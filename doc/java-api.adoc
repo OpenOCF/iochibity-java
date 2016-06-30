@@ -1,0 +1,3 @@
+= java api
+
+Notes on the Java API for Iotivity

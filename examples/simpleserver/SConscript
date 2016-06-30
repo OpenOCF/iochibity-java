@@ -1,0 +1,11 @@
+import os
+import platform
+Import('env')
+
+target_os = env.get('TARGET_OS')
+target_arch = env.get('TARGET_ARCH')
+
+jcp = '-cp ./../iotivity-' + target_os + '/build/libs/iotivity-' + target_os + '.jar'
+
+env.Java('classes', 'src', JAVACFLAGS=jcp)
+

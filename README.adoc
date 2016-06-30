@@ -1,0 +1,28 @@
+# iotivity-java
+
+Java API/SDK for Iotivity
+
+WARNING: The makefile is very much a Work-In-Progress. If you have
+trouble you'll havve to read it and figure out what to adjust. It
+should be pretty simple: compile some C++ code, then some java
+code. You just have to point to the right header files and library
+paths.
+
+This is the Java API and JNI wrapper code for Iotivity, broken out
+into a stand-alone project.  It is derived from work by Petre Eftime
+(https://gerrit.iotivity.org/gerrit/#/c/7895/[patch 7895]).
+
+The examples were originally for use with the Android port, but only
+two (simpleclient and simpleserver) have been ported to work with the
+Java SDK.
+
+Makefiles for the example code have not yet been written. But it
+should be easy to compile them, just run an ordinary `javac` command.
+You don't need the Gradle stuff, it will eventually be removed.
+
+See also https://github.com/iotk/iotivity-clj[iotk/iotivity-clj],
+which is a Clojure SDK for Iotivity, built on this Java SDK.
+
+For assistance, try https://iotivity-slack.herokuapp.com/[iotivity-slack].
+
+

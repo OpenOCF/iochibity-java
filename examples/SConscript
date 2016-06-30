@@ -1,0 +1,9 @@
+import os
+import platform
+Import('env')
+
+target_arch = env.get('TARGET_ARCH')
+
+SConscript('simpleserver/SConscript')
+
+SConscript('simpleclient/SConscript')
