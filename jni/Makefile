@@ -6,9 +6,6 @@
 
 # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
 
-# Your platform. See PLATS for possible values.
-PLAT= none
-
 CC= gcc -std=c11
 CXXFLAGS= -O2 -std=c++11 -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
@@ -33,26 +30,29 @@ MYOBJS=
 IOTLIBPATH = [env.get('BUILD_DIR')])
 IOTRPATH = [env.get('BUILD_DIR')])
 
-# IOTLIBS = -loc -loctbstack -loc_logger -lconnectivity_abstraction -lpthread
+IOTLIBS = -loc -loctbstack -loc_logger -lconnectivity_abstraction -lpthread
 
-IOTIVITY_LIB="$(IOTIVITY_HOME)/out/darwin/x86_64/release"
+IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE)"
 
-IOTLIBS = $(IOTIVITY_LIB)/liboctbstack.a \
-	$(IOTIVITY_LIB)/libconnectivity_abstraction.a \
-	$(IOTIVITY_LIB)/liboc_logger.dylib \
-	$(IOTIVITY_LIB)/liboc.dylib \
-	-lpthread
+# IOTLIBS = $(IOTIVITY_LIBPATH)/liboctbstack.a \
+# 	$(IOTIVITY_LIBPATH)/libconnectivity_abstraction.a \
+# 	$(IOTIVITY_LIBPATH)/liboc_logger.dylib \
+# 	$(IOTIVITY_LIBPATH)/liboc.dylib \
+# 	-lpthread
 
 # ifeq ($(SECURED), 1)
 #     IOTLIBS += "-ltinydtls -locprovision -locpmapi"
 # endif
 
-# if target_os == 'linux':
-#    shlibsuffix = '.so'
-#    jnilibsuffix = '.so'
-# elif target_os == 'darwin':
-#    shlibsuffix = '.dylib'
-#    jnilibsuffix = '.jnilib'
+ifeq ($(HOST),'linux')
+   SHLIBSUFFIX = '.so'
+   JNILIBSUFFIX = '.so'
+endif
+ifeq ($(HOST),'darwin')
+   SHLIBSUFFIX = '.dylib'
+   JNILIBSUFFIX = '.jnilib'
+endif
+
 # elif target_os == 'win32':
 #    shlibsuffix = '.dll'
 #    jnilibsuffix = '.dll'
@@ -61,8 +61,6 @@ IOTLIBS = $(IOTIVITY_LIB)/liboctbstack.a \
 
 # if target_os in ['darwin', 'ios']:
 # 	jni_env.AppendUnique(CPPDEFINES = ['_DARWIN_C_SOURCE'])
-
-PLATS= aix bsd c89 freebsd generic linux darwin mingw posix solaris
 
 # if target_arch in ['x86']:
 # 	env.AppendUnique(CCFLAGS = ['-m32'])
@@ -86,7 +84,7 @@ PLATS= aix bsd c89 freebsd generic linux darwin mingw posix solaris
 IOT_CXXFLAGS= -I. \
 	-I./src \
 	-I${JAVA_HOME}/include \
-	-I${JAVA_HOME}/include/darwin \
+	-I${JAVA_HOME}/include/$(HOST) \
 	-I${IOTIVITY_HOME}/resource/csdk/connectivity/api \
 	-I${IOTIVITY_HOME}/resource/include \
 	-I${IOTIVITY_HOME}/resource/c_common \
@@ -146,8 +144,15 @@ ALL= all
 linux:
 	$(MAKE) $(ALL) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl -lreadline"
 
-darwin:
+$(HOST):
 	$(MAKE) $(ALL) $(CXX_FLAGS) SYSCFLAGS="-DDARWIN_C_SOURCE"
+	 g++ -o libiotivity-jni.$(JNILIBSUFFIX) \
+	$(IOTLIBS) \
+	-L$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE) \
+	-L. \
+	$(CORE_O)
+
+darwin:
 	 g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
 	-rpath $HOME/out/darwin/x86_64/release \
 	-flat_namespace \

@@ -2,8 +2,14 @@
 
 # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
 
-# Your platform. See PLATS for possible values.
-PLAT= none
+# Edison: linux, x86 (32 bit)
+HOST=linux
+ARCH=x86
+
+#HOST=darwin
+#ARCH=x86_64
+
+STAGE=release
 
 # Where to install. The installation starts in the src and doc directories,
 # so take care if INSTALL_TOP is not an absolute path. See the local target.
