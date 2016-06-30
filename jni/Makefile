@@ -142,11 +142,11 @@ echo:
 # Convenience targets for popular platforms
 ALL= all
 
-linux:
-	$(MAKE) $(ALL) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl -lreadline"
+# linux:
+# 	$(MAKE) $(ALL) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl -lreadline"
 
 $(HOST):
-	$(MAKE) $(ALL) $(CXX_FLAGS)
+	$(MAKE) $(ALL) $(CXX_FLAGS) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl"
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
 	$(IOTLIBS) \

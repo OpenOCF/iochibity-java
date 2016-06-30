@@ -10,8 +10,8 @@ JNILIBSUFFIX=.so
 
 #HOST=darwin
 #ARCH=x86_64
-#SHLIBSUFFIX='.dylib'
-#JNILIBSUFFIX='.jnilib'
+#SHLIBSUFFIX=.dylib
+#JNILIBSUFFIX=.jnilib
 
 STAGE=release
 
@@ -31,6 +31,8 @@ INSTALL_INC= $(INSTALL_TOP)/include
 INSTALL_LIB= $(INSTALL_TOP)/lib
 INSTALL_MAN= $(INSTALL_TOP)/man/man1
 INSTALL_JNI= $(INSTALL_TOP)/lib/iotivity/$V
+
+JARBIN=$(JAVA_HOME)/bin/jar
 
 # INSTALL_JAR= $(INSTALL_TOP)/share/iotivity-jvm/$V
 
@@ -86,7 +88,7 @@ $(PLATS):
 	javac -d api/classes -sourcepath api/src:api/unix api/src/org/iotivity/base/OcSecureResource.java
 	javac -d api/classes -sourcepath api/src:api/unix api/src/org/iotivity/base/OicSecAcl.java
 	javac -d api/classes -sourcepath api/src:api/unix api/src/org/iotivity/base/OxmType.java
-	cd api/classes && jar cf ../lib/$(TO_JAR) ./
+	cd api/classes && $(JARBIN) cf ../lib/$(TO_JAR) ./
 
 clean:
 	cd jni && $(MAKE) clean
