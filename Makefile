@@ -88,6 +88,7 @@ $(PLATS):
 	javac -d api/classes -sourcepath api/src:api/unix api/src/org/iotivity/base/OcSecureResource.java
 	javac -d api/classes -sourcepath api/src:api/unix api/src/org/iotivity/base/OicSecAcl.java
 	javac -d api/classes -sourcepath api/src:api/unix api/src/org/iotivity/base/OxmType.java
+	$(MKDIR) api/lib
 	cd api/classes && $(JARBIN) cf ../lib/$(TO_JAR) ./
 
 clean:
