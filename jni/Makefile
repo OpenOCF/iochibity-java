@@ -83,6 +83,7 @@ endif
 
 IOT_CXXFLAGS= -I. \
 	-I./src \
+	-I$/usr/include/mraa \
 	-I${JAVA_HOME}/include \
 	-I${JAVA_HOME}/include/$(HOST) \
 	-I${IOTIVITY_HOME}/resource/csdk/connectivity/api \
@@ -145,7 +146,7 @@ linux:
 	$(MAKE) $(ALL) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl -lreadline"
 
 $(HOST):
-	$(MAKE) $(ALL) $(CXX_FLAGS) SYSCFLAGS="-DDARWIN_C_SOURCE"
+	$(MAKE) $(ALL) $(CXX_FLAGS)
 	 g++ -o libiotivity-jni.$(JNILIBSUFFIX) \
 	$(IOTLIBS) \
 	-L$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE) \

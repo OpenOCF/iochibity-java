@@ -5,11 +5,21 @@
 # Edison: linux, x86 (32 bit)
 HOST=linux
 ARCH=x86
+SHLIBSUFFIX='.so'
+JNILIBSUFFIX='.so'
 
 #HOST=darwin
 #ARCH=x86_64
+#SHLIBSUFFIX='.dylib'
+#JNILIBSUFFIX='.jnilib'
 
 STAGE=release
+
+export HOST
+export ARCH
+export STAGE
+export SHLIBSUFFIX
+export JNILIBSUFFIX
 
 # Where to install. The installation starts in the src and doc directories,
 # so take care if INSTALL_TOP is not an absolute path. See the local target.
