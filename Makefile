@@ -5,8 +5,8 @@
 # Edison: linux, x86 (32 bit)
 HOST=linux
 ARCH=x86
-SHLIBSUFFIX='.so'
-JNILIBSUFFIX='.so'
+SHLIBSUFFIX=.so
+JNILIBSUFFIX=.so
 
 #HOST=darwin
 #ARCH=x86_64

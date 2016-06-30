@@ -147,7 +147,8 @@ linux:
 
 $(HOST):
 	$(MAKE) $(ALL) $(CXX_FLAGS)
-	 g++ -o libiotivity-jni.$(JNILIBSUFFIX) \
+	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
+	-shared \
 	$(IOTLIBS) \
 	-L$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE) \
 	-L. \
