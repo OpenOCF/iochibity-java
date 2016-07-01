@@ -5,7 +5,7 @@
 # Edison: linux, x86
 # Ubuntu: linux, x86_64
 # HOST=linux
-# ARCH=x86
+# ARCH=x86_86
 # STAGE=release
 # SHLIBSUFFIX =.so
 # JNILIBSUFFIX =.so
