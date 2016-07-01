@@ -160,15 +160,15 @@ all:	check-env $(BASE_O)
 
 ALL=all
 
+# NB: do not change the order of the CORE_O files and the libs:
 linux:	check-env
 	echo "Making linux"
 	$(MAKE) $(ALL)
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
-	$(CORE_O)
-	$(IOTLIBS) \
+	-L. $(CORE_O) \
 	-L$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE) \
-	-L.
+	$(IOTLIBS)
 
 darwin: check-env
 	@echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
