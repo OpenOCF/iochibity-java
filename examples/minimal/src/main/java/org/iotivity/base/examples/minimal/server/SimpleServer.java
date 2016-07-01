@@ -136,8 +136,8 @@ public class SimpleServer {
 
         while(true){
             try{
-		t1.sleep(2);       // main-thread is sleeping not the thread created above
-            }catch(InterruptedException e){
+		// sleep(2);       // main-thread is sleeping not the thread created above
+            }catch(Exception e){
 		e.printStackTrace();
             }
 
