@@ -162,7 +162,8 @@ all:	check-env $(BASE_O)
 ALL=all
 
 linux:	check-env
-	@$(MAKE) $(ALL) $(CXX_FLAGS) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl"
+	echo "Making linux"
+	$(CC) $(ALL) $(CXX_FLAGS) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl"
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
 	$(IOTLIBS) \
@@ -171,8 +172,8 @@ linux:	check-env
 	$(CORE_O)
 
 darwin: check-env
-	echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
-	@$(CC) $(ALL) $(CXX_FLAGS)
+	@echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
+	@$(MAKE) $(ALL)
 	@g++ -o libiotivity-jni$(JNILIBSUFFIX) -dynamiclib -undefined error \
 	-rpath $(HOME)/out/darwin/x86_64/release \
 	-flat_namespace \
