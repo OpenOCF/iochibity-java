@@ -5,14 +5,14 @@
 # Edison: linux, x86 (32 bit)
 # HOST=linux
 # ARCH=x86
-# SHLIBSUFFIX = '.so'
-# JNILIBSUFFIX = '.so'
+# SHLIBSUFFIX =.so
+# JNILIBSUFFIX =.so
 
 HOST=darwin
 ARCH=x86_64
 STAGE=release
-SHLIBSUFFIX = '.dylib'
-JNILIBSUFFIX = '.jnilib'
+SHLIBSUFFIX =.dylib
+JNILIBSUFFIX =.jnilib
 
 # Where to install. The installation starts in the src and doc directories,
 # so take care if INSTALL_TOP is not an absolute path. See the local target.
@@ -42,7 +42,7 @@ RANLIB ?= ranlib
 RM     ?= rm -f
 
 # Options
-CXXFLAGS= -O2 -std=c++11 -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
+CXXFLAGS= -std=c++11 -fPIC -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
 CFLAGS  = -std=c11
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
@@ -51,7 +51,7 @@ SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
-MYCFLAGS=-Wno-unused-private-field -Wno-unused-parameter -Wno-unused-function
+OSXCFLAGS=-Wno-unused-private-field -Wno-unused-parameter -Wno-unused-function
 MYLDFLAGS=
 MYLIBS=
 MYOBJS=
@@ -154,16 +154,13 @@ BASE_O= $(CORE_O)
 # Convenience targets for popular platforms
 # ALL= all
 
-# linux:
-# 	$(MAKE) $(ALL) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl -lreadline"
-
 all:	check-env $(BASE_O)
 
 ALL=all
 
 linux:	check-env
 	echo "Making linux"
-	$(CC) $(ALL) $(CXX_FLAGS) SYSCFLAGS="-DIOT_USE_LINUX" SYSLIBS="-Wl,-E -ldl"
+	$(MAKE) $(ALL)
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
 	$(IOTLIBS) \
@@ -173,7 +170,7 @@ linux:	check-env
 
 darwin: check-env
 	@echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
-	@$(MAKE) $(ALL)
+	@$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
 	@g++ -o libiotivity-jni$(JNILIBSUFFIX) -dynamiclib -undefined error \
 	-rpath $(HOME)/out/darwin/x86_64/release \
 	-flat_namespace \
@@ -249,11 +246,11 @@ SHLIBSUFFIX = '.so'
 JNILIBSUFFIX = '.so'
 endif
 
-ifeq ($(STAGE),'release')
-MYCFLAGS += -O2
-else
-MYCFLAGS += -g
-endif
+# ifeq ($(STAGE),'release')
+# MYCFLAGS += -O2
+# else
+# MYCFLAGS += -g
+# endif
 
 
 
