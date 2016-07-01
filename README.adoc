@@ -2,23 +2,68 @@
 
 Java API/SDK for Iotivity
 
-WARNING: The makefile is very much a Work-In-Progress. If you have
-trouble you'll havve to read it and figure out what to adjust. It
-should be pretty simple: compile some C++ code, then some java
-code. You just have to point to the right header files and library
-paths.
-
 This is the Java API and JNI wrapper code for Iotivity, broken out
 into a stand-alone project.  It is derived from work by Petre Eftime
 (https://gerrit.iotivity.org/gerrit/#/c/7895/[patch 7895]).
 
-The examples were originally for use with the Android port, but only
-two (simpleclient and simpleserver) have been ported to work with the
-Java SDK.
+It seems to build and work on Ubuntu with the latest source pulled
+from master.  It also works with
+https://github.com/iotk/iochibity[iochibity] on Darwin.
 
-Makefiles for the example code have not yet been written. But it
-should be easy to compile them, just run an ordinary `javac` command.
-You don't need the Gradle stuff, it will eventually be removed.
+=== building
+
+==== jni
+
+Step one is to adapt `source.me` to your system. The provided code
+assumes that this SDK is cloned to `$HOME/iotivity/kit/java` and that
+the Iotivity dev kit is at `$HOME/iotivity/iotivity`; change as
+needed, then source it: `$ source source.me`.
+
+Then build the JNI layer. Edit `jni/Makefile` to adjust the vars to
+your setup, then just run `$ make <host>`, for example `make linux`.
+
+NOTE: If you build it on the Edison, you want ARCH=x86; on 64 bit
+Ubuntu, make it x86_64.
+
+WARNING: The makefile is very much a Work-In-Progress. The goal is to
+make it like the one for Lua, which is very portable, but it needs
+some work.
+
+==== api
+
+To build the Java API:
+
+[source,sh]
+----
+$ cd api
+$ mvn install
+----
+
+The `mvn` command will compile the Java source, package it in a jar
+file, and install it to your local repository.  The result should be in
+
+[source,sh]
+----
+$HOME/.m2/repository/iotivity/iotivity-api/1.1.0-SNAPSHOT
+----
+
+Note that this version number is for the Java API; it is not the
+version number of the Iotivity library.
+
+==== examples
+
+Only one of the original Android samples has been ported; it's in `examples/minimal`.
+
+To build it, just run `$ mvn package`.  Note that you do not need to install it.
+
+To run it, do `$ ./bin/<host>/<role>`, for example, `$ ./bin/linux/jserver`.
+
+If you get errors pertaining to linkage, check the `source.me` paths
+and the paths in the `bin/<host>/<role>` code.
+
+On Darwin you may have to run the `fixlinks.sh` script to fixup the linkage info.
+
+=== related
 
 See also https://github.com/iotk/iotivity-clj[iotk/iotivity-clj],
 which is a Clojure SDK for Iotivity, built on this Java SDK.
