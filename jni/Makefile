@@ -2,9 +2,11 @@
 
 
 # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
-# Edison: linux, x86 (32 bit)
+# Edison: linux, x86
+# Ubuntu: linux, x86_64
 # HOST=linux
 # ARCH=x86
+# STAGE=release
 # SHLIBSUFFIX =.so
 # JNILIBSUFFIX =.so
 
@@ -163,10 +165,10 @@ linux:	check-env
 	$(MAKE) $(ALL)
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
+	$(CORE_O)
 	$(IOTLIBS) \
 	-L$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE) \
-	-L. \
-	$(CORE_O)
+	-L.
 
 darwin: check-env
 	@echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
