@@ -1,22 +1,24 @@
-//******************************************************************
-//
-// Copyright 2015 Samsung Electronics All Rights Reserved.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+/*
+* //******************************************************************
+* //
+* // Copyright 2015 Samsung Electronics All Rights Reserved.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+* //
+* // Licensed under the Apache License, Version 2.0 (the "License");
+* // you may not use this file except in compliance with the License.
+* // You may obtain a copy of the License at
+* //
+* //      http://www.apache.org/licenses/LICENSE-2.0
+* //
+* // Unless required by applicable law or agreed to in writing, software
+* // distributed under the License is distributed on an "AS IS" BASIS,
+* // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* // See the License for the specific language governing permissions and
+* // limitations under the License.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+*/
 
 #include "JniOcStack.h"
 #include "JniProvisionResultListner.h"
@@ -53,7 +55,8 @@ class JniOcSecureResource
                 jobject device2, jobject jListener);
         OCStackResult unlinkDevices(JNIEnv* env, jobject device2, jobject jListener);
         OCStackResult removeDevice(JNIEnv* env, jint timeout, jobject jListener);
-
+        OCStackResult provisionDirectPairing(JNIEnv* env, jobjectArray jpdacls,jobject jListener,
+                std::string pin, std::vector<int> prms, int edp);
     private:
 
         std::map<jobject, std::pair<JniProvisionResultListner*, int>> resultMap;
@@ -113,6 +116,14 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcSecureResource_provisionACL
  */
 JNIEXPORT void JNICALL Java_org_iotivity_base_OcSecureResource_provisionPairwiseDevices1
   (JNIEnv *, jobject, jint, jint, jobject, jobject, jobject, jobject);
+
+/*
+ * Class:     org_iotivity_base_OcSecureResource
+ * Method:    provisionDirectPairing
+ * Signature: (Ljava/lang/Object;Lorg/iotivity/base/OcSecureResource/ProvisionDirectPairingListener;)V
+ */
+JNIEXPORT void JNICALL Java_org_iotivity_base_OcSecureResource_provisionDirectPairing
+  (JNIEnv *, jobject, jstring, jobjectArray, jintArray, jint, jobject);
 
 /*
  * Class:     org_iotivity_base_OcSecureResource

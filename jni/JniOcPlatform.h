@@ -1,27 +1,30 @@
-//******************************************************************
-//
-// Copyright 2015 Intel Corporation.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
+/*
+* //******************************************************************
+* //
+* // Copyright 2015 Intel Corporation.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+* //
+* // Licensed under the Apache License, Version 2.0 (the "License");
+* // you may not use this file except in compliance with the License.
+* // You may obtain a copy of the License at
+* //
+* //      http://www.apache.org/licenses/LICENSE-2.0
+* //
+* // Unless required by applicable law or agreed to in writing, software
+* // distributed under the License is distributed on an "AS IS" BASIS,
+* // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* // See the License for the specific language governing permissions and
+* // limitations under the License.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+*/
 #include "JniOcStack.h"
 #include "JniOnResourceFoundListener.h"
 #include "JniOnDeviceInfoListener.h"
 #include "JniOnPlatformInfoListener.h"
+#include "JniOnDPDevicesFoundListener.h"
+#include "JniOnDirectPairingListener.h"
 #include "JniOnPresenceListener.h"
 #include <mutex>
 
@@ -42,15 +45,26 @@ void RemoveOnPlatformInfoListener(JNIEnv* env, jobject jListener);
 JniOnPresenceListener* AddOnPresenceListener(JNIEnv* env, jobject jListener);
 void RemoveOnPresenceListener(JNIEnv* env, jobject jListener);
 
+JniOnDPDevicesFoundListener* AddOnDPDevicesFoundListener(JNIEnv* env, jobject jListener);
+void RemoveOnDPDevicesFoundListener(JNIEnv* env, jobject jListener);
+
+JniOnDirectPairingListener* AddOnDirectPairingListener(JNIEnv* env, jobject jListener);
+void RemoveOnDirectPairingListener(JNIEnv* env, jobject jListener);
+
+
 std::map<jobject, std::pair<JniOnResourceFoundListener*, int>> onResourceFoundListenerMap;
 std::map<jobject, std::pair<JniOnDeviceInfoListener*, int>> onDeviceInfoListenerMap;
 std::map<jobject, std::pair<JniOnPlatformInfoListener*, int>> onPlatformInfoListenerMap;
 std::map<jobject, std::pair<JniOnPresenceListener*, int>> onPresenceListenerMap;
+std::map<jobject, std::pair<JniOnDPDevicesFoundListener*, int>> onDPDevicesFoundListenerMap;
+std::map<jobject, std::pair<JniOnDirectPairingListener*, int>> directPairingListenerMap;
 
 std::mutex resourceFoundMapLock;
 std::mutex deviceInfoMapLock;
 std::mutex platformInfoMapLock;
 std::mutex presenceMapLock;
+std::mutex dpDevicesFoundListenerMapLock;
+std::mutex directPairingListenerMapLock;
 
 #ifdef __cplusplus
 extern "C" {
@@ -162,10 +176,10 @@ extern "C" {
     /*
     * Class:     org_iotivity_base_OcPlatform
     * Method:    registerDeviceInfo0
-    * Signature: (Ljava/lang/String;)V
+    * Signature: (Ljava/lang/String;[Ljava/lang/String;)V
     */
     JNIEXPORT void JNICALL Java_org_iotivity_base_OcPlatform_registerDeviceInfo0
-        (JNIEnv *, jclass, jstring);
+        (JNIEnv *, jclass, jstring, jobjectArray);
 
     /*
     * Class:     org_iotivity_base_OcPlatform
@@ -287,6 +301,30 @@ extern "C" {
     JNIEXPORT void JNICALL Java_org_iotivity_base_OcPlatform_sendResponse0
         (JNIEnv *, jclass, jobject);
 
+    /*
+     * Class:     org_iotivity_base_OcPlatform
+     * Method:    findDirectPairingDevices
+     * Signature: (ILorg/iotivity/base/OcPlatform/FindDirectPairingListener;)V
+     */
+    JNIEXPORT void JNICALL Java_org_iotivity_base_OcPlatform_findDirectPairingDevices
+        (JNIEnv *, jclass, jint, jobject);
+
+    /*
+     * Class:     org_iotivity_base_OcPlatform
+     * Method:    getDirectPairedDevices
+     * Signature: (Lorg/iotivity/base/OcDirectPairDevice/GetDirectPairedListener;)V
+     */
+    JNIEXPORT void JNICALL Java_org_iotivity_base_OcPlatform_getDirectPairedDevices
+        (JNIEnv *, jclass, jobject);
+
+    /*
+     * Class:     org_iotivity_base_OcPlatform
+     * Method:    doDirectPairing
+     * Signature: (Lorg/iotivity/base/OcDirectPairDevice;Lorg/iotivity/base/OcPrmType;
+     *           Ljava/lang/String;Lorg/iotivity/base/OcDirectPairDevice/DirectPairingListener;)V
+     */
+    JNIEXPORT void JNICALL Java_org_iotivity_base_OcPlatform_doDirectPairing0
+        (JNIEnv *, jclass, jobject, jint, jstring, jobject);
 #ifdef __cplusplus
 }
 #endif

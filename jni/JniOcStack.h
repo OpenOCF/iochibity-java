@@ -1,25 +1,31 @@
-//******************************************************************
-//
-// Copyright 2015 Intel Corporation.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
+/*
+* //******************************************************************
+* //
+* // Copyright 2015 Intel Corporation.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+* //
+* // Licensed under the Apache License, Version 2.0 (the "License");
+* // you may not use this file except in compliance with the License.
+* // You may obtain a copy of the License at
+* //
+* //      http://www.apache.org/licenses/LICENSE-2.0
+* //
+* // Unless required by applicable law or agreed to in writing, software
+* // distributed under the License is distributed on an "AS IS" BASIS,
+* // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* // See the License for the specific language governing permissions and
+* // limitations under the License.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+*/
 #include <jni.h>
+#ifdef __ANDROID__
+#include <android/log.h>
+#else
 #include "logger.h"
+#endif
+
 #include "OCApi.h"
 
 #ifndef _Included_org_iotivity_base_ocstack
@@ -29,9 +35,15 @@
 
 #define JNI_CURRENT_VERSION JNI_VERSION_1_6
 
+#ifdef __ANDROID__
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+#else
 #define LOGI(...) OIC_LOG_V(INFO, TAG, __VA_ARGS__)
 #define LOGD(...) OIC_LOG_V(DEBUG, TAG, __VA_ARGS__)
 #define LOGE(...) OIC_LOG_V(ERROR, TAG, __VA_ARGS__)
+#endif
 
 #define JNI_EXCEPTION 1000
 #define JNI_NO_NATIVE_POINTER 1001
@@ -81,6 +93,8 @@ extern jclass g_cls_OcResourceIdentifier;
 extern jclass g_cls_OcProvisionResult;
 extern jclass g_cls_OcSecureResource;
 extern jclass g_cls_OcOicSecAcl;
+extern jclass g_cls_OcOicSecPdAcl;
+extern jclass g_cls_OcDirectPairDevice;
 
 extern jmethodID g_mid_Integer_ctor;
 extern jmethodID g_mid_Double_ctor;
@@ -113,6 +127,8 @@ extern jmethodID g_mid_OcPresenceStatus_get;
 extern jmethodID g_mid_OcResourceIdentifier_N_ctor;
 extern jmethodID g_mid_OcProvisionResult_ctor;
 extern jmethodID g_mid_OcSecureResource_ctor;
+extern jmethodID g_mid_OcDirectPairDevice_ctor;
+extern jmethodID g_mid_OcDirectPairDevice_dev_ctor;
 extern jmethodID g_mid_OcOicSecAcl_get_subject;
 extern jmethodID g_mid_OcOicSecAcl_get_resources_cnt;
 extern jmethodID g_mid_OcOicSecAcl_get_resources;
@@ -120,8 +136,13 @@ extern jmethodID g_mid_OcOicSecAcl_get_permission;
 extern jmethodID g_mid_OcOicSecAcl_get_periods_cnt;
 extern jmethodID g_mid_OcOicSecAcl_get_periods;
 extern jmethodID g_mid_OcOicSecAcl_get_recurrences;
-extern jmethodID g_mid_OcOicSecAcl_get_owners_cnt;
-extern jmethodID g_mid_OcOicSecAcl_get_owners;
+extern jmethodID g_mid_OcOicSecAcl_get_rownerID;
+extern jmethodID g_mid_OcOicSecPdAcl_get_resources_cnt;
+extern jmethodID g_mid_OcOicSecPdAcl_get_resources;
+extern jmethodID g_mid_OcOicSecPdAcl_get_permission;
+extern jmethodID g_mid_OcOicSecPdAcl_get_periods_cnt;
+extern jmethodID g_mid_OcOicSecPdAcl_get_periods;
+extern jmethodID g_mid_OcOicSecPdAcl_get_recurrences;
 
 typedef void(*RemoveListenerCallback)(JNIEnv* env, jobject jListener);
 
@@ -151,32 +172,29 @@ static JNIEnv* GetJNIEnv(jint& ret)
     JNIEnv *env = nullptr;
 
     ret = g_jvm->GetEnv((void **)&env, JNI_CURRENT_VERSION);
-    switch (ret) {
-    case JNI_OK:
-        return env;
-    case JNI_EDETACHED:
-// AttachCurrentThread API changed in JNI 1.7 which is not a defined version
-#pragma GCC diagnostic push
-#if !defined(__clang__)
-#pragma GCC diagnostic warning "-fpermissive"
-#endif
-      if (g_jvm->AttachCurrentThread((void**) &env, nullptr) < 0)
-#pragma GCC diagnostic push
-        {
+    switch (ret)
+    {
+        case JNI_OK:
+            return env;
+        case JNI_EDETACHED:
+            if (g_jvm->AttachCurrentThread(&env, nullptr) < 0)
+            {
+                LOGE("Failed to get the environment");
+                return nullptr;
+            }
+            else
+            {
+                return env;
+            }
+
+        case JNI_EVERSION:
+            LOGE("JNI version not supported");
+            break;
+        default:
             LOGE("Failed to get the environment");
             return nullptr;
-        }
-        else
-        {
-            return env;
-        }
-
-    case JNI_EVERSION:
-        LOGE("JNI version not supported");
-    default:
-        LOGE("Failed to get the environment");
-        return nullptr;
     }
+    return nullptr;
 }
 
 static void DuplicateString(char ** targetString, std::string sourceString)

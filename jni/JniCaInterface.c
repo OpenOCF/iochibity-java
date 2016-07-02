@@ -1,25 +1,31 @@
-//******************************************************************
-//
-// Copyright 2015 Intel Corporation.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+/*
+* //******************************************************************
+* //
+* // Copyright 2015 Intel Corporation.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+* //
+* // Licensed under the Apache License, Version 2.0 (the "License");
+* // you may not use this file except in compliance with the License.
+* // You may obtain a copy of the License at
+* //
+* //      http://www.apache.org/licenses/LICENSE-2.0
+* //
+* // Unless required by applicable law or agreed to in writing, software
+* // distributed under the License is distributed on an "AS IS" BASIS,
+* // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* // See the License for the specific language governing permissions and
+* // limitations under the License.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+*/
 
 #include <jni.h>
+#if defined(__ANDROID__)
+#include <android/log.h>
+#else
 #include "logger.h"
+#endif
 #include <stdio.h>
 #include "cainterface.h"
 #include "JniCaInterface.h"
@@ -27,8 +33,13 @@
 #include "cacommon.h"
 
 #define  LOG_TAG   "JNI_CA_INTERFACE"
+#if defined(__ANDROID__)
+#define  LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define  LOGE(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#else
 #define  LOGI(...) OIC_LOG_V(OC_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define  LOGE(...) OIC_LOG_V(OC_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#endif
 
 static jobject g_foundDeviceListenerObject = NULL;
 static jobject g_listenerObject = NULL;
@@ -81,7 +92,7 @@ void CAManagerConnectionStateChangedCB(CATransportAdapter_t adapter,
     }
 
     bool isAttached = false;
-    JNIEnv* env;
+    JNIEnv* env = NULL;
     jint res = (*g_jvm)->GetEnv(g_jvm, (void**) &env, JNI_VERSION_1_6);
     if (JNI_OK != res)
     {
@@ -162,7 +173,7 @@ void CAManagerAdapterStateChangedCB(CATransportAdapter_t adapter, bool enabled)
     }
 
     bool isAttached = false;
-    JNIEnv* env;
+    JNIEnv* env = NULL;
     jint res = (*g_jvm)->GetEnv(g_jvm, (void**) &env, JNI_VERSION_1_6);
     if (JNI_OK != res)
     {
@@ -352,9 +363,8 @@ Java_org_iotivity_ca_CaInterface_caBtPairingStartScan(JNIEnv *env, jclass clazz)
 {
     LOGI("caBtPairingStartScan");
     (void)clazz;
-    /*GAR FIXME
+    /*GAR FIXME */
     CAUtilStartScan(env);
-    */
 }
 
 JNIEXPORT void JNICALL
@@ -362,9 +372,8 @@ Java_org_iotivity_ca_CaInterface_caBtPairingStopScan(JNIEnv *env, jclass clazz)
 {
     LOGI("caBtPairingStopScan");
     (void)clazz;
-    /*GAR FIXME
+    /*GAR FIXME */
     CAUtilStopScan(env);
-    */
 }
 
 JNIEXPORT void JNICALL
@@ -372,7 +381,17 @@ Java_org_iotivity_ca_CaInterface_caBtPairingCreateBond(JNIEnv *env, jclass clazz
 {
     LOGI("caBtPairingCreateBond");
     (void)clazz;
-    /*GAR FIXME
+    /*GAR FIXME */
     CAUtilCreateBond(env, device);
-    */
 }
+
+JNIEXPORT void JNICALL
+Java_org_iotivity_ca_CaInterface_setLeScanIntervalTimeImpl(JNIEnv *env, jclass clazz,
+                                                           jint intervalTime, jint workignCount)
+{
+    LOGI("setLeScanIntervalTimeImpl");
+    (void)env;
+    (void)clazz;
+    CAUtilSetLEScanInterval(intervalTime, workignCount);
+}
+

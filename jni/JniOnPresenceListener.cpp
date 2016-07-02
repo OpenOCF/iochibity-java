@@ -1,22 +1,24 @@
-//******************************************************************
-//
-// Copyright 2015 Intel Corporation.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+/*
+* //******************************************************************
+* //
+* // Copyright 2015 Intel Corporation.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+* //
+* // Licensed under the Apache License, Version 2.0 (the "License");
+* // you may not use this file except in compliance with the License.
+* // You may obtain a copy of the License at
+* //
+* //      http://www.apache.org/licenses/LICENSE-2.0
+* //
+* // Unless required by applicable law or agreed to in writing, software
+* // distributed under the License is distributed on an "AS IS" BASIS,
+* // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* // See the License for the specific language governing permissions and
+* // limitations under the License.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+*/
 #include "JniOnPresenceListener.h"
 #include "JniUtils.h"
 
@@ -32,14 +34,20 @@ JniOnPresenceListener::~JniOnPresenceListener()
     LOGD("~JniOnPresenceListener");
     if (m_jwListener)
     {
-        jint ret;
+        jint ret = JNI_ERR;
         JNIEnv *env = GetJNIEnv(ret);
-        if (nullptr == env) return;
+        if (nullptr == env)
+        {
+            return;
+        }
 
         env->DeleteWeakGlobalRef(m_jwListener);
         m_jwListener = nullptr;
 
-        if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+        if (JNI_EDETACHED == ret)
+        {
+            g_jvm->DetachCurrentThread();
+        }
     }
 }
 
@@ -47,17 +55,26 @@ void JniOnPresenceListener::onPresenceCallback(OCStackResult result, const unsig
     const std::string& hostAddress)
 {
     LOGI("JniOnPresenceListener::onPresenceCallback");
-    if (!m_jwListener) return;
+    if (!m_jwListener)
+    {
+        return;
+    }
 
-    jint ret;
+    jint ret = JNI_ERR;
     JNIEnv *env = GetJNIEnv(ret);
-    if (nullptr == env) return;
+    if (nullptr == env)
+    {
+        return;
+    }
 
     if (OC_STACK_OK != result && OC_STACK_PRESENCE_STOPPED != result &&
         OC_STACK_PRESENCE_TIMEOUT != result &&  OC_STACK_PRESENCE_DO_NOT_HANDLE != result)
     {
         ThrowOcException(result, "onPresenceCallback: stack failure");
-        if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+        if (JNI_EDETACHED == ret)
+        {
+            g_jvm->DetachCurrentThread();
+        }
         return;
     }
 
@@ -65,7 +82,10 @@ void JniOnPresenceListener::onPresenceCallback(OCStackResult result, const unsig
     if (enumField.empty())
     {
         ThrowOcException(JNI_INVALID_VALUE, "Unexpected OCStackResult value");
-        if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+        if (JNI_EDETACHED == ret)
+        {
+            g_jvm->DetachCurrentThread();
+        }
         return;
     }
 
@@ -74,7 +94,10 @@ void JniOnPresenceListener::onPresenceCallback(OCStackResult result, const unsig
     if (!jPresenceStatus)
     {
         checkExAndRemoveListener(env);
-        if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+        if (JNI_EDETACHED == ret)
+        {
+            g_jvm->DetachCurrentThread();
+        }
         return;
     }
 
@@ -82,7 +105,10 @@ void JniOnPresenceListener::onPresenceCallback(OCStackResult result, const unsig
     if (!jListener)
     {
         checkExAndRemoveListener(env);
-        if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+        if (JNI_EDETACHED == ret)
+        {
+            g_jvm->DetachCurrentThread();
+        }
         return;
     }
 
@@ -90,7 +116,10 @@ void JniOnPresenceListener::onPresenceCallback(OCStackResult result, const unsig
     if (!clsL)
     {
         checkExAndRemoveListener(env);
-        if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+        if (JNI_EDETACHED == ret)
+        {
+            g_jvm->DetachCurrentThread();
+        }
         return;
     }
     jmethodID midL = env->GetMethodID(clsL, "onPresence",
@@ -98,7 +127,10 @@ void JniOnPresenceListener::onPresenceCallback(OCStackResult result, const unsig
     if (!midL)
     {
         checkExAndRemoveListener(env);
-        if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+        if (JNI_EDETACHED == ret)
+        {
+            g_jvm->DetachCurrentThread();
+        }
         return;
     }
 
@@ -109,7 +141,11 @@ void JniOnPresenceListener::onPresenceCallback(OCStackResult result, const unsig
         LOGE("Java exception is thrown");
         checkExAndRemoveListener(env);
     }
-    if (JNI_EDETACHED == ret) g_jvm->DetachCurrentThread();
+
+    if (JNI_EDETACHED == ret)
+    {
+        g_jvm->DetachCurrentThread();
+    }
 }
 
 void JniOnPresenceListener::checkExAndRemoveListener(JNIEnv* env)

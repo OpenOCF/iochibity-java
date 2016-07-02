@@ -1,22 +1,24 @@
-//******************************************************************
-//
-// Copyright 2015 Intel Corporation.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+/*
+* //******************************************************************
+* //
+* // Copyright 2015 Intel Corporation.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+* //
+* // Licensed under the Apache License, Version 2.0 (the "License");
+* // you may not use this file except in compliance with the License.
+* // You may obtain a copy of the License at
+* //
+* //      http://www.apache.org/licenses/LICENSE-2.0
+* //
+* // Unless required by applicable law or agreed to in writing, software
+* // distributed under the License is distributed on an "AS IS" BASIS,
+* // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* // See the License for the specific language governing permissions and
+* // limitations under the License.
+* //
+* //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+*/
 
 #include "JniOcResource.h"
 #include "JniOcRepresentation.h"
@@ -24,7 +26,8 @@
 
 JniOcResource::JniOcResource(std::shared_ptr<OCResource> resource)
     : m_sharedResource(resource)
-{}
+{
+}
 
 JniOcResource::~JniOcResource()
 {
@@ -32,9 +35,12 @@ JniOcResource::~JniOcResource()
 
     m_sharedResource = nullptr;
 
-    jint envRet;
+    jint envRet = JNI_ERR;
     JNIEnv *env = GetJNIEnv(envRet);
-    if (nullptr == env) return;
+    if (nullptr == env)
+    {
+        return;
+    }
 
     m_onGetManager.removeAllListeners(env);
     m_onPutManager.removeAllListeners(env);
@@ -42,7 +48,10 @@ JniOcResource::~JniOcResource()
     m_onDeleteManager.removeAllListeners(env);
     m_onObserveManager.removeAllListeners(env);
 
-    if (JNI_EDETACHED == envRet) g_jvm->DetachCurrentThread();
+    if (JNI_EDETACHED == envRet)
+    {
+        g_jvm->DetachCurrentThread();
+    }
 }
 
 OCStackResult JniOcResource::get(JNIEnv* env, const QueryParamsMap &queryParametersMap, jobject jListener)
@@ -430,7 +439,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_get
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -474,7 +486,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_get1
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -531,7 +546,10 @@ jobject jQueryParamsMap, jobject jListener)
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -588,7 +606,10 @@ jobject jQueryParamsMap, jobject jListener, jint jQoS)
         resourceInterface = env->GetStringUTFChars(jResourceInterface, nullptr);
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -641,10 +662,16 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_put
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -696,10 +723,16 @@ jobject jListener, jint jQoS)
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -762,10 +795,16 @@ jobject jRepresentation, jobject jQueryParamsMap, jobject jListener)
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -830,10 +869,16 @@ jobject jQueryParamsMap, jobject jListener, jint jQoS)
     }
 
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -886,10 +931,16 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_post
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -939,10 +990,16 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_post1
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -1006,10 +1063,16 @@ jobject jRepresentation, jobject jQueryParamsMap, jobject jListener)
     }
 
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -1074,10 +1137,16 @@ jobject jRepresentation, jobject jQueryParamsMap, jobject jListener, jint jQoS)
     }
 
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     OCRepresentation *representation = JniOcRepresentation::getOCRepresentationPtr(env, jRepresentation);
-    if (!representation) return;
+    if (!representation)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -1120,7 +1189,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_deleteResource
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     try
     {
@@ -1155,7 +1227,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_deleteResource1
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     try
     {
@@ -1197,7 +1272,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_observe
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -1244,7 +1322,10 @@ jobject jListener, jint jQoS)
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     QueryParamsMap qpm;
     JniUtils::convertJavaMapToQueryParamsMap(env, jQueryParamsMap, qpm);
@@ -1280,7 +1361,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_cancelObserve1
 {
     LOGD("OcResource_cancelObserve1");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     try
     {
@@ -1315,7 +1399,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_setHeaderOptions
         return;
     }
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     HeaderOptions headerOptions;
     JniUtils::convertJavaHeaderOptionsArrToVector(env, jheaderOptionArr, headerOptions);
@@ -1333,7 +1420,10 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcResource_unsetHeaderOptions
 {
     LOGD("OcResource_unsetHeaderOptions");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return;
+    if (!resource)
+    {
+        return;
+    }
 
     resource->unsetHeaderOptions();
 }
@@ -1348,7 +1438,10 @@ JNIEXPORT jstring JNICALL Java_org_iotivity_base_OcResource_getHost
 {
     LOGD("OcResource_getHost");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return nullptr;
+    if (!resource)
+    {
+        return nullptr;
+    }
 
     return env->NewStringUTF(resource->host().c_str());
 }
@@ -1363,7 +1456,10 @@ JNIEXPORT jstring JNICALL Java_org_iotivity_base_OcResource_getUri
 {
     LOGD("OcResource_getUri");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return nullptr;
+    if (!resource)
+    {
+        return nullptr;
+    }
 
     return env->NewStringUTF(resource->uri().c_str());
 }
@@ -1378,7 +1474,10 @@ JNIEXPORT jint JNICALL Java_org_iotivity_base_OcResource_getConnectivityTypeN
 {
     LOGD("OcResource_getConnectivityType");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return -1;
+    if (!resource)
+    {
+        return -1;
+    }
 
     OCConnectivityType connectivityType = resource->connectivityType();
     return static_cast<jint>(connectivityType);
@@ -1394,6 +1493,11 @@ JNIEXPORT jboolean JNICALL Java_org_iotivity_base_OcResource_isObservable
 {
     LOGD("OcResource_isObservable");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
+    if (!resource)
+    {
+        return false;
+    }
+
     return (jboolean)resource->isObservable();
 }
 
@@ -1407,7 +1511,10 @@ JNIEXPORT jobject JNICALL Java_org_iotivity_base_OcResource_getResourceTypes
 {
     LOGD("OcResource_getResourceTypes");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return nullptr;
+    if (!resource)
+    {
+        return nullptr;
+    }
 
     std::vector<std::string> resourceTypes = resource->getResourceTypes();
 
@@ -1424,7 +1531,10 @@ JNIEXPORT jobject JNICALL Java_org_iotivity_base_OcResource_getResourceInterface
 {
     LOGD("OcResource_getResourceInterfaces");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return nullptr;
+    if (!resource)
+    {
+        return nullptr;
+    }
 
     std::vector<std::string> resourceInterfaces = resource->getResourceInterfaces();
 
@@ -1441,11 +1551,17 @@ JNIEXPORT jobject JNICALL Java_org_iotivity_base_OcResource_getUniqueIdentifier
 {
     LOGD("OcResource_getUniqueIdentifier");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return nullptr;
+    if (!resource)
+    {
+        return nullptr;
+    }
 
     JniOcResourceIdentifier *jniResourceIdentifier =
         new JniOcResourceIdentifier(resource->uniqueIdentifier());
-    if (!jniResourceIdentifier) return nullptr;
+    if (!jniResourceIdentifier)
+    {
+        return nullptr;
+    }
 
     jlong handle = reinterpret_cast<jlong>(jniResourceIdentifier);
     jobject jResourceIdentifier = env->NewObject(g_cls_OcResourceIdentifier,
@@ -1467,7 +1583,10 @@ JNIEXPORT jstring JNICALL Java_org_iotivity_base_OcResource_getServerId
 {
     LOGD("OcResource_getServerId");
     JniOcResource *resource = JniOcResource::getJniOcResourcePtr(env, thiz);
-    if (!resource) return nullptr;
+    if (!resource)
+    {
+        return nullptr;
+    }
 
     return env->NewStringUTF(resource->sid().c_str());
 }

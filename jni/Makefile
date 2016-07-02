@@ -258,17 +258,40 @@ endif
 
 # DO NOT DELETE
 
-iochibity.o: JniOcStack.o JniUtils.o JniEntityHandler.o JniOnResourceFoundListener.o \
-	JniOnDeviceInfoListener.o JniOnPlatformInfoListener.o JniOnPresenceListener.o \
-	JniOnGetListener.o JniOnPutListener.o JniOnPostListener.o JniOnDeleteListener.o \
-	JniOnObserveListener.o JniOcRepresentation.o JniOcResourceHandle.o \
-	JniOcPresenceHandle.o JniOcRequestHandle.o JniOcResourceRequest.o \
-	JniOcResourceResponse.o JniOcPlatform.o JniOcResource.o \
-	JniOcResourceIdentifier.o JniOcSecurity.o
+iochibity.o: \
+	JniCaInterface.o \
+	JniEntityHandler.o \
+	JniOcDirectPairDevice.o \
+	JniOcPlatform.o \
+	JniOcPresenceHandle.o \
+	JniOcRepresentation.o \
+	JniOcRequestHandle.o \
+	JniOcResource.o \
+	JniOcResourceHandle.o \
+	JniOcResourceIdentifier.o \
+	JniOcResourceRequest.o \
+	JniOcResourceResponse.o \
+	JniOcSecurity.o \
+	JniOcStack.o \
+	JniOnDPDevicesFoundListener.o \
+	JniOnDeleteListener.o \
+	JniOnDeviceInfoListener.o \
+	JniOnDirectPairingListener.o \
+	JniOnGetListener.o \
+	JniOnObserveListener.o \
+	JniOnPlatformInfoListener.o \
+	JniOnPostListener.o \
+	JniOnPresenceListener.o \
+	JniOnPutListener.o \
+	JniOnResourceFoundListener.o \
+	JniUtils.o \
 
-iotsec.o: JniOcSecureResource.o \
-	JniOcProvisioning.o JniProvisionResultListner.o \
-	JniPinCheckListener.o JniDisplayPinListener.o \
+iotsec.o: \
+	JniOcSecureResource.o \
+	JniOcProvisioning.o \
+	JniDisplayPinListener.o \
+	JniPinCheckListener.o \
+	JniProvisionResultListner.o \
 	JniSecureUtils.o
 
 # (end of Makefile)
