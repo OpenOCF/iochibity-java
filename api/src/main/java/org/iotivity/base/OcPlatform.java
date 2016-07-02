@@ -535,7 +535,10 @@ public final class OcPlatform {
             OcDeviceInfo ocDeviceInfo) throws OcException {
         OcPlatform.initCheck();
         OcPlatform.registerDeviceInfo0(
-                ocDeviceInfo.getDeviceName()
+                ocDeviceInfo.getDeviceName(),
+                ocDeviceInfo.getDeviceTypes().toArray(
+                        new String[ocDeviceInfo.getDeviceTypes().size()]
+                )
         );
     }
 
