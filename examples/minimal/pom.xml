@@ -7,7 +7,7 @@
   <artifactId>examples</artifactId>
   <packaging>jar</packaging>
   <version>1.1.0-SNAPSHOT</version>
-  <name>Iotivity Java API</name>
+  <name>Iotivity Java Minimal Example</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -15,7 +15,7 @@
     <dependency>
       <groupId>iotivity</groupId>
       <artifactId>iotivity-api</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
