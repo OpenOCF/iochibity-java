@@ -33,7 +33,7 @@ public class OcDeviceInfo {
 
     private String mDeviceName;
     private String mSpecVersion;      // core.major.minor
-    private String mDataModelVersion; // <vertical>.major.minor
+    private String mDataModelVersions; // <vertical>.major.minor
     private List<String> mDeviceTypes;
 
     public OcDeviceInfo(String deviceName, List<String> deviceTypes) {
@@ -43,10 +43,10 @@ public class OcDeviceInfo {
 
     public OcDeviceInfo(String deviceName,
 			String specVersion,
-			String dataModelVersion) {
+			String dataModelVersions) {
         this.mDeviceName = deviceName;
         this.mSpecVersion = specVersion;
-        this.mDataModelVersion = dataModelVersion;
+        this.mDataModelVersions = dataModelVersions;
         this.mDeviceName = deviceName;
         this.mDeviceTypes = new ArrayList<String>(){{
 		add("oic.wk.d");

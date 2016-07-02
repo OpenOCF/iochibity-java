@@ -45,8 +45,7 @@ public class PlatformConfig {
      * @param qualityOfService quality of service
      * @param dbPath           Persistant storage file for SVR Database.
      */
-    public PlatformConfig(
-                          ServiceType serviceType,
+    public PlatformConfig(ServiceType serviceType,
                           ModeType modeType,
                           String ipAddress,
                           int port,
@@ -61,6 +60,30 @@ public class PlatformConfig {
     }
 
     /**
+     * @param context          app context
+     * @param serviceType      indicate IN_PROC or OUT_OF_PROC
+     * @param modeType         indicate whether we want to do server, client or both
+     * @param ipAddress        ip address of server
+     *                         if you specify 0.0.0.0 : it listens on any interface
+     * @param port             port of server
+     *                         if you specifiy 0 : next available random port is used
+     *                         if you specify 5683 : client discovery can work even if they don't
+     *                         specify port
+     * @param qualityOfService quality of service
+     * @param dbPath           Persistant storage file for SVR Database.
+     */
+    public PlatformConfig(Context context,
+                          ServiceType serviceType,
+                          ModeType modeType,
+                          String ipAddress,
+                          int port,
+                          QualityOfService qualityOfService,
+                          String dbPath) {
+        this(null,context,serviceType,modeType,ipAddress,port,qualityOfService, dbPath);
+    }
+
+    /**
+     * @param context          app context
      * @param serviceType      indicate IN_PROC or OUT_OF_PROC
      * @param modeType         indicate whether we want to do server, client or both
      * @param ipAddress        ip address of server
@@ -72,13 +95,40 @@ public class PlatformConfig {
      * @param qualityOfService quality of service
      */
     // Avoid breaking building java samples due to persistent storage SVR DB changes.
-    public PlatformConfig(
+    public PlatformConfig(Context context,
                           ServiceType serviceType,
                           ModeType modeType,
                           String ipAddress,
                           int port,
                           QualityOfService qualityOfService) {
-        this(serviceType,modeType,ipAddress,port,qualityOfService, "");
+        this(null,context,serviceType,modeType,ipAddress,port,qualityOfService, "");
+    }
+
+    /**
+     * @param activity         app activity
+     * @param context          app context
+     * @param serviceType      indicate IN_PROC or OUT_OF_PROC
+     * @param modeType         indicate whether we want to do server, client or both
+     * @param ipAddress        ip address of server
+     *                         if you specify 0.0.0.0 : it listens on any interface
+     * @param port             port of server
+     *                         if you specifiy 0 : next available random port is used
+     *                         if you specify 5683 : client discovery can work even if they don't
+     *                         specify port
+     * @param qualityOfService quality of service
+     */
+    // Avoid breaking building java samples due to persistent storage SVR DB changes.
+    public PlatformConfig(Activity activity,
+                          Context context,
+                          ServiceType serviceType,
+                          ModeType modeType,
+                          String ipAddress,
+                          int port,
+                          QualityOfService qualityOfService) {
+        this(activity,context,serviceType,modeType,ipAddress,port,qualityOfService, "");
+    }
+    public Context getContext() {
+        return mContext;
     }
 
     public ServiceType getServiceType() {
@@ -103,6 +153,10 @@ public class PlatformConfig {
 
     public String getSvrDbPath() {
         return mSvrDbPath;
+    }
+
+    public Activity getActivity() {
+        return mActivity;
     }
 
 }
