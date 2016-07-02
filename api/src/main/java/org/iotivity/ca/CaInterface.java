@@ -25,15 +25,15 @@ package org.iotivity.ca;
 import org.iotivity.base.OcException;
 import org.iotivity.base.OcConnectivityType;
 
+class BluetoothDevice {}
+
 public class CaInterface {
     static {
-        System.loadLibrary("connectivity_abstraction");
-        System.loadLibrary("ca-interface");
     }
     private static volatile boolean isConnectionManagerInitialized = false;
     private static volatile boolean isBtPairingInitialized = false;
 
-    public static /* native */ void initialize() {};
+    public static void initialize()  {}
 
     /**
      *  Method start connection manager service.
@@ -99,11 +99,11 @@ public class CaInterface {
         }
     }
 
-    private static native void caManagerInitialize(
-            OnConnectionManagerStateListener onConnectionManagerStateListener);
-    private static native void caManagerTerminate();
-    private static native void caManagerSetAutoConnectionDeviceInfo(String address);
-    private static native void caManagerUnsetAutoConnectionDeviceInfo(String address);
+    private static void caManagerInitialize(
+            OnConnectionManagerStateListener onConnectionManagerStateListener) {}
+    private static void caManagerTerminate() {}
+    private static void caManagerSetAutoConnectionDeviceInfo(String address) {}
+    private static void caManagerUnsetAutoConnectionDeviceInfo(String address) {}
 
     /**
      *  start bluetooth pairing service.
@@ -112,7 +112,8 @@ public class CaInterface {
     public synchronized static void startBtPairingService(
             OnBtDeviceFoundListener listener) {
         if (!isBtPairingInitialized) {
-            CaInterface.caBtPairingInitialize(context, listener);
+            /* TODO */
+            CaInterface.caBtPairingInitialize(listener);
 
             isBtPairingInitialized = true;
         }
@@ -168,25 +169,10 @@ public class CaInterface {
         }
     }
 
-    private static native void caBtPairingInitialize(
-            OnBtDeviceFoundListener listener);
-    private static native void caBtPairingTerminate();
-    private static native void caBtPairingStartScan();
-    private static native void caBtPairingStopScan();
-    private static native void caBtPairingCreateBond(BluetoothDevice device);
-
-    /**
-     *  set BLE scan interval time and working count.
-     *  scanning logic (start scan -> stop scan) will be worked repeatly for workingCount.
-     *  and if you choose '0' value for workingCount parameter,
-     *  scanning will be worked continually as interval time.
-     *  @param intervalTime                  interval time(Seconds).
-     *  @param workingCount                  working count with interval time.
-     */
-
-    public synchronized static void setLeScanIntervalTime(int intervalTime, int workingCount){
-        CaInterface.setLeScanIntervalTimeImpl(intervalTime, workingCount);
-    }
-
-    private static native void setLeScanIntervalTimeImpl(int intervalTime, int workingCount);
+    private static void caBtPairingInitialize(
+            OnBtDeviceFoundListener listener) {}
+    private static void caBtPairingTerminate() {}
+    private static void caBtPairingStartScan() {}
+    private static void caBtPairingStopScan() {}
+    private static void caBtPairingCreateBond(BluetoothDevice device) {}
 }
