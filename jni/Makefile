@@ -44,8 +44,9 @@ RANLIB ?= ranlib
 RM     ?= rm -f
 
 # Options
-CXXFLAGS= -std=c++11 -fPIC -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
-CFLAGS  = -std=c11
+CPPFLAGS= -fPIC -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
+CXXFLAGS= -std=c++11 $(CPPFLAGS)
+CFLAGS  = -std=c11 $(CPPFLAGS)
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
@@ -53,7 +54,7 @@ SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
-OSXCFLAGS=-Wno-unused-private-field -Wno-unused-parameter -Wno-unused-function
+OSXCFLAGS=-Wno-unused-private-field -Wno-unused-parameter -Wno-unused-function -Wno-comment
 MYLDFLAGS=
 MYLIBS=
 MYOBJS=
@@ -136,27 +137,57 @@ IOT_CXXFLAGS= -I. \
 	-I${IOTIVITY_HOME}/resource/csdk/security/include
 
 # IOT_A=	liblua.a
-CORE_O= JniOcStack.o JniUtils.o JniEntityHandler.o JniOnResourceFoundListener.o \
-	JniOnDeviceInfoListener.o JniOnPlatformInfoListener.o JniOnPresenceListener.o \
-	JniOnGetListener.o JniOnPutListener.o JniOnPostListener.o JniOnDeleteListener.o \
-	JniOnObserveListener.o JniOcRepresentation.o JniOcResourceHandle.o \
-	JniOcPresenceHandle.o JniOcRequestHandle.o JniOcResourceRequest.o \
-	JniOcResourceIdentifier.o JniOcSecurity.o \
-	JniOcResourceResponse.o JniOcPlatform.o JniOcResource.o
+# CORE_O= JniOcStack.o JniUtils.o JniEntityHandler.o JniOnResourceFoundListener.o \
+# 	JniOnDeviceInfoListener.o JniOnPlatformInfoListener.o JniOnPresenceListener.o \
+# 	JniOnGetListener.o JniOnPutListener.o JniOnPostListener.o JniOnDeleteListener.o \
+# 	JniOnObserveListener.o JniOcRepresentation.o JniOcResourceHandle.o \
+# 	JniOcPresenceHandle.o JniOcRequestHandle.o JniOcResourceRequest.o \
+# 	JniOcResourceIdentifier.o JniOcSecurity.o \
+# 	JniOcResourceResponse.o JniOcPlatform.o JniOcResource.o
 
 # SEC=	JniOcSecureResource.o JniOcProvisioning.o JniSecureUtils.o \
 # 	JniProvisionResultListner.o JniPinCheckListener.o JniDisplayPinListener.o
+
+IOCHIBITY_O= \
+	JniEntityHandler.o \
+	JniOcDirectPairDevice.o \
+	JniOcPlatform.o \
+	JniOcPresenceHandle.o \
+	JniOcRepresentation.o \
+	JniOcRequestHandle.o \
+	JniOcResource.o \
+	JniOcResourceHandle.o \
+	JniOcResourceIdentifier.o \
+	JniOcResourceRequest.o \
+	JniOcResourceResponse.o \
+	JniOcSecurity.o \
+	JniOcStack.o \
+	JniOnDPDevicesFoundListener.o \
+	JniOnDeleteListener.o \
+	JniOnDeviceInfoListener.o \
+	JniOnDirectPairingListener.o \
+	JniOnGetListener.o \
+	JniOnObserveListener.o \
+	JniOnPlatformInfoListener.o \
+	JniOnPostListener.o \
+	JniOnPresenceListener.o \
+	JniOnPutListener.o \
+	JniOnResourceFoundListener.o \
+	JniUtils.o
+
+# ble not yet supported:
+# JniCaInterface.o \
 
 
 # Targets start here.
 # default: $(PLAT)
 
-BASE_O= $(CORE_O)
+BASE_O= $(IOCHIBITY_O)
 
 # Convenience targets for popular platforms
 # ALL= all
 
-all:	check-env $(BASE_O)
+all:	$(IOCHIBITY_O)
 
 ALL=all
 
@@ -166,20 +197,20 @@ linux:	check-env
 	$(MAKE) $(ALL)
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
-	-L. $(CORE_O) \
+	-L. $(IOCHIBITY_O) \
 	-L$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE) \
 	$(IOTLIBS)
 
 darwin: check-env
-	@echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
-	@$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
-	@g++ -o libiotivity-jni$(JNILIBSUFFIX) -dynamiclib -undefined error \
+	echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
+	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
+	g++ -o libiotivity-jni$(JNILIBSUFFIX) -dynamiclib -undefined error \
 	-rpath $(HOME)/out/darwin/x86_64/release \
 	-flat_namespace \
 	$(IOTLIBS) \
 	-L$(IOTIVITY_HOME)/out/darwin/x86_64/release \
 	-L. \
-	$(CORE_O)
+	$(IOCHIBITY_O)
 
 # -flat_namespace
 
@@ -257,34 +288,6 @@ endif
 
 
 # DO NOT DELETE
-
-iochibity.o: \
-	JniCaInterface.o \
-	JniEntityHandler.o \
-	JniOcDirectPairDevice.o \
-	JniOcPlatform.o \
-	JniOcPresenceHandle.o \
-	JniOcRepresentation.o \
-	JniOcRequestHandle.o \
-	JniOcResource.o \
-	JniOcResourceHandle.o \
-	JniOcResourceIdentifier.o \
-	JniOcResourceRequest.o \
-	JniOcResourceResponse.o \
-	JniOcSecurity.o \
-	JniOcStack.o \
-	JniOnDPDevicesFoundListener.o \
-	JniOnDeleteListener.o \
-	JniOnDeviceInfoListener.o \
-	JniOnDirectPairingListener.o \
-	JniOnGetListener.o \
-	JniOnObserveListener.o \
-	JniOnPlatformInfoListener.o \
-	JniOnPostListener.o \
-	JniOnPresenceListener.o \
-	JniOnPutListener.o \
-	JniOnResourceFoundListener.o \
-	JniUtils.o \
 
 iotsec.o: \
 	JniOcSecureResource.o \
