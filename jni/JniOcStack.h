@@ -177,7 +177,7 @@ static JNIEnv* GetJNIEnv(jint& ret)
         case JNI_OK:
             return env;
         case JNI_EDETACHED:
-            if (g_jvm->AttachCurrentThread(&env, nullptr) < 0)
+            if (g_jvm->AttachCurrentThread( (void**)&env, nullptr) < 0)
             {
                 LOGE("Failed to get the environment");
                 return nullptr;
