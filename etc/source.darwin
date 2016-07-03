@@ -6,4 +6,6 @@ export IOTIVITY_HOST_ARCH=x86_64
 export IOTIVITY_STAGE=release
 
 export IOTIVITY_HOME=$HOME/iotivity/iotk/iochibity
+export IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/${IOTIVITY_HOST_OS}/${IOTIVITY_HOST_ARCH}/${IOTIVITY_STAGE}
+
 export DYLD_LIBRARY_PATH=$HOME/iotivity/kit/java/jni:$HOME/iotivity/iotk/iochibity/out/darwin/x86/release
