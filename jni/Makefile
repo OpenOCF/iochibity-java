@@ -2,19 +2,6 @@
 
 
 # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
-# Edison: linux, x86
-# Ubuntu: linux, x86_64
-# HOST=linux
-# ARCH=x86_86
-# STAGE=release
-# SHLIBSUFFIX =.so
-# JNILIBSUFFIX =.so
-
-HOST=darwin
-ARCH=x86_64
-STAGE=release
-SHLIBSUFFIX =.dylib
-JNILIBSUFFIX =.jnilib
 
 # Where to install. The installation starts in the src and doc directories,
 # so take care if INSTALL_TOP is not an absolute path. See the local target.
@@ -74,7 +61,7 @@ R= $V.10
 
 IOTLIBS = -loc -loctbstack -loc_logger -llogger -lconnectivity_abstraction -lpthread
 
-IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE)"
+IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(IOTIVITY_HOST)/$(IOTIVITY_ARCH)/$(IOTIVITY_STAGE)"
 
 # IOTLIBS = $(IOTIVITY_LIBPATH)/liboctbstack.a \
 # 	$(IOTIVITY_LIBPATH)/libconnectivity_abstraction.a \
@@ -118,7 +105,7 @@ IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE)"
 IOT_CXXFLAGS= -I. \
 	-I./src \
 	-I${JAVA_HOME}/include \
-	-I${JAVA_HOME}/include/$(HOST) \
+	-I${JAVA_HOME}/include/$(IOTIVITY_HOST_OS) \
 	-I${IOTIVITY_HOME}/resource/csdk/connectivity/api \
 	-I${IOTIVITY_HOME}/resource/include \
 	-I${IOTIVITY_HOME}/resource/c_common \

@@ -1,6 +1,9 @@
 # adapt to your system
 
-# Linux
+# Wind River Linux (Intel IoT Gateways)
+
+export JAVA_HOME=/usr/lib64/jvm/java-8-openjdk
+
 export IOTIVITY_HOST_OS=linux
 export IOTIVITY_HOST_ARCH=x86_64
 export IOTIVITY_STAGE=release
