@@ -61,7 +61,7 @@ R= $V.10
 
 IOTLIBS = -loc -loctbstack -loc_logger -llogger -lconnectivity_abstraction -lpthread
 
-IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(IOTIVITY_HOST)/$(IOTIVITY_ARCH)/$(IOTIVITY_STAGE)"
+# IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(IOTIVITY_HOST_OS)/$(IOTIVITY_HOST_ARCH)/$(IOTIVITY_STAGE)"
 
 # IOTLIBS = $(IOTIVITY_LIBPATH)/liboctbstack.a \
 # 	$(IOTIVITY_LIBPATH)/libconnectivity_abstraction.a \
@@ -185,7 +185,7 @@ linux:	check-env
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
 	-L. $(IOCHIBITY_O) \
-	-L$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE) \
+	-L$(IOTIVITY_LIBPATH) \
 	$(IOTLIBS)
 
 darwin: check-env
@@ -195,7 +195,7 @@ darwin: check-env
 	-rpath $(HOME)/out/darwin/x86_64/release \
 	-flat_namespace \
 	$(IOTLIBS) \
-	-L$(IOTIVITY_HOME)/out/darwin/x86_64/release \
+	-L$(IOTIVITY_LIBPATH) \
 	-L. \
 	$(IOCHIBITY_O)
 
@@ -237,7 +237,7 @@ local:
 # 	@$(CC) $(CFLAGS) -MM l*.c
 
 echo:	check-env
-	@echo "HOST= $(HOST)"
+	@echo "HOST= $(IOTIVITY_HOST_OS)"
 	@echo "CC= $(CC)"
 	@echo "CFLAGS= $(CFLAGS)"
 	@echo "LDFLAGS= $(SYSLDFLAGS)"
@@ -261,7 +261,10 @@ endif
 ifndef IOTIVITY_HOME
 	$(error IOTIVITY_HOME is undefined)
 endif
-ifeq ($(HOST),'linux')
+ifndef IOTIVITY_LIBPATH
+	$(error IOTIVITY_LIBPATH is undefined)
+endif
+ifeq ($(IOTIVITY_HOST_OS),'linux')
 SHLIBSUFFIX = '.so'
 JNILIBSUFFIX = '.so'
 endif

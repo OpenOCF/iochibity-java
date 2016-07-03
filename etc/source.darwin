@@ -1,5 +1,9 @@
 # adapt to your system
 
 ## Darwin
+export IOTIVITY_HOST_OS=darwin
+export IOTIVITY_HOST_ARCH=x86_64
+export IOTIVITY_STAGE=release
+
 export IOTIVITY_HOME=$HOME/iotivity/iotk/iochibity
 export DYLD_LIBRARY_PATH=$HOME/iotivity/kit/java/jni:$HOME/iotivity/iotk/iochibity/out/darwin/x86/release
