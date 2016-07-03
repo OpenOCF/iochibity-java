@@ -261,9 +261,9 @@ endif
 ifndef IOTIVITY_HOME
 	$(error IOTIVITY_HOME is undefined)
 endif
-ifndef IOTIVITY_LIBPATH
-	$(error IOTIVITY_LIBPATH is undefined)
-endif
+# ifndef IOTIVITY_LIBPATH
+# 	$(error IOTIVITY_LIBPATH is undefined)
+# endif
 ifeq ($(IOTIVITY_HOST_OS),'linux')
 SHLIBSUFFIX = '.so'
 JNILIBSUFFIX = '.so'
