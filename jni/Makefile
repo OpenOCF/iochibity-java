@@ -44,7 +44,7 @@ RANLIB ?= ranlib
 RM     ?= rm -f
 
 # Options
-CPPFLAGS= -fPIC -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
+CPPFLAGS= -fPIC -Wall -Wextra -DTB_LOG $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
 CXXFLAGS= -std=c++11 $(CPPFLAGS)
 CFLAGS  = -std=c11 $(CPPFLAGS)
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
@@ -72,7 +72,7 @@ R= $V.10
 # IOTLIBPATH = [env.get('BUILD_DIR')])
 # IOTRPATH = [env.get('BUILD_DIR')])
 
-IOTLIBS = -loc -loctbstack -loc_logger -lconnectivity_abstraction -lpthread
+IOTLIBS = -loc -loctbstack -loc_logger -llogger -lconnectivity_abstraction -lpthread
 
 IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(HOST)/$(ARCH)/$(STAGE)"
 
