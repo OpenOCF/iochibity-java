@@ -16,6 +16,8 @@ export IOTIVITY_HOME=$HOME/iochibity
 
 # for development
 # export LD_LIBRARY_PATH=$HOME/iochibity/out/linux/x86_64/release:$HOME/iotivity/java/jni
+#export IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/${IOTIVITY_HOST_OS}/${IOTIVITY_HOST_ARCH}/${IOTIVITY_STAGE}
 
 # for prod
-export LD_LIBRARY_PATH=/usr/local/lib/iotivity/1.1.2:$LD_LIBRARY_PATH
+export IOTIVITY_LIBPATH=/usr/local/lib/iotivity/1.1.2
+export LD_LIBRARY_PATH=$IOTIVITY_LIBPATH:$LD_LIBRARY_PATH
