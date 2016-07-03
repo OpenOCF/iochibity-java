@@ -543,7 +543,8 @@ public final class OcPlatform {
     }
 
     private static native void registerDeviceInfo0(
-            String deviceName
+            String deviceName,
+            String[] deviceTypes
     ) throws OcException;
 
     /**
