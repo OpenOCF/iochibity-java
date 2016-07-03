@@ -1,0 +1,11 @@
+# adapt to your system
+
+## Edison
+
+# dev
+#export IOTIVITY_HOME=$HOME/iotivity
+#export LD_LIBRARY_PATH=$HOME/iotivity/iotivity/out/linux/x86/release:$HOME/iotivity/kit/java/jni
+
+# prod
+# export IOTIVITY_HOME=$HOME/iochibity
+export IOTIVITY_HOME=$HOME/iotivity

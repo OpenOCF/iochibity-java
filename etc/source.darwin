@@ -1,0 +1,5 @@
+# adapt to your system
+
+## Darwin
+export IOTIVITY_HOME=$HOME/iotivity/iotk/iochibity
+export DYLD_LIBRARY_PATH=$HOME/iotivity/kit/java/jni:$HOME/iotivity/iotk/iochibity/out/darwin/x86/release

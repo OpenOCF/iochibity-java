@@ -1,0 +1,10 @@
+# adapt to your system
+
+# Ubuntu
+export IOTIVITY_HOME=$HOME/iochibity
+
+# for development
+# export LD_LIBRARY_PATH=$HOME/iochibity/out/linux/x86_64/release:$HOME/iotivity/java/jni
+
+# for prod
+export LD_LIBRARY_PATH=/usr/local/lib/iotivity/1.1.2:$LD_LIBRARY_PATH
