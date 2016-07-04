@@ -1397,8 +1397,8 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcPlatform_registerDeviceInfo0(
     OCDeviceInfo deviceInfo = {
 	deviceName : NULL,
 	types : NULL,
-  	specVersion : NULL,
-        dataModelVersions : NULL
+  	specVersion : NULL
+        // dataModelVersion : NULL
     };
 
     try
