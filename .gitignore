@@ -1,3 +1,7 @@
+GPATH
+GRTAGS
+GTAGS
+
 *.class
 
 # Mobile Tools for Java (J2ME)
