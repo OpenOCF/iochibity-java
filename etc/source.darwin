@@ -1,6 +1,10 @@
 # adapt to your system
 
 ## Darwin
+
+export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+#export PATH=$PATH:$JAVA_HOME/bin
+
 export IOTIVITY_HOST_OS=darwin
 export IOTIVITY_HOST_ARCH=x86_64
 export IOTIVITY_STAGE=release

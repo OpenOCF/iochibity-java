@@ -31,9 +31,9 @@ RANLIB ?= ranlib
 RM     ?= rm -f
 
 # Options
-CPPFLAGS= -fPIC -Wall -Wextra -DTB_LOG $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
-CXXFLAGS= -std=c++11 $(CPPFLAGS)
-CFLAGS  = -std=c11 $(CPPFLAGS)
+CPPFLAGS= -fPIC -Wall -Wextra -Wno-unused -Wno-comment $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
+CXXFLAGS= -std=c++11
+CFLAGS  = -std=c11
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
@@ -191,7 +191,7 @@ linux:	check-env
 darwin: check-env
 	echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
 	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
-	g++ -o libiotivity-jni$(JNILIBSUFFIX) -dynamiclib -undefined error \
+	g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
 	-rpath $(HOME)/out/darwin/x86_64/release \
 	-flat_namespace \
 	$(IOTLIBS) \
