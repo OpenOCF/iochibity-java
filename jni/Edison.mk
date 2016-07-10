@@ -37,11 +37,10 @@ CFLAGS  = -std=c11
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-SYSCFLAGS=
+SYSCFLAGS=-m32 -g
 SYSLDFLAGS=
 SYSLIBS=
 
-OSXCFLAGS=-m64 -Wno-unused-private-field -Wno-unused-parameter -Wno-unused-function -Wno-comment
 MYLDFLAGS=
 MYLIBS=
 MYOBJS=
@@ -178,26 +177,25 @@ all:	$(IOCHIBITY_O)
 
 ALL=all
 
-# NB: do not change the order of the CORE_O files and the libs:
-linux:	check-env
+edison:	check-env
 	echo "Making linux"
-	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(EDISONCFLAGS)"
+	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS)"
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
 	-L. $(IOCHIBITY_O) \
 	-L$(IOTIVITY_LIBPATH) \
 	$(IOTLIBS)
 
-darwin: check-env
-	echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
-	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
-	g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
-	-rpath $(HOME)/out/darwin/x86_64/release \
-	-flat_namespace \
-	$(IOTLIBS) \
-	-L$(IOTIVITY_LIBPATH) \
-	-L. \
-	$(IOCHIBITY_O)
+# darwin: check-env
+# 	echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
+# 	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
+# 	g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
+# 	-rpath $(HOME)/out/darwin/x86_64/release \
+# 	-flat_namespace \
+# 	$(IOTLIBS) \
+# 	-L$(IOTIVITY_LIBPATH) \
+# 	-L. \
+# 	$(IOCHIBITY_O)
 
 # -flat_namespace
 
