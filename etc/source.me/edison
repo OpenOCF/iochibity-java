@@ -1,0 +1,25 @@
+## Edison
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+
+export IOTIVITY_HOST_OS=linux
+export IOTIVITY_HOST_ARCH=x86
+
+export IOTIVITY_TARGET_OS=linux
+export IOTIVITY_TARGET_ARCH=x86
+
+export IOTIVITY_STAGE=release
+
+export IOTIVITY_HOME=$HOME/iochibity
+#export IOTIVITY_HOME=$HOME/iotivity
+
+# dev
+export IOTIVITY_LIBPATH=${IOTIVITY_HOME}/out/${IOTIVITY_HOST}/${IOTIVITY_ARCH}/${IOTIVITY_STAGE}
+export IOTIVITY_JNIPATH="$HOME/iotivity-java/jni"
+export JLP=$IOTIVITY_JNI_PATH:$IOTIVITY_LIBPATH
+export LD_LIBRARY_PATH=$JLP
+
+# prod
+#export IOTIVITY_LIBPATH=/usr/local/lib/iotivity/1.1.2
+#export JLP=$IOTIVITY_LIBPATH
+#export LD_LIBRARY_PATH=$JLP
