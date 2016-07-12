@@ -6,18 +6,23 @@ export JAVA_HOME=/usr/lib64/jvm/java-8-openjdk
 
 export IOTIVITY_HOST_OS=linux
 export IOTIVITY_HOST_ARCH=x86_64
+
+export IOTIVITY_TARGET_OS=linux
+export IOTIVITY_TARGET_ARCH=x86_64
+
 export IOTIVITY_STAGE=release
 
-export SHLIBSUFFIX = ".so"
-export JNILIBSUFFIX = ".so"
-
+export SHLIBSUFFIX=.so
+export JNILIBSUFFIX=.so
 
 export IOTIVITY_HOME=$HOME/iochibity
 
 # for development
-# export LD_LIBRARY_PATH=$HOME/iochibity/out/linux/x86_64/release:$HOME/iotivity/java/jni
-#export IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/${IOTIVITY_HOST_OS}/${IOTIVITY_HOST_ARCH}/${IOTIVITY_STAGE}
+export IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/${IOTIVITY_HOST_OS}/${IOTIVITY_HOST_ARCH}/${IOTIVITY_STAGE}
+export IOTIVITY_JNIPATH="$HOME/iochibity-java/jni"
+export JLP=$IOTIVITY_JNIPATH:$IOTIVITY_LIBPATH
+export LD_LIBRARY_PATH=$JLP:$LD_LIBRARY_PATH
 
 # for prod
-export IOTIVITY_LIBPATH=/usr/local/lib/iotivity/1.1.2
-export LD_LIBRARY_PATH=$IOTIVITY_LIBPATH:$LD_LIBRARY_PATH
+#export IOTIVITY_LIBPATH=/usr/local/lib/iotivity/1.1.2
+#export LD_LIBRARY_PATH=$IOTIVITY_LIBPATH:$LD_LIBRARY_PATH

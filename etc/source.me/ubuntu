@@ -1,18 +1,28 @@
-# adapt to your system
+## Ubuntu
 
-# Linux
+export JAVA_HOME=/usr/lib/jvm/default-java
+
 export IOTIVITY_HOST_OS=linux
 export IOTIVITY_HOST_ARCH=x86_64
+
+export IOTIVITY_TARGET_OS=linux
+export IOTIVITY_TARGET_ARCH=x86_64
+
 export IOTIVITY_STAGE=release
 
-# SHLIBSUFFIX =.so
-# JNILIBSUFFIX =.so
-
+export SHLIBSUFFIX=.so
+export JNILIBSUFFIX=.so
 
 export IOTIVITY_HOME=$HOME/iochibity
+#export IOTIVITY_HOME=$HOME/iotivity
 
-# for development
-# export LD_LIBRARY_PATH=$HOME/iochibity/out/linux/x86_64/release:$HOME/iotivity/java/jni
+# dev
+export IOTIVITY_LIBPATH=${IOTIVITY_HOME}/out/${IOTIVITY_HOST_OS}/${IOTIVITY_HOST_ARCH}/${IOTIVITY_STAGE}
+export IOTIVITY_JNIPATH="$HOME/iochibity-java/jni"
+export JLP=$IOTIVITY_JNIPATH:$IOTIVITY_LIBPATH
+export LD_LIBRARY_PATH=$JLP
 
-# for prod
-export LD_LIBRARY_PATH=/usr/local/lib/iotivity/1.1.2:$LD_LIBRARY_PATH
+# prod
+#export IOTIVITY_LIBPATH=/usr/local/lib/iotivity/1.1.2
+#export JLP=$IOTIVITY_LIBPATH
+#export LD_LIBRARY_PATH=$JLP

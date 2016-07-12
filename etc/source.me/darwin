@@ -1,5 +1,3 @@
-# adapt to your system
-
 ## Darwin
 
 export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
@@ -7,9 +5,24 @@ export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
 
 export IOTIVITY_HOST_OS=darwin
 export IOTIVITY_HOST_ARCH=x86_64
+
+export IOTIVITY_TARGET_OS=darwin
+export IOTIVITY_TARGET_ARCH=x86_64
+
 export IOTIVITY_STAGE=release
 
+export SHLIBSUFFIX=.dyld
+export JNILIBSUFFIX=.jnilib
+
+#dev
 export IOTIVITY_HOME=$HOME/iotivity/iotk/iochibity
 export IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/${IOTIVITY_HOST_OS}/${IOTIVITY_HOST_ARCH}/${IOTIVITY_STAGE}
+export IOTIVITY_JNIPATH="$IOTIVITY_HOME/iotivity-java/jni"
+export JLP=$IOTIVITY_JNI_PATH:$IOTIVITY_LIBPATH
 
-export DYLD_LIBRARY_PATH=$HOME/iotivity/kit/java/jni:$HOME/iotivity/iotk/iochibity/out/darwin/x86/release
+export DYLD_LIBRARY_PATH=$IOTIVITY_JNIPATH:$IOTIVITY_LIBPATH
+
+# prod
+#export IOTIVITY_LIBPATH=/usr/local/lib/iotivity/1.1.2
+#export JLP=$IOTIVITY_LIBPATH
+#export DYLD_LIBRARY_PATH=$JLP
