@@ -71,3 +71,57 @@ which is a Clojure SDK for Iotivity, built on this Java SDK.
 For assistance, try https://iotivity-slack.herokuapp.com/[iotivity-slack].
 
 
+== merging master
+
+* Until OCProvisioningManager.h has been renamed in master, all
+  #include refs to this in header files must be edited to
+  OCProvisioningManager.hpp
+
+* Use OC_UNUSED to eliminate warnings
+
+in JniOcPlatform.cpp, restore
+#define UNUSED(expr) (void)(expr);
+
+
+* JniOcPlatform.cpp:
+-    OCDeviceInfo deviceInfo = {
+-	deviceName : NULL,
+-	types : NULL,
+-  	specVersion : NULL
+-        // dataModelVersions : NULL
+-    };
+-
+
+
+The master codebase includes Android-dependent code.  This repository
+is Java only, so merging master to this involves some tweaking.
+
+* JniCaInterface.[ch] compiles, but it's for Android only - remove it?
+
+* fix #ifdef __ANDROID__ code, e.g. in JniOcStack.h, etc.
+
+* switch from android/log.h to logger.h, e.g. in JniOcStack.h
+i.e. restore:
+#ifdef __ANDROID__
+ #include <android/log.h>
+#else
+#include "logger.h"
+#endif
+
+restore:
+-#ifdef __ANDROID__
+ #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+ #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+ #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+-#else
+-#define LOGI(...) OIC_LOG_V(INFO, TAG, __VA_ARGS__)
+-#define LOGD(...) OIC_LOG_V(DEBUG, TAG, __VA_ARGS__)
+-#define LOGE(...) OIC_LOG_V(ERROR, TAG, __VA_ARGS__)
+-#endif
+
+
+* there are some casts that must be made explicit, e.g. in JniOcStack.h
+restore
+-            if (g_jvm->AttachCurrentThread( (void**)&env, nullptr) < 0)
+for
++            if (g_jvm->AttachCurrentThread(&env, nullptr) < 0)

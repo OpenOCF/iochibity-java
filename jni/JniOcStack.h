@@ -20,12 +20,12 @@
 * //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 */
 #include <jni.h>
+ #include <jni.h>
 #ifdef __ANDROID__
-#include <android/log.h>
+ #include <android/log.h>
 #else
 #include "logger.h"
 #endif
-
 #include "OCApi.h"
 
 #ifndef _Included_org_iotivity_base_ocstack
@@ -36,9 +36,9 @@
 #define JNI_CURRENT_VERSION JNI_VERSION_1_6
 
 #ifdef __ANDROID__
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+ #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+ #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+ #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
 #else
 #define LOGI(...) OIC_LOG_V(INFO, TAG, __VA_ARGS__)
 #define LOGD(...) OIC_LOG_V(DEBUG, TAG, __VA_ARGS__)
@@ -96,6 +96,10 @@ extern jclass g_cls_OcOicSecAcl;
 extern jclass g_cls_OcOicSecPdAcl;
 extern jclass g_cls_OcDirectPairDevice;
 
+extern jclass g_cls_OcOicSecAcl_ace;
+extern jclass g_cls_OcOicSecAcl_resr;
+extern jclass g_cls_OcOicSecAcl_validity;
+
 extern jmethodID g_mid_Integer_ctor;
 extern jmethodID g_mid_Double_ctor;
 extern jmethodID g_mid_Boolean_ctor;
@@ -129,20 +133,29 @@ extern jmethodID g_mid_OcProvisionResult_ctor;
 extern jmethodID g_mid_OcSecureResource_ctor;
 extern jmethodID g_mid_OcDirectPairDevice_ctor;
 extern jmethodID g_mid_OcDirectPairDevice_dev_ctor;
-extern jmethodID g_mid_OcOicSecAcl_get_subject;
-extern jmethodID g_mid_OcOicSecAcl_get_resources_cnt;
-extern jmethodID g_mid_OcOicSecAcl_get_resources;
-extern jmethodID g_mid_OcOicSecAcl_get_permission;
-extern jmethodID g_mid_OcOicSecAcl_get_periods_cnt;
-extern jmethodID g_mid_OcOicSecAcl_get_periods;
-extern jmethodID g_mid_OcOicSecAcl_get_recurrences;
+
 extern jmethodID g_mid_OcOicSecAcl_get_rownerID;
+extern jmethodID g_mid_OcOicSecAcl_get_aces;
+extern jmethodID g_mid_OcOicSecAcl_ace_get_subjectID;
+extern jmethodID g_mid_OcOicSecAcl_ace_get_permissions;
+extern jmethodID g_mid_OcOicSecAcl_ace_get_resources;
+extern jmethodID g_mid_OcOicSecAcl_ace_get_validities;
+extern jmethodID g_mid_OcOicSecAcl_resr_get_href;
+extern jmethodID g_mid_OcOicSecAcl_resr_get_rel;
+extern jmethodID g_mid_OcOicSecAcl_resr_get_types;
+extern jmethodID g_mid_OcOicSecAcl_resr_get_typeLen;
+extern jmethodID g_mid_OcOicSecAcl_resr_get_interfaces;
+extern jmethodID g_mid_OcOicSecAcl_resr_get_interfaceLen;
+extern jmethodID g_mid_OcOicSecAcl_validity_get_getPeriod;
+extern jmethodID g_mid_OcOicSecAcl_validity_get_recurrences;
+extern jmethodID g_mid_OcOicSecAcl_validity_get_recurrenceLen;
 extern jmethodID g_mid_OcOicSecPdAcl_get_resources_cnt;
 extern jmethodID g_mid_OcOicSecPdAcl_get_resources;
 extern jmethodID g_mid_OcOicSecPdAcl_get_permission;
 extern jmethodID g_mid_OcOicSecPdAcl_get_periods_cnt;
 extern jmethodID g_mid_OcOicSecPdAcl_get_periods;
 extern jmethodID g_mid_OcOicSecPdAcl_get_recurrences;
+
 
 typedef void(*RemoveListenerCallback)(JNIEnv* env, jobject jListener);
 

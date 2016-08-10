@@ -31,12 +31,10 @@
 extern "C" {
 #endif
 
-    void CAManagerConnectionStateChangedCB(CATransportAdapter_t adapter,
-                                           const char *remote_address, bool connected);
+    void CAManagerConnectionStateChangedCB(const CAEndpoint_t *info, bool connected);
 
     void CAManagerAdapterStateChangedCB(CATransportAdapter_t adapter, bool enabled);
 
-#ifdef __ANDROID__
     /*
      * Class:     Java_org_iotivity_ca_CaInterface_caManagerInitialize
      * Method:    caManagerInitialize
@@ -45,16 +43,6 @@ extern "C" {
     JNIEXPORT void JNICALL
     Java_org_iotivity_ca_CaInterface_caManagerInitialize(JNIEnv *env, jclass clazz,
                                                          jobject context, jobject listener);
-#else
-    /*
-     * Class:     Java_org_iotivity_ca_CaInterface_caManagerInitialize
-     * Method:    caManagerInitialize
-     * Signature: ()V
-     */
-    JNIEXPORT void JNICALL
-    Java_org_iotivity_ca_CaInterface_caManagerInitialize(JNIEnv *env, jclass clazz,
-                                                         jobject listener);
-#endif
 
     /*
      * Class:     Java_org_iotivity_ca_CaInterface_caManagerTerminate
@@ -84,7 +72,6 @@ extern "C" {
                                                                             jclass clazz,
                                                                             jstring jaddress);
 
-#ifdef __ANDROID__
     /*
      * Class:     Java_org_iotivity_ca_CaInterface_caBtPairingInitialize
      * Method:    caBtPairingInitialize
@@ -92,15 +79,6 @@ extern "C" {
      */
     JNIEXPORT void JNICALL
     Java_org_iotivity_ca_CaInterface_caBtPairingInitialize(JNIEnv *, jclass, jobject, jobject);
-#else
-    /*
-     * Class:     Java_org_iotivity_ca_CaInterface_caBtPairingInitialize
-     * Method:    caBtPairingInitialize
-     * Signature: ()V
-     */
-    JNIEXPORT void JNICALL
-    Java_org_iotivity_ca_CaInterface_caBtPairingInitialize(JNIEnv *, jclass, jobject);
-#endif
 
     /*
      * Class:     Java_org_iotivity_ca_CaInterface_caBtPairingTerminate
@@ -134,7 +112,6 @@ extern "C" {
     JNIEXPORT void JNICALL
     Java_org_iotivity_ca_CaInterface_caBtPairingCreateBond(JNIEnv *, jclass, jobject);
 
-#ifdef __ANDROID__
     /*
      * Class:     org_iotivity_ca_CaInterface_Initialize
      * Method:    Initialize
@@ -142,15 +119,6 @@ extern "C" {
      */
     JNIEXPORT void JNICALL Java_org_iotivity_ca_CaInterface_initialize
         (JNIEnv *, jclass, jobject, jobject);
-#else
-    /*
-     * Class:     org_iotivity_ca_CaInterface_Initialize
-     * Method:    Initialize
-     * Signature: ()V
-     */
-    JNIEXPORT void JNICALL Java_org_iotivity_ca_CaInterface_initialize
-        (JNIEnv *, jclass);
-#endif
 
     /*
      * Class:     Java_org_iotivity_ca_CaInterface_setLeScanIntervalTimeImpl

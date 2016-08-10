@@ -21,11 +21,7 @@
 */
 
 #include <jni.h>
-#if defined(__ANDROID__)
 #include <android/log.h>
-#else
-#include "logger.h"
-#endif
 #include <stdio.h>
 #include "cainterface.h"
 #include "JniCaInterface.h"
@@ -33,13 +29,8 @@
 #include "cacommon.h"
 
 #define  LOG_TAG   "JNI_CA_INTERFACE"
-#if defined(__ANDROID__)
 #define  LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define  LOGE(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#else
-#define  LOGI(...) OIC_LOG_V(OC_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define  LOGE(...) OIC_LOG_V(OC_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#endif
 
 static jobject g_foundDeviceListenerObject = NULL;
 static jobject g_listenerObject = NULL;
@@ -59,7 +50,6 @@ void JNI_OnUnload(JavaVM *jvm, void *reserved)
     return;
 }
 
-#ifdef __ANDROID__
 JNIEXPORT void JNICALL
 Java_org_iotivity_ca_CaInterface_initialize
 (JNIEnv *env, jclass clazz, jobject activity, jobject context)
@@ -69,27 +59,24 @@ Java_org_iotivity_ca_CaInterface_initialize
     CANativeSetActivity(env, activity);
     CANativeJNISetContext(env, context);
 }
-#else
-JNIEXPORT void JNICALL
-Java_org_iotivity_ca_CaInterface_initialize
-(JNIEnv *env, jclass clazz)
-{
-    LOGI("CaInterface_initialize");
-}
-#endif
 
-void CAManagerConnectionStateChangedCB(CATransportAdapter_t adapter,
-                                       const char *remote_address,
+void CAManagerConnectionStateChangedCB(const CAEndpoint_t *info,
                                        bool connected)
 {
-    LOGI("Callback - CAManagerConnectionStateChangedCB : type(%d), address(%s), connected(%d)",
-         adapter, remote_address, connected);
+    if (!info)
+    {
+        LOGE("info is NULL");
+        return;
+    }
 
     if (!g_listenerObject)
     {
         LOGE("g_listener is NULL, cannot have callback");
         return;
     }
+
+    LOGI("Callback - CAManagerConnectionStateChangedCB : type(%d), address(%s), connected(%d)",
+         info->adapter, info->addr, connected);
 
     bool isAttached = false;
     JNIEnv* env = NULL;
@@ -124,7 +111,7 @@ void CAManagerConnectionStateChangedCB(CATransportAdapter_t adapter,
         goto exit_error;
     }
 
-    jstring jni_address = (*env)->NewStringUTF(env, remote_address);
+    jstring jni_address = (*env)->NewStringUTF(env, info->addr);
     if (!jni_address)
     {
         LOGE("jni_address is null");
@@ -147,7 +134,7 @@ void CAManagerConnectionStateChangedCB(CATransportAdapter_t adapter,
     }
 
     jobject jni_adaptertype = (*env)->CallStaticObjectMethod(env, jni_cls_enum,
-                                                             jni_mid_enum, adapter);
+                                                             jni_mid_enum, info->adapter);
     (*env)->CallVoidMethod(env, g_listenerObject, jni_mid_listener,
                            jni_adaptertype, jni_address,
                            (jboolean)connected);
@@ -233,7 +220,6 @@ exit_error:
     LOGI("OUT -  CAManagerAdapterStateChangedCB");
 }
 
-#ifdef __ANDROID__
 JNIEXPORT void JNICALL
 Java_org_iotivity_ca_CaInterface_caManagerInitialize(JNIEnv *env, jclass clazz,
                                                      jobject context, jobject listener)
@@ -247,28 +233,13 @@ Java_org_iotivity_ca_CaInterface_caManagerInitialize(JNIEnv *env, jclass clazz,
     CARegisterNetworkMonitorHandler(CAManagerAdapterStateChangedCB,
                                     CAManagerConnectionStateChangedCB);
 }
-#else
-JNIEXPORT void JNICALL
-Java_org_iotivity_ca_CaInterface_caManagerInitialize(JNIEnv *env, jclass clazz,
-                                                     jobject listener)
-{
-    LOGI("CaManagere_initialize");
-
-    g_listenerObject = (*env)->NewGlobalRef(env, listener);
-
-    CARegisterNetworkMonitorHandler(CAManagerAdapterStateChangedCB,
-                                    CAManagerConnectionStateChangedCB);
-}
-#endif
 
 JNIEXPORT void JNICALL
 Java_org_iotivity_ca_CaInterface_caManagerTerminate(JNIEnv *env, jclass clazz)
 {
     LOGI("CaManager_terminate");
 
-#ifdef __ANDROID__		/*GAR FIXME  */
     CAUtilClientTerminate(env);
-#endif
 
     if (g_listenerObject)
     {
@@ -315,7 +286,6 @@ Java_org_iotivity_ca_CaInterface_caManagerUnsetAutoConnectionDeviceInfo(JNIEnv *
     (*env)->ReleaseStringUTFChars(env, jaddress, address);
 }
 
-#ifdef __ANDROID__
 JNIEXPORT void JNICALL
 Java_org_iotivity_ca_CaInterface_caBtPairingInitialize(JNIEnv *env, jclass clazz,
                                                        jobject context, jobject listener)
@@ -328,23 +298,6 @@ Java_org_iotivity_ca_CaInterface_caBtPairingInitialize(JNIEnv *env, jclass clazz
     g_foundDeviceListenerObject = (*env)->NewGlobalRef(env, listener);
     CAUtilSetFoundDeviceListener(g_foundDeviceListenerObject);
 }
-#else
-JNIEXPORT void JNICALL
-Java_org_iotivity_ca_CaInterface_caBtPairingInitialize(JNIEnv *env, jclass clazz,
-                                                       jobject listener)
-{
-    LOGI("caBtPairingInitialize");
-    (void)clazz;
-
-    /*GAR FIXME
-    CAUtilClientInitialize(env, g_jvm);
-
-    g_foundDeviceListenerObject = (*env)->NewGlobalRef(env, listener);
-    CAUtilSetFoundDeviceListener(g_foundDeviceListenerObject);
-    */
-
-}
-#endif
 
 JNIEXPORT void JNICALL
 Java_org_iotivity_ca_CaInterface_caBtPairingTerminate(JNIEnv *env, jclass clazz)
@@ -363,7 +316,6 @@ Java_org_iotivity_ca_CaInterface_caBtPairingStartScan(JNIEnv *env, jclass clazz)
 {
     LOGI("caBtPairingStartScan");
     (void)clazz;
-    /*GAR FIXME */
     CAUtilStartScan(env);
 }
 
@@ -372,7 +324,6 @@ Java_org_iotivity_ca_CaInterface_caBtPairingStopScan(JNIEnv *env, jclass clazz)
 {
     LOGI("caBtPairingStopScan");
     (void)clazz;
-    /*GAR FIXME */
     CAUtilStopScan(env);
 }
 
@@ -381,7 +332,6 @@ Java_org_iotivity_ca_CaInterface_caBtPairingCreateBond(JNIEnv *env, jclass clazz
 {
     LOGI("caBtPairingCreateBond");
     (void)clazz;
-    /*GAR FIXME */
     CAUtilCreateBond(env, device);
 }
 
