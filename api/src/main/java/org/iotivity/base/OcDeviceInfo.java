@@ -32,9 +32,9 @@ import java.util.ArrayList;
 public class OcDeviceInfo {
 
     private String mDeviceName;
+    private List<String> mDeviceTypes;
     private String mSpecVersion;      // core.major.minor
     private String mDataModelVersions; // <vertical>.major.minor
-    private List<String> mDeviceTypes;
 
     public OcDeviceInfo(String deviceName, List<String> deviceTypes) {
         this.mDeviceName = deviceName;

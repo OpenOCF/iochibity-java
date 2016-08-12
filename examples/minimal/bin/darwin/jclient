@@ -2,7 +2,7 @@
 
 set -x
 
-IOTIVITY_JAR=$HOME/.m2/repository/iotivity/iotivity-api/1.1.2-SNAPSHOT/iotivity-api-1.1.2-SNAPSHOT.jar
+IOTIVITY_JAR=$HOME/.m2/repository/iotivity/iotivity-api/1.1.3-SNAPSHOT/iotivity-api-1.1.3-SNAPSHOT.jar
 
 IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/darwin/x86_64/release
 #IOTIVITY_JNI=/usr/local/lib/iotivity/1.1

@@ -51,7 +51,7 @@ public class SimpleClient implements
         OcPlatform.OnResourceFoundListener,
         OcResource.OnGetListener,
         OcResource.OnPutListener,
-        OcResource.OnPostListener,
+        // OcResource.OnPostListener,
         OcResource.OnObserveListener {
 
     private Map<OcResourceIdentifier, OcResource> mFoundResources = new HashMap<>();
@@ -159,6 +159,11 @@ public class SimpleClient implements
         }
     }
 
+    public void onFindResourceFailed(Throwable ex, String uri) {
+	msg("onFindResourceFailed");
+    }
+
+
     /**
      * Local method to get representation of a found light resource
      */
@@ -196,11 +201,15 @@ public class SimpleClient implements
             msgError(TAG, e.toString());
             msg("Failed to read the attributes of a light resource");
         }
-        msg("Light attributes: ");
-        msg(mLight.toString());
+        // msg("Light attributes: ");
+        // msg(mLight.toString());
+	mLight.printThis();
         printLine();
 
+	observeFoundLightResource();
+
         //Call a local method which will internally invoke put API on the foundLightResource
+	//GAR:  why?
         putLightRepresentation();
     }
 
@@ -266,12 +275,13 @@ public class SimpleClient implements
             msgError(TAG, e.toString());
             msg("Failed to create Light representation");
         }
-        msg("Light attributes: ");
-        msg(mLight.toString());
+        // msg("Light attributes: ");
+        // msg(mLight.toString());
+	mLight.printThis();
         printLine();
 
         //Call a local method which will internally invoke post API on the foundLightResource
-        postLightRepresentation();
+        // postLightRepresentation();
     }
 
     /**
@@ -294,31 +304,31 @@ public class SimpleClient implements
     /**
      * Local method to post a different state for this light resource
      */
-    private void postLightRepresentation() {
-        //set new values
-        mLight.setState(false);
-        mLight.setPower(105);
+    // private void postLightRepresentation() {
+    //     //set new values
+    //     mLight.setState(false);
+    //     mLight.setPower(105);
 
-        msg("Posting light representation...");
-        OcRepresentation representation = null;
-        try {
-            representation = mLight.getOcRepresentation();
-        } catch (OcException e) {
-            msgError(TAG, e.toString());
-            msg("Failed to get OcRepresentation from a light");
-        }
+    //     msg("Posting light representation...");
+    //     OcRepresentation representation = null;
+    //     try {
+    //         representation = mLight.getOcRepresentation();
+    //     } catch (OcException e) {
+    //         msgError(TAG, e.toString());
+    //         msg("Failed to get OcRepresentation from a light");
+    //     }
 
-        Map<String, String> queryParams = new HashMap<>();
-        try {
-            sleep(1);
-            // Invoke resource's "post" API with a new representation, query parameters and
-            // OcResource.OnPostListener event listener implementation
-            mFoundLightResource.post(representation, queryParams, this);
-        } catch (OcException e) {
-            msgError(TAG, e.toString());
-            msg("Error occurred while invoking \"post\" API");
-        }
-    }
+    //     Map<String, String> queryParams = new HashMap<>();
+    //     try {
+    //         sleep(1);
+    //         // Invoke resource's "post" API with a new representation, query parameters and
+    //         // OcResource.OnPostListener event listener implementation
+    //         mFoundLightResource.post(representation, queryParams, this);
+    //     } catch (OcException e) {
+    //         msgError(TAG, e.toString());
+    //         msg("Error occurred while invoking \"post\" API");
+    //     }
+    // }
 
     /**
      * An event handler to be executed whenever a "post" request completes successfully
@@ -326,51 +336,52 @@ public class SimpleClient implements
      * @param list             list of the header options
      * @param ocRepresentation representation of a resource
      */
-    @Override
-    public synchronized void onPostCompleted(List<OcHeaderOption> list,
-                                             OcRepresentation ocRepresentation) {
-        msg("POST request was successful");
-        try {
-            if (ocRepresentation.hasAttribute(OcResource.CREATED_URI_KEY)) {
-                msg("\tUri of the created resource: " +
-                        ocRepresentation.getValue(OcResource.CREATED_URI_KEY));
-            } else {
-                mLight.setOcRepresentation(ocRepresentation);
-                msg(mLight.toString());
-            }
-        } catch (OcException e) {
-            msgError(TAG, e.toString());
-        }
+    // @Override
+    // public synchronized void onPostCompleted(List<OcHeaderOption> list,
+    //                                          OcRepresentation ocRepresentation) {
+    //     msg("POST request was successful");
+    //     try {
+    //         if (ocRepresentation.hasAttribute(OcResource.CREATED_URI_KEY)) {
+    //             msg("\tUri of the created resource: " +
+    //                     ocRepresentation.getValue(OcResource.CREATED_URI_KEY));
+    //         } else {
+    //             mLight.setOcRepresentation(ocRepresentation);
+    //             // msg(mLight.toString());
+    // 		mLight.printThis();
+    //         }
+    //     } catch (OcException e) {
+    //         msgError(TAG, e.toString());
+    //     }
 
-        //setting new values
-        mLight.setState(true);
-        mLight.setPower(55);
-        msg("Posting again light representation...");
-        OcRepresentation representation2 = null;
-        try {
-            representation2 = mLight.getOcRepresentation();
-        } catch (OcException e) {
-            msgError(TAG, e.toString());
-            msg("Failed to get OcRepresentation from a light");
-        }
+    //     //setting new values
+    //     mLight.setState(true);
+    //     mLight.setPower(55);
+    //     msg("Posting again light representation...");
+    //     OcRepresentation representation2 = null;
+    //     try {
+    //         representation2 = mLight.getOcRepresentation();
+    //     } catch (OcException e) {
+    //         msgError(TAG, e.toString());
+    //         msg("Failed to get OcRepresentation from a light");
+    //     }
 
-        Map<String, String> queryParams = new HashMap<>();
-        try {
-            // Invoke resource's "post" API with a new representation, query parameters and
-            // OcResource.OnPostListener event listener implementation
-            mFoundLightResource.post(representation2, queryParams, onPostListener2);
-        } catch (OcException e) {
-            msgError(TAG, e.toString());
-            msg("Error occurred while invoking \"post\" API");
-        }
-    }
+    //     Map<String, String> queryParams = new HashMap<>();
+    //     try {
+    //         // Invoke resource's "post" API with a new representation, query parameters and
+    //         // OcResource.OnPostListener event listener implementation
+    //         mFoundLightResource.post(representation2, queryParams, onPostListener2);
+    //     } catch (OcException e) {
+    //         msgError(TAG, e.toString());
+    //         msg("Error occurred while invoking \"post\" API");
+    //     }
+    // }
 
     /**
      * An event handler to be executed whenever a "post" request fails
      *
      * @param throwable exception
      */
-    @Override
+    // @Override
     public synchronized void onPostFailed(Throwable throwable) {
         if (throwable instanceof OcException) {
             OcException ocEx = (OcException) throwable;
@@ -385,49 +396,50 @@ public class SimpleClient implements
     /**
      * Declare and implement a second OcResource.OnPostListener
      */
-    OcResource.OnPostListener onPostListener2 = new OcResource.OnPostListener() {
-        /**
-         * An event handler to be executed whenever a "post" request completes successfully
-         * @param list             list of the header options
-         * @param ocRepresentation representation of a resource
-         */
-        @Override
-        public synchronized void onPostCompleted(List<OcHeaderOption> list,
-                                                 OcRepresentation ocRepresentation) {
-            msg("Second POST request was successful");
-            try {
-                if (ocRepresentation.hasAttribute(OcResource.CREATED_URI_KEY)) {
-                    msg("\tUri of the created resource: " +
-                            ocRepresentation.getValue(OcResource.CREATED_URI_KEY));
-                } else {
-                    mLight.setOcRepresentation(ocRepresentation);
-                    msg(mLight.toString());
-                }
-            } catch (OcException e) {
-                msgError(TAG, e.toString());
-            }
+    // OcResource.OnPostListener onPostListener2 = new OcResource.OnPostListener() {
+    //     /**
+    //      * An event handler to be executed whenever a "post" request completes successfully
+    //      * @param list             list of the header options
+    //      * @param ocRepresentation representation of a resource
+    //      */
+    //     @Override
+    //     public synchronized void onPostCompleted(List<OcHeaderOption> list,
+    //                                              OcRepresentation ocRepresentation) {
+    //         msg("Second POST request was successful");
+    //         try {
+    //             if (ocRepresentation.hasAttribute(OcResource.CREATED_URI_KEY)) {
+    //                 msg("\tUri of the created resource: " +
+    //                         ocRepresentation.getValue(OcResource.CREATED_URI_KEY));
+    //             } else {
+    //                 mLight.setOcRepresentation(ocRepresentation);
+    //                 // msg(mLight.toString());
+    // 		    mLight.printThis();
+    //             }
+    //         } catch (OcException e) {
+    //             msgError(TAG, e.toString());
+    //         }
 
-            //Call a local method which will internally invoke observe API on the foundLightResource
-            observeFoundLightResource();
-        }
+    //         //Call a local method which will internally invoke observe API on the foundLightResource
+    //         observeFoundLightResource();
+    //     }
 
-        /**
-         * An event handler to be executed whenever a "post" request fails
-         *
-         * @param throwable exception
-         */
-        @Override
-        public synchronized void onPostFailed(Throwable throwable) {
-            if (throwable instanceof OcException) {
-                OcException ocEx = (OcException) throwable;
-                msgError(TAG, ocEx.toString());
-                ErrorCode errCode = ocEx.getErrorCode();
-                //do something based on errorCode
-                msg("Error code: " + errCode);
-            }
-            msg("Failed to \"post\" a new representation");
-        }
-    };
+    //     /**
+    //      * An event handler to be executed whenever a "post" request fails
+    //      *
+    //      * @param throwable exception
+    //      */
+    //     @Override
+    //     public synchronized void onPostFailed(Throwable throwable) {
+    //         if (throwable instanceof OcException) {
+    //             OcException ocEx = (OcException) throwable;
+    //             msgError(TAG, ocEx.toString());
+    //             ErrorCode errCode = ocEx.getErrorCode();
+    //             //do something based on errorCode
+    //             msg("Error code: " + errCode);
+    //         }
+    //         msg("Failed to \"post\" a new representation");
+    //     }
+    // };
 
     /**
      * Local method to start observing this light resource
@@ -437,6 +449,7 @@ public class SimpleClient implements
             sleep(1);
             // Invoke resource's "observe" API with a observe type, query parameters and
             // OcResource.OnObserveListener event listener implementation
+	    msg("sending OBSERVE request for " + mFoundLightResource.getUri());
             mFoundLightResource.observe(ObserveType.OBSERVE, new HashMap<String, String>(), this);
         } catch (OcException e) {
             msgError(TAG, e.toString());
@@ -448,7 +461,7 @@ public class SimpleClient implements
     private static int mObserveCount = 0;
 
     /**
-     * An event handler to be executed whenever a "post" request completes successfully
+     * An event handler to be executed whenever a notification response is received
      *
      * @param list             list of the header options
      * @param ocRepresentation representation of a resource
@@ -458,6 +471,9 @@ public class SimpleClient implements
     public synchronized void onObserveCompleted(List<OcHeaderOption> list,
                                                 OcRepresentation ocRepresentation,
                                                 int sequenceNumber) {
+        System.out.println("");
+        msg("onObserveCompleted, seq: " + sequenceNumber);
+
         if (OcResource.OnObserveListener.REGISTER == sequenceNumber) {
             msg("Observe registration action is successful:");
         } else if (OcResource.OnObserveListener.DEREGISTER == sequenceNumber) {
@@ -466,15 +482,15 @@ public class SimpleClient implements
             msg("Observe registration or de-registration action is failed");
         }
 
-        msg("OBSERVE Result:");
-        msg("\tSequenceNumber:" + sequenceNumber);
+	mLight.printThis();
+	msg("Observed resource: " + ocRepresentation.getHost() + " " + ocRepresentation.getUri());
         try {
             mLight.setOcRepresentation(ocRepresentation);
         } catch (OcException e) {
             msgError(TAG, e.toString());
             msg("Failed to get the attribute values");
         }
-        msg(mLight.toString());
+	mLight.printThis();
 
         if ((++mObserveCount) == 11) {
             msg("Cancelling Observe...");

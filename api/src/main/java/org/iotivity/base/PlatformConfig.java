@@ -45,8 +45,7 @@ public class PlatformConfig {
      * @param qualityOfService quality of service
      * @param dbPath           Persistant storage file for SVR Database.
      */
-    public PlatformConfig(
-                          ServiceType serviceType,
+    public PlatformConfig(ServiceType serviceType,
                           ModeType modeType,
                           String ipAddress,
                           int port,
@@ -72,8 +71,7 @@ public class PlatformConfig {
      * @param qualityOfService quality of service
      */
     // Avoid breaking building java samples due to persistent storage SVR DB changes.
-    public PlatformConfig(
-                          ServiceType serviceType,
+    public PlatformConfig(ServiceType serviceType,
                           ModeType modeType,
                           String ipAddress,
                           int port,

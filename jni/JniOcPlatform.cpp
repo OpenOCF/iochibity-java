@@ -1411,7 +1411,13 @@ JNIEXPORT void JNICALL Java_org_iotivity_base_OcPlatform_registerDeviceInfo0(
         return;
     }
 
-    OCDeviceInfo deviceInfo;
+    OCDeviceInfo deviceInfo = {
+	.deviceName = NULL,
+	.types = NULL,
+  	.specVersion = NULL,
+        .dataModelVersions = NULL
+    };
+
     try
     {
         DuplicateString(&deviceInfo.deviceName, env->GetStringUTFChars(jDeviceName, nullptr));

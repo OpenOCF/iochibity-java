@@ -33,6 +33,12 @@ install_name_tool \
 
 install_name_tool \
     -change \
+    out/darwin/x86_64/release/resource/csdk/security/provisioning/libocpmapi.dylib \
+    $JLP/libocpmapi.dylib \
+    jni/libiotivity-jni.jnilib
+
+install_name_tool \
+    -change \
     out/darwin/x86_64/release/resource/oc_logger/liboc_logger.dylib \
     $JLP/liboc_logger.dylib \
     jni/libiotivity-jni.jnilib

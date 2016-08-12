@@ -59,7 +59,9 @@ R= $V.10
 # IOTLIBPATH = [env.get('BUILD_DIR')])
 # IOTRPATH = [env.get('BUILD_DIR')])
 
-IOTLIBS = -loc -loctbstack -loc_logger -llogger -lconnectivity_abstraction -lpthread
+IOTLIBS = -loc -loctbstack -loc_logger -llogger -lpthread
+
+# if SECURED=1, add  -locprovision  -locpmapi
 
 # IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(IOTIVITY_HOST_OS)/$(IOTIVITY_HOST_ARCH)/$(IOTIVITY_STAGE)"
 
@@ -113,15 +115,19 @@ IOT_CXXFLAGS= -I. \
 	-I${IOTIVITY_HOME}/resource/c_common/oic_malloc/include \
 	-I${IOTIVITY_HOME}/resource/csdk/stack/include \
 	-I${IOTIVITY_HOME}/resource/csdk/stack/include/internal \
-	-I${IOTIVITY_HOME}/resource/csdk/ocsocket/include \
+	-I${IOTIVITY_HOME}/resource/csdk/cjson \
 	-I${IOTIVITY_HOME}/resource/oc_logger/include \
 	-I${IOTIVITY_HOME}/resource/csdk/logger/include \
+	-I${IOTIVITY_HOME}/resource/csdk/connectivity/lib/libcoap-4.1.1 \
 	-I${IOTIVITY_HOME}/resource/../extlibs/boost/boost_1_58_0 \
 	-I${IOTIVITY_HOME}/resource/../build_common/android/compatibility \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/oxm \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/internal \
-	-I${IOTIVITY_HOME}/resource/csdk/security/include
+	-I${IOTIVITY_HOME}/resource/csdk/security/include \
+	-I${IOTIVITY_HOME}/resource/csdk/security/include/internal
+
+	# -I${IOTIVITY_HOME}/resource/csdk/ocsocket/include \
 
 # IOT_A=	liblua.a
 # CORE_O= JniOcStack.o JniUtils.o JniEntityHandler.o JniOnResourceFoundListener.o \
@@ -160,7 +166,14 @@ IOCHIBITY_O= \
 	JniOnPresenceListener.o \
 	JniOnPutListener.o \
 	JniOnResourceFoundListener.o \
-	JniUtils.o
+	JniUtils.o \
+
+IOTSEC=	JniOcSecureResource.o \
+	JniOcProvisioning.o \
+	JniDisplayPinListener.o \
+	JniPinCheckListener.o \
+	JniProvisionResultListner.o \
+	JniSecureUtils.o
 
 # ble not yet supported:
 # JniCaInterface.o \
@@ -171,10 +184,12 @@ IOCHIBITY_O= \
 
 BASE_O= $(IOCHIBITY_O)
 
+#$(IOTSEC)
+
 # Convenience targets for popular platforms
 # ALL= all
 
-all:	$(IOCHIBITY_O)
+all:	$(BASE_O)
 
 ALL=all
 
@@ -194,10 +209,12 @@ darwin: check-env
 	g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
 	-rpath $(HOME)/out/darwin/x86_64/release \
 	-flat_namespace \
+	$(IOTIVITY_LIBPATH)/libconnectivity_abstraction.a \
+	$(IOTIVITY_LIBPATH)/libocsrm.a \
 	$(IOTLIBS) \
 	-L$(IOTIVITY_LIBPATH) \
 	-L. \
-	$(IOCHIBITY_O)
+	$(BASE_O)
 
 # -flat_namespace
 
@@ -278,13 +295,5 @@ endif
 
 
 # DO NOT DELETE
-
-iotsec.o: \
-	JniOcSecureResource.o \
-	JniOcProvisioning.o \
-	JniDisplayPinListener.o \
-	JniPinCheckListener.o \
-	JniProvisionResultListner.o \
-	JniSecureUtils.o
 
 # (end of Makefile)

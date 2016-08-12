@@ -35,17 +35,23 @@ public class Light {
     public static final String STATE_KEY = "state";
     public static final String POWER_KEY = "power";
 
+    private String mUri;
+    private String mHost;
     private String mName;
     private boolean mState;
     private int mPower;
 
     public Light() {
+        mUri = "";
+        mHost = "";
         mName = "";
         mState = false;
         mPower = 0;
     }
 
     public void setOcRepresentation(OcRepresentation rep) throws OcException {
+        mUri = rep.getUri();
+	mHost = rep.getHost();
         mName = rep.getValue(NAME_KEY);
         mState = rep.getValue(Light.STATE_KEY);
         mPower = rep.getValue(Light.POWER_KEY);
@@ -57,6 +63,14 @@ public class Light {
         rep.setValue(STATE_KEY, mState);
         rep.setValue(POWER_KEY, mPower);
         return rep;
+    }
+
+    public String getUri() {
+        return mUri;
+    }
+
+    public String getHost() {
+        return mHost;
     }
 
     public String getName() {
@@ -89,4 +103,18 @@ public class Light {
                 "\n\t" + STATE_KEY + ": " + mState +
                 "\n\t" + POWER_KEY + ": " + mPower;
     }
+
+    public void printThis() {
+	msg("THIS:");
+	msg("\tUri: " + mUri);
+	msg("\tHost: " + mHost);
+	msg("\tName: " + mName);
+	msg("\tState: " + mState);
+	msg("\tPower: " + mPower);
+    }
+
+    private void msg(final String text) {
+        System.out.println("[O]" + mName + " | " + text);
+    }
+
 }

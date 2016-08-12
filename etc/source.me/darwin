@@ -15,9 +15,9 @@ export SHLIBSUFFIX=.dyld
 export JNILIBSUFFIX=.jnilib
 
 #dev
-export IOTIVITY_HOME=$HOME/iotivity/iotk/iochibity
+export IOTIVITY_HOME=$HOME/iotivity/iochibity
 export IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/${IOTIVITY_HOST_OS}/${IOTIVITY_HOST_ARCH}/${IOTIVITY_STAGE}
-export IOTIVITY_JNIPATH="$IOTIVITY_HOME/iotivity-java/jni"
+export IOTIVITY_JNIPATH="$HOME/iotivity/kit/java/jni"
 export JLP=$IOTIVITY_JNI_PATH:$IOTIVITY_LIBPATH
 
 export DYLD_LIBRARY_PATH=$IOTIVITY_JNIPATH:$IOTIVITY_LIBPATH

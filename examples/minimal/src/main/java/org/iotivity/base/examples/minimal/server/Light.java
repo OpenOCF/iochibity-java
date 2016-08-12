@@ -91,37 +91,51 @@ public class Light implements OcPlatform.EntityHandler {
      */
     @Override
     public synchronized EntityHandlerResult handleEntity(final OcResourceRequest request) {
+	msg("handleEntity");
+	msg("\tRequest Type:    " + request.getRequestType());
+	msg("\tResource URI:    " + request.getResourceUri());
+	msg("\tResource Handle: " + request.getResourceHandle());
         EntityHandlerResult ehResult = EntityHandlerResult.ERROR;
         if (null == request) {
             msg("Server request is invalid");
             return ehResult;
         }
+
+	Map<String, String> queries = request.getQueryParameters();
+        if (!queries.isEmpty()) {
+            msg("\tQuery Params: ");
+        } else {
+            msg("\tQuery Params: none");
+        }
+
         // Get the request flags
         EnumSet<RequestHandlerFlag> requestFlags = request.getRequestHandlerFlagSet();
         if (requestFlags.contains(RequestHandlerFlag.INIT)) {
-            msg("\t\tRequest Flag: Init");
+            msg("\tRequest Flag: Init");
             ehResult = EntityHandlerResult.OK;
         }
         if (requestFlags.contains(RequestHandlerFlag.REQUEST)) {
-            msg("\t\tRequest Flag: Request");
+            msg("\tRequest Flag: Request");
             ehResult = handleRequest(request);
         }
         if (requestFlags.contains(RequestHandlerFlag.OBSERVER)) {
-            msg("\t\tRequest Flag: Observer");
+            msg("\tRequest Flag: Observer");
             ehResult = handleObserver(request);
         }
+
         return ehResult;
     }
 
     private EntityHandlerResult handleRequest(OcResourceRequest request) {
+	msg("  ..handleRequest");
         EntityHandlerResult ehResult = EntityHandlerResult.ERROR;
         // Check for query params (if any)
         Map<String, String> queries = request.getQueryParameters();
-        if (!queries.isEmpty()) {
-            msg("Query processing is up to entityHandler");
-        } else {
-            msg("No query parameters in this request");
-        }
+        // if (!queries.isEmpty()) {
+        //     msg("Query processing is up to entityHandler");
+        // } else {
+        //     msg("No query parameters in this request");
+        // }
 
         for (Map.Entry<String, String> entry : queries.entrySet()) {
             msg("Query key: " + entry.getKey() + " value: " + entry.getValue());
@@ -131,19 +145,19 @@ public class Light implements OcPlatform.EntityHandler {
         RequestType requestType = request.getRequestType();
         switch (requestType) {
             case GET:
-                msg("\t\t\tRequest Type is GET");
+                // msg("\tRequest Type is GET");
                 ehResult = handleGetRequest(request);
                 break;
             case PUT:
-                msg("\t\t\tRequest Type is PUT");
+                // msg("\tRequest Type is PUT");
                 ehResult = handlePutRequest(request);
                 break;
             case POST:
-                msg("\t\t\tRequest Type is POST");
+                // msg("\tRequest Type is POST");
                 ehResult = handlePostRequest(request);
                 break;
             case DELETE:
-                msg("\t\t\tRequest Type is DELETE");
+                // msg("\tRequest Type is DELETE");
                 ehResult = handleDeleteRequest();
                 break;
         }
@@ -151,6 +165,7 @@ public class Light implements OcPlatform.EntityHandler {
     }
 
     private EntityHandlerResult handleGetRequest(final OcResourceRequest request) {
+	msg("  ....handleGetRequest");
         EntityHandlerResult ehResult;
         OcResourceResponse response = new OcResourceResponse();
         response.setRequestHandle(request.getRequestHandle());
@@ -173,7 +188,8 @@ public class Light implements OcPlatform.EntityHandler {
     }
 
     private EntityHandlerResult handlePutRequest(OcResourceRequest request) {
-        OcResourceResponse response = new OcResourceResponse();
+    	msg("  ....handlePutRequest");
+	OcResourceResponse response = new OcResourceResponse();
         response.setRequestHandle(request.getRequestHandle());
         response.setResourceHandle(request.getResourceHandle());
 
@@ -186,11 +202,13 @@ public class Light implements OcPlatform.EntityHandler {
 
     private static int sUriCounter = 1;
     private EntityHandlerResult handlePostRequest(OcResourceRequest request) {
+	msg("  ....handlePostRequest");
         OcResourceResponse response = new OcResourceResponse();
         response.setRequestHandle(request.getRequestHandle());
         response.setResourceHandle(request.getResourceHandle());
         String newUri = "/a/light" + (++sUriCounter);
         SimpleServer.createNewLightResource(newUri, "John's light " + sUriCounter);
+	msg("        new uri: " + newUri);
         OcRepresentation rep_post = getOcRepresentation();
         try {
             rep_post.setValue(OcResource.CREATED_URI_KEY, newUri);
@@ -205,6 +223,7 @@ public class Light implements OcPlatform.EntityHandler {
     }
 
     private EntityHandlerResult handleDeleteRequest() {
+	msg("  ....handleDeleteRequest");
         try {
             this.unregisterResource();
             return EntityHandlerResult.RESOURCE_DELETED;
@@ -216,6 +235,7 @@ public class Light implements OcPlatform.EntityHandler {
     }
 
     private void handleSlowResponse(OcResourceRequest request) {
+	msg("  ....handleSlowResponse");
         sleep(10);
         msg("Sending slow response...");
         OcResourceResponse response = new OcResourceResponse();
@@ -231,15 +251,18 @@ public class Light implements OcPlatform.EntityHandler {
     private List<Byte> mObservationIds; //IDs of observes
 
     private EntityHandlerResult handleObserver(final OcResourceRequest request) {
+	msg("  ....handleObserver");
         ObservationInfo observationInfo = request.getObservationInfo();
         switch (observationInfo.getObserveAction()) {
             case REGISTER:
+		msg("\t\tObserve Action: REGISTER");
                 if (null == mObservationIds) {
                     mObservationIds = new LinkedList<>();
                 }
                 mObservationIds.add(observationInfo.getOcObservationId());
                 break;
             case UNREGISTER:
+		msg("\t\tObserve Action: UNREGISTER");
                 mObservationIds.remove((Byte)observationInfo.getOcObservationId());
                 break;
         }
@@ -261,11 +284,10 @@ public class Light implements OcPlatform.EntityHandler {
             // increment current power value by 10 every 2 seconds
             mPower += 10;
             sleep(2);
-
-            msg("Notifying observers...");
-            msg(this.toString());
+	    System.out.println("");
             try {
                 if (mIsListOfObservers) {
+		    msg("Notifying list of observers...");
                     OcResourceResponse response = new OcResourceResponse();
                     response.setErrorCode(SUCCESS);
                     response.setResourceRepresentation(getOcRepresentation());
@@ -274,6 +296,7 @@ public class Light implements OcPlatform.EntityHandler {
                             mObservationIds,
                             response);
                 } else {
+		    msg("Notifying all observers...");
                     OcPlatform.notifyAllObservers(mResourceHandle);
                 }
             } catch (OcException e) {
@@ -283,6 +306,8 @@ public class Light implements OcPlatform.EntityHandler {
                 }
                 return;
             }
+	    printThis();
+	    msg("Notification completed");
         }
     }
 
@@ -298,6 +323,7 @@ public class Light implements OcPlatform.EntityHandler {
     }
 
     public synchronized void unregisterResource() throws OcException {
+	msg("unregisterResource");
         if (null != mResourceHandle) {
             OcPlatform.unregisterResource(mResourceHandle);
         }
@@ -339,12 +365,12 @@ public class Light implements OcPlatform.EntityHandler {
         mIsListOfObservers = isListOfObservers;
     }
 
-    @Override
-    public String toString() {
-        return "\t" + "URI" + ": " + mResourceUri +
-                "\n\t" + NAME_KEY + ": " + mName +
-                "\n\t" + STATE_KEY + ": " + mState +
-                "\n\t" + POWER_KEY + ": " + mPower;
+    public void printThis() {
+	msg("THIS:");
+        msg("\t" + "URI" + ": " + mResourceUri);
+	msg("\t" + NAME_KEY + ": " + mName);
+	msg("\t" + STATE_KEY + ": " + mState);
+	msg("\t" + POWER_KEY + ": " + mPower);
     }
 
     private void sleep(int seconds) {
@@ -356,13 +382,25 @@ public class Light implements OcPlatform.EntityHandler {
         }
     }
 
-    private void msg(String text) {
-            SimpleServer.msg(text);
+    // private void msg(String text) {
+    //         SimpleServer.msg(text);
+    // }
+
+    public static void msg(final String text) {
+        System.out.println("[O]" + TAG + " | " + text);
     }
 
-    private void msgError(String tag, String text) {
-            SimpleServer.msgError(tag, text);
+    public static void msg(final String tag, final String text) {
+        System.out.println("[O]" + tag + " | " + text);
     }
+
+    public static void msgError(final String tag ,final String text) {
+        System.out.println("[E]" + tag + " | " + text);
+    }
+
+   // private void msgError(String tag, String text) {
+   //          SimpleServer.msgError(tag, text);
+   //  }
 
     private final static String TAG = Light.class.getSimpleName();
     private final static int SUCCESS = 200;

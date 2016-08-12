@@ -74,7 +74,8 @@ public class SimpleServer {
                 false,           //state
                 0                //power
         );
-        msg(light.toString());
+        // msg(light.toString());
+	light.printThis();
 
         msg("Registering light as a resource");
         try {
@@ -126,6 +127,14 @@ public class SimpleServer {
     }
 
     public static void main(String[] args) {
+	// System.loadLibrary("iotivity-jni");
+        // System.out.println("FOO");
+        // System.loadLibrary("oc_logger");
+        // System.loadLibrary("octbstack");
+	// System.loadLibrary("connectivity_abstraction");
+        // System.loadLibrary("oc");
+        // System.out.println("BAR");
+
         startSimpleServer();
 
         // // creating a new thread to handle the input
@@ -135,11 +144,13 @@ public class SimpleServer {
         System.out.println("press q then ENTER to terminate");
 
         while(true){
-            try{
-		// sleep(2);       // main-thread is sleeping not the thread created above
-            }catch(Exception e){
+	    try {
+		Thread.sleep(2000);
+		System.out.println("GUI thread loop");
+	    } catch (InterruptedException e) {
 		e.printStackTrace();
-            }
+		msgError(TAG, e.toString());
+	    }
 
             // outputting data until the quit boolean flag is not set
             if(quit==true) break;

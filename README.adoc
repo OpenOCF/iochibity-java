@@ -31,7 +31,8 @@ some work.
 
 ==== api
 
-To build the Java API:
+To build the Java API, start by adjusting the version string in
+pom.xml.  Then:
 
 [source,sh]
 ----
@@ -54,6 +55,8 @@ version number of the Iotivity library.
 
 Only one of the original Android samples has been ported; it's in `examples/minimal`.
 
+Start by adjusting the versions in pom.xml
+
 To build it, just run `$ mvn package`.  Note that you do not need to install it.
 
 To run it, do `$ ./bin/<host>/<role>`, for example, `$ ./bin/linux/jserver`.
@@ -61,7 +64,17 @@ To run it, do `$ ./bin/<host>/<role>`, for example, `$ ./bin/linux/jserver`.
 If you get errors pertaining to linkage, check the `source.me` paths
 and the paths in the `bin/<host>/<role>` code.
 
-On Darwin you may have to run the `fixlinks.sh` script to fixup the linkage info.
+ADJUST the api version in bin/jserver etc.
+
+== troubleshooting
+
+`java.lang.NoSuchMethodError: getOicSecAces` - did you build the iotivity stack using SECURED=1?
+
+==== darwin
+
+On Darwin you may have to run the `fixlinks.sh` script to fixup the
+linkage info.  Do this both for jni here and for your iochibity build
+(use bin/darwin/fixlinks.sh)
 
 === related
 
@@ -73,6 +86,13 @@ For assistance, try https://iotivity-slack.herokuapp.com/[iotivity-slack].
 
 == merging master
 
+Run diff -qr against jni and api/src to see what's changed/new etc.
+
+copy changed and new files from master to here, remove deleted files
+
+use (emacs) magit-status to review changes
+
+=== jni merge
 * Until OCProvisioningManager.h has been renamed in master, all
   #include refs to this in header files must be edited to
   OCProvisioningManager.hpp
@@ -82,7 +102,7 @@ For assistance, try https://iotivity-slack.herokuapp.com/[iotivity-slack].
 in JniOcPlatform.cpp, restore
 #define UNUSED(expr) (void)(expr);
 
-
+* REQUIRED:
 * JniOcPlatform.cpp:
 -    OCDeviceInfo deviceInfo = {
 -	deviceName : NULL,
@@ -125,3 +145,37 @@ restore
 -            if (g_jvm->AttachCurrentThread( (void**)&env, nullptr) < 0)
 for
 +            if (g_jvm->AttachCurrentThread(&env, nullptr) < 0)
+
+=== api merge
+
+* skip the ca stuff? except CaInterface.java and CaIpInterface.java?
+
+* OcDeviceInfo.java - the OcDeviceInfo class is not in sync with the
+  OCDeviceInfo struct in octypes.h
+
+add -    private String mSpecVersion;      // core.major.minor
+-    private String mDataModelVersions; // <vertical>.major.minor
+
+-    public OcDeviceInfo(String deviceName,
+-			String specVersion,
+-			String dataModelVersions) {
+-        this.mDeviceName = deviceName;
+-        this.mSpecVersion = specVersion;
+-        this.mDataModelVersions = dataModelVersions;
+-        this.mDeviceName = deviceName;
+-        this.mDeviceTypes = new ArrayList<String>(){{
+-		add("oic.wk.d");
+-	    }};
+-    }
+-
+
+* OcPlatform.java and PlatformConfig.java must be adjusted since they are
+  platform-specific. In master they assume Android.
+
+    save originals to Android repo
+
+    edit ctors in PlatformConfig
+
+* we use 'iotivity-jni' instead of 'ocstack-jni'
+
+* delete ^M (e.g. in OicSecAcl.java)
