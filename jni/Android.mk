@@ -37,10 +37,11 @@ CFLAGS  = -std=c11
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-SYSCFLAGS=-m32 -g
+SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
+OSXCFLAGS=-m64 -Wno-unused-private-field -Wno-unused-parameter -Wno-unused-function -Wno-comment
 MYLDFLAGS=
 MYLIBS=
 MYOBJS=
@@ -58,9 +59,11 @@ R= $V.10
 # IOTLIBPATH = [env.get('BUILD_DIR')])
 # IOTRPATH = [env.get('BUILD_DIR')])
 
-IOTLIBS = -loc -loctbstack -loc_logger -llogger -lconnectivity_abstraction -lpthread
+IOTLIBS = -loc -loctbstack -loc_logger -llogger
 
-# IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(IOTIVITY_HOST_OS)/$(IOTIVITY_HOST_ARCH)/$(IOTIVITY_STAGE)"
+# if SECURED=1, add  -locprovision  -locpmapi
+
+IOTIVITY_LIBPATH="$(IOTIVITY_HOME)/out/$(IOTIVITY_TARGET_OS)/$(IOTIVITY_TARGET_ARCH)/$(IOTIVITY_STAGE)"
 
 # IOTLIBS = $(IOTIVITY_LIBPATH)/liboctbstack.a \
 # 	$(IOTIVITY_LIBPATH)/libconnectivity_abstraction.a \
@@ -112,18 +115,22 @@ IOT_CXXFLAGS= -I. \
 	-I${IOTIVITY_HOME}/resource/c_common/oic_malloc/include \
 	-I${IOTIVITY_HOME}/resource/csdk/stack/include \
 	-I${IOTIVITY_HOME}/resource/csdk/stack/include/internal \
-	-I${IOTIVITY_HOME}/resource/csdk/ocsocket/include \
+	-I${IOTIVITY_HOME}/resource/csdk/cjson \
 	-I${IOTIVITY_HOME}/resource/oc_logger/include \
 	-I${IOTIVITY_HOME}/resource/csdk/logger/include \
+	-I${IOTIVITY_HOME}/resource/csdk/connectivity/lib/libcoap-4.1.1 \
 	-I${IOTIVITY_HOME}/resource/../extlibs/boost/boost_1_58_0 \
 	-I${IOTIVITY_HOME}/resource/../build_common/android/compatibility \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/oxm \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/internal \
-	-I${IOTIVITY_HOME}/resource/csdk/security/include
+	-I${IOTIVITY_HOME}/resource/csdk/security/include \
+	-I${IOTIVITY_HOME}/resource/csdk/security/include/internal \
+	-I${IOTIVITY_CRYSTAX_HOME}/sources/boost/1.59.0/include \
+	-I${IOTIVITY_CRYSTAX_HOME}/sources/boost/1.59.0/libs/armeabi-v7a
 
-#TODO: add boost include dir
 
+	# -I${IOTIVITY_HOME}/resource/csdk/ocsocket/include \
 
 # IOT_A=	liblua.a
 # CORE_O= JniOcStack.o JniUtils.o JniEntityHandler.o JniOnResourceFoundListener.o \
@@ -162,7 +169,14 @@ IOCHIBITY_O= \
 	JniOnPresenceListener.o \
 	JniOnPutListener.o \
 	JniOnResourceFoundListener.o \
-	JniUtils.o
+	JniUtils.o \
+
+IOTSEC=	JniOcSecureResource.o \
+	JniOcProvisioning.o \
+	JniDisplayPinListener.o \
+	JniPinCheckListener.o \
+	JniProvisionResultListner.o \
+	JniSecureUtils.o
 
 # ble not yet supported:
 # JniCaInterface.o \
@@ -173,32 +187,27 @@ IOCHIBITY_O= \
 
 BASE_O= $(IOCHIBITY_O)
 
+#$(IOTSEC)
+
 # Convenience targets for popular platforms
 # ALL= all
 
-all:	$(IOCHIBITY_O)
+all:	$(BASE_O)
 
 ALL=all
 
-edison:	check-env
-	echo "Making linux"
-	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS)"
+JNILIBSUFFIX=.jnilib
+
+# NB: do not change the order of the CORE_O files and the libs:
+android: check-env
+	echo "Making android"
+	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(EDISONCFLAGS)"
 	$(LD) -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
+	-Wl,-soname,libiotivity-jni$(JNILIBSUFFIX) \
 	-L. $(IOCHIBITY_O) \
 	-L$(IOTIVITY_LIBPATH) \
 	$(IOTLIBS)
-
-# darwin: check-env
-# 	echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
-# 	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
-# 	g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
-# 	-rpath $(HOME)/out/darwin/x86_64/release \
-# 	-flat_namespace \
-# 	$(IOTLIBS) \
-# 	-L$(IOTIVITY_LIBPATH) \
-# 	-L. \
-# 	$(IOCHIBITY_O)
 
 # -flat_namespace
 
@@ -279,13 +288,5 @@ endif
 
 
 # DO NOT DELETE
-
-iotsec.o: \
-	JniOcSecureResource.o \
-	JniOcProvisioning.o \
-	JniDisplayPinListener.o \
-	JniPinCheckListener.o \
-	JniProvisionResultListner.o \
-	JniSecureUtils.o
 
 # (end of Makefile)

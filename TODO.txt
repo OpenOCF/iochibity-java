@@ -1,0 +1,4 @@
+
+* Initializing the stack should be done by the library, not the
+  app. Implement a static method, sth like Iotivity.start()
+

@@ -1,0 +1,46 @@
+# source this file from IOTIVITY_HOME to setup the iotivity build environment
+
+unset IOTIVITY_VERSION
+unset IOTIVITY_TARGET_PLATFORM
+unset IOTIVITY_TARGET_PLATFORM_VERSION
+unset IOTIVITY_TARGET_OS
+unset IOTIVITY_TARGET_OS_VERSION
+unset IOTIVITY_TARGET_ARCH
+unset IOTIVITY_TARGET_ARCH_ABI
+unset IOTIVITY_STAGE
+unset IOTIVITY_TOOLCHAIN
+unset IOTIVITY_TOOLCHAIN_DIR
+unset IOTIVITY_TOOLCHAIN_PREFIX
+unset IOTIVITY_SYSROOT
+
+# networking
+unset IOTIVITY_IP_API
+unset IOTIVITY_BT_API
+unset IOTIVITY_BLE_API
+unset IOTIVITY_NFC_API
+
+#dev
+unset IOTIVITY_HOME
+unset IOTIVITY_LIBPATH
+# unset IOTIVITY_JAVA_SDK_HOME
+# unset IOTIVITY_GRADLE_HOME
+# unset IOTIVITY_JNIPATH
+# JLP = java.library.path
+# unset JLP
+
+# prod
+#unset IOTIVITY_LIBPATH
+#unset LD_LIBRARY_PATH
+
+## unset JLP
+
+
+## test, for building java jni
+unset CPP
+unset CC
+unset CXX
+unset LD
+unset AR
+unset RANLIB
+
+unset MKDIR

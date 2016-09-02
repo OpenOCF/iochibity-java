@@ -125,7 +125,9 @@ IOT_CXXFLAGS= -I. \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/oxm \
 	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/internal \
 	-I${IOTIVITY_HOME}/resource/csdk/security/include \
-	-I${IOTIVITY_HOME}/resource/csdk/security/include/internal
+	-I${IOTIVITY_HOME}/resource/csdk/security/include/internal \
+	-I${SDKTARGETSYSROOT}/usr/include/c++/4.9.1 \
+	-I${SDKTARGETSYSROOT}/usr/include/c++/4.9.1/i586-poky-linux
 
 	# -I${IOTIVITY_HOME}/resource/csdk/ocsocket/include \
 

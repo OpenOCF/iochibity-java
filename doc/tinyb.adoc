@@ -1,0 +1,15 @@
+= tinyb
+
+https://github.com/intel-iot-devkit/tinyb
+
+https://software.intel.com/en-us/java-for-bluetooth-le-apps[Java for Bluetooth LE applications] (Intel)
+
+=== edison
+
+Tinyb requires Bluez 5.37 in experimental mode.  That's what's
+installled on the Edison, and it's configured to run in experimental
+mode on the Edison.  See/lib/systemd/system/bluetooth.service
+
+The tinyb jar:  /usr/lib/java/tinyb.jar
+
+The .so files are in /usr/lib, libtinyb.* and libjavatinyb.*
