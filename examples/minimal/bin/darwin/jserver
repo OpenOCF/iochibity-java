@@ -4,17 +4,20 @@ set -x
 
 IOTIVITY_JAR=$HOME/.m2/repository/iotivity/iotivity-api/1.1.3-SNAPSHOT/iotivity-api-1.1.3-SNAPSHOT.jar
 
-IOTIVITY_LIBPATH=$IOTIVITY_HOME/out/darwin/x86_64/release
+IOTIVITY_LIBPATH=$INSTALL_SYSROOT/lib
 
 #IOTIVITY_JNI=/usr/local/lib/iotivity/1.1
-IOTIVITY_JNI=$HOME/iotivity/kit/java/jni
+#IOTIVITY_JNI=$HOME/iotivity/kit/java/jni
+
+IOTIVITY_JNI=$INSTALL_SYSROOT/lib
 
 
 # ./java/iotivity-darwin/build/libs/iotivity-darwin.jar
 
-java -cp ./target/examples-1.1.0-SNAPSHOT.jar:${IOTIVITY_JAR} \
-     -Djava.library.path=$IOTIVITY_JNI:$IOTIVITY_LIBPATH \
+java -cp ./target/examples-1.1.0-SNAPSHOT.jar:${IOTIVITY_JAR}:./ \
+     -Djava.library.path=$INSTALL_SYSROOT/lib \
      org.iotivity.base.examples.minimal.server.SimpleServer
 
 
+     # -Djava.library.path=$IOTIVITY_JNI:$IOTIVITY_LIBPATH \
 #     -Djava.library.path=$(pwd)/out/darwin/x86_64/release/ \

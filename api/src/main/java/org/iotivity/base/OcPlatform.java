@@ -37,8 +37,8 @@ import java.util.List;
 public final class OcPlatform {
 
     static {
+        System.loadLibrary("chibity");
         System.loadLibrary("oc_logger");
-        System.loadLibrary("octbstack");
         System.loadLibrary("oc");
         // if (0 != BuildConfig.SECURED)
         // {

@@ -5,12 +5,14 @@
 
 # Where to install. The installation starts in the src and doc directories,
 # so take care if INSTALL_TOP is not an absolute path. See the local target.
-INSTALL_TOP= /usr/local
+INSTALL_TOP= $(INSTALL_SYSROOT)
 INSTALL_BIN= $(INSTALL_TOP)/bin
 INSTALL_INC= $(INSTALL_TOP)/include
 INSTALL_LIB= $(INSTALL_TOP)/lib
 INSTALL_MAN= $(INSTALL_TOP)/man/man1
-INSTALL_JNI= $(INSTALL_TOP)/lib/iotivity/$V
+
+INSTALL_JNI= $(INSTALL_TOP)/lib
+# INSTALL_JNI= $(INSTALL_TOP)/lib/iotivity/$V
 
 # How to install. If your install program does not support "-p", then
 # you may have to run ranlib on the installed liblua.a.
@@ -48,7 +50,7 @@ MYOBJS=
 
 # == END OF USER SETTINGS -- NO NEED TO CHANGE ANYTHING BELOW THIS LINE =======
 # What to install.
-TO_LIB= jni/libiotivity-jni.jnilib
+TO_LIB= libiotivity-jni.jnilib
 # TO_MAN= iotivity.1 iotivity.1
 
 # version and release.
@@ -59,7 +61,7 @@ R= $V.10
 # IOTLIBPATH = [env.get('BUILD_DIR')])
 # IOTRPATH = [env.get('BUILD_DIR')])
 
-IOTLIBS = -loc -loctbstack -loc_logger -llogger -lpthread
+IOTLIBS = -loc -lchibity -loc_logger -lpthread
 
 # if SECURED=1, add  -locprovision  -locpmapi
 
@@ -107,27 +109,28 @@ IOTLIBS = -loc -loctbstack -loc_logger -llogger -lpthread
 IOT_CXXFLAGS= -I. \
 	-I./src \
 	-I${JAVA_HOME}/include \
-	-I${JAVA_HOME}/include/$(IOTIVITY_HOST_OS) \
+	-I${JAVA_HOME}/include/$(TARGET_OS) \
+	-I${INSTALL_SYSROOT}/include \
 	-I${IOTIVITY_HOME}/resource/csdk/connectivity/api \
 	-I${IOTIVITY_HOME}/resource/include \
 	-I${IOTIVITY_HOME}/resource/c_common \
-	-I${IOTIVITY_HOME}/resource/c_common/oic_string/include \
-	-I${IOTIVITY_HOME}/resource/c_common/oic_malloc/include \
-	-I${IOTIVITY_HOME}/resource/csdk/stack/include \
-	-I${IOTIVITY_HOME}/resource/csdk/stack/include/internal \
+	-I${IOTIVITY_HOME}/resource/csdk/stack \
+	-I${IOTIVITY_HOME}/resource/csdk/logger \
+	-I${IOTIVITY_HOME}/resource/csdk/stack/internal \
 	-I${IOTIVITY_HOME}/resource/csdk/cjson \
 	-I${IOTIVITY_HOME}/resource/oc_logger/include \
 	-I${IOTIVITY_HOME}/resource/csdk/logger/include \
 	-I${IOTIVITY_HOME}/resource/csdk/connectivity/lib/libcoap-4.1.1 \
-	-I${IOTIVITY_HOME}/resource/../extlibs/boost/boost_1_58_0 \
-	-I${IOTIVITY_HOME}/resource/../build_common/android/compatibility \
-	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include \
-	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/oxm \
-	-I${IOTIVITY_HOME}/resource/csdk/security/provisioning/include/internal \
-	-I${IOTIVITY_HOME}/resource/csdk/security/include \
-	-I${IOTIVITY_HOME}/resource/csdk/security/include/internal \
-	-I${SDKTARGETSYSROOT}/usr/include/c++/4.9.1 \
-	-I${SDKTARGETSYSROOT}/usr/include/c++/4.9.1/i586-poky-linux
+	-I${IOTIVITY_HOME}/resource/csdk/security \
+	-I${IOTIVITY_HOME}/resource/csdk/security/ocsecurity
+
+	# -I${SDKTARGETSYSROOT}/usr/include/c++/4.9.1 \
+	# -I${SDKTARGETSYSROOT}/usr/include/c++/4.9.1/i586-poky-linux
+
+	# -I${IOTIVITY_HOME}/resource/c_common/oic_string/include \
+	# -I${IOTIVITY_HOME}/resource/c_common/oic_malloc/include \
+	# -I${IOTIVITY_HOME}/resource/../extlibs/boost/boost_1_58_0 \
+	# -I${IOTIVITY_HOME}/resource/../build_common/android/compatibility \
 
 	# -I${IOTIVITY_HOME}/resource/csdk/ocsocket/include \
 
@@ -202,7 +205,7 @@ linux:	check-env
 	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
 	-L. $(IOCHIBITY_O) \
-	-L$(IOTIVITY_LIBPATH) \
+	-L$(INSTALL_SYSROOT)/lib \
 	$(IOTLIBS)
 
 darwin: check-env
@@ -211,10 +214,9 @@ darwin: check-env
 	g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
 	-rpath $(HOME)/out/darwin/x86_64/release \
 	-flat_namespace \
-	$(IOTIVITY_LIBPATH)/libconnectivity_abstraction.a \
-	$(IOTIVITY_LIBPATH)/libocsrm.a \
+	$(INSTALL_SYSROOT)/lib/libconnectivity_abstraction.a \
 	$(IOTLIBS) \
-	-L$(IOTIVITY_LIBPATH) \
+	-L$(INSTALL_SYSROOT)/lib \
 	-L. \
 	$(BASE_O)
 
@@ -280,8 +282,8 @@ endif
 ifndef IOTIVITY_HOME
 	$(error IOTIVITY_HOME is undefined)
 endif
-# ifndef IOTIVITY_LIBPATH
-# 	$(error IOTIVITY_LIBPATH is undefined)
+# ifndef INSTALL_SYSROOT
+# 	$(error INSTALL_SYSROOT is undefined)
 # endif
 ifeq ($(IOTIVITY_HOST_OS),'linux')
 SHLIBSUFFIX = '.so'
