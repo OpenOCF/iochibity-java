@@ -17,8 +17,8 @@ INSTALL_JNI= $(INSTALL_TOP)/lib
 # How to install. If your install program does not support "-p", then
 # you may have to run ranlib on the installed liblua.a.
 INSTALL= install -p
-# INSTALL_EXEC= $(INSTALL) -m 0755
-INSTALL_DATA= $(INSTALL) -m 0644
+INSTALL_EXEC= $(INSTALL) -m 0755
+# INSTALL_DATA= $(INSTALL) -m 0644
 #
 # If you don't have "install" you can use "cp" instead.
 # INSTALL= cp -p
@@ -34,12 +34,12 @@ RM     ?= rm -f
 
 # Options
 CPPFLAGS= -fPIC -Wall -Wextra -Wno-unused -Wno-comment $(SYSCFLAGS) $(MYCFLAGS) $(IOT_CXXFLAGS)
-CXXFLAGS= -std=c++11
-CFLAGS  = -std=c11
+CXXFLAGS=-std=c++11
+CFLAGS  =-std=c11
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-SYSCFLAGS=
+SYSCFLAGS=-m64 -pthread
 SYSLDFLAGS=
 SYSLIBS=
 
@@ -50,7 +50,7 @@ MYOBJS=
 
 # == END OF USER SETTINGS -- NO NEED TO CHANGE ANYTHING BELOW THIS LINE =======
 # What to install.
-TO_LIB= libiotivity-jni.jnilib
+TO_LIB= $(BUILD_SYSROOT)/libiotivity-jni.jnilib
 # TO_MAN= iotivity.1 iotivity.1
 
 # version and release.
@@ -114,8 +114,8 @@ IOT_CXXFLAGS= -I. \
 	-I${IOTIVITY_HOME}/resource/csdk/connectivity/api \
 	-I${IOTIVITY_HOME}/resource/include \
 	-I${IOTIVITY_HOME}/resource/c_common \
-	-I${IOTIVITY_HOME}/resource/csdk/stack \
-	-I${IOTIVITY_HOME}/resource/csdk/logger \
+	-I${IOTIVITY_HOME}/resource/csdk/stack/include \
+	-I${IOTIVITY_HOME}/resource/csdk/logger/include \
 	-I${IOTIVITY_HOME}/resource/csdk/stack/internal \
 	-I${IOTIVITY_HOME}/resource/csdk/cjson \
 	-I${IOTIVITY_HOME}/resource/oc_logger/include \
@@ -200,25 +200,13 @@ ALL=all
 
 # NB: do not change the order of the CORE_O files and the libs:
 linux:	check-env
-	echo "Making linux"
-	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(EDISONCFLAGS)"
-	g++ -o libiotivity-jni$(JNILIBSUFFIX) \
+	@echo "Making Linux"
+	$(MAKE) -f legacy.mk $(ALL)
+	g++ -o $(BUILD_SYSROOT)/libiotivity-jni$(JNILIBSUFFIX) \
 	-shared \
 	-L. $(IOCHIBITY_O) \
 	-L$(INSTALL_SYSROOT)/lib \
 	$(IOTLIBS)
-
-darwin: check-env
-	echo "JNILIBSUFFIX: $(JNILIBSUFFIX)"
-	$(MAKE) $(ALL) CXXFLAGS="$(CXXFLAGS) $(OSXCFLAGS)"
-	g++ -o libiotivity-jni.jnilib -dynamiclib -undefined error \
-	-rpath $(HOME)/out/darwin/x86_64/release \
-	-flat_namespace \
-	$(INSTALL_SYSROOT)/lib/libconnectivity_abstraction.a \
-	$(IOTLIBS) \
-	-L$(INSTALL_SYSROOT)/lib \
-	-L. \
-	$(BASE_O)
 
 # -flat_namespace
 
@@ -236,7 +224,7 @@ test:	dummy
 
 install: dummy
 	$(MKDIR) $(INSTALL_LIB) $(INSTALL_JNI)
-	$(INSTALL_DATA) $(TO_LIB) $(INSTALL_JNI)
+	$(INSTALL_EXEC) $(TO_LIB) $(INSTALL_JNI)
 
 	# -DlocalRepositoryPath=$(MVN_REPO)
 
@@ -276,8 +264,8 @@ echo:	check-env
 
 check-env:
 ifeq ( $($@), "darwin")
-SHLIBSUFFIX = '.dylib'
-JNILIBSUFFIX = '.jnilib'
+    JNILIBSUFFIX = '.jnilib'
+    SHLIBSUFFIX = '.dylib'
 endif
 ifndef IOTIVITY_HOME
 	$(error IOTIVITY_HOME is undefined)
@@ -286,8 +274,8 @@ endif
 # 	$(error INSTALL_SYSROOT is undefined)
 # endif
 ifeq ($(IOTIVITY_HOST_OS),'linux')
-SHLIBSUFFIX = '.so'
-JNILIBSUFFIX = '.so'
+    SHLIBSUFFIX = '.so'
+    JNILIBSUFFIX = '.so'
 endif
 
 # ifeq ($(STAGE),'release')
