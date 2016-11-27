@@ -29,6 +29,58 @@ WARNING: The makefile is very much a Work-In-Progress. The goal is to
 make it like the one for Lua, which is very portable, but it needs
 some work.
 
+see https://newcircle.com/s/post/1292/jni_reference_example
+
+Java Language Type | Native Type | Description | typedef (C99) | typedef (otherwise)
+boolean | jboolean | unsigned 8 bits | uint8_t | unsigned char
+byte | jbyte | signed 8 bits | int8_t | signed char
+char | jchar | unsigned 16 bits | uint16_t | unsigned short
+short
+jshort
+signed 16 bits
+int16_t
+short
+int
+jint
+signed 32 bits
+int32_t
+int
+long
+jlong
+signed 64 bits
+int64_t
+long long
+float
+jfloat
+32-bit IEEE 754
+float
+float
+double
+jdouble
+64-bit IEEE 754
+double
+double
+void
+void
+N/A
+N/A
+N/A
+N/A
+jsize
+used to describe cardinal indices and sizes
+jint
+jint
+Because booleans are treated as unsigned bytes, the following definitions are also useful
+Java Boolean Value	Native Boolean Type	Definition
+false
+JNI_FALSE
+#define JNI_FALSE 0
+true
+JNI_TRUE
+#define JNI_TRUE 1
+
+
+
 ==== api
 
 To build the Java API, start by adjusting the version string in

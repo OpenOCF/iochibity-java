@@ -1,6 +1,11 @@
-= java api
+= java c++ api
 
-Notes on the Java API for Iotivity
+
+== Design
+
+This API was designed to meet the following goals:
+
+* Wrap the Iotivity C++ API.
 
 
 == key types and ops
