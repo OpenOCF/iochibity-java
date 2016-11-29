@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class ResponseIn		//  OCClientResponse
+public class ResponseIn extends Response //  OCClientResponse
 {
 // typedef struct
 // {

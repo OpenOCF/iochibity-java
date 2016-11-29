@@ -427,3 +427,16 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
 
     return 0;
 }
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    sendResponse
+ * Signature: (Lorg/iochibity/Response;)I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_OCF_sendResponse
+(JNIEnv * env, jclass clazz, jobject this)
+{
+    printf("Java_org_iochibity_OCF_sendResponse ENTRY\n");
+    return 0;
+}
+

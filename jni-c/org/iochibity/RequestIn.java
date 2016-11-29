@@ -2,49 +2,49 @@ package org.iochibity;
 
 public class RequestIn		// OCEntityHandlerRequest
 {
-    private long handle;
 
-// typedef struct
-// {
-//     /** Associated resource.*/
-//     OCResourceHandle resource;
-    // Resource getResource();
+    // typedef struct
+    // {
+    //     OCRequestHandle requestHandle - i.e. handle of request at ORIGIN (i.e. client)?;
+    public long handleAtOrigin;
 
-//     /** Associated request handle.*/
-//     OCRequestHandle requestHandle - i.e. handle of request on originating client?;
-    long handleAtOrigin;
+    //     OCResourceHandle resource;
+    private long resourceHandle;
+    public native Resource getResource();
 
-//     /** the REST method retrieved from received request PDU.*/
-//     OCMethod method;
-    int method;
+    //     /** the REST method retrieved from received request PDU.*/
+    //     OCMethod method;
+    public int method;
 
-//     /** description of endpoint that sent the request.*/
-//     OCDevAddr devAddr;
-    // DeviceAddress getDeviceAddress;
+    //     /** description of endpoint that sent the request.*/
+    //     OCDevAddr devAddr;
+    public DeviceAddress deviceAddress;
+    // public native DeviceAddress getDeviceAddress();
 
-//     /** resource query send by client.*/
-//     char * query;
-    String query;
+    //     /** resource query send by client.*/
+    //     char * query;
+    public String query;
 
-//     /** Information associated with observation - valid only when OCEntityHandler flag includes
-//      * ::OC_OBSERVE_FLAG.*/
-//     OCObservationInfo obsInfo;
+    //     /** Information associated with observation - valid only when OCEntityHandler flag includes
+    //      * ::OC_OBSERVE_FLAG.*/
+    //     OCObservationInfo obsInfo;
 
-//     /** Number of the received vendor specific header options.*/
-//     uint8_t numRcvdVendorSpecificHeaderOptions;
-    int VendorHeaderOptionsCount;
+    //     /** Number of the received vendor specific header options.*/
+    //     uint8_t numRcvdVendorSpecificHeaderOptions;
+    public int vendorHeaderOptionsCount;
 
-//     /** Pointer to the array of the received vendor specific header options.*/
-//     OCHeaderOption * rcvdVendorSpecificHeaderOptions;
+    //     /** Pointer to the array of the received vendor specific header options.*/
+    //     OCHeaderOption * rcvdVendorSpecificHeaderOptions;
 
-//     /** Message id.*/
-//     uint16_t messageID;
-    int messageId;
+    //     /** Message id.*/
+    //     uint16_t messageID;
+    public int messageId;
 
-//     /** the payload from the request PDU.*/
-//     OCPayload *payload;
-    // Payload getPayload();
+    //     /** the payload from the request PDU.*/
+    //     OCPayload *payload;
+    private long payloadHandle;
+    public native Payload getPayload();
 
-// } OCEntityHandlerRequest;
+    // } OCEntityHandlerRequest;
 
 }

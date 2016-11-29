@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class Resource
 {
-    public long handle;
+    public long handle;		// OCResource*
 
     // typedef struct OCResource {
 

@@ -97,11 +97,11 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCCancel
 
 /*
  * Class:     org_iochibity_OCF
- * Method:    OCDoResponse
- * Signature: (Ljava/lang/Object;)I
+ * Method:    sendResponse
+ * Signature: (Lorg/iochibity/Response;)I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCDoResponse
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jint JNICALL Java_org_iochibity_OCF_sendResponse
+  (JNIEnv *, jclass, jobject);
 
 #ifdef __cplusplus
 }

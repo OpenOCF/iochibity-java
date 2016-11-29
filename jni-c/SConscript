@@ -93,6 +93,7 @@ if target_os == 'darwin':
     local_env['SHLIBSUFFIX'] = '.jnilib'
 
 jni_clib_src = ['ocfjni.c'
+	      ,'ocf_request_in.c'
 	      ,'ocf_resource.c'
 	      ,'ocf_resource_manager.c']
 
