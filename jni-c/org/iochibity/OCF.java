@@ -64,5 +64,5 @@ public class OCF
 		 byte /*uint8_t*/ options_count);
 
     /* OCStackResult OCDoResponse */
-    static public native int sendResponse(Response /*OCEntityHandlerResponse* */ response);
+    static public native int sendResponse(ResponseOut response); // OCEntityHandlerResponse*
 }

@@ -1,64 +1,66 @@
 package org.iochibity;
 
 import java.util.LinkedList;
+import java.util.UUID;
 
 public class Resource
 {
-    public long handle;		// OCResource*
+    // public void Resource(Resource r)
+    // {
+    // 	handle = r.handle;
+    // 	uri    = r.uri;
+    // }
 
-    // typedef struct OCResource {
+    public long handle;		// this OCResource*
 
-    //     /** Points to next resource in list.*/
-    //     struct OCResource *next;
+    // Points to next resource in list.
+    // struct OCResource *next;
+    public native long getNext();
 
-    //     /** Relative path on the device; will be combined with base url to create fully qualified path.*/
-    //     char *uri;
+    // Relative path on the device; will be combined with base url to create fully qualified path.
     public String uri;
 
-    //     /** Resource type(s); linked list.*/
-    //     OCResourceType *rsrcType;
+    // OCResourceType *rsrcType;  /* linked list */
     public native LinkedList<String> getTypes();
 
-    //     /** Resource interface(s); linked list.*/
-    //     OCResourceInterface *rsrcInterface;
+    // OCResourceInterface *rsrcInterface;  /* linked list */
     public native LinkedList<String> getInterfaces();
 
-    //     OCAttribute *rsrcAttributes;
-    public native LinkedList<ResourceProperty> getProperties();
+    // OCAttribute *rsrcAttributes;  /* linked list */
+    public native LinkedList<Property> getProperties();
 
     // Array of pointers to resources; can be used to represent a container of resources.
     // (i.e. hierarchies of resources) or for reference resources (i.e. for a resource collection).
-
-    //     /** Child resource(s); linked list.*/
-    //     OCChildResource *rsrcChildResourcesHead;
+    // OCChildResource *rsrcChildResourcesHead;   /* linked list */
     public native LinkedList<Resource> getChildren();
 
-    //     /** Pointer to function that handles the entity bound to the resource.
-    //      *  This handler has to be explicitly defined by the programmer.*/
-    //     OCEntityHandler entityHandler;
+    // Pointer to function that handles the entity bound to the resource.
+    // This handler has to be explicitly defined by the programmer.
+    // OCEntityHandler entityHandler;   /* fn pointer */
+    // we instead return the ResourceServiceProvider object
     public native ResourceServiceProvider getServiceProvider();
 
-    //     /** Callback parameter.*/
-    //     void * entityHandlerCallbackParam;
-    public native Object getCallbackParam();
+    // Callback parameter.*/
+    // void * entityHandlerCallbackParam;
+    public native CallbackParam getCallbackParam();
 
-    //     /** Properties on the resource – defines meta information on the resource.
-    //      * (ACTIVE, DISCOVERABLE etc ). */
+    // Properties on the resource – defines meta information on the resource.
+    // (ACTIVE, DISCOVERABLE etc ).  NB: we call these Policies, per OCF, not "properties"
+    // OCResourceProperty resourceProperties ;
+    public native int getPolicies(); // int = constants.ResourcePolicy
 
-    //     OCResourceProperty resourceProperties ;
-    public native int getPolicies();
+    /* @note: Methods supported by this resource should be based on the interface targeted
+     * i.e. look into the interface structure based on the query request Can be removed here;
+     * place holder for the note above.*/
+    /* method_t methods; */
 
-    //     /* @note: Methods supported by this resource should be based on the interface targeted
-    //      * i.e. look into the interface structure based on the query request Can be removed here;
-    //      * place holder for the note above.*/
-    //     /* method_t methods; */
+    // Sequence number for observable resources. Per the CoAP standard it is a 24 bit value.*/
+    // uint32_t sequenceNum;
+    public int sn;		// abbrev: Serial Number
 
-    //     /** Sequence number for observable resources. Per the CoAP standard it is a 24 bit value.*/
-    //     uint32_t sequenceNum;
-    public int sequenceNbr;
-
-    //     /** Pointer of ActionSet which to support group action.*/
-    //     OCActionSet *actionsetHead;
+    // Pointer of ActionSet which to support group action.*/
+    // OCActionSet *actionsetHead;  /* linked list */
+    public native LinkedList<ActionSet> getActionSet();
 
     //     /** The instance identifier for this web link in an array of web links - used in links. */
     //     union
@@ -71,4 +73,9 @@ public class Resource
     //         OCIdentity uniqueUUID;
     //     };
     // } OCResource;
+    public class InstanceId {};
+    public class InstanceOrdinal extends InstanceId { public int val = 0; }
+    public class InstanceString  extends InstanceId { public String val; }
+    public class InstanceUuid    extends InstanceId { public UUID val; }
+    public InstanceId id = new InstanceId();
 }

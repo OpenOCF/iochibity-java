@@ -98,7 +98,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCCancel
 /*
  * Class:     org_iochibity_OCF
  * Method:    sendResponse
- * Signature: (Lorg/iochibity/Response;)I
+ * Signature: (Lorg/iochibity/ResponseOut;)I
  */
 JNIEXPORT jint JNICALL Java_org_iochibity_OCF_sendResponse
   (JNIEnv *, jclass, jobject);

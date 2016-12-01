@@ -1,9 +1,13 @@
 import org.iochibity.OCF;
+import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
+import org.iochibity.HeaderOption;
 import org.iochibity.Payload;
 import org.iochibity.PayloadRepresentation;
+import org.iochibity.Property;
 import org.iochibity.RequestIn;
 import org.iochibity.Resource;
+// import org.iochibity.Resource$InstanceId;
 import org.iochibity.ResourceManager;
 import org.iochibity.ResourceServiceProvider;
 import org.iochibity.Response;
@@ -19,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class OCFTest
@@ -31,40 +36,89 @@ public class OCFTest
 	}
     }
 
-    static private void logRequestIn(RequestIn request)
+    static private void logResource(Resource resource)
     {
-	System.out.println("TEST ResourceServiceProvider.service ENTRY");
-	// System.out.println("resourceHandle: " + request.resourceHandle);
-	System.out.println("TEST handle at origin: " + request.handleAtOrigin);
-	System.out.println("TEST request method: " + request.method);
-	System.out.println("TEST query : \"" + request.query + "\"");
-	System.out.println("TEST msg id : " + request.messageId);
-	System.out.println("TEST request vendorHeaderOptionsCount: " + request.vendorHeaderOptionsCount);
+	System.out.println("RESOURCE: logResource ENTRY");
+	System.out.println("REQUEST IN: resource uri: " + resource.uri);
 
-	Resource resource = request.getResource();
-	System.out.println("TEST resource uri: " + resource.uri);
 	LinkedList<String> tll = resource.getTypes();
-	tll.forEach(t -> System.out.println("TEST resource type: " + t)); // Java 8
+	tll.forEach(t -> System.out.println("RESORUCE: type:     " + t)); // Java 8
+
 	LinkedList<String> ifll = resource.getInterfaces();
-	ifll.forEach(iface -> System.out.println("TEST resource if: " + iface)); // Java 8
-	// for (int i = 0; i < ifll.size(); i++) {
-	//     System.out.println("TEST resource if:    " + ifll.get(i));
+	ifll.forEach(iface -> System.out.println("RESOURCE: interface: " + iface));
+	// for (int i = 0; i < ifll.size(); i++) {   // Java 7
+	//     System.out.println("REQUEST IN: resource if:    " + ifll.get(i));
 	// }
 
-	System.out.println("TEST devaddr adapter: " + request.deviceAddress.adapter);
-	System.out.println("TEST devaddr flags: " + String.format("0x%04X", request.deviceAddress.flags & 0xFFFFF));
-	System.out.println("TEST devaddr port: " + request.deviceAddress.port);
-	System.out.println("TEST devaddr address: " + request.deviceAddress.address);
-	System.out.println("TEST devaddr ifindex: " + request.deviceAddress.ifindex);
-	System.out.println("TEST devaddr route data: " + request.deviceAddress.routeData);
+	LinkedList<Property> pll = resource.getProperties();
+	System.out.println("RESOURCE: properties count: " + pll.size());
+	pll.forEach(p -> System.out.println("RESOURCE: property: " + p.name + " = " + p.value));
 
+	LinkedList<Resource> cll = resource.getChildren();
+	System.out.println("RESOURCE: child resources count: " + cll.size());
+	cll.forEach(ch -> System.out.println("RESOURCE: child resource: " + ch));
+
+	System.out.println("RESOURCE: service provider (callback): "
+			   + resource.getServiceProvider().getClass().getName());
+
+	System.out.println("RESOURCE: callback param: "
+			   + resource.getCallbackParam().getClass().getName());
+
+
+	// Instance Id
+	// System.out.println("RESOURCE: resource instance id: " + resource.id.getClass().getName());
+	if (resource.id.getClass().getName().equals("org.iochibity.Resource$InstanceId")) {
+	    System.out.println("RESOURCE: resource InstanceId class: InstanceId");
+	} else if (resource.id.getClass().getName().equals("org.iochibity.Resource$InstanceOrdinal")) {
+		System.out.println("RESOURCE: resource InstanceId class: InstanceOrdinal, val="
+				   + ((org.iochibity.Resource.InstanceOrdinal)resource.id).val);
+	} else if (resource.id.getClass().getName().equals("org.iochibity.Resource$InstanceString")) {
+		System.out.println("RESOURCE: resource InstanceId class: InstanceString, val="
+				   + ((org.iochibity.Resource.InstanceString)resource.id).val);
+	} else if (resource.id.getClass().getName().equals("org.iochibity.Resource$InstanceUuid")) {
+		System.out.println("RESOURCE: resource InstanceId class: InstanceUuid, val="
+				   + ((org.iochibity.Resource.InstanceUuid)resource.id).val);
+	}
+
+	System.out.println("RESOURCE: logResource EXIT");
+    }
+
+    static private void logRequestIn(RequestIn request)
+    {
+	System.out.println("REQUEST IN: logRequestIn ENTRY");
+	System.out.println("REQUEST IN: handle at origin: " + request.handleAtOrigin);
+	System.out.println("REQUEST IN: request method: " + request.method);
+	System.out.println("REQUEST IN: query : \"" + request.query + "\"");
+	System.out.println("REQUEST IN: msg id : " + request.messageId);
+
+	Resource resource = request.getResource();
+	logResource(resource);
+
+	System.out.println("REQUEST IN: devaddr adapter: " + request.deviceAddress.adapter);
+	System.out.println("REQUEST IN: devaddr flags: " + String.format("0x%04X", request.deviceAddress.flags & 0xFFFFF));
+	System.out.println("REQUEST IN: devaddr port: " + request.deviceAddress.port);
+	System.out.println("REQUEST IN: devaddr address: " + request.deviceAddress.address);
+	System.out.println("REQUEST IN: devaddr ifindex: " + request.deviceAddress.ifindex);
+	System.out.println("REQUEST IN: devaddr route data: " + request.deviceAddress.routeData);
+
+	System.out.println("REQUEST IN: observe action: " + request.observeAction);
+	System.out.println("REQUEST IN: observe id    : " + request.observeId);
+
+	ArrayList<HeaderOption> vendorOptions = request.getVendorHeaderOptions();
+	System.out.println("REQUEST IN: vendor opts ct: " + vendorOptions.size());
 
 	Payload payload = request.getPayload();
 	if (payload != null) {
-	    System.out.println("TEST payload type: " + payload.type);
+	    System.out.println("REQUEST IN: payload type: " + payload.type);
 	} else {
-	    System.out.println("TEST payload is null");
+	    System.out.println("REQUEST IN: payload is null");
 	}
+    }
+
+    static public class MyParam extends CallbackParam
+    {
+	int foo;
+	public MyParam(int i) { foo = i; }
     }
 
     static public class TemperatureServiceProvider extends ResourceServiceProvider
@@ -93,9 +147,9 @@ public class OCFTest
 	@Override
 	public int service(int flag, RequestIn request, Object callbackParam)
 	{
+	    System.out.println("TEST TemperatureServiceProvider.service routine ENTRY");
 	    logRequestIn(request);
 
-	    ResponseOut response = new ResponseOut();
 	    Payload payload;
 
 	    switch (request.method) {
@@ -128,6 +182,7 @@ public class OCFTest
 	    }
 
 	    /* now populate ResponseOut object with payload, etc. */
+	    ResponseOut response = new ResponseOut();
 
 	    /* finally, send ResponeOut */
 	    OCF.sendResponse(response);
@@ -201,8 +256,8 @@ public class OCFTest
 					     "core.temp",
 					     "oc.mi.def",
 					     "/a/temperature",
-					     tempServiceProvider,
-					     null,
+					     tempServiceProvider, // ResourceServiceProvider
+					     new MyParam(99),     // callbackParam object
 					     (byte)(ResourcePolicy.DISCOVERABLE
 						    | ResourcePolicy.SECURE));
 	// | OC_OBSERVABLE | OC_SECURE);

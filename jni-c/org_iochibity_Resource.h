@@ -63,6 +63,14 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getCallbackParam
 JNIEXPORT jint JNICALL Java_org_iochibity_Resource_getPolicies
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_iochibity_Resource
+ * Method:    getActionSet
+ * Signature: ()Ljava/util/LinkedList;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getActionSet
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

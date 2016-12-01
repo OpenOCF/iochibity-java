@@ -14,7 +14,7 @@
 pthread_t pt_work;
 bool g_quit_flag = false;
 
-char* g_config_fname;
+const char* g_config_fname;
 
 /* thread routine - service client requests */
 void *troutine_work(void *arg)
@@ -431,12 +431,16 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
 /*
  * Class:     org_iochibity_OCF
  * Method:    sendResponse
- * Signature: (Lorg/iochibity/Response;)I
+ * Signature: (Lorg/iochibity/ResponseOut;)I
  */
 JNIEXPORT jint JNICALL Java_org_iochibity_OCF_sendResponse
-(JNIEnv * env, jclass clazz, jobject this)
+(JNIEnv * env, jclass clazz, jobject response_out)
 {
+    OC_UNUSED(env);
+    OC_UNUSED(clazz);
+    OC_UNUSED(response_out);
     printf("Java_org_iochibity_OCF_sendResponse ENTRY\n");
+    printf("Java_org_iochibity_OCF_sendResponse EXIT\n");
     return 0;
 }
 

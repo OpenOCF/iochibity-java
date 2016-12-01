@@ -10,6 +10,8 @@
 #include "octypes.h"
 
 JavaVM* g_jvm;
+jobject g_resource_service_provider;
+jobject g_callback_param;
 
 /* INTERNAL ONLY */
 
@@ -37,7 +39,7 @@ void populate_request_in(JNIEnv* env, jobject jrequest_in, OCEntityHandlerReques
 	    printf("OCRequestHandle in c: %ld\n", (long)crequest_in->requestHandle);
 	    (*env)->SetLongField(env, jrequest_in, field, (jlong)crequest_in->requestHandle);
 	}
-
+	/* method */
 	field = (*env)->GetFieldID(env, request_in_clazz, "method", "I");
         if (field == NULL) {
 	    printf("Failed to get method fld\n");
@@ -45,7 +47,6 @@ void populate_request_in(JNIEnv* env, jobject jrequest_in, OCEntityHandlerReques
 	    /* printf("method in c: %d\n", crequest_in->method); */
 	    (*env)->SetIntField(env, jrequest_in, field, crequest_in->method);
 	}
-
 	/* OCDevAddr */
         jfieldID dev_addr_field = (*env)->GetFieldID(env, request_in_clazz,
 						     "deviceAddress", "Lorg/iochibity/DeviceAddress;");
@@ -122,6 +123,7 @@ void populate_request_in(JNIEnv* env, jobject jrequest_in, OCEntityHandlerReques
 	    /* 	    (*env)->SetObjectField(env, jdevice_address, field, js); */
 	    /* 	} */
 	    /* } */
+	    /* now set deviceAddress field in RequestIn object */
 	    (*env)->SetObjectField(env, jrequest_in, dev_addr_field, jdevice_address);
 	}
 
@@ -136,14 +138,32 @@ void populate_request_in(JNIEnv* env, jobject jrequest_in, OCEntityHandlerReques
 	    (*env)->SetObjectField(env, jrequest_in, field, js);
 	}
 
-	field = (*env)->GetFieldID(env, request_in_clazz, "vendorHeaderOptionsCount", "I");
-        if (field == NULL) { /* make sure we got the field */
-	    printf("Failed to get vendorHeaderOptionsCount fld\n");
+	/* observation info */
+	field = (*env)->GetFieldID(env, request_in_clazz, "observeAction", "I");
+	if (field == NULL) {
+	    printf("Failed to get observeAction fld\n");
 	} else {
-	    printf("method in c: %d\n", crequest_in->method);
-	    (*env)->SetIntField(env, jrequest_in, field, crequest_in->method);
+	    printf("c observeAction: %d\n", crequest_in->obsInfo.action);
+	    (*env)->SetIntField(env, jrequest_in, field, crequest_in->obsInfo.action);
+	}
+	field = (*env)->GetFieldID(env, request_in_clazz, "observeId", "I");
+	if (field == NULL) {
+	    printf("Failed to get observeId fld\n");
+	} else {
+	    printf("c observation id: %d\n", crequest_in->obsInfo.obsId);
+	    (*env)->SetIntField(env, jrequest_in, field, crequest_in->obsInfo.obsId);
 	}
 
+	/* vendor header options - implemented as getter method */
+	field = (*env)->GetFieldID(env, request_in_clazz, "vendorHeaderOptionCount", "I");
+	if (field == NULL) {
+	    printf("Failed to get vendorHeaderOptionCount fld\n");
+	} else {
+	    printf("c nbf header options: %d\n", crequest_in->numRcvdVendorSpecificHeaderOptions);
+	    (*env)->SetIntField(env, jrequest_in, field, crequest_in->numRcvdVendorSpecificHeaderOptions);
+	}
+
+	/* message ID */
 	field = (*env)->GetFieldID(env, request_in_clazz, "messageId", "I");
         if (field == NULL) { /* make sure we got the field */
 	    printf("Failed to get messageId fld\n");
@@ -152,7 +172,7 @@ void populate_request_in(JNIEnv* env, jobject jrequest_in, OCEntityHandlerReques
 	    (*env)->SetIntField(env, jrequest_in, field, crequest_in->messageID);
 	}
 
-	/* PAYLOAD */
+	/* payload - implemented as getter, using handle */
         field = (*env)->GetFieldID(env, request_in_clazz, "payloadHandle", "J");
         if (field == NULL) {
 	    printf("Failed to get payloadHandle fld id\n");
@@ -172,44 +192,68 @@ OCEntityHandlerResult service_routine(OCEntityHandlerFlag flag,
 				      void* callbackParam)
 {
     OC_UNUSED(flag);
-    printf("\nservice_routine ENTRY\n");
-    printf("REQUEST URI: %s\n", ((OCResource*)(crequest_in->resource))->uri);
+    printf("\nocf_resource_manager.c/service_routine ENTRY\n");
+    /* printf("REQUEST URI: %s\n", ((OCResource*)(crequest_in->resource))->uri); */
 
     /* 1. set up jvm, env */
-    /* 2. callbackParam is ref to Java callback obj (ResourceServiceProvider) */
-    /* 3.  get id for service method */
-    /* 4.  prep args for service method */
-    /* 5. call service method */
-
 /* http://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls */
 /* http://adamish.com/blog/archives/327 */
     JNIEnv * env;
     // double check it's all ok
     int getEnvStat = (*g_jvm)->GetEnv(g_jvm, (void **)&env, JNI_VERSION_1_6);
     if (getEnvStat == JNI_EDETACHED) {
-	printf("GetEnv: not attached; attaching now\n");
+	/* printf("GetEnv: not attached; attaching now\n"); */
 	if ((*g_jvm)->AttachCurrentThread(g_jvm, (void **) &env, NULL) != 0) {
 	    printf("Failed to attach\n");
 	}
     } else if (getEnvStat == JNI_OK) {
-	printf("GetEnv: attached\n");
+	/* printf("GetEnv: attached\n"); */
     } else if (getEnvStat == JNI_EVERSION) {
 	printf("GetEnv: version not supported\n");
+	return OC_EH_INTERNAL_SERVER_ERROR;
+    }
+    if ((*env)->ExceptionCheck(env)) {
+	(*env)->ExceptionDescribe(env);
     }
 
-    jclass service_provider_clazz = (*env)->GetObjectClass(env, callbackParam);
-    if (service_provider_clazz == NULL) {
-	printf("Failed to find class\n");
+    /* extract ref to service provider from callback param */
+    jclass cbparam_clazz = (*env)->GetObjectClass(env, callbackParam);
+    if (cbparam_clazz == NULL) {
+	printf("Failed to find class for callbackParam\n");
+    } else {
+	printf("Found class for callbackParam\n");
     }
-    /* TODO: verify this is a subclass of ResourceServiceProvider */
+    jfieldID fid_rsp = (*env)->GetFieldID(env, cbparam_clazz,
+					  "serviceProvider", "Lorg/iochibity/ResourceServiceProvider;");
+    if (fid_rsp == NULL) {
+	printf("Failed to get serviceProvider fld id\n");
+    } else {
+	printf("Got serviceProvider fld id\n");
+    }
+    jobject service_provider = (*env)->GetObjectField(env, callbackParam, fid_rsp);
+    if (service_provider == NULL) {
+	printf("Failed to get ResourceServiceProvider object\n");
+    } else {
+	printf("Got ResourceServiceProvider object\n");
+    }
+    /* now get the service routine, for later */
+    jclass rsp_clazz = (*env)->GetObjectClass(env, service_provider);
+    if (rsp_clazz == NULL) {
+	printf("Failed to find class for ResourceServiceProvider\n");
+    } else {
+	printf("Found class for ResourceServiceProvider\n");
+    }
+    jmethodID mid_service = (*env)->GetMethodID(env, rsp_clazz,
+					  "service",
+					  "(ILorg/iochibity/RequestIn;Ljava/lang/Object;)I");
+    if (mid_service == NULL) {
+	printf("TEST Unable to get 'service' method id\n");
+    } else {
+	printf("Found id for 'service' method\n");
+    }
 
-    /* deal with embedded OCResourceHandle */
-    /* OCResource *resource_ptr =  */
-
-    /* callbackParam contains ref to the java ResourceServiceProvider jobject.
-       use it to invoke service routine.
-    */
     /* prepare args to service method: (ILorg/iochibity/RequestIn;Ljava/lang/Object;)I */
+
     /* create RequestIn object */
     jclass request_in_clazz = (*env)->FindClass(env, "Lorg/iochibity/RequestIn;");
     if (request_in_clazz == NULL) {
@@ -229,40 +273,15 @@ OCEntityHandlerResult service_routine(OCEntityHandlerFlag flag,
     populate_request_in(env, jrequest_in, crequest_in);
     fflush(NULL);
 
-    jmethodID service_mid = (*env)->GetMethodID(env, service_provider_clazz,
-					  "service",
-					  "(ILorg/iochibity/RequestIn;Ljava/lang/Object;)I");
-    if (service_mid == NULL) {
-	printf("TEST Unable to get method ref\n");
-    } else {
-	/* printf("Found id for service method\n"); */
-    }
-    if ((*env)->ExceptionCheck(env)) {
-	(*env)->ExceptionDescribe(env);
-    }
-
     OCEntityHandlerResult op_result = OC_EH_OK;
-    op_result = (*env)->CallIntMethod(env, callbackParam, service_mid, flag, jrequest_in, callbackParam);
+    op_result = (*env)->CallIntMethod(env, service_provider, mid_service,
+				      flag, jrequest_in, callbackParam);
     if (op_result != OC_STACK_OK) {
         printf("TEST call to service routine failed!\n");
         /* exit (EXIT_FAILURE); */
     } else {
         printf("TEST call to Java service routine succeeded!\n");
     }
-
-    /* jclass clazz = (*env)->GetObjectClass(env, (jobject) callbackParam); */
-    /* if (clazz != NULL) { */
-    /*     /\* Same as clazz.getMethod("setBar", String.class) - assuming non-static *\/ */
-    /*     jmethodID method = (*env)->GetMethodID(env, clazz, "service", "(Ljava/lang/String;)V"); */
-    /*     if (method != NULL) { /\* make sure we found the method *\/ */
-    /*         /\* Create a new Java String *\/ */
-    /*         jstring jString = (*env)->NewStringUTF(env, "Bar2"); */
-    /*         if (jString != null) { */
-    /*             /\* Same as method.invoke(object, jString) *\/ */
-    /*             (*env)->CallVoidMethod(env, object, method, jString); */
-    /*         } */
-    /*     } */
-    /* } */
 
     (*g_jvm)->DetachCurrentThread(g_jvm);
 
@@ -271,7 +290,7 @@ OCEntityHandlerResult service_routine(OCEntityHandlerFlag flag,
     /* printf("Incoming request param: %ld\n", (long)callbackParam); */
     /* printf("Incoming request flag: %d\n", flag); */
 
-    printf("service_routine EXIT\n");
+    printf("ocf_resource_manager.c/service_routine EXIT\n");
     return op_result;
 }
 
@@ -314,9 +333,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
    jbyte   j_resource_properties)
 {
     OC_UNUSED(clazz);
-    OC_UNUSED(j_resource);
-    OC_UNUSED(j_callback_param);
-    printf("org_iochibity_ResourceManager/registerResource ENTRY\n");
+    printf("Java_org_iochibity_ResourceManager_registerResource ENTRY\n");
 
     const char *c_resource_type_name = "";
     if (j_resource_type_name == NULL) {
@@ -361,7 +378,6 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
     (*env)->GetJavaVM(env, &g_jvm);
     /* bool returnValue = true; */
     // convert local to global reference
-    jobject g_resource_service_provider;
     g_resource_service_provider = (*env)->NewGlobalRef(env, j_resource_service_provider);
     jclass g_clazz = (*env)->GetObjectClass(env, g_resource_service_provider);
     if (g_clazz == NULL) {
@@ -374,10 +390,22 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
 	printf("Unable to get method ref\n");
     } else {
 	/* printf("Found id for service method\n"); */
-    
-}
+    }
     /* now malloc a callbackParam struct and pack obj and method id into it */
     /* or, just pass the global ref as cb param? */
+    g_callback_param = (*env)->NewGlobalRef(env, j_callback_param);
+    jclass cbparam_clazz = (*env)->GetObjectClass(env, g_callback_param);
+    if (cbparam_clazz == NULL) {
+	printf("Failed to find CallbackParam class\n");
+    } else {
+	jfieldID fid_rsp = (*env)->GetFieldID(env, cbparam_clazz,
+					      "serviceProvider", "Lorg/iochibity/ResourceServiceProvider;");
+        if (fid_rsp == NULL) {
+	    printf("Failed to get serviceProvider fld id\n");
+	} else {
+	    (*env)->SetObjectField(env, g_callback_param, fid_rsp, j_resource_service_provider);
+	}
+    }
 
     OCResourceHandle c_resource_handle;
     OCStackResult op_result;
@@ -386,8 +414,9 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
 				  service_routine,       /* OCEntityHandler entityHandler, */
+				  g_callback_param,
 				  /* j_resource_service_provider, /\* void* callbackParam *\/ */
-				  (*env)->NewGlobalRef(env, j_resource_service_provider),
+				  /* (*env)->NewGlobalRef(env, j_resource_service_provider), */
 				  (uint8_t) j_resource_properties);  /* uint8_t resourceProperties */
 
     /* Populate Resource */
@@ -396,9 +425,9 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
     jclass resource_clazz = (*env)->GetObjectClass(env, j_resource);
     /* insert handle to OCResource */
     if (resource_clazz != NULL) { /* cannot be null in this case */
-        jfieldID field = (*env)->GetFieldID(env, resource_clazz, "handle", "J");
-        if (field != NULL) {
-	    (*env)->SetLongField(env, j_resource, field, (jlong) (OCResource*)c_resource_handle);
+        jfieldID fid_handle = (*env)->GetFieldID(env, resource_clazz, "handle", "J");
+        if (fid_handle != NULL) {
+	    (*env)->SetLongField(env, j_resource, fid_handle, (jlong) (OCResource*)c_resource_handle);
 	}
         jfieldID urifield = (*env)->GetFieldID(env, resource_clazz, "uri", "Ljava/lang/String;");
         if (urifield != NULL) {
@@ -406,6 +435,25 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
             if (jString != NULL) {
                 (*env)->SetObjectField(env, j_resource, urifield, jString);
             }
+	}
+        jfieldID fid_sn = (*env)->GetFieldID(env, resource_clazz, "sn", "I");
+        if (fid_sn != NULL) {
+	    (*env)->SetIntField(env, j_resource, fid_sn,
+				(jint) ((OCResource*)c_resource_handle)->sequenceNum);
+	}
+	/* printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins); */
+	/* printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr); */
+	/* printf("instance uuid ln: %d\n", ((OCResource*)c_resource_handle)->uniqueUUID.id_length); */
+	/* printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); */
+
+	if ( ((OCResource*)c_resource_handle)->ins > 0) {
+	    printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins);
+	} else if ( ((OCResource*)c_resource_handle)->uniqueStr != NULL) {
+	    printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr);
+	} else if ( ((OCResource*)c_resource_handle)->uniqueUUID.id_length > 0) {
+	    printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id);
+	} else {
+	    printf("NO INSTANCE ID\n");
 	}
     }
 
