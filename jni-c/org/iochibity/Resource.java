@@ -27,6 +27,8 @@ public class Resource
     public native LinkedList<String> getInterfaces();
 
     // OCAttribute *rsrcAttributes;  /* linked list */
+    // NB: this does not seem to be set anywhere by the stack or example pgms
+    // OCAttribute only holds string values
     public native LinkedList<Property> getProperties();
 
     // Array of pointers to resources; can be used to represent a container of resources.
@@ -47,7 +49,7 @@ public class Resource
     // Properties on the resource – defines meta information on the resource.
     // (ACTIVE, DISCOVERABLE etc ).  NB: we call these Policies, per OCF, not "properties"
     // OCResourceProperty resourceProperties ;
-    public native int getPolicies(); // int = constants.ResourcePolicy
+    public int policies; //  see constants.ResourcePolicy
 
     /* @note: Methods supported by this resource should be based on the interface targeted
      * i.e. look into the interface structure based on the query request Can be removed here;
@@ -78,4 +80,11 @@ public class Resource
     public class InstanceString  extends InstanceId { public String val; }
     public class InstanceUuid    extends InstanceId { public UUID val; }
     public InstanceId id = new InstanceId();
+
+    ////////////////////////////////////////////////////////////////
+    /*  ocresource.h: */
+    // OCStackResult BuildResponseRepresentation(const OCResource *resourcePtr,
+    // 					      OCRepPayload** payload)
+    public native LinkedList<PayloadResource> getPayloads();
+
 }

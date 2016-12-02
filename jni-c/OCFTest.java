@@ -3,7 +3,7 @@ import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
 import org.iochibity.Payload;
-import org.iochibity.PayloadRepresentation;
+import org.iochibity.PayloadResource;
 import org.iochibity.Property;
 import org.iochibity.RequestIn;
 import org.iochibity.Resource;
@@ -36,13 +36,24 @@ public class OCFTest
 	}
     }
 
+    static private void logResourcePolicies(Resource resource)
+    {
+	System.out.println("RESOURCE: policies: "
+			   + String.format("0x%X", resource.policies & 0xFFFFF));
+	if ( (resource.policies & ResourcePolicy.DISCOVERABLE) > 0 )
+	    {System.out.println("DISCOVERABLE");}
+	if ( (resource.policies & ResourcePolicy.ACTIVE) > 0 ) {System.out.println("ACTIVE");}
+	if ( (resource.policies & ResourcePolicy.OBSERVABLE) > 0) {System.out.println("OBSERVABLE");}
+	if ( (resource.policies & ResourcePolicy.SECURE) > 0) {System.out.println("SECURE");}
+    }
+
     static private void logResource(Resource resource)
     {
 	System.out.println("RESOURCE: logResource ENTRY");
-	System.out.println("REQUEST IN: resource uri: " + resource.uri);
+	System.out.println("RESOURCE: resource uri: " + resource.uri);
 
 	LinkedList<String> tll = resource.getTypes();
-	tll.forEach(t -> System.out.println("RESORUCE: type:     " + t)); // Java 8
+	tll.forEach(t -> System.out.println("RESOURCE: type:     " + t)); // Java 8
 
 	LinkedList<String> ifll = resource.getInterfaces();
 	ifll.forEach(iface -> System.out.println("RESOURCE: interface: " + iface));
@@ -64,6 +75,7 @@ public class OCFTest
 	System.out.println("RESOURCE: callback param: "
 			   + resource.getCallbackParam().getClass().getName());
 
+	System.out.println("RESOURCE: serial number: " + resource.sn);
 
 	// Instance Id
 	// System.out.println("RESOURCE: resource instance id: " + resource.id.getClass().getName());
@@ -80,7 +92,16 @@ public class OCFTest
 				   + ((org.iochibity.Resource.InstanceUuid)resource.id).val);
 	}
 
+	System.out.println("RESOURCE: policies: " + resource.policies);
+	logResourcePolicies(resource);
 	System.out.println("RESOURCE: logResource EXIT");
+    }
+
+    static private void logPayload(PayloadResource p)
+    {
+	// System.out.println("PAYLOAD: logPayload ENTRY");
+	System.out.println("PAYLOAD: uri: " + p.uri);
+	// System.out.println("PAYLOAD: logPayload EXIT");
     }
 
     static private void logRequestIn(RequestIn request)
@@ -123,25 +144,18 @@ public class OCFTest
 
     static public class TemperatureServiceProvider extends ResourceServiceProvider
     {
-	static private Payload serviceGetRequest(int flag, RequestIn reqeust, Object callbackParam)
+	static private LinkedList<PayloadResource> serviceGetRequest(int flag, RequestIn request, Object callbackParam)
 	{
 	    System.out.println("TEST serviceGetRequest ENTRY");
-	    PayloadRepresentation payload = new PayloadRepresentation();
+	    Resource r = request.getResource();
+	    // PayloadResource payload = new PayloadResource();
+	    LinkedList<PayloadResource> payloads = r.getPayloads();
+	    payloads.forEach(pl -> logPayload(pl));
+	    // OCRepPayloadSetPropInt(payload, "temp", 72);
+	    // pl.putInt("temp", 72); // since props is a hashmap
+	    // or:  pl.getProperties() returns a hashmap ...
 
-	    //     OCEntityHandlerResult ehResult = OC_EH_OK;
-	    //     OCEntityHandlerResponse response = { .requestHandle = NULL }; /* ResponseOut */
-	    //     OCRepPayload* new_payload = OCRepPayloadCreate();
-	    //     if(!new_payload)
-	    //     {
-	    //         printf("Failed to allocate Payload\n");
-	    // 	ehResult = OC_EH_ERROR;
-	    //     }
-
-	    // #define RSC_URI_TEMPERATURE  "/a/temperature"
-	    //     OCRepPayloadSetUri(new_payload, RSC_URI_TEMPERATURE);
-	    //     OCRepPayloadSetPropInt(new_payload, "temp", 72);
-
-	    return payload;
+	    return payloads;
 	}
 
 	@Override
@@ -150,11 +164,11 @@ public class OCFTest
 	    System.out.println("TEST TemperatureServiceProvider.service routine ENTRY");
 	    logRequestIn(request);
 
-	    Payload payload;
+	    LinkedList<PayloadResource> payloads;
 
 	    switch (request.method) {
 	    case OCMethod.GET:
-		payload = serviceGetRequest(flag, request, callbackParam);
+		payloads = serviceGetRequest(flag, request, callbackParam);
 		break;
 	    case OCMethod.PUT:
 		System.out.println("TEST method: PUT");
@@ -182,6 +196,7 @@ public class OCFTest
 	    }
 
 	    /* now populate ResponseOut object with payload, etc. */
+	    // ResponseOut response = new ResponseOut(request, payloads);
 	    ResponseOut response = new ResponseOut();
 
 	    /* finally, send ResponeOut */
@@ -276,6 +291,9 @@ public class OCFTest
 	System.out.println("temperatureResource type (first): " + tll.getFirst());
 	LinkedList<String> ifll = temperatureResource.getInterfaces();
 	System.out.println("temperatureResource if   (first): " + ifll.getFirst());
+
+	System.out.println("temperatureResource policies: " + temperatureResource.policies);
+	logResourcePolicies(temperatureResource);
 
         System.out.println("press q then ENTER to terminate");
 

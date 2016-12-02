@@ -2,11 +2,24 @@ package org.iochibity;
 
 public class PayloadDiscovery extends Payload
 {
+    //     octypes.h:
+    //     // used inside a discovery payload
+    // typedef struct OCResourcePayload
+    // {
+    //     char* uri;
+    //     OCStringLL* types;
+    //     OCStringLL* interfaces;
+    //     uint8_t bitmap;
+    //     bool secure;
+    //     uint16_t port;
+    // #ifdef TCP_ADAPTER
+    //     uint16_t tcpPort;
+    // #endif
+    //     struct OCResourcePayload* next;
+    // } OCResourcePayload;
+
     //     /* ocpayload.h */
     // OC_EXPORT OCDiscoveryPayload* OCDiscoveryPayloadCreate();
-
-    // OC_EXPORT OCSecurityPayload* OCSecurityPayloadCreate(const uint8_t* securityData, size_t size);
-    // OC_EXPORT void OCSecurityPayloadDestroy(OCSecurityPayload* payload);
 
     // #ifndef TCP_ADAPTER
     // OC_EXPORT void OCDiscoveryPayloadAddResource(OCDiscoveryPayload* payload, const OCResource* res,

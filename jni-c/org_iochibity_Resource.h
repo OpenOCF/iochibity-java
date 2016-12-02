@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_iochibity_Resource
+ * Method:    getNext
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_org_iochibity_Resource_getNext
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_Resource
  * Method:    getTypes
  * Signature: ()Ljava/util/LinkedList;
  */
@@ -50,17 +58,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getServiceProvider
 /*
  * Class:     org_iochibity_Resource
  * Method:    getCallbackParam
- * Signature: ()Ljava/lang/Object;
+ * Signature: ()Lorg/iochibity/CallbackParam;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getCallbackParam
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getPolicies
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_Resource_getPolicies
   (JNIEnv *, jobject);
 
 /*
@@ -69,6 +69,14 @@ JNIEXPORT jint JNICALL Java_org_iochibity_Resource_getPolicies
  * Signature: ()Ljava/util/LinkedList;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getActionSet
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_Resource
+ * Method:    getPayloads
+ * Signature: ()Ljava/util/LinkedList;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

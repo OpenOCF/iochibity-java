@@ -77,6 +77,16 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_MessageService_getResource
     } else {
 	printf("Failed to get resource uri fld id\n");
     }
+
+    jfieldID fid_policies = (*env)->GetFieldID(env, resource_clazz, "policies", "I");
+    if (fid_policies != NULL) {
+	(*env)->SetIntField(env, jresource, fid_policies,
+			    (jint)((OCResource*)j_resource_handle)->resourceProperties);
+    } else {
+	printf("Failed to find policies field id\n");
+    }
+
+
     /* printf("org_iochibity_MessageService/getResource EXIT\n"); */
     return jresource;
 }

@@ -43,8 +43,11 @@ print "JDK:", jdk_home
 # Build flags
 ######################################################################
 local_env.AppendUnique(CPPPATH = ['#src',
+	                          source_root + '/resource/c_common',
 	                          source_root + '/resource/csdk/stack',
+	                          source_root + '/resource/csdk/stack/internal',
 	                          source_root + '/resource/csdk/connectivity/api',
+	                          source_root + '/resource/csdk/security/ocsecurity',
 	                          install_sysroot + '/include',
                                   jdk_home + '/include',
                                   jdk_home + '/include/' + target_os])

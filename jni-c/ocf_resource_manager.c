@@ -10,8 +10,6 @@
 #include "octypes.h"
 
 JavaVM* g_jvm;
-jobject g_resource_service_provider;
-jobject g_callback_param;
 
 /* INTERNAL ONLY */
 
@@ -195,6 +193,9 @@ OCEntityHandlerResult service_routine(OCEntityHandlerFlag flag,
     printf("\nocf_resource_manager.c/service_routine ENTRY\n");
     /* printf("REQUEST URI: %s\n", ((OCResource*)(crequest_in->resource))->uri); */
 
+    printf("request resource properties: 0x%X\n",
+	   ((OCResource*)(crequest_in->resource))->resourceProperties);
+
     /* 1. set up jvm, env */
 /* http://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls */
 /* http://adamish.com/blog/archives/327 */
@@ -377,7 +378,11 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
     /* prep callback */
     (*env)->GetJavaVM(env, &g_jvm);
     /* bool returnValue = true; */
-    // convert local to global reference
+
+    // convert local to global references to be passed
+    jobject g_resource_service_provider;
+    jobject g_callback_param;
+
     g_resource_service_provider = (*env)->NewGlobalRef(env, j_resource_service_provider);
     jclass g_clazz = (*env)->GetObjectClass(env, g_resource_service_provider);
     if (g_clazz == NULL) {
@@ -403,9 +408,11 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
         if (fid_rsp == NULL) {
 	    printf("Failed to get serviceProvider fld id\n");
 	} else {
-	    (*env)->SetObjectField(env, g_callback_param, fid_rsp, j_resource_service_provider);
+	    (*env)->SetObjectField(env, g_callback_param, fid_rsp, g_resource_service_provider);
 	}
     }
+
+    printf("c POLICIES before: 0x%X\n",  j_resource_properties);
 
     OCResourceHandle c_resource_handle;
     OCStackResult op_result;
@@ -436,11 +443,24 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
                 (*env)->SetObjectField(env, j_resource, urifield, jString);
             }
 	}
+	printf("c POLICIES: 0x%X\n",  ((OCResource*)c_resource_handle)->resourceProperties);
+
+        jfieldID fid_policies = (*env)->GetFieldID(env, resource_clazz, "policies", "I");
+        if (fid_policies != NULL) {
+	    (*env)->SetIntField(env, j_resource, fid_policies,
+				(jint)((OCResource*)c_resource_handle)->resourceProperties);
+	} else {
+	    printf("Failed to find policies field id\n");
+	}
+
+	/* printf("resource seq nbr: %d\n", (jint) ((OCResource*)c_resource_handle)->sequenceNum); */
         jfieldID fid_sn = (*env)->GetFieldID(env, resource_clazz, "sn", "I");
         if (fid_sn != NULL) {
 	    (*env)->SetIntField(env, j_resource, fid_sn,
 				(jint) ((OCResource*)c_resource_handle)->sequenceNum);
 	}
+
+	/* instance id ∪nion */
 	/* printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins); */
 	/* printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr); */
 	/* printf("instance uuid ln: %d\n", ((OCResource*)c_resource_handle)->uniqueUUID.id_length); */

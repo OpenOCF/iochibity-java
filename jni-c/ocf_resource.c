@@ -6,7 +6,9 @@
 #include "jni_utils.h"
 
 #include "octypes.h"
+#include "ocpayload.h"
 #include "ocresource.h"
+#include "ocresourcehandler.h"
 #include "ocstack.h"
 
 /* INTERNAL */
@@ -108,11 +110,11 @@ JNIEXPORT jobject /*LinkedList<String> */ JNICALL Java_org_iochibity_Resource_ge
 	}
 
 	OCResourceType* resource_types = ((OCResource*)j_resource_handle)->rsrcType;
-	jstring jresource_type;
+	jstring j_resource_type;
 	while(resource_types) {
 	    /* printf("c resource type: %s\n", resource_types->resourcetypename); */
-	    jresource_type = (*env)->NewStringUTF(env, resource_types->resourcetypename);
-	    jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, jresource_type);
+	    j_resource_type = (*env)->NewStringUTF(env, resource_types->resourcetypename);
+	    jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_resource_type);
 	    if (!jb) {
 		printf("CallBooleanMethod Failed.\n");
 	    }
@@ -196,11 +198,11 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getInterfaces
     /* } OCResourceInterface; */
 
     OCResourceInterface* resource_ifs = ((OCResource*)j_resource_handle)->rsrcInterface;
-    jstring jresource_if;
+    jstring j_resource_if;
     while(resource_ifs) {
 	/* printf("c resource interface: %s\n", resource_ifs->name); */
-	jresource_if = (*env)->NewStringUTF(env, resource_ifs->name);
-	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, jresource_if);
+	j_resource_if = (*env)->NewStringUTF(env, resource_ifs->name);
+	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_resource_if);
 	if (!jb) {
 	    printf("CallBooleanMethod Failed.\n");
 	}
@@ -291,19 +293,19 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getProperties
 	/* printf("FOUND ctor method for rp.\n"); */
     }
 
-    jstring jresource_pname, jresource_pval;
+    jstring j_resource_pname, j_resource_pval;
 
     /* testing: add one rp */
-    /* jresource_pname = (*env)->NewStringUTF(env, "foo"); */
-    /* jresource_pval = (*env)->NewStringUTF(env, "99"); */
+    /* j_resource_pname = (*env)->NewStringUTF(env, "foo"); */
+    /* j_resource_pval = (*env)->NewStringUTF(env, "99"); */
     /* printf("creating Property(\"foo\", \"99\");\n"); */
-    /* jobject jresource_p  = (*env)->NewObject(env, rp_clazz, rp_ctor, jresource_pname, jresource_pval); */
-    /* if (jresource_p == NULL) { */
-    /* 	printf("NewObject failed for Property %s\n", (char*)jresource_pname); */
+    /* jobject j_resource_p  = (*env)->NewObject(env, rp_clazz, rp_ctor, j_resource_pname, j_resource_pval); */
+    /* if (j_resource_p == NULL) { */
+    /* 	printf("NewObject failed for Property %s\n", (char*)j_resource_pname); */
     /* 	/\* exit? *\/ */
     /* } */
     /* printf("adding Property to list\n"); */
-    /* jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, jresource_p); */
+    /* jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_resource_p); */
     /* if (!jb) { */
     /* 	printf("CallBooleanMethod Failed.\n"); */
     /* } */
@@ -313,14 +315,14 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getProperties
     OCAttribute* resource_ps = ((OCResource*)j_resource_handle)->rsrcAttributes;
     while(resource_ps) {
 	printf("c resource property name: %s, value: %s\n", resource_ps->attrName, resource_ps->attrValue);
-	jresource_pname = (*env)->NewStringUTF(env, resource_ps->attrName);
-	jresource_pval = (*env)->NewStringUTF(env, resource_ps->attrValue);
-	jobject jresource_p  = (*env)->NewObject(env, rp_clazz, rp_ctor, jresource_pname, jresource_pval);
-	if (jresource_p == NULL) {
-	    printf("NewObject failed for Property %s\n", (char*)jresource_pname);
+	j_resource_pname = (*env)->NewStringUTF(env, resource_ps->attrName);
+	j_resource_pval = (*env)->NewStringUTF(env, resource_ps->attrValue);
+	jobject j_resource_p  = (*env)->NewObject(env, rp_clazz, rp_ctor, j_resource_pname, j_resource_pval);
+	if (j_resource_p == NULL) {
+	    printf("NewObject failed for Property %s\n", (char*)j_resource_pname);
 	    /* exit? */
 	}
-	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, jresource_p);
+	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_resource_p);
 	if (!jb) {
 	    printf("CallBooleanMethod Failed for add.\n");
 	}
@@ -398,23 +400,23 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getChildren
     while(child_resources) {
 	child = child_resources->rsrcResource;
 	printf("c got child resource\n");
-	jobject jresource  = (*env)->NewObject(env, r_clazz, r_ctor);
-	if (jresource == NULL) {
+	jobject j_resource  = (*env)->NewObject(env, r_clazz, r_ctor);
+	if (j_resource == NULL) {
 	    printf("NewObject failed for child Resource\n");
 	    /* exit? */
 	}
 	/* now copy fields */
         if (fid_handle != NULL) {
-	    (*env)->SetLongField(env, jresource, fid_handle, (jlong)child);
+	    (*env)->SetLongField(env, j_resource, fid_handle, (jlong)child);
 	}
         if (fid_uri != NULL) {
             jstring jString = (*env)->NewStringUTF(env, child->uri);
             if (jString != NULL) {
-                (*env)->SetObjectField(env, jresource, fid_uri, jString);
+                (*env)->SetObjectField(env, j_resource, fid_uri, jString);
             }
 	}
         if (fid_serial != NULL) {
-	    (*env)->SetIntField(env, jresource, fid_serial, (jlong)child->sequenceNum);
+	    (*env)->SetIntField(env, j_resource, fid_serial, (jlong)child->sequenceNum);
 	}
 
 	/* testing */
@@ -424,7 +426,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getChildren
 	printf("Child instance uuid: '%s'\n",  child->uniqueUUID.id);
 
         if (fid_id != NULL) {
-	    (*env)->SetIntField(env, jresource, fid_serial, (jlong)child->sequenceNum);
+	    (*env)->SetIntField(env, j_resource, fid_serial, (jlong)child->sequenceNum);
 	    if ( ((OCResource*)c_resource_handle)->ins > 0) {
 		printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins);
 		/* FIXME: create InstanceOrdinal */
@@ -439,7 +441,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getChildren
 	    }
 	}
 
-	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, jresource);
+	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_resource);
 	if (!jb) {
 	    printf("CallBooleanMethod Failed for linkedlist.add.\n");
 	}
@@ -511,19 +513,6 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getCallbackParam
 
 /*
  * Class:     org_iochibity_Resource
- * Method:    getPolicies
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_Resource_getPolicies
-(JNIEnv * env, jobject this)
-{
-    OC_UNUSED(env);
-    OC_UNUSED(this);
-    return 0;
-}
-
-/*
- * Class:     org_iochibity_Resource
  * Method:    getActionSet
  * Signature: ()Ljava/util/LinkedList;
  */
@@ -534,3 +523,104 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getActionSet
     OC_UNUSED(this);
     return 0;
 }
+
+/*
+ * Class:     org_iochibity_Resource
+ * Method:    getPayload
+ * Signature: ()Lorg/iochibity/PayloadResource;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
+(JNIEnv * env, jobject this)
+{
+    /* printf("Java_org_iochibity_Resource_getPayload ENTRY\n"); */
+    /*  ocresourcehandler.h: */
+    /* OCStackResult BuildResponseRepresentation(const OCResource *resourcePtr, */
+    /* 					      OCRepPayload** payload) */
+
+    /* 1. build payload for resource */
+    OCResource* c_resource_handle = (OCResource*) getResourceHandle(env, this);
+    OCStackResult op_result = OC_STACK_OK;
+    OCRepPayload* payload = NULL;  //OCRepPayloadCreate();
+    op_result = BuildResponseRepresentation(c_resource_handle, &payload);
+    if (op_result != OC_STACK_OK)
+    {
+        printf("Failed to build payload from resource\n");
+	return NULL;
+    }
+    /* testing linked list */
+    /* OCRepPayload* payload2 = NULL;  //OCRepPayloadCreate(); */
+    /* op_result = BuildResponseRepresentation(c_resource_handle, &payload2); */
+    /* if (op_result != OC_STACK_OK) */
+    /* { */
+    /*     printf("Failed to build payload2 from resource\n"); */
+    /* 	return NULL; */
+    /* } */
+    /* payload->next = payload2; */
+    /* end testing */
+
+    /* 2. create a linked list */
+    jclass ll_clazz = (*env)->FindClass(env, "java/util/LinkedList");
+    if (ll_clazz == 0) {
+	printf("Find class method Failed.\n");
+    }
+    jmethodID ll_ctor = (*env)->GetMethodID(env, ll_clazz, "<init>", "()V");
+    if (ll_ctor == 0) {
+	printf("Find ctor method for ll Failed.\n");
+    }
+    jobject ll  = (*env)->NewObject(env, ll_clazz, ll_ctor);
+    if (ll == NULL) {
+	printf("NewObject failed for LinkedList\n");
+	/* exit */
+    }
+    jmethodID j_add = (*env)->GetMethodID(env, ll_clazz, "add", "(Ljava/lang/Object;)Z");
+    if (j_add == NULL) {
+	printf("Find add method Failed.\n");
+    }else {
+	/* printf("Found add method succeeded.\n"); */
+    }
+
+    /* 3.  get reeady to create a java PayloadResource objects */
+    jclass p_clazz = (*env)->FindClass(env, "org/iochibity/PayloadResource");
+    if (p_clazz == 0) {
+	printf("Find class method for PayloadResource Failed.\n");
+    }
+    jmethodID p_ctor = (*env)->GetMethodID(env, p_clazz, "<init>", "()V");
+    if (p_ctor == 0) {
+	printf("Find ctor method for PayloadResource Failed.\n");
+    }
+
+    /* 4. for each payload in the OCRepPayload linked list, create
+       java obj and add to java LinkedList */
+
+    while (payload) {
+	jobject j_payload  = (*env)->NewObject(env, p_clazz, p_ctor);
+	if (j_payload == NULL) {
+	    printf("NewObject failed for PayloadResource\n");
+	    /* exit */
+	}
+
+	jfieldID fid_handle = (*env)->GetFieldID(env, p_clazz, "handle", "J");
+	if (fid_handle != NULL) {
+		(*env)->SetLongField(env, j_payload, fid_handle, (jlong)payload);
+	}
+	jfieldID fid_uri = (*env)->GetFieldID(env, p_clazz, "uri", "Ljava/lang/String;");
+	if (fid_uri != NULL) {
+	    jstring jString = (*env)->NewStringUTF(env, payload->uri);
+	    if (jString != NULL) {
+		(*env)->SetObjectField(env, j_payload, fid_uri, jString);
+	    }
+	}
+
+	/* 4. add PayloadResource obj to linked list */
+	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_payload);
+	if (!jb) {
+	    printf("Failed add payload for linkedlist.\n");
+	}
+
+	payload = payload->next;
+    }
+
+    /* printf("Java_org_iochibity_Resource_getPayload EXIT\n"); */
+    return ll;
+}
+

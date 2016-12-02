@@ -18,4 +18,11 @@ public class ResourceManager
 					      ResourceServiceProvider serviceRoutine,
 					      Object /*void* */ callbackParam,
 					      byte   /*uint8_t*/ resourceProperties);
+
+    ////////////////////////////////////////////////////////////////
+    // stack/internal/ocresourcehandler.h:
+    // OCResource *FindResourceByUri(const char* resourceUri);
+    // bool IsVirtualResource(const char* resourceUri);
+    // OCStackResult GetPlatformInfo(OCPlatformInfo** info);
+
 }
