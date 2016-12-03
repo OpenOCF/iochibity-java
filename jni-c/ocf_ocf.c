@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "org_iochibity_OCF.h"
+#include "ocf_exceptions.h"
 
 #include "octypes.h"
 #include "ocresource.h"
@@ -49,7 +50,7 @@ FILE* server_fopen(const char *path, const char *mode)
  */
 /* JNIEXPORT jint JNICALL Java_org_iochibity_OCF_Init */
 /*   (JNIEnv *, jobject, jstring ip_addr, jchar port, jint mode) */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_Init
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
 (JNIEnv * env, jclass clazz, jstring j_ip_addr, jint port, jint mode, jstring j_config_fname)
 {
     OC_UNUSED(clazz);
@@ -62,7 +63,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_Init
     }
     g_config_fname = (*env)->GetStringUTFChars(env, j_config_fname, NULL);
     if (g_config_fname == NULL) {
-	return 0; /* OutOfMemoryError already thrown */
+	THROW_JNI_EXCEPTION("GetStringUTFChars");
     }
     OCPersistentStorage ps = {server_fopen, fread, fwrite, fclose, unlink};
     printf("calling OCRegisterPersistentStorageHandler: %s\n", g_config_fname);
@@ -79,7 +80,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_Init
     } else {
 	cip_addr = (*env)->GetStringUTFChars(env, j_ip_addr, NULL);
 	if (cip_addr == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("ip addr: [%s]\n", cip_addr);
@@ -87,10 +88,11 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_Init
     op_result = OCInit(cip_addr, (uint16_t)port, mode);
     if (op_result != OC_STACK_OK) {
 	printf("OCStack init error\n");
+	THROW_STACK_EXCEPTION(op_result, "Initialization failure");
     }
     (*env)->ReleaseStringUTFChars(env, j_ip_addr, cip_addr);
 
-    return op_result;
+    /* return op_result; */
 }
 
 /*
@@ -98,7 +100,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_Init
  * Method:    OCInit1
  * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCInit1
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCInit1
   (JNIEnv * env, jclass clazz, jint mode, jint server_flags, jint client_flags)
 {
     OC_UNUSED(env);
@@ -106,7 +108,6 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCInit1
     OC_UNUSED(mode);
     OC_UNUSED(server_flags);
     OC_UNUSED(client_flags);
-    return 0;
 }
 
 /*
@@ -130,7 +131,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCInit1
  * Method:    run
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_run
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_run
   (JNIEnv * env, jclass clazz)
 {
     OC_UNUSED(env);
@@ -140,7 +141,6 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_run
     /* main thread has nothing to do. by calling pthread_exit it exits
        but the process continues, so any spawned threads do too. */
     /* pthread_exit(NULL); */
-    return 0;
 }
 
 /*
@@ -185,7 +185,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_stop
  * Method:    setPlatformInfo
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_setPlatformInfo
   (JNIEnv * env, jclass clazz,
    jstring j_platform_id,
    jstring j_mfg_name,
@@ -222,7 +222,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.platformID = (char*) (*env)->GetStringUTFChars(env, j_platform_id, NULL);
 	if (platform_info.platformID == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c platform id: [%s]\n", platform_info.platformID);
@@ -234,7 +234,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.manufacturerName = (char*) (*env)->GetStringUTFChars(env, j_mfg_name, NULL);
 	if (platform_info.manufacturerName == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c mfg name: [%s]\n", platform_info.manufacturerName);
@@ -246,7 +246,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.manufacturerUrl = (char*) (*env)->GetStringUTFChars(env, j_mfg_url, NULL);
 	if (platform_info.manufacturerUrl == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c mfg url: [%s]\n", platform_info.manufacturerUrl);
@@ -258,7 +258,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.modelNumber = (char*) (*env)->GetStringUTFChars(env, j_model_number, NULL);
 	if (platform_info.modelNumber == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c model nbr: [%s]\n", platform_info.modelNumber);
@@ -270,7 +270,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.dateOfManufacture = (char*) (*env)->GetStringUTFChars(env, j_mfg_date, NULL);
 	if (platform_info.dateOfManufacture == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c mfg date: [%s]\n", platform_info.dateOfManufacture);
@@ -282,7 +282,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.platformVersion = (char*) (*env)->GetStringUTFChars(env, j_platform_version, NULL);
 	if (platform_info.platformVersion == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c platform version: [%s]\n", platform_info.platformVersion);
@@ -294,7 +294,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.operatingSystemVersion = (char*) (*env)->GetStringUTFChars(env, j_os_version, NULL);
 	if (platform_info.operatingSystemVersion == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c os version: [%s]\n", platform_info.operatingSystemVersion);
@@ -306,7 +306,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.hardwareVersion = (char*) (*env)->GetStringUTFChars(env, j_hw_version, NULL);
 	if (platform_info.hardwareVersion == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c hw version: [%s]\n", platform_info.hardwareVersion);
@@ -318,7 +318,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.firmwareVersion = (char*) (*env)->GetStringUTFChars(env, j_fw_version, NULL);
 	if (platform_info.firmwareVersion == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c firmware version: [%s]\n", platform_info.firmwareVersion);
@@ -330,7 +330,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.supportUrl = (char*) (*env)->GetStringUTFChars(env, j_support_url, NULL);
 	if (platform_info.supportUrl == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c support url: [%s]\n", platform_info.supportUrl);
@@ -342,7 +342,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     } else {
 	platform_info.systemTime = (char*) (*env)->GetStringUTFChars(env, j_sys_time, NULL);
 	if (platform_info.systemTime == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c system time: [%s]\n", platform_info.systemTime);
@@ -362,7 +362,6 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
     (*env)->ReleaseStringUTFChars(env, j_fw_version, platform_info.firmwareVersion);
     (*env)->ReleaseStringUTFChars(env, j_support_url, platform_info.supportUrl);
     (*env)->ReleaseStringUTFChars(env, j_sys_time, platform_info.systemTime);
-    return 0;
 }
 
 /*
@@ -370,7 +369,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
  * Method:    setDeviceInfo
  * Signature: (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_setDeviceInfo
   (JNIEnv * env, jclass clazz,
    jstring j_device_name, jobjectArray j_types, jstring j_spec_version, jobjectArray j_data_model_versions)
 {
@@ -380,7 +379,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
     OC_UNUSED(j_data_model_versions);
     static OCDeviceInfo device_info =
 	{
-	    .deviceName = "Default Device Name",
+	    .deviceName = "", /* Default Device Name", */
 	    /* OCStringLL *types; */
 	    .types = NULL,
 	    .specVersion = "0.0.0", /* device specification version */
@@ -395,7 +394,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
     } else {
 	device_info.deviceName = (char*) (*env)->GetStringUTFChars(env, j_device_name, NULL);
 	if (device_info.deviceName == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c device name: [%s]\n", device_info.deviceName);
@@ -407,7 +406,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
     } else {
 	device_info.specVersion = (char*) (*env)->GetStringUTFChars(env, j_spec_version, NULL);
 	if (device_info.specVersion == NULL) {
-	    return 0; /* OutOfMemoryError already thrown */
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
 	}
     }
     printf("c platform id: [%s]\n", device_info.specVersion);
@@ -417,15 +416,20 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
     printf("Setting device info...\n");
     OCStackResult op_result;
     op_result = OCSetDeviceInfo(device_info);
-    if (op_result != OC_STACK_OK) {
-        printf("Device Registration failed!\n");
-        /* exit (EXIT_FAILURE); */
+    switch (op_result) {
+    case OC_STACK_OK:
+	break;
+    case OC_STACK_INVALID_PARAM:
+	THROW_STACK_EXCEPTION(op_result, "Java_org_iochibity_OCF_setDeviceInfo");
+	/* throw_invalid_param(env, "Java_org_iochibity_OCF_setDeviceInfo"); */
+	break;
+    default:
+        printf("Device Registration failed with result %d!\n", op_result);
+	THROW_STACK_EXCEPTION(op_result, "UNKNOWN");
     }
 
     (*env)->ReleaseStringUTFChars(env, j_device_name, device_info.deviceName);
     (*env)->ReleaseStringUTFChars(env, j_spec_version, device_info.specVersion);
-
-    return 0;
 }
 
 /*
@@ -433,7 +437,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
  * Method:    sendResponse
  * Signature: (Lorg/iochibity/ResponseOut;)I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_sendResponse
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendResponse
 (JNIEnv * env, jclass clazz, jobject response_out)
 {
     OC_UNUSED(env);
@@ -441,6 +445,5 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_sendResponse
     OC_UNUSED(response_out);
     printf("Java_org_iochibity_OCF_sendResponse ENTRY\n");
     printf("Java_org_iochibity_OCF_sendResponse EXIT\n");
-    return 0;
 }
 
