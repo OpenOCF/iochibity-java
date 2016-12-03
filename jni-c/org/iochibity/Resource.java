@@ -1,5 +1,7 @@
 package org.iochibity;
 
+import org.iochibity.exceptions.OCFNotImplementedException;
+
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -62,7 +64,7 @@ public class Resource
 
     // Pointer of ActionSet which to support group action.*/
     // OCActionSet *actionsetHead;  /* linked list */
-    public native LinkedList<ActionSet> getActionSet();
+    public native LinkedList<ActionSet> getActionSet() throws OCFNotImplementedException;
 
     //     /** The instance identifier for this web link in an array of web links - used in links. */
     //     union

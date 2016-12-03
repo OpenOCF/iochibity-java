@@ -17,6 +17,7 @@ import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
+import org.iochibity.exceptions.OCFNotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -94,6 +95,12 @@ public class OCFTest
 
 	System.out.println("RESOURCE: policies: " + resource.policies);
 	logResourcePolicies(resource);
+
+	try {
+	    System.out.println("RESOURCE: action set: " + resource.getActionSet());
+	} catch (OCFNotImplementedException e) {
+	    System.out.println("ERROR**** RESOURCE: getActionSet not implemented.");
+	}
 	System.out.println("RESOURCE: logResource EXIT");
     }
 
@@ -249,10 +256,9 @@ public class OCFTest
 	    });
 
 	// System.out.println(System.getProperty("java.library.path"));
-	int r = OCF.Init(null, 0, OCMode.SERVER, "/Users/gar/iotivity/kit/java/jni-c/data.d/oic_svr_db_server.dat");
-	System.out.println("Init returned: " + r);
+	OCF.Init(null, 0, OCMode.SERVER, "/Users/gar/iotivity/kit/java/jni-c/data.d/oic_svr_db_server.dat");
 
-	r = OCF.setPlatformInfo("Fartmaster",
+	OCF.setPlatformInfo("Fartmaster",
 				"Acme Novelties",
 				"http://acme.example.org",
 				"modelnbr", "mfgdate", "platversion",
@@ -260,14 +266,14 @@ public class OCFTest
 				"http://acme.example.org/support",
 				new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
 
-	r = OCF.setDeviceInfo("Fartmaster2020",
-			      new String[] {"type1", "type2"},
-			      "version-0.1",
-			      new String[] {"dmversion-0.1"});
+	OCF.setDeviceInfo("", //Fartmaster2020",
+			  new String[] {"type1", "type2"},
+			  "version-0.1",
+			  new String[] {"dmversion-0.1"});
 
 	System.out.println("resource count before: " + ResourceManager.resourceCount());
 
-	r = ResourceManager.registerResource(temperatureResource, // OCResourceHandle*
+	int r = ResourceManager.registerResource(temperatureResource, // OCResourceHandle*
 					     "core.temp",
 					     "oc.mi.def",
 					     "/a/temperature",
@@ -297,7 +303,7 @@ public class OCFTest
 
         System.out.println("press q then ENTER to terminate");
 
-	r = OCF.run();
+	OCF.run();
 	System.out.println("run returned: " + r);
 
         while(true){

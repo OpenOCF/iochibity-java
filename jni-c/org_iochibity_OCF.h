@@ -10,17 +10,17 @@ extern "C" {
 /*
  * Class:     org_iochibity_OCF
  * Method:    Init
- * Signature: (Ljava/lang/String;IILjava/lang/String;)I
+ * Signature: (Ljava/lang/String;IILjava/lang/String;)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_Init
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
   (JNIEnv *, jclass, jstring, jint, jint, jstring);
 
 /*
  * Class:     org_iochibity_OCF
  * Method:    OCInit1
- * Signature: (III)I
+ * Signature: (III)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCInit1
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCInit1
   (JNIEnv *, jclass, jint, jint, jint);
 
 /*
@@ -34,25 +34,25 @@ JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCRegisterPersistentStorageHandler
 /*
  * Class:     org_iochibity_OCF
  * Method:    OCStartMulticastServer
- * Signature: ()I
+ * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCStartMulticastServer
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCStartMulticastServer
   (JNIEnv *, jobject);
 
 /*
  * Class:     org_iochibity_OCF
  * Method:    OCStopMulticastServer
- * Signature: ()I
+ * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCStopMulticastServer
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCStopMulticastServer
   (JNIEnv *, jobject);
 
 /*
  * Class:     org_iochibity_OCF
  * Method:    run
- * Signature: ()I
+ * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_run
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_run
   (JNIEnv *, jclass);
 
 /*
@@ -66,41 +66,41 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_stop
 /*
  * Class:     org_iochibity_OCF
  * Method:    setPlatformInfo
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setPlatformInfo
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_setPlatformInfo
   (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring);
 
 /*
  * Class:     org_iochibity_OCF
  * Method:    setDeviceInfo
- * Signature: (Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)I
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_setDeviceInfo
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_setDeviceInfo
   (JNIEnv *, jclass, jstring, jobjectArray, jstring, jobjectArray);
 
 /*
  * Class:     org_iochibity_OCF
  * Method:    OCDoResource
- * Signature: (Ljava/lang/Object;ILjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;IILjava/lang/Object;Ljava/lang/Object;B)I
+ * Signature: (Ljava/lang/Object;ILjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;IILjava/lang/Object;Ljava/lang/Object;B)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCDoResource
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCDoResource
   (JNIEnv *, jobject, jobject, jint, jstring, jobject, jobject, jint, jint, jobject, jobject, jbyte);
 
 /*
  * Class:     org_iochibity_OCF
  * Method:    OCCancel
- * Signature: (Ljava/lang/Object;ILjava/lang/Object;B)I
+ * Signature: (Ljava/lang/Object;ILjava/lang/Object;B)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCCancel
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCCancel
   (JNIEnv *, jobject, jobject, jint, jobject, jbyte);
 
 /*
  * Class:     org_iochibity_OCF
  * Method:    sendResponse
- * Signature: (Lorg/iochibity/ResponseOut;)I
+ * Signature: (Lorg/iochibity/ResponseOut;)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_OCF_sendResponse
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendResponse
   (JNIEnv *, jclass, jobject);
 
 #ifdef __cplusplus

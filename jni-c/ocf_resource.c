@@ -4,6 +4,7 @@
 
 #include "org_iochibity_Resource.h"
 #include "jni_utils.h"
+#include "ocf_exceptions.h"
 
 #include "octypes.h"
 #include "ocpayload.h"
@@ -521,6 +522,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getActionSet
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
+    throw_not_implemented(env, "Java_org_iochibity_Resource_getActionSet");
     return 0;
 }
 
