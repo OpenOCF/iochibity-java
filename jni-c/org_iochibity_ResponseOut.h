@@ -7,6 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     org_iochibity_ResponseOut
+ * Method:    createResponseOut
+ * Signature: (Lorg/iochibity/RequestIn;Lorg/iochibity/PayloadList;)J
+ */
+JNIEXPORT jlong JNICALL Java_org_iochibity_ResponseOut_createResponseOut
+  (JNIEnv *, jobject, jobject, jobject);
+
+/*
+ * Class:     org_iochibity_ResponseOut
+ * Method:    setResourceUri
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_ResponseOut_setResourceUri
+  (JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif

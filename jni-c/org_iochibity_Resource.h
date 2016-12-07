@@ -7,14 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     org_iochibity_Resource
- * Method:    getNext
- * Signature: ()J
- */
-JNIEXPORT jlong JNICALL Java_org_iochibity_Resource_getNext
-  (JNIEnv *, jobject);
-
+#undef org_iochibity_Resource_NOMETHOD
+#define org_iochibity_Resource_NOMETHOD 0L
+#undef org_iochibity_Resource_NONE
+#define org_iochibity_Resource_NONE 0L
+#undef org_iochibity_Resource_DISCOVERABLE
+#define org_iochibity_Resource_DISCOVERABLE 1L
+#undef org_iochibity_Resource_OBSERVABLE
+#define org_iochibity_Resource_OBSERVABLE 2L
+#undef org_iochibity_Resource_ACTIVE
+#define org_iochibity_Resource_ACTIVE 4L
+#undef org_iochibity_Resource_SLOW
+#define org_iochibity_Resource_SLOW 8L
+#undef org_iochibity_Resource_SECURE
+#define org_iochibity_Resource_SECURE 16L
+#undef org_iochibity_Resource_EXPLICIT_DISCOVERABLE
+#define org_iochibity_Resource_EXPLICIT_DISCOVERABLE 32L
 /*
  * Class:     org_iochibity_Resource
  * Method:    getTypes
@@ -69,14 +77,6 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getCallbackParam
  * Signature: ()Ljava/util/LinkedList;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getActionSet
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getPayloads
- * Signature: ()Ljava/util/LinkedList;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

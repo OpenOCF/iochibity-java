@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "jni_utils.h"
+#include "ocf_exceptions.h"
 
 /* print the class name */
 /* http://stackoverflow.com/questions/12719766/can-i-know-the-name-of-the-class-that-calls-a-jni-c-method */
@@ -30,4 +31,61 @@ void print_class_name(JNIEnv* env, jobject obj)
     printf("\t%s\n", str);
     // Release the memory pinned char array
     (*env)->ReleaseStringUTFChars(env,strObj, str);
+}
+
+jobject int2Integer(JNIEnv* env, int i)
+{
+    printf("int2integer ENTRY\n");
+    jclass i_klass = (*env)->FindClass(env, "java/lang/Integer");
+    if (i_klass == 0) {
+	THROW_JNI_EXCEPTION("FindClass failed on java/lang/Integer\n");
+    }
+    jmethodID ctor = (*env)->GetMethodID(env, i_klass, "<init>", "(I)V");
+    if (ctor == 0) {
+	THROW_JNI_EXCEPTION("GetMethodID failed on int ctor for Integer\n");
+    }
+    jobject newint  = (*env)->NewObject(env, i_klass, ctor, i);
+    if (newint == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for Integer(i)\n");
+    }
+    printf("int2integer EXIT\n");
+    return newint;
+}
+
+jobject bool2Boolean(JNIEnv* env, bool b)
+{
+    printf("bool2boolean ENTRY\n");
+    jclass klass = (*env)->FindClass(env, "java/lang/Boolean");
+    if (klass == 0) {
+	THROW_JNI_EXCEPTION("FindClass failed on java/lang/Boolean\n");
+    }
+    jmethodID ctor = (*env)->GetMethodID(env, klass, "<init>", "(Z)V");
+    if (ctor == 0) {
+	THROW_JNI_EXCEPTION("GetMethodID failed on bool ctor for Boolean\n");
+    }
+    jobject newb  = (*env)->NewObject(env, klass, ctor, b);
+    if (newb == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for Boolean(b)\n");
+    }
+    printf("bool2boolean EXIT\n");
+    return newb;
+}
+
+jobject double2Double(JNIEnv* env, double d)
+{
+    printf("double2Double ENTRY\n");
+    jclass klass = (*env)->FindClass(env, "java/lang/Double");
+    if (klass == 0) {
+	THROW_JNI_EXCEPTION("FindClass failed on java/lang/Double\n");
+    }
+    jmethodID ctor = (*env)->GetMethodID(env, klass, "<init>", "(D)V");
+    if (ctor == 0) {
+	THROW_JNI_EXCEPTION("GetMethodID failed on d ctor for Double\n");
+    }
+    jobject newd  = (*env)->NewObject(env, klass, ctor, d);
+    if (newd == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for Double(d)\n");
+    }
+    printf("double2Double EXIT\n");
+    return newd;
 }

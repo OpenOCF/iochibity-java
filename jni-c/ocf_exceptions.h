@@ -22,6 +22,14 @@ void throw_stack_exception(JNIEnv* env,
 			 const int code,
 			 const char* message);
 
+void throw_eh_exception(JNIEnv* env,
+			 const char* functionName,
+			 const char* file,
+			 const int line,
+			 const int code,
+			 const char* message);
+
+
 /**
  * Throw macros macro assume that the current scope has a symbol named
  * env that is of the type JNIEnv*.
@@ -29,6 +37,8 @@ void throw_stack_exception(JNIEnv* env,
 #define THROW_JNI_EXCEPTION(message) throw_jni_exception(env, __func__, __FILE__, __LINE__, message)
 
 #define THROW_STACK_EXCEPTION(code, message) throw_stack_exception(env, __func__, __FILE__, __LINE__, code, message)
+
+#define THROW_EH_EXCEPTION(code, message) throw_eh_exception(env, __func__, __FILE__, __LINE__, code, message)
 
 
 #endif

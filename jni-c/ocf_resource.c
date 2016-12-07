@@ -283,9 +283,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getProperties
        Property for each and adding it to the list */
 
     /* first, prepare to create new Property objects */
-    jclass rp_clazz = (*env)->FindClass(env, "org/iochibity/Property");
+    jclass rp_clazz = (*env)->FindClass(env, "org/iochibity/PropertyString");
     if (rp_clazz == 0) {
-	printf("Find Property class Failed.\n");
+	printf("Find PropertyString class Failed.\n");
     }
     jmethodID rp_ctor = (*env)->GetMethodID(env, rp_clazz, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (ctor == 0) {
@@ -530,8 +530,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getActionSet
  * Class:     org_iochibity_Resource
  * Method:    getPayload
  * Signature: ()Lorg/iochibity/PayloadResource;
+ * This method wraps  BuildResponseRepresentation (in ocresourcehandler.h/ocresource.c)
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
+JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayload
 (JNIEnv * env, jobject this)
 {
     /* printf("Java_org_iochibity_Resource_getPayload ENTRY\n"); */
@@ -542,26 +543,16 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
     /* 1. build payload for resource */
     OCResource* c_resource_handle = (OCResource*) getResourceHandle(env, this);
     OCStackResult op_result = OC_STACK_OK;
-    OCRepPayload* payload = NULL;  //OCRepPayloadCreate();
-    op_result = BuildResponseRepresentation(c_resource_handle, &payload);
+    OCRepPayload* c_payload = NULL;  //OCRepPayloadCreate();
+    op_result = BuildResponseRepresentation(c_resource_handle, &c_payload);
     if (op_result != OC_STACK_OK)
     {
         printf("Failed to build payload from resource\n");
 	return NULL;
     }
-    /* testing linked list */
-    /* OCRepPayload* payload2 = NULL;  //OCRepPayloadCreate(); */
-    /* op_result = BuildResponseRepresentation(c_resource_handle, &payload2); */
-    /* if (op_result != OC_STACK_OK) */
-    /* { */
-    /*     printf("Failed to build payload2 from resource\n"); */
-    /* 	return NULL; */
-    /* } */
-    /* payload->next = payload2; */
-    /* end testing */
 
     /* 2. create a linked list */
-    jclass ll_clazz = (*env)->FindClass(env, "java/util/LinkedList");
+    jclass ll_clazz = (*env)->FindClass(env, "org/iochibity/PayloadList");
     if (ll_clazz == 0) {
 	printf("Find class method Failed.\n");
     }
@@ -581,7 +572,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
 	/* printf("Found add method succeeded.\n"); */
     }
 
-    /* 3.  get reeady to create a java PayloadResource objects */
+    /* 3.  get reeady to create java PayloadResource objects */
     jclass p_clazz = (*env)->FindClass(env, "org/iochibity/PayloadResource");
     if (p_clazz == 0) {
 	printf("Find class method for PayloadResource Failed.\n");
@@ -594,24 +585,29 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
     /* 4. for each payload in the OCRepPayload linked list, create
        java obj and add to java LinkedList */
 
-    while (payload) {
+    while (c_payload) {
 	jobject j_payload  = (*env)->NewObject(env, p_clazz, p_ctor);
 	if (j_payload == NULL) {
-	    printf("NewObject failed for PayloadResource\n");
-	    /* exit */
+	    THROW_JNI_EXCEPTION("NewObject failed for PayloadResource\n");
 	}
 
 	jfieldID fid_handle = (*env)->GetFieldID(env, p_clazz, "handle", "J");
 	if (fid_handle != NULL) {
-		(*env)->SetLongField(env, j_payload, fid_handle, (jlong)payload);
+		(*env)->SetLongField(env, j_payload, fid_handle, (jlong)c_payload);
+	} else {
+	    THROW_JNI_EXCEPTION("SetLongField failed for handle of PayloadResource\n");
 	}
-	jfieldID fid_uri = (*env)->GetFieldID(env, p_clazz, "uri", "Ljava/lang/String;");
-	if (fid_uri != NULL) {
-	    jstring jString = (*env)->NewStringUTF(env, payload->uri);
-	    if (jString != NULL) {
-		(*env)->SetObjectField(env, j_payload, fid_uri, jString);
-	    }
+	jmethodID mid_uri = (*env)->GetMethodID(env, p_clazz, "setUri", "(Ljava/lang/String;)V");
+	if (mid_uri == NULL) {
+	    THROW_JNI_EXCEPTION("GetMethodID failed for setUri of PayloadResource\n");
 	}
+	/* jstring s = (*env)->CallObjectMethod(env, j_payload, mid_uri); */
+	/* if (s == NULL) { */
+	/*     THROW_STACK_EXCEPTION(op_result, "CallObjectMethod failed on getUri for PayloadResource\n"); */
+	/* } else { */
+	/*     printf(":::: PayloadResource Uri: %s\n", */
+	/* 	   (char*) (*env)->GetStringUTFChars(env, s, NULL)); */
+	/* } */
 
 	/* 4. add PayloadResource obj to linked list */
 	jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_payload);
@@ -619,7 +615,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getPayloads
 	    printf("Failed add payload for linkedlist.\n");
 	}
 
-	payload = payload->next;
+	c_payload = c_payload->next;
     }
 
     /* printf("Java_org_iochibity_Resource_getPayload EXIT\n"); */

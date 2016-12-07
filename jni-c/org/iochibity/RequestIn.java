@@ -1,15 +1,15 @@
 package org.iochibity;
 
-public class RequestIn extends MessageService // OCEntityHandlerRequest
+public class RequestIn extends MessageForResource // OCEntityHandlerRequest
 {
 
     // typedef struct
     // {
     // OCResourceHandle resource;
-    // in MessageService
+    // in MessageForResource
 
     // OCRequestHandle requestHandle - i.e. handle of request at ORIGIN (i.e. client)?;
-    // in MessageService
+    // in MessageForResource
 
     // the REST method retrieved from received request PDU.
     // OCMethod method;
@@ -39,11 +39,11 @@ public class RequestIn extends MessageService // OCEntityHandlerRequest
 
     // Number of the received vendor specific header options.*/
     // uint8_t numRcvdVendorSpecificHeaderOptions;
-    // in MessageService
+    // in MessageForResource
 
     // Pointer to the array of the received vendor specific header options.*/
     // OCHeaderOption * rcvdVendorSpecificHeaderOptions;
-    // in MessageService
+    // in MessageForResource
 
     // Message id.
     // uint16_t messageID;
@@ -51,7 +51,7 @@ public class RequestIn extends MessageService // OCEntityHandlerRequest
 
     // the payload from the request PDU.
     // OCPayload *payload;
-    // in MessageService
+    // in MessageForResource
 
     // } OCEntityHandlerRequest;
 

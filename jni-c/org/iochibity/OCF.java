@@ -1,7 +1,5 @@
 package org.iochibity;
 
-import org.iochibity.exceptions.OCFInvalidParamException;
-
 public class OCF
 {
     public static native void /*OCStackResult*/
@@ -64,5 +62,5 @@ public class OCF
 				byte /*uint8_t*/ options_count);
 
     /* OCStackResult OCDoResponse */
-    static public native void sendResponse(ResponseOut response); // OCEntityHandlerResponse*
+    static public native void sendResponse(ResponseOut responseOut); // OCEntityHandlerResponse*
 }

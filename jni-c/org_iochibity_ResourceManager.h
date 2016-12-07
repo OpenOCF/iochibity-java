@@ -18,18 +18,18 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_resourceCount
 /*
  * Class:     org_iochibity_ResourceManager
  * Method:    registerDefaultServiceRoutine
- * Signature: (Ljava/lang/Object;Ljava/lang/Object;)I
+ * Signature: (Ljava/lang/Object;Ljava/lang/Object;)V
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerDefaultServiceRoutine
+JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerDefaultServiceRoutine
   (JNIEnv *, jclass, jobject, jobject);
 
 /*
  * Class:     org_iochibity_ResourceManager
  * Method:    registerResource
- * Signature: (Lorg/iochibity/Resource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/iochibity/ResourceServiceProvider;Ljava/lang/Object;B)I
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/ResourceServiceProvider;Ljava/lang/Object;B)Lorg/iochibity/Resource;
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_registerResource
-  (JNIEnv *, jclass, jobject, jstring, jstring, jstring, jobject, jobject, jbyte);
+JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceManager_registerResource
+  (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray, jobject, jobject, jbyte);
 
 #ifdef __cplusplus
 }

@@ -7,20 +7,40 @@ import java.util.UUID;
 
 public class Resource
 {
+    // OCResourceProperty constants
+    public static final int NOMETHOD       = 0;
+    public static final int NONE = 0;
+    public static final int DISCOVERABLE  = (1 << 0);
+    public static final int OBSERVABLE    = (1 << 1);
+    public static final int ACTIVE        = (1 << 2);
+    public static final int SLOW          = (1 << 3);
+    public static final int SECURE        = (1 << 4);
+    public static final int EXPLICIT_DISCOVERABLE   = (1 << 5);
+    // #ifdef WITH_MQ
+    // /** When this bit is set, the resource is allowed to be published */
+    // ,OC_MQ_PUBLISHER     = (1 << 6)
+    // #endif
+    // #ifdef MQ_BROKER
+    // /** When this bit is set, the resource is allowed to be notified as MQ broker.*/
+    // ,OC_MQ_BROKER        = (1 << 7)
+
+    public long handle;		// this OCResource*
+    public long getHandle() { return handle; }
+
+    // Points to next resource in list.
+    // struct OCResource *next;
+    // public native long getNext();
+
+    // Relative path on the device; will be combined with base url to create fully qualified path.
+    private String uri = "FOOBAR";
+    public String getUri() { return uri; }
+    public void setUri(String theUri) {  uri = theUri; }
+ 
     // public void Resource(Resource r)
     // {
     // 	handle = r.handle;
     // 	uri    = r.uri;
     // }
-
-    public long handle;		// this OCResource*
-
-    // Points to next resource in list.
-    // struct OCResource *next;
-    public native long getNext();
-
-    // Relative path on the device; will be combined with base url to create fully qualified path.
-    public String uri;
 
     // OCResourceType *rsrcType;  /* linked list */
     public native LinkedList<String> getTypes();
@@ -31,7 +51,7 @@ public class Resource
     // OCAttribute *rsrcAttributes;  /* linked list */
     // NB: this does not seem to be set anywhere by the stack or example pgms
     // OCAttribute only holds string values
-    public native LinkedList<Property> getProperties();
+    public native LinkedList<PropertyString> getProperties();
 
     // Array of pointers to resources; can be used to represent a container of resources.
     // (i.e. hierarchies of resources) or for reference resources (i.e. for a resource collection).
@@ -82,11 +102,4 @@ public class Resource
     public class InstanceString  extends InstanceId { public String val; }
     public class InstanceUuid    extends InstanceId { public UUID val; }
     public InstanceId id = new InstanceId();
-
-    ////////////////////////////////////////////////////////////////
-    /*  ocresource.h: */
-    // OCStackResult BuildResponseRepresentation(const OCResource *resourcePtr,
-    // 					      OCRepPayload** payload)
-    public native LinkedList<PayloadResource> getPayloads();
-
 }

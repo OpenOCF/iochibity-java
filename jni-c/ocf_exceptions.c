@@ -48,7 +48,7 @@ void throw_jni_exception(// The first four parameters are common for all
 				     (*env)->FindClass( env, "java/lang/ClassNotFoundException"),
 				     "org/iochibity/exceptions/JNIRuntimeException" );
 
-    jmethodID ctor = (*env)->GetMethodID(env, clazz, "<init>", "(ILjava/lang/String;)V");
+    jmethodID ctor = (*env)->GetMethodID(env, clazz, "<init>", "(Ljava/lang/String;)V");
     if (ctor == 0) (*env)->ThrowNew( env,
 				     (*env)->FindClass( env, "java/lang/NoSuchMethod"),
 				     "ctor for JNIRuntimeException" );
@@ -80,7 +80,7 @@ void throw_jni_exception(// The first four parameters are common for all
     (*env)->DeleteLocalRef(env, clazz);
 }
 
-char* getCodeString(int code) {
+char* getStackCodeString(int code) {
     switch(code) {
 	// typedef enum
 	// {
@@ -173,6 +173,7 @@ char* getCodeString(int code) {
     }
 }
 
+/* FIXME: unify stack and eh routines */
 void throw_stack_exception (// The first four parameters are common for all
 			    // throwables
 			    JNIEnv* env,
@@ -196,7 +197,115 @@ void throw_stack_exception (// The first four parameters are common for all
 
     jthrowable e = (*env)->NewObject(env, clazz, ctor,
 				     code,
-				     (*env)->NewStringUTF(env, getCodeString(code)),
+				     (*env)->NewStringUTF(env, getStackCodeString(code)),
+				     (*env)->NewStringUTF(env, message));
+
+    // Find the __jni_setLocation method and call it with
+    // the function name, file and line parameters
+    jmethodID mid_set_location = (*env)->GetMethodID(env, clazz, "__jni_setLocation",
+						     "(Ljava/lang/String;"
+						     "Ljava/lang/String;"
+						     "I)V");
+
+    (*env)->CallVoidMethod(env, e, mid_set_location,
+			   (*env)->NewStringUTF(env, functionName),
+			   (*env)->NewStringUTF(env, file),
+			   line);
+
+    // Throw the exception. Since this is native code,
+    // execution continues, and the execution will be abruptly
+    // interrupted at the point in time when we return to the VM.
+    // The calling code will perform the early return back to Java code.
+    (*env)->Throw(env, e);
+
+    // Clean up local reference
+    (*env)->DeleteLocalRef(env, clazz);
+}
+
+char* getEHCodeString(int code) {
+    switch(code) {
+	/* OCEntityHandlerResult (enum) */
+    case OC_EH_OK:
+	return "OC_EH_OK";
+	break;
+    case OC_EH_ERROR:
+	return "OC_EH_ERROR";
+	break;
+    case OC_EH_RESOURCE_CREATED:
+	return "OC_EH_RESOURCE_CREATED";  // 2.01
+	break;
+    case OC_EH_RESOURCE_DELETED:
+	return "OC_EH_RESOURCE_DELETED";  // 2.02
+	break;
+    case OC_EH_SLOW:
+	return "OC_EH_SLOW"; // 2.05
+	break;
+    case OC_EH_FORBIDDEN:
+	return "OC_EH_FORBIDDEN"; // 4.03
+	break;
+    case OC_EH_RESOURCE_NOT_FOUND:
+	return "OC_EH_RESOURCE_NOT_FOUND"; // 4.04
+	break;
+    case OC_EH_VALID:
+	return "OC_EH_VALID";   // 2.03
+	break;
+    case OC_EH_CHANGED:
+	return "OC_EH_CHANGED"; // 2.04
+	break;
+    case OC_EH_CONTENT:
+	return "OC_EH_CONTENT"; // 2.05
+	break;
+    case OC_EH_BAD_REQ:
+	return "OC_EH_BAD_REQ"; // 4.00
+	break;
+    case OC_EH_UNAUTHORIZED_REQ:
+	return "OC_EH_UNAUTHORIZED_REQ"; // 4.01
+	break;
+    case OC_EH_BAD_OPT:
+	return "OC_EH_BAD_OPT"; // 4.02
+	break;
+    case OC_EH_METHOD_NOT_ALLOWED:
+	return "OC_EH_METHOD_NOT_ALLOWED"; // 4.05
+	break;
+    case OC_EH_NOT_ACCEPTABLE:
+	return "OC_EH_NOT_ACCEPTABLE"; // 4.06
+	break;
+    case OC_EH_INTERNAL_SERVER_ERROR:
+	return "OC_EH_INTERNAL_SERVER_ERROR"; // 5.00
+	break;
+    case OC_EH_RETRANSMIT_TIMEOUT:
+	return "OC_EH_RETRANSMIT_TIMEOUT"; // 5.04
+	break;
+    default:
+	return "OC_EH UNKNOWN ERROR";
+	break;
+    }
+}
+
+void throw_eh_exception (// The first four parameters are common for all
+			    // throwables
+			    JNIEnv* env,
+			    const char* functionName,
+			    const char* file,
+			    const int line,
+
+			    // These are specific to the OCFStackException
+			    const int code,
+			    const char* message)
+{
+    jclass clazz = (*env)->FindClass(env, "org/iochibity/exceptions/OCFServiceProviderException");
+    if (clazz == 0) (*env)->ThrowNew(env,
+				     (*env)->FindClass( env, "java/lang/ClassNotFoundException"),
+				     "org/iochibity/exceptions/OCFStackException" );
+
+    jmethodID ctor = (*env)->GetMethodID(env, clazz, "<init>", "(ILjava/lang/String;Ljava/lang/String;)V");
+    if (ctor == 0) (*env)->ThrowNew( env,
+				     (*env)->FindClass( env, "java/lang/NoSuchMethod"),
+				     "ctor for OCFStackException" );
+
+    jthrowable e = (*env)->NewObject(env, clazz, ctor,
+				     code,
+				     (*env)->NewStringUTF(env, getEHCodeString(code)),
 				     (*env)->NewStringUTF(env, message));
 
     // Find the __jni_setLocation method and call it with

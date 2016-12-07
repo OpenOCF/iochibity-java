@@ -1,0 +1,40 @@
+= java wrapper on c api
+
+== naming conventions
+
+
+JNI:
+
+* 'klass' is reserved for the jclass arg (Class object) of static methods
+* 'this' is reserved for the (this) jobject arg of object methods
+* k_  is the prefix used for klasses other than the klass object
+* fid_ is the prefix for field ids from GetFieldId, e.g. fid_class_method
+* mid_ is the prefix for method ids from GetMethodId, e.g. mid_class_method
+* mids_ is for static methods
+* j_ - prefix for java objects
+* c_ - prefix for native c data
+
+UPPER_CASE prefixes: file scope, for caching; e.g. K_PAYLOAD.
+
+
+Java:
+
+* _ - underscore prefix marks a field as both private and
+  corresponding to an underlying var, ptr, struct, e.g. _handle
+
+
+== exceptions
+
+Instead of returning an OCStackResult code we return void and throw
+Java exceptions as needed.
+
+
+=== TODO
+
+* support iotivity logging for the jni bits called by stack, e.g. the
+  OCEntityHandler service routine.  needed so we can log errors since
+  we cannot throw java exceptions for that sort of error.
+
+* subclass LinkedList and HashMap so we can use them to add and remove items
+
+* cache field ids
