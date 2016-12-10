@@ -1,0 +1,209 @@
+#******************************************************************
+#
+# Copyright 2014 Intel Mobile Communications GmbH All Rights Reserved.
+#
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+##
+# jni-c jnilib (share library) build script
+##
+import os
+Import('env')
+
+lib_env = env.Clone()
+
+local_env = lib_env.Clone()
+secured = local_env.get('SECURED')
+target_os = local_env.get('TARGET_OS')
+jvm_host = env['ENV']['TARGET_JVM_HOST']
+with_cloud = local_env.get('WITH_CLOUD')
+with_mq = local_env.get('WITH_MQ')
+
+iotivity_home   = env['ENV']['IOTIVITY_HOME']
+install_sysroot = local_env.get('INSTALL_SYSROOT')
+build_sysroot = local_env.get('BUILD_SYSROOT')
+source_root     = env.get('SOURCE_ROOT')
+
+jdk_home = env['ENV']['TARGET_JDK_HOME']
+print "JDK:", jdk_home
+
+######################################################################
+# Build flags
+######################################################################
+if env['ENV']['IOTIVITY_FLAVOR'] == 'IOTIVITY':
+   CPPPATHS = ['#src',
+	       jdk_home + '/include',
+	       jdk_home + '/include/' + jvm_host,
+	       install_sysroot + '/include',
+	       iotivity_home + '/resource/include',
+	       iotivity_home + '/resource/c_common',
+	       iotivity_home + '/resource/c_common/ocrandom/include',
+	       iotivity_home + '/resource/c_common/oic_malloc/include',
+	       iotivity_home + '/resource/c_common/oic_string/include',
+	       iotivity_home + '/resource/csdk/connectivity/api',
+	       iotivity_home + '/resource/csdk/stack/include',
+	       iotivity_home + '/resource/csdk/stack/include/internal',
+	       iotivity_home + '/resource/csdk/logger/include',
+	       iotivity_home + '/resource/oc_logger/include',
+	       iotivity_home + '/extlibs/cjson',
+	       iotivity_home + '/resource/csdk/connectivity/lib/libcoap-4.1.1',
+	       iotivity_home + '/resource/csdk/security/include',
+	       iotivity_home + '/resource/csdk/security/include/internal']
+   install_dir = install_sysroot
+   local_env.AppendUnique(LIBS=['octbstack', 'logger', 'oc_logger','connectivity_abstraction', 'ocsrm', 'c_common', 'routingmanager'])
+   local_env.AppendUnique(LIBPATH = [local_env.get('INSTALL_SYSROOT')])
+
+if env['ENV']['IOTIVITY_FLAVOR'] == 'IOCHIBITY':
+   CPPPATHS = ['#src',
+               source_root + '/resource/c_common',
+               source_root + '/resource/csdk/stack',
+               source_root + '/resource/csdk/stack/internal',
+               source_root + '/resource/csdk/connectivity/api',
+               source_root + '/resource/csdk/security/ocsecurity',
+               install_sysroot + '/include',
+               jdk_home + '/include',
+               jdk_home + '/include/' + jvm_host]
+   local_env.PrependUnique(LIBS = ['chibity'])
+   install_dir = install_sysroot + '/lib'
+   local_env.AppendUnique(LIBPATH = [install_dir])
+   local_env.AppendUnique(CPPDEFINES = ['IOCHIBITY'])
+
+
+local_env.AppendUnique(CPPPATH = CPPPATHS)
+
+
+# if 'g++' in local_env.get('CXX'):
+# 	local_env.AppendUnique(CXXFLAGS = ['-std=c++0x'])
+# 	local_env.AppendUnique(CXXFLAGS = ['-Wall'])
+# 	local_env.AppendUnique(CXXFLAGS = ['-fPIC'])
+
+# if target_os not in ['darwin', 'ios', 'windows']:
+# 	local_env.AppendUnique(LINKFLAGS = ['-Wl,--no-undefined'])
+
+# if target_os == 'android':
+#     local_env.AppendUnique(CXXFLAGS = ['-frtti', '-fexceptions'])
+#     local_env.AppendUnique(LIBS = ['boost_thread', 'gnustl_shared', 'log'])
+#     local_env.AppendUnique(LINKFLAGS = ['-Wl,-soname,liboc.so'])
+
+# if target_os == 'tizen':
+# 	local_env.AppendUnique(CPPDEFINES = ['__TIZEN__'])
+
+# if target_os in ['linux'] and local_env.get('SIMULATOR', False):
+#     local_env.Append( RPATH = local_env.Literal('\\$$ORIGIN'))
+
+# if target_os in ['msys_nt', 'windows']:
+# 	local_env.AppendUnique(LIBPATH = [os.path.join(local_env.get('BUILD_DIR'), 'resource', 'oc_logger')])
+# 	local_env.AppendUnique(LIBPATH = [os.path.join(local_env.get('BUILD_DIR'), 'resource', 'csdk')])
+# 	local_env.AppendUnique(LIBS=['octbstack', 'logger', 'oc_logger','connectivity_abstraction', 'ocsrm', 'c_common', 'routingmanager'])
+# 	local_env.AppendUnique(LIBS=[ 'coap', 'ws2_32' ,'iphlpapi'])
+# 	if secured == '1':
+# 		local_env.AppendUnique(LIBS=['tinydtls'])
+
+# if target_os in ['darwin']:
+#     local_env.AppendUnique(CFLAGS = ['-install_name' + install_sysroot + '/lib/libocfjni-c.jnilib',
+#                                      '-dynamiclib'])
+
+######################################################################
+# Source files and Targets
+######################################################################
+if target_os == 'darwin':
+    local_env.Append(SHLINKFLAGS = '-framework JavaVM')
+    local_env.AppendUnique(LINKFLAGS = ['-install_name', install_sysroot + '/lib/libocfjni_c.jnilib'])
+    local_env['SHLIBSUFFIX'] = '.jnilib'
+
+jni_clib_src = ['ocf_ocf.c',
+	        'ocf_DocForServiceProvider.c',
+	        'ocf_PayloadForResourceState.c',
+	        'ocf_property_map.c',
+	        'ocf_resource_local.c',
+	        'ocf_resource_manager.c',
+	        'ocf_response_out.c',
+	        'ocf_exceptions.c',
+	        'jni_utils.c']
+
+# if target_os in ['windows']:
+# 	jni_clib_src = jni_clib_src + ['OCApi.cpp']
+# 	# TODO: Add OC_EXPORT prefixes to enable DLL generation
+# 	jni_clib = local_env.StaticLibrary('jni_oc', jni_clib_src)
+# else:
+jni_clib = local_env.SharedLibrary('ocfjni_c', jni_clib_src)
+
+#local_env.InstallTarget(oclib, 'oc')
+#local_env.UserInstallTargetLib(oclib, 'oc')
+
+
+jnilib = local_env.InstallVersionedLib(target=install_dir, source=jni_clib)
+Alias('jni-c', jnilib)
+
+# headers =  ['OCPlatform.h',
+#             'OCPlatform_impl.h',
+#             'OCApi.h',
+#             'OCHeaderOption.h',
+#             'OCException.h',
+#             'StringConstants.h',
+#             'OCRepresentation.h',
+#             'AttributeValue.h',
+#             'OCUtilities.h',
+#             'WrapperFactory.h',
+#             'IClientWrapper.h',
+#             'IServerWrapper.h',
+#             'OCResource.h',
+#             'OCResourceRequest.h',
+#             'OCResourceResponse.h',
+#             'OutOfProcClientWrapper.h',
+#             'OutOfProcServerWrapper.h',
+#             'InProcClientWrapper.h',
+#             'InProcServerWrapper.h',
+#             'InitializeException.h',
+#             'ResourceInitException.h',
+#             'OCDirectPairing.h']
+
+# local_env.Install(install_sysroot + '/include', headers)
+
+#header_dir = os.path.join(local_env.get('SRC_DIR') , 'resource' , 'include') + os.sep
+
+# local_env.UserInstallTargetHeader(header_dir + 'OCApi.h', 'resource', 'OCApi.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OCHeaderOption.h', 'resource', 'OCHeaderOption.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OCException.h', 'resource', 'OCException.h')
+# local_env.UserInstallTargetHeader(header_dir + 'StringConstants.h', 'resource', 'StringConstants.h')
+
+#local_env.UserInstallTargetHeader(header_dir + 'OCPlatform.h', 'resource', 'OCPlatform.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OCPlatform_impl.h', 'resource', 'OCPlatform_impl.h')
+# local_env.UserInstallTargetHeader(header_dir + 'WrapperFactory.h', 'resource', 'WrapperFactory.h')
+# local_env.UserInstallTargetHeader(header_dir + 'IClientWrapper.h', 'resource', 'IClientWrapper.h')
+# local_env.UserInstallTargetHeader(header_dir + 'IServerWrapper.h', 'resource', 'IServerWrapper.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OutOfProcClientWrapper.h', 'resource', 'OutOfProcClientWrapper.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OutOfProcServerWrapper.h', 'resource', 'OutOfProcServerWrapper.h')
+# local_env.UserInstallTargetHeader(header_dir + 'InProcClientWrapper.h', 'resource', 'InProcClientWrapper.h')
+# local_env.UserInstallTargetHeader(header_dir + 'InProcServerWrapper.h', 'resource', 'InProcServerWrapper.h')
+# local_env.UserInstallTargetHeader(header_dir + 'InitializeException.h', 'resource', 'InitializeException.h')
+# local_env.UserInstallTargetHeader(header_dir + 'ResourceInitException.h', 'resource', 'ResourceInitException.h')
+
+# local_env.UserInstallTargetHeader(header_dir + 'OCRepresentation.h', 'resource', 'OCRepresentation.h')
+# local_env.UserInstallTargetHeader(header_dir + 'AttributeValue.h', 'resource', 'AttributeValue.h')
+
+# local_env.UserInstallTargetHeader(header_dir + 'OCResource.h', 'resource', 'OCResource.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OCResourceRequest.h', 'resource', 'OCResourceRequest.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OCResourceResponse.h', 'resource', 'OCResourceResponse.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OCUtilities.h', 'resource', 'OCUtilities.h')
+
+# local_env.UserInstallTargetHeader(header_dir + 'CAManager.h', 'resource', 'CAManager.h')
+# local_env.UserInstallTargetHeader(header_dir + 'OCDirectPairing.h', 'resource', 'OCDirectPairing.h')
+
+# # Add Provisioning library
+# if target_os in ['darwin', 'linux', 'android', 'tizen'] and secured == '1':
+#         SConscript('../provisioning/SConscript')

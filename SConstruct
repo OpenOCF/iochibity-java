@@ -127,7 +127,7 @@ src_dir = env.get('SRC_DIR')
 
 build_dir = env.get('BUILD_DIR')
 
-SConscript('jni-c/SConscript',
+SConscript('jni-c/src/c/SConscript',
            variant_dir=build_sysroot + '/jni',
            duplicate=0)
 

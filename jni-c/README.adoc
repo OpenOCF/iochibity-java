@@ -1,5 +1,21 @@
 = java wrapper on c api
 
+== build
+
+First source devhost and targethost files, e.g.
+
+```
+source ~/xc/source.me/darwin.devhost
+source ~/xc/source.me/darwin.targethost
+```
+
+$ scons jni-c
+options:  VERBOSE=0 | 1, LOGGING= 0 | 1
+
+$ cd jni-c
+$ mvn install
+
+
 == naming conventions
 
 
@@ -29,12 +45,35 @@ Instead of returning an OCStackResult code we return void and throw
 Java exceptions as needed.
 
 
-=== TODO
+== mapping to iotivity c api
 
-* support iotivity logging for the jni bits called by stack, e.g. the
-  OCEntityHandler service routine.  needed so we can log errors since
-  we cannot throw java exceptions for that sort of error.
+Metaphor: bureaucracy.  Documents contain (inscribed) messages.
+ServiceProviders (respondants) receive (from ServiceRequestors)
+incoming request documents (DocRequestIn), which refer to Resources
+(ResourceLocal).  They create an outgoing document (DocResponseOut)
+and send it to the ServiceRequestor.
 
-* subclass LinkedList and HashMap so we can use them to add and remove items
+Resources:
+ServiceRequestors create outgoing request documents (DocRequestOut)
+and send them to a ServiceProvider.  receive (from ServiceProviders)
+incoming response documents (DocResponseIn)
 
-* cache field ids
+
+
+setPlatformInfo  => ResourceManager.registerPlatform
+setDeviceInfo    => ResourceManager.registerDevice
+OCCreateResource => ResourceManager.registerResource
+OCDoResource     => ResourceManager.sendRequest
+
+OCResource       => Resource
+			        ResourceLocal  (new; resource on server)
+			        ResourceRemote (new; resource on client, rec'd from server)
+
+new: Document
+new: DocForServiceProvider extends Document
+OCEntityHandlerRequest   => DocRequestIn   extends DocForServiceProvider
+OCEntityHandlerResponse  => DocResponseOut extends DocForServiceProvider
+
+new: DocForServiceRequestor extends Document
+OCClientResponse         => DocResponseIn  extends DocForServiceRequestor
+new:                        DocReQuestOut  extends DocForServiceRequestor

@@ -205,5 +205,5 @@ if with_ra_ibb:
 # env.AddMethod(__install_head_file, "InstallHeadFile")
 # env.AddMethod(__install_lib, "InstallLib")
 
-if env.get('SECURED') == '1':
-	SConscript(os.path.join(env.get('SRC_DIR'), 'extlibs', 'sqlite3', 'SConscript'))
+# if env.get('SECURED') == '1':
+# 	SConscript(os.path.join(env.get('SRC_DIR'), 'extlibs', 'sqlite3', 'SConscript'))

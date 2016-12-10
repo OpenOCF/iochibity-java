@@ -12,7 +12,8 @@ Import('env')
 #       ENV = os.environ)
 # Help(hvars.GenerateHelpText(env))
 
-target_os = env.get('TARGET_OS')
+jvm_host = env['ENV']['TARGET_JVM_HOST']
+target_os       = env.get('TARGET_OS')
 
 from os.path import expanduser
 home = expanduser("~")
@@ -291,7 +292,7 @@ else:
     If target_os is not Yocto, continue with the regular build process
     '''
     # Load config of target os
-    env.SConscript(target_os + '/SConscript')
+    env.SConscript(jvm_host + '/SConscript')
 
 # Delete the temp files of configuration
 if env.GetOption('clean'):
