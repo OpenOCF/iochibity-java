@@ -1,10 +1,10 @@
 package org.iochibity.test;
 
 import org.iochibity.OCF;
-import org.iochibity.CallbackParam;
+// import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.MessageForResource;
+import org.iochibity.DocForServiceProvider;
 import org.iochibity.Payload;
 import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
@@ -15,10 +15,10 @@ import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
 // import org.iochibity.Resource$InstanceId;
 import org.iochibity.ResourceManager;
-import org.iochibity.ResourceServiceProvider;
+import org.iochibity.IResourceServiceProvider;
 // import org.iochibity.Response;
 import org.iochibity.DocResponseOut;
-import org.iochibity.constants.OCMethod;
+import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
@@ -45,25 +45,19 @@ public class OCFTestServer
 	}
     }
 
-    static public class MyParam extends CallbackParam
+    static public class TemperatureSP implements IResourceServiceProvider
     {
-	int foo;
-	public MyParam(int i) { foo = i; }
+	int foo = 72;
 	public void hello() { System.out.println("Hello from callback: " + foo); }
-    }
 
-    static public class TemperatureSP extends ResourceServiceProvider
-    {
-	static private PayloadList<Payload> serviceGetRequest(int flag,
-							      DocRequestIn request,
-							      MyParam callbackParam)
+	private PayloadList<Payload> serviceGetRequest(DocRequestIn requestIn)
 	{
 	    System.out.println("TEST serviceGetRequest ENTRY");
 
-	    System.out.println("TEST callback param: " + callbackParam.foo);
-	    callbackParam.hello();
+	    System.out.println("TEST callback param: " + foo);
+	    hello();
 
-	    ResourceLocal r = request.getResource();
+	    ResourceLocal r = requestIn.getResource();
 	    System.out.println("TEST resource uri: " + r.getUri());
 
 	    PayloadForResourceState pfrs = new PayloadForResourceState(r);
@@ -108,10 +102,10 @@ public class OCFTestServer
 	}
 
 	@Override
-	public int service(int flag, DocRequestIn request_in, CallbackParam callbackParam)
+	public int serviceRequestIn(DocRequestIn requestIn)
 	{
 	    System.out.println("TEST TemperatureSP.service routine ENTRY");
-	    Logger.logRequestIn(request_in);
+	    Logger.logRequestIn(requestIn);
 
 	    PayloadList<Payload> payloadOut = null;
 
@@ -122,36 +116,36 @@ public class OCFTestServer
 	    // } OCEntityHandlerFlag;
 	    // if (entityHandlerRequest && (flag & OC_REQUEST_FLAG))
 
-	    switch (request_in.method) {
-	    case OCMethod.GET:
-		payloadOut = serviceGetRequest(flag, request_in, (MyParam)callbackParam);
+	    switch (requestIn.method) {
+	    case Method.GET:
+		payloadOut = serviceGetRequest(requestIn);
 		break;
-	    case OCMethod.PUT:
+	    case Method.PUT:
 		System.out.println("TEST method: PUT");
 		break;
-	    case OCMethod.POST:
+	    case Method.POST:
 		System.out.println("TEST method: POST");
 		break;
-	    case OCMethod.DELETE:
+	    case Method.DELETE:
 		System.out.println("TEST method: DELETE");
 		break;
-	    case OCMethod.OBSERVE:
+	    case Method.OBSERVE:
 		break;
-	    case OCMethod.OBSERVE_ALL:
+	    case Method.OBSERVE_ALL:
 		break;
-	    case OCMethod.CANCEL_OBSERVE:
+	    case Method.CANCEL_OBSERVE:
 		break;
-	    case OCMethod.PRESENCE:
+	    case Method.PRESENCE:
 		break;
-	    case OCMethod.DISCOVER:
+	    case Method.DISCOVER:
 		break;
-	    case OCMethod.NOMETHOD:
+	    case Method.NOMETHOD:
 		break;
 	    default:
 		break;
 	    }
 
-	    DocResponseOut responseOut = new DocResponseOut(request_in, payloadOut);
+	    DocResponseOut responseOut = new DocResponseOut(requestIn, payloadOut);
 
 	    try {
 		OCF.sendResponse(responseOut);
@@ -164,8 +158,7 @@ public class OCFTestServer
 	}
     }
 
-    static LightSP lightSP = new LightSP();
-    static LightSP.CBData lspData = new LightSP.CBData(99);
+    static TemperatureSP tempSP = new TemperatureSP();
 
     public static void main(String[] args)
     {
@@ -180,7 +173,7 @@ public class OCFTestServer
 	    });
 
 	// System.out.println(System.getProperty("java.library.path"));
-	OCF.Init(null, 0, OCMode.SERVER, "resources/ocftestserver_config.cbor");
+	OCF.Init(null, 0, OCMode.SERVER, "src/main/resources/ocftestserver_config.cbor");
 
 	ResourceManager.registerPlatform("Fartmaster",
 					 "Acme Novelties",
@@ -190,7 +183,7 @@ public class OCFTestServer
 					 "http://acme.example.org/support",
 					 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
 
-	ResourceManager.registerDevice("Fartmaster2020",
+	ResourceManager.registerDevice("Fartmaster2020 Server",
 				       new String[] {"type1", "type2"},
 				       "version-0.1",
 				       new String[] {"dmversion-0.1"});
@@ -199,8 +192,8 @@ public class OCFTestServer
 	l = ResourceManager.registerResource("/a/light",	          // uri String
 					     new String[] {"core.light"}, // array of typenames
 					     new String[] {"oc.mi.l"}, // array of ifnames
-					     lightSP, // ResourceServiceProvider
-					     lspData,
+					     new LightSP(),            // IResourceServiceProvider
+					     // lspData,
 					     (byte)(Resource.DISCOVERABLE
 						     | Resource.SECURE));
 	Logger.logResource(l);
@@ -209,8 +202,8 @@ public class OCFTestServer
 	tr = ResourceManager.registerResource("/a/temperature",
 					      new String[] {"core.temperature"},
 					      new String[] {"oc.mi.def"},
-					      new TemperatureSP(),
-					      new MyParam(99),
+					      tempSP,
+					      // new MyParam(99),
 					      (byte)(Resource.DISCOVERABLE
 						     | Resource.SECURE));
 	Logger.logResource(tr);
@@ -220,7 +213,7 @@ public class OCFTestServer
 						   new String[] {"core.whatist"},
 						   new String[] {"oc.mi.whatsit"},
 						   new WhatsitSP(),
-						   new WhatsitSP.CBData(123),
+						   // new WhatsitSP.CBData(123),
 						   (byte)(Resource.DISCOVERABLE
 							  | Resource.SECURE));
 

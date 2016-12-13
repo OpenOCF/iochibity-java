@@ -457,7 +457,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getChildren
 /*
  * Class:     org_iochibity_ResourceLocal
  * Method:    getServiceProvider
- * Signature: ()Lorg/iochibity/ResourceServiceProvider;
+ * Signature: ()Lorg/iochibity/IResourceServiceProvider;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getServiceProvider
 (JNIEnv * env, jobject this)
@@ -467,31 +467,32 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getServiceProvider
     /* first get handle to OCResource struct */
     OCResource* c_resource_handle = (OCResource*)(intptr_t) getResourceHandle(env, this);
 
-    void * c_cbparam = c_resource_handle->entityHandlerCallbackParam;
-    jclass cbparam_clazz = (*env)->GetObjectClass(env, c_cbparam);
-    if (cbparam_clazz == NULL) {
-	printf("Failed to find class for cbparam \n");
+    void * c_IResourceServiceProvider = c_resource_handle->entityHandlerCallbackParam;
+    jclass IResourceServiceProvider_clazz = (*env)->GetObjectClass(env, c_IResourceServiceProvider);
+    if (IResourceServiceProvider_clazz == NULL) {
+	printf("Failed to find class for IResourceServiceProvider \n");
     } else {
 	/* printf("Found class for callbackParam:"); */
-	/* print_class_name(env, (jobject)c_cbparam); */
+	/* print_class_name(env, (jobject)c_IResourceServiceProvider); */
     }
 
-    jfieldID fid_rsp = (*env)->GetFieldID(env, cbparam_clazz,
-					  "serviceProvider", "Lorg/iochibity/ResourceServiceProvider;");
-    if (fid_rsp == NULL) {
-	printf("Failed to get serviceProvider fld id\n");
-    } else {
-	/* printf("Got serviceProvider fld id\n"); */
-    }
-    jobject service_provider = (*env)->GetObjectField(env, (jobject)c_cbparam, fid_rsp);
-    if (service_provider == NULL) {
-	printf("Failed to get ResourceServiceProvider object\n");
-    } else {
-	/* printf("Got ResourceServiceProvider object\n"); */
-    }
+    /* jfieldID fid_rsp = (*env)->GetFieldID(env, cbparam_clazz, */
+    /* 					  "serviceProvider", "Lorg/iochibity/IResourceServiceProvider;"); */
+    /* if (fid_rsp == NULL) { */
+    /* 	printf("GetFieldID failed for serviceProvider of \n"); */
+    /* } else { */
+    /* 	/\* printf("Got serviceProvider fld id\n"); *\/ */
+    /* } */
+    /* jobject service_provider = (*env)->GetObjectField(env, (jobject)c_cbparam, fid_rsp); */
+    /* if (service_provider == NULL) { */
+    /* 	printf("Failed to get ResourceServiceProvider object\n"); */
+    /* } else { */
+    /* 	/\* printf("Got ResourceServiceProvider object\n"); *\/ */
+    /* } */
 
     /* printf("Java_org_iochibity_ResourceLocal_getServiceProvider EXIT\n"); */
-    return service_provider;
+    /* return service_provider; */
+    return (jobject) c_IResourceServiceProvider;
 }
 
 /*

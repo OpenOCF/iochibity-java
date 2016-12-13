@@ -1,6 +1,6 @@
 package org.iochibity.constants;
 
-public class OCMethod
+public class Method
 {
     public static final int NOMETHOD       = 0;
 

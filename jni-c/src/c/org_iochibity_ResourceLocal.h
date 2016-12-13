@@ -58,7 +58,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getChildren
 /*
  * Class:     org_iochibity_ResourceLocal
  * Method:    getServiceProvider
- * Signature: ()Lorg/iochibity/ResourceServiceProvider;
+ * Signature: ()Lorg/iochibity/IResourceServiceProvider;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getServiceProvider
   (JNIEnv *, jobject);
@@ -66,7 +66,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getServiceProvider
 /*
  * Class:     org_iochibity_ResourceLocal
  * Method:    getCallbackParam
- * Signature: ()Lorg/iochibity/CallbackParam;
+ * Signature: ()Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getCallbackParam
   (JNIEnv *, jobject);

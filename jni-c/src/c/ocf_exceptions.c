@@ -4,6 +4,9 @@
 
 #include "ocf_exceptions.h"
 
+/* see https://monochrome.sutic.nu/2013/09/01/nice-jni-exceptions.html */
+
+
 jint throw_no_class_def_error( JNIEnv *env, char *message )
 {
     jclass clazz;

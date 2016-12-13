@@ -1,10 +1,8 @@
 package org.iochibity.test;
 
 import org.iochibity.OCF;
-import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.MessageForResource;
 import org.iochibity.Payload;
 import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
@@ -14,10 +12,10 @@ import org.iochibity.DocRequestIn;
 import org.iochibity.ResourceLocal;
 // import org.iochibity.Resource$InstanceId;
 import org.iochibity.ResourceManager;
-import org.iochibity.ResourceServiceProvider;
+import org.iochibity.IResourceServiceProvider;
 // import org.iochibity.Response;
 import org.iochibity.DocResponseOut;
-import org.iochibity.constants.OCMethod;
+import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
@@ -34,22 +32,19 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class WhatsitSP extends ResourceServiceProvider
+public class WhatsitSP implements IResourceServiceProvider
 {
 
-    static public class CBData extends CallbackParam
-    {
-	int foo;
-	public CBData(int i) { foo = i; }
-    }
+    int foo = 99;
 
-    @Override
-    public int service(int flag, DocRequestIn request_in, CallbackParam callbackParam)
+    // @Override
+    // public int serviceRequestIn(int flag, DocRequestIn request_in, CallbackParam callbackParam)
+    public int serviceRequestIn(DocRequestIn requestIn)
     {
 	System.out.println("WhatsitSP.service routine ENTRY");
-	Logger.logRequestIn(request_in);
+	Logger.logRequestIn(requestIn);
 
-	System.out.println("WhatsitSP: callbackParam.foo = " + ((CBData)callbackParam).foo);
+	System.out.println("WhatsitSP: requestIn callback param foo = " + foo);
 
 	PayloadList<Payload> payloadOut = null;
 
@@ -60,36 +55,36 @@ public class WhatsitSP extends ResourceServiceProvider
 	// } OCEntityHandlerFlag;
 	// if (entityHandlerRequest && (flag & OC_REQUEST_FLAG))
 
-	switch (request_in.method) {
-	case OCMethod.GET:
-	    payloadOut = serviceGetRequest(flag, request_in, callbackParam);
+	switch (requestIn.method) {
+	case Method.GET:
+	    payloadOut = serviceGetRequest(requestIn);
 	    break;
-	case OCMethod.PUT:
+	case Method.PUT:
 	    System.out.println("WhatsitSP: method: PUT");
 	    break;
-	case OCMethod.POST:
+	case Method.POST:
 	    System.out.println("WhatsitSP: method: POST");
 	    break;
-	case OCMethod.DELETE:
+	case Method.DELETE:
 	    System.out.println("WhatsitSP: method: DELETE");
 	    break;
-	case OCMethod.OBSERVE:
+	case Method.OBSERVE:
 	    break;
-	case OCMethod.OBSERVE_ALL:
+	case Method.OBSERVE_ALL:
 	    break;
-	case OCMethod.CANCEL_OBSERVE:
+	case Method.CANCEL_OBSERVE:
 	    break;
-	case OCMethod.PRESENCE:
+	case Method.PRESENCE:
 	    break;
-	case OCMethod.DISCOVER:
+	case Method.DISCOVER:
 	    break;
-	case OCMethod.NOMETHOD:
+	case Method.NOMETHOD:
 	    break;
 	default:
 	    break;
 	}
 
-	DocResponseOut responseOut = new DocResponseOut(request_in, payloadOut);
+	DocResponseOut responseOut = new DocResponseOut(requestIn, payloadOut);
 	// DocResponseOut responseOut = new DocResponseOut();
 
 	// if we create a new URI (e.g. on a POST request) then:
@@ -129,9 +124,7 @@ public class WhatsitSP extends ResourceServiceProvider
 	return ServiceResult.OK;
     }
 
-    static private PayloadList<Payload> serviceGetRequest(int flag,
-							  DocRequestIn request,
-							  CallbackParam callbackParam)
+    static private PayloadList<Payload> serviceGetRequest(DocRequestIn request)
     {
 	System.out.println("WhatsitSP.serviceGetRequest ENTRY");
 

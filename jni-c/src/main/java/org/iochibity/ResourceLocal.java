@@ -53,11 +53,11 @@ public class ResourceLocal extends Resource // OCResource
     // This handler has to be explicitly defined by the programmer.
     // OCEntityHandler entityHandler;   /* fn pointer */
     // we instead return the ResourceServiceProvider object
-    public native ResourceServiceProvider getServiceProvider();
+    public native IResourceServiceProvider getServiceProvider();
 
     // Callback parameter.*/
     // void * entityHandlerCallbackParam;
-    public native CallbackParam getCallbackParam();
+    public native Object getCallbackParam();
 
     // Properties on the resource – defines meta information on the resource.
     // (ACTIVE, DISCOVERABLE etc ).  NB: we call these Policies, per OCF, not "properties"

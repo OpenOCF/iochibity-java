@@ -1,24 +1,22 @@
 package org.iochibity.test;
 
 import org.iochibity.OCF;
-import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.MessageForResource;
 import org.iochibity.Payload;
 import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
 import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
 import org.iochibity.DocRequestIn;
+import org.iochibity.DocResponseIn;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
 // import org.iochibity.Resource$InstanceId;
 import org.iochibity.ResourceManager;
-import org.iochibity.ResourceServiceProvider;
-import org.iochibity.Response;
+import org.iochibity.IResourceServiceProvider;
 import org.iochibity.DocResponseOut;
-import org.iochibity.constants.OCMethod;
+// import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
@@ -37,6 +35,27 @@ import java.util.Map;
 
 public class Logger
 {
+    static public void logDocResponseIn(DocResponseIn drspi)
+    {
+	System.out.println("JAVA: response uri:\t" + drspi.uri);
+	System.out.println("JAVA: response conn type:\t" + drspi.connType);
+	System.out.println("JAVA: response sec ID:\t" + drspi.secID);
+	System.out.println("JAVA: response stack result:\t" + drspi.result);
+	System.out.println("JAVA: response serial:\t" + drspi.serial);
+	System.out.println("JAVA: response option count:\t" + drspi.optionCount);
+	logDeviceAddress(drspi.deviceAddress);
+    }
+
+    static public void logDeviceAddress(DeviceAddress da)
+    {
+	System.out.println("JAVA: response dev address:\t" + da.address);
+	System.out.println("JAVA: response dev port:\t" + da.port);
+	System.out.println("JAVA: response dev adapter:\t" + da.adapter);
+	System.out.println("JAVA: response dev flags:\t" + da.flags);
+	System.out.println("JAVA: response dev ifindex:\t" + da.ifindex);
+	// System.out.println("JAVA: response dev route data: " + da.routeData);
+    }
+
     static public void logResourcePolicies(ResourceLocal resource)
     {
 	System.out.println("RESOURCE: policies: "
@@ -176,7 +195,7 @@ public class Logger
 	System.out.println("REQUEST IN: observe action: " + request.observeAction);
 	System.out.println("REQUEST IN: observe id    : " + request.observeId);
 
-	ArrayList<HeaderOption> vendorOptions = request.getVendorHeaderOptions();
+	List<HeaderOption> vendorOptions = request.getOptions();
 	System.out.println("REQUEST IN: vendor opts ct: " + vendorOptions.size());
 
 	PayloadList<PayloadForResourceState> payload = request.getPDUPayload();

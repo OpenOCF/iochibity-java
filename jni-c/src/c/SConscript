@@ -125,7 +125,9 @@ if target_os == 'darwin':
     local_env.AppendUnique(LINKFLAGS = ['-install_name', install_sysroot + '/lib/libocfjni_c.jnilib'])
     local_env['SHLIBSUFFIX'] = '.jnilib'
 
-jni_clib_src = ['ocf_ocf.c',
+jni_clib_src = ['ocf_init.c',
+	        'ocf_ocf.c',
+		'ocf_document.c',
 	        'ocf_DocForServiceProvider.c',
 	        'ocf_PayloadForResourceState.c',
 	        'ocf_property_map.c',
@@ -133,6 +135,8 @@ jni_clib_src = ['ocf_ocf.c',
 	        'ocf_resource_manager.c',
 	        'ocf_response_out.c',
 	        'ocf_exceptions.c',
+		'ocf_api_server.c',
+	        'ocf_api_client.c',
 	        'jni_utils.c']
 
 # if target_os in ['windows']:

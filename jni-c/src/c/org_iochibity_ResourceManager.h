@@ -42,10 +42,10 @@ JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerDefaultService
 /*
  * Class:     org_iochibity_ResourceManager
  * Method:    registerResource
- * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/ResourceServiceProvider;Ljava/lang/Object;B)Lorg/iochibity/ResourceLocal;
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IResourceServiceProvider;B)Lorg/iochibity/ResourceLocal;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceManager_registerResource
-  (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray, jobject, jobject, jbyte);
+  (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray, jobject, jbyte);
 
 #ifdef __cplusplus
 }

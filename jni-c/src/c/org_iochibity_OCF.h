@@ -7,6 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef org_iochibity_OCF_CLIENT
+#define org_iochibity_OCF_CLIENT 0L
+#undef org_iochibity_OCF_SERVER
+#define org_iochibity_OCF_SERVER 1L
+#undef org_iochibity_OCF_CLIENT_SERVER
+#define org_iochibity_OCF_CLIENT_SERVER 2L
+#undef org_iochibity_OCF_GATEWAY
+#define org_iochibity_OCF_GATEWAY 3L
+#undef org_iochibity_OCF_QOS_LOW
+#define org_iochibity_OCF_QOS_LOW 0L
+#undef org_iochibity_OCF_QOS_MEDIUM
+#define org_iochibity_OCF_QOS_MEDIUM 1L
+#undef org_iochibity_OCF_QOS_HIGH
+#define org_iochibity_OCF_QOS_HIGH 2L
+#undef org_iochibity_OCF_QOS_NA
+#define org_iochibity_OCF_QOS_NA 3L
 /*
  * Class:     org_iochibity_OCF
  * Method:    Init
@@ -70,6 +86,62 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_stop
  */
 JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCCancel
   (JNIEnv *, jobject, jobject, jint, jobject, jbyte);
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    sendRequest
+ * Signature: (ILorg/iochibity/DocRequestOut;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendRequest__ILorg_iochibity_DocRequestOut_2
+  (JNIEnv *, jclass, jint, jobject);
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    sendRequest
+ * Signature: (ILorg/iochibity/DocRequestOut;I)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendRequest__ILorg_iochibity_DocRequestOut_2I
+  (JNIEnv *, jclass, jint, jobject, jint);
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    discoverPlatform
+ * Signature: (Lorg/iochibity/DocRequestOut;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatform__Lorg_iochibity_DocRequestOut_2
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    discoverPlatform
+ * Signature: (Lorg/iochibity/IResourceServiceRequestor;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatform__Lorg_iochibity_IResourceServiceRequestor_2
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    discoverPlatform
+ * Signature: (Lorg/iochibity/IResourceServiceRequestor;[Lorg/iochibity/DeviceAddress;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatform__Lorg_iochibity_IResourceServiceRequestor_2_3Lorg_iochibity_DeviceAddress_2
+  (JNIEnv *, jclass, jobject, jobjectArray);
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    discoverDevices
+ * Signature: (Lorg/iochibity/IResourceServiceRequestor;[Lorg/iochibity/DeviceAddress;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverDevices
+  (JNIEnv *, jclass, jobject, jobjectArray);
+
+/*
+ * Class:     org_iochibity_OCF
+ * Method:    discoverResources
+ * Signature: (Lorg/iochibity/IResourceServiceRequestor;[Lorg/iochibity/DeviceAddress;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverResources
+  (JNIEnv *, jclass, jobject, jobjectArray);
 
 /*
  * Class:     org_iochibity_OCF

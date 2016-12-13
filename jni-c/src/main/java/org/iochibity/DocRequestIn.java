@@ -2,6 +2,11 @@ package org.iochibity;
 
 public class DocRequestIn extends DocForServiceProvider // OCEntityHandlerRequest
 {
+    private IResourceServiceProvider serviceProvider;
+
+    // OCEntityHandlerFlag: OC_REQUEST_FLAG || OC_OBSERVE_FLAG
+    public boolean isRequest = false;
+    public boolean isObserve = false;
 
     // typedef struct
     // {

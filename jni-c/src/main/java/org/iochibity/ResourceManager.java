@@ -31,8 +31,8 @@ public class ResourceManager
     public static native ResourceLocal registerResource(String Uri,
 							String[] resourceTypeName,
 							String[] resourceInterfaceName,
-							ResourceServiceProvider serviceRoutine,
-							CallbackParam /*void* */ callbackParam,
+							IResourceServiceProvider serviceRoutine,
+							// CallbackParam /*void* */ callbackParam,
 							byte   /*uint8_t*/ policies);
 
     ////////////////////////////////////////////////////////////////
