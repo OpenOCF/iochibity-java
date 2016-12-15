@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class PayloadForLinks extends Payload
+public class PayloadForLinks // extends Payload
 {
     // typedef struct OCLinksPayload
     // {

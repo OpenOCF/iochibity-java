@@ -35,6 +35,12 @@ public class ResourceManager
 							// CallbackParam /*void* */ callbackParam,
 							byte   /*uint8_t*/ policies);
 
+    public static native ResourceLocal registerWatchableResource(String Uri,
+								 String[] resourceTypeName,
+								 String[] resourceInterfaceName,
+								 IResourceServiceProvider serviceRoutine,
+								 byte   /*uint8_t*/ policies);
+
     ////////////////////////////////////////////////////////////////
     // stack/internal/ocresourcehandler.h:
     // OCResource *FindResourceByUri(const char* resourceUri);

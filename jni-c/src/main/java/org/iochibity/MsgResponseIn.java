@@ -2,9 +2,11 @@ package org.iochibity;
 
 import java.util.List;
 
-public class DocResponseIn extends DocForServiceRequestor //  OCClientResponse
+public class MsgResponseIn extends MsgForServiceRequestor //  OCClientResponse
 {
-    public long ptr_OCClientResponse; // ptr to c struct
+    // public long ptr_OCClientResponse; // ptr to c struct
+
+    // public native void logPayload();
 
     // a ResponseIn doc is passed to the ResourceServiceRequestor.serviceResponse
 
@@ -12,7 +14,9 @@ public class DocResponseIn extends DocForServiceRequestor //  OCClientResponse
 // {
 //     /** Address of remote server.*/
 //     OCDevAddr devAddr;
-    public DeviceAddress deviceAddress;
+    public DeviceAddress _remoteDeviceAddress;
+    // Message protocol:
+    public DeviceAddress getRemoteDeviceAddress() { return _remoteDeviceAddress; }
 
 //     /** backward compatibility (points to devAddr).*/
 //     OCDevAddr *addr;
@@ -41,15 +45,15 @@ public class DocResponseIn extends DocForServiceRequestor //  OCClientResponse
 
 // /** the payload for the response PDU.*/
 // OCPayload *payload;
-// see Document.java
+// see Message.java
 
 //     /** Number of the received vendor specific header options.*/
 //     uint8_t numRcvdVendorSpecificHeaderOptions;
-    // see Document.java
+    // see Message.java
 
 //     /** An array of the received vendor specific header options.*/
 //     OCHeaderOption rcvdVendorSpecificHeaderOptions[MAX_HEADER_OPTIONS];
-    // see Document.java
+    // see Message.java
 
 // } OCClientResponse;
 }

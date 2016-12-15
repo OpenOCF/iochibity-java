@@ -1,31 +1,31 @@
 package org.iochibity.test;
 
 // UI stuff
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
+// import com.googlecode.lanterna.TerminalSize;
+// import com.googlecode.lanterna.TextColor;
+// import com.googlecode.lanterna.gui2.*;
+// import com.googlecode.lanterna.screen.Screen;
+// import com.googlecode.lanterna.screen.TerminalScreen;
+// import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+// import com.googlecode.lanterna.terminal.Terminal;
 
 // iochibity jni-c stuff
 import org.iochibity.OCF;
-// import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
-import org.iochibity.DocRequestOut;
+import org.iochibity.Message;
+import org.iochibity.MsgRequestOut;
+import org.iochibity.MsgResponseIn;
+import org.iochibity.MsgResponseOut;
 import org.iochibity.HeaderOption;
 import org.iochibity.Payload;
 import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
 import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
-import org.iochibity.DocResponseIn;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
 import org.iochibity.ResourceManager;
 import org.iochibity.IResourceServiceRequestor;
-import org.iochibity.DocResponseOut;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
@@ -53,24 +53,15 @@ public class OCFTestClient
 	}
     }
 
-    // public static class PlatformRequestor extends ResourceServiceRequestor
     public static class PlatformRequestor implements IResourceServiceRequestor
     {
 	private int cbdata = 99;
 
-	public int serviceResponseIn(DocResponseIn responseIn)
+	public int serviceResponseIn(MsgResponseIn responseIn)
 	{
 	    System.out.println("JAVA: PlatformRequestor.serviceResponse ENTRY");
 	    System.out.println("JAVA: cbdata: " + cbdata);
-	    Logger.logDocResponseIn(responseIn);
-
-	    if (responseIn.getPayloadType() == Payload.PLATFORM) {
-		System.out.println("JAVA: payload type is PLATFORM");
-		// PayloadForPlatform plfp = new PayloadForPlatform(responseIn);
-	    } else {
-		// something went wrong ...
-	    }
-
+	    Logger.logMsgResponseIn(responseIn);
 
 	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
 	    // update screen ...
@@ -79,12 +70,59 @@ public class OCFTestClient
 
     }
 
-    int discoverPlatform()
+    public static class DeviceRequestor implements IResourceServiceRequestor
     {
-	// DocRequestOut requestOut = new DocRequestOut(Method.GET,
-	// 					     Resource.URI_PLATFORM,
-	// 					     platformRequestor);
-	return 0;
+	private int cbdata = 123;
+
+	public int serviceResponseIn(MsgResponseIn responseIn)
+	{
+	    System.out.println("LOG: DeviceRequestor.serviceResponse ENTRY");
+	    System.out.println("LOG: cbdata: " + cbdata);
+	    Logger.logMsgResponseIn(responseIn);
+
+	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
+	    // update screen ...
+	    return 0;
+	}
+
+    }
+
+    public static DeviceAddress gRemoteResourceAddr;
+
+    public static class DiscoverResourcesRequestor implements IResourceServiceRequestor
+    {
+	private int cbdata = 123;
+
+	public int serviceResponseIn(MsgResponseIn responseIn)
+	{
+	    System.out.println("LOG: DiscoverResourcesRequestor.serviceResponse ENTRY");
+	    System.out.println("LOG: cbdata: " + cbdata);
+	    Logger.logMsgResponseIn(responseIn);
+
+	    gRemoteResourceAddr = responseIn.getRemoteDeviceAddress();
+
+	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
+	    // update screen ...
+	    return 0;
+	}
+
+    }
+
+    public static class WhatsitRequestor implements IResourceServiceRequestor
+    {
+	private int cbdata = 123;
+
+	public int serviceResponseIn(MsgResponseIn responseIn)
+	{
+	    System.out.println("LOG: DiscoverResourcesRequestor.serviceResponse ENTRY");
+	    System.out.println("LOG: cbdata: " + cbdata);
+	    Logger.logMsgResponseIn(responseIn);
+
+	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
+	    // update screen ...
+	    return 0;
+	}
+
     }
 
     // ****************************************************************
@@ -118,14 +156,47 @@ public class OCFTestClient
 	OCF.run();
 
 	try {
-	    DocRequestOut requestOut
-		= new DocRequestOut(new PlatformRequestor());
-		// = new DocRequestOut((IResourceServiceRequestor)(new PlatformRequestor()));
-	    byte[] bs = OCF.discoverPlatform(requestOut);
-	    System.out.println("Discover handle: " + bs);
+	    MsgRequestOut requestOut
+		= new MsgRequestOut(new PlatformRequestor());
+		// = new MsgRequestOut((IResourceServiceRequestor)(new PlatformRequestor()));
+	    byte[] bs = OCF.discoverPlatforms(requestOut);
 	} catch (Exception e) {
-	    System.out.println("ERROR: discoverPlatform");
+	    System.out.println("ERROR: discoverPlatforms");
 	}
+
+	try {
+	    MsgRequestOut requestOut
+		= new MsgRequestOut(new DeviceRequestor());
+	    byte[] bs = OCF.discoverDevices(requestOut);
+	} catch (Exception e) {
+	    System.out.println("ERROR: discoverDevices");
+	}
+
+	try {
+	    MsgRequestOut requestOut
+		= new MsgRequestOut(new DiscoverResourcesRequestor());
+	    byte[] bs = OCF.discoverResources(requestOut);
+	} catch (Exception e) {
+	    System.out.println("ERROR: discoverResources");
+	}
+
+	try {
+	    Thread.sleep(1000);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    msgError(TAG, e.toString());
+	}
+
+	try {
+	    MsgRequestOut requestOut
+		= new MsgRequestOut(new WhatsitRequestor());
+	    requestOut.dest = gRemoteResourceAddr;
+	    requestOut.uri  = "/a/whatsit";
+	    byte[] bs = OCF.sendRequest(Method.GET, requestOut);
+	} catch (Exception e) {
+	    System.out.println("ERROR: discoverResources");
+	}
+
 
 	// // Setup terminal and screen layers
 	// Screen screen = null;

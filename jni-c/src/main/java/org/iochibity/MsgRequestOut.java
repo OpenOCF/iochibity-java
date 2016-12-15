@@ -5,7 +5,7 @@ import org.iochibity.constants.ConnectivityType;
 import java.util.List;
 
 // created by client
-public class DocRequestOut extends DocForServiceRequestor
+public class MsgRequestOut extends MsgForServiceRequestor
 {
     // data necessary to support OCDoResource
     // OCStackResult OCDoResource(OCDoHandle *handle,
@@ -19,10 +19,10 @@ public class DocRequestOut extends DocForServiceRequestor
     //                             OCHeaderOption *options,
     //                             uint8_t numOptions)
 
-    String        uri;
+    public String        uri;
     // method supplied as arg to sendRequest, not as data
     // int           method;
-    DeviceAddress dest;
+    public DeviceAddress dest = null;
     Payload       payload;
 
     int protocol; // ConnectivityType.DEFAULT, etc.
@@ -39,35 +39,27 @@ public class DocRequestOut extends DocForServiceRequestor
 
     // Discovery requests: OCF.discoverPlatform, OCF.discoverDevice, OCF.discoverResources?
 
-    public DocRequestOut(IResourceServiceRequestor requestor) {
+    public MsgRequestOut(IResourceServiceRequestor requestor) {
 	serviceRequestor = requestor;
     }
 
-    public DocRequestOut(String theUri, IResourceServiceRequestor requestor) {
-	switch(uri) {
-	case Resource.URI_PLATFORM:
-	case Resource.URI_DEVICE:
-	case Resource.URI_RESOURCES:
-	    uri              = theUri;
-	    // method           = theMethod;
-	    dest             = null;
-	    payload          = null;
-	    protocol         = ConnectivityType.DEFAULT;
-	    // qos              = OCF.QOS_LOW;
-	    serviceRequestor = requestor;
-	    context          = 0;
-	    contextDeleter   = 0;
-	    break;
-	default:
-	    break;
-	}
+    public MsgRequestOut(String theUri, IResourceServiceRequestor requestor) {
+	uri              = theUri;
+	// method           = theMethod;
+	dest             = null;
+	payload          = null;
+	protocol         = ConnectivityType.DEFAULT;
+	// qos              = OCF.QOS_LOW;
+	serviceRequestor = requestor;
+	context          = 0;
+	contextDeleter   = 0;
     }
 }
 
 // examples:
-// DocRequestOut requestOut = new DocRequestOut(Resource.URI_PLATFORM,
+// MsgRequestOut requestOut = new MsgRequestOut(Resource.URI_PLATFORM,
 // 					     platformRequestor);
 
-// DocRequestOut requestOut = new DocRequestOut(Resource.URI_RESOURCES,
+// MsgRequestOut requestOut = new MsgRequestOut(Resource.URI_RESOURCES,
 // 					     devAddress, // forces unicast
 // 					     platformRequestor);

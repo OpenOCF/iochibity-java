@@ -13,13 +13,13 @@ public class Method
     public static final int DELETE         = (1 << 3);
 
     /** Register observe request for most up date notifications ONLY.*/
-    public static final int OBSERVE        = (1 << 4);
+    public static final int WATCH        = (1 << 4); // OBSERVE
 
     /** Register observe request for all notifications, including stale notifications.*/
-    public static final int OBSERVE_ALL    = (1 << 5);
+    public static final int WATCH_ALL    = (1 << 5); // OBSERVE_ALL
 
     /** De-register observation, intended for internal use.*/
-    public static final int CANCEL_OBSERVE = (1 << 6);
+    public static final int CANCEL_WATCH = (1 << 6); // CANCEL_OBSERVE
 
     // #ifdef WITH_PRESENCE
     /** Subscribe for all presence notifications of a particular resource.*/
@@ -28,6 +28,7 @@ public class Method
 
     /** Allows OCDoResource caller to do discovery.*/
     public static final int DISCOVER       = (1 << 8);
+
 }
 
 

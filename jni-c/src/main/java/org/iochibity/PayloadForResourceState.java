@@ -53,6 +53,7 @@ public class PayloadForResourceState extends Payload // OCRepPayload
     // Resource Properties
     //     OCRepPayloadValue* values;
     private PropertyMap<String, Object> _properties;
+    @Override
     public PropertyMap<String, Object> getProperties() { return _properties; }
     public native void setProperties(PropertyForResource ps);
     public void putProperty(String name, Object value) { _properties.put(name, value); }

@@ -1,8 +1,10 @@
+/* ocf_MsgResonseOut.c */
+
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "org_iochibity_ResponseOut.h"
+#include "org_iochibity_MsgResponseOut.h"
 #include "jni_utils.h"
 #include "ocf_exceptions.h"
 

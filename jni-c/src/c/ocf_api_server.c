@@ -20,232 +20,102 @@
 
 /* FIXME: this is called from the runtime stack, not java - deal with exceptions */
 /* THROW_JNI_EXCEPTION won't work since we're not called from Java */
-jobject OCEntityHandlerRequest_to_DocRequestIn(JNIEnv* env, OCEntityHandlerRequest* crequest_in)
+jobject OCEntityHandlerRequest_to_MsgRequestIn(JNIEnv* env, OCEntityHandlerRequest* crequest_in)
 {
-    /* printf("OCEntityHandlerRequest_to_DocRequestIn ENTRY\n"); */
+    /* printf("OCEntityHandlerRequest_to_MsgRequestIn ENTRY\n"); */
 
-    jobject j_DocRequestIn = (*env)->NewObject(env, K_DOC_REQUEST_IN, MID_DRQI_CTOR); // request_in_ctor);
+    jobject j_MsgRequestIn = (*env)->NewObject(env, K_MSG_REQUEST_IN, MID_RQI_CTOR); // request_in_ctor);
 
-    /*FIXME: verify class of parms */
-    jclass k_request_in = (*env)->GetObjectClass(env, j_DocRequestIn);
-    if (k_request_in == NULL) {
-	printf("ERROR:  GetObjectClass failed for DocRequestIn\n");
-	fflush(NULL);
-    	return NULL;
-    }
+    (*env)->SetLongField(env, j_MsgRequestIn, FID_RQI_LOCAL_HANDLE, (intptr_t)crequest_in);
+    (*env)->SetLongField(env, j_MsgRequestIn, FID_RQI_REMOTE_HANDLE, (intptr_t)crequest_in->requestHandle);
+    (*env)->SetLongField(env, j_MsgRequestIn, FID_RQI_RESOURCE_HANDLE, (intptr_t)crequest_in->resource);
 
-    /* first, store pointer to the incoming request */
-    jfieldID field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "localHandle", "J");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for localHandle\n");
-	fflush(NULL);
-    	return NULL;
-    }
-    (*env)->SetLongField(env, j_DocRequestIn, field, (intptr_t)crequest_in);
-
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "remoteHandle", "J");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for remoteHandle\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	printf("c request remote handle: %ld\n", (long)crequest_in->requestHandle);
-	(*env)->SetLongField(env, j_DocRequestIn, field, (intptr_t)crequest_in->requestHandle);
-    }
-    /* then do the rest */
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "resourceHandle", "J");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for resourceHandle\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	/* printf("OCResourceHandle (in c): %ld\n", (long)crequest_in->resource); */
-	(*env)->SetLongField(env, j_DocRequestIn, field, (intptr_t)crequest_in->resource);
-    }
-
-    /* method */
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "method", "I");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for 'method' fld\n");
-	fflush(NULL);
-    	return NULL;
-
-    } else {
-	/* printf("method in c: %d\n", crequest_in->method); */
-	(*env)->SetIntField(env, j_DocRequestIn, field, crequest_in->method);
-    }
 
     /* OCDevAddr */
-    /* jfieldID dev_addr_field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, */
-    /* 						 "deviceAddress", */
-    /* 						 "Lorg/iochibity/DeviceAddress;"); */
-    /* if (dev_addr_field == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for deviceAddress\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } */
-
-    /* construct a new DeviceAddress object to insert into DocRequestIn obj */
-    /* jclass k_devaddr = (*env)->FindClass(env, "org/iochibity/DeviceAddress"); */
-    /* if (k_devaddr == NULL) { */
-    /* 	printf("ERROR:  FindClass failed for org/iochibity/DeviceAddress\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } */
-    /* jmethodID dev_addr_ctor = (*env)->GetMethodID(env, K_DEVICE_ADDRESS, "<init>", "()V"); */
-    /* if (dev_addr_ctor == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for ctor of DeviceAddress\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } */
-
-    /* jobject jdevice_address = (*env)->NewObject(env, K_DEVICE_ADDRESS, dev_addr_ctor); */
-    jobject jdevice_address = (*env)->NewObject(env, K_DEVICE_ADDRESS, MID_DRQI_CTOR);
-
-    /* OCDevAddr.adapter */
-    /* field = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "adapter", "I"); */
-    /* if (field == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for adapter\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } else { */
-
-    /* printf("c adapter: %d\n", crequest_in->devAddr.adapter); */
+    jobject jdevice_address = (*env)->NewObject(env, K_DEVICE_ADDRESS, MID_RQI_CTOR);
     (*env)->SetIntField(env, jdevice_address, FID_DA_ADAPTER, crequest_in->devAddr.adapter);
-
-    /* } */
-
-    /* OCDevAddr.flags */
-    /* field = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "flags", "I"); */
-    /* if (field == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for 'flags' fld\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } else { */
-
-	/* printf("c flags: 0x%X\n", crequest_in->devAddr.flags); */
     (*env)->SetIntField(env, jdevice_address, FID_DA_FLAGS, crequest_in->devAddr.flags);
-    /* } */
-
-    /* OCDevAddr.port */
-    /* field = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "port", "I"); */
-    /* if (field == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for port fld\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } else { */
-
-    /* printf("c port: %d\n", crequest_in->devAddr.port); */
-    (*env)->SetIntField(env, jdevice_address, field, crequest_in->devAddr.port);
-
-    /* } */
-
-    /* OCDevAddr.addr */
-    /* field = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "address", "Ljava/lang/String;"); */
-    /* if (field == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for address fld\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } else { */
-
-    /* printf("c address: %s\n", crequest_in->devAddr.addr); */
+    (*env)->SetIntField(env, jdevice_address, FID_DA_PORT, crequest_in->devAddr.port);
     jstring js = (*env)->NewStringUTF(env, crequest_in->devAddr.addr);
-    (*env)->SetObjectField(env, jdevice_address, field, js);
-    /* } */
+    (*env)->SetObjectField(env, jdevice_address, FID_DA_ADDRESS, js);
+    (*env)->SetIntField(env, jdevice_address, FID_DA_IFINDEX, crequest_in->devAddr.ifindex);
 
-    /* OCDevAddr.ifindex */
-    /* field = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "ifindex", "I"); */
-    /* if (field == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for ifindex fld\n"); */
-    /* 	fflush(NULL); */
-    /* 	return NULL; */
-    /* } else { */
+    (*env)->SetObjectField(env, j_MsgRequestIn, FID_MSG_REMOTE_DEVADDR, jdevice_address);
 
-    /* printf("c ifindex: %d\n", crequest_in->devAddr.ifindex); */
-    (*env)->SetIntField(env, jdevice_address, field, crequest_in->devAddr.ifindex);
-    /* } */
-
-    /* now set deviceAddress field in DocRequestIn object */
-    /* (*env)->SetObjectField(env, j_DocRequestIn, dev_addr_field, jdevice_address); */
-    (*env)->SetObjectField(env, j_DocRequestIn, FID_DRQI_DEVICE_ADDRESS, jdevice_address);
+    /* method */
+    (*env)->SetIntField(env, j_MsgRequestIn, FID_RQI_METHOD, crequest_in->method);
 
     /* query */
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "query", "Ljava/lang/String;");
-    if (field == NULL) { /* make sure we got the field */
-	printf("ERROR:  GetFieldID failed for query fld\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	/* printf("query in c: '%s'\n", crequest_in->query); */
-	jstring js = (*env)->NewStringUTF(env, crequest_in->query);
-	(*env)->SetObjectField(env, j_DocRequestIn, field, js);
-    }
+    /* field = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "query", "Ljava/lang/String;"); */
+    /* if (field == NULL) { /\* make sure we got the field *\/ */
+    /* 	printf("ERROR:  GetFieldID failed for query fld\n"); */
+    /* 	fflush(NULL); */
+    /* 	return NULL; */
+    /* } else { */
+    /* printf("query in c: '%s'\n", crequest_in->query); */
+    js = (*env)->NewStringUTF(env, crequest_in->query);
+    (*env)->SetObjectField(env, j_MsgRequestIn, FID_RQI_QUERY, js);
 
     /* observation info */
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "observeAction", "I");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for observeAction fld\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	/* printf("c observeAction: %d\n", crequest_in->obsInfo.action); */
-	(*env)->SetIntField(env, j_DocRequestIn, field, crequest_in->obsInfo.action);
-    }
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "observeId", "I");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for observeId fld\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	/* printf("c observation id: %d\n", crequest_in->obsInfo.obsId); */
-	(*env)->SetIntField(env, j_DocRequestIn, field, crequest_in->obsInfo.obsId);
-    }
+    /* we encode this info as methods WATCH, UNWATCH */
 
-    /* vendor header options - implemented as getter method */
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "vendorHeaderOptionCount", "I");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for vendorHeaderOptionCount fld\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	/* printf("c nbf header options: %d\n", crequest_in->numRcvdVendorSpecificHeaderOptions); */
-	(*env)->SetIntField(env, j_DocRequestIn, field, crequest_in->numRcvdVendorSpecificHeaderOptions);
-    }
+    /* field = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "observeAction", "I"); */
+    /* if (field == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for observeAction fld\n"); */
+    /* 	fflush(NULL); */
+    /* 	return NULL; */
+    /* } else { */
+    /* 	/\* printf("c observeAction: %d\n", crequest_in->obsInfo.action); *\/ */
+    /* 	(*env)->SetIntField(env, j_MsgRequestIn, field, crequest_in->obsInfo.action); */
+    /* } */
+    /* field = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "observeId", "I"); */
+    /* if (field == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for observeId fld\n"); */
+    /* 	fflush(NULL); */
+    /* 	return NULL; */
+    /* } else { */
+    /* 	/\* printf("c observation id: %d\n", crequest_in->obsInfo.obsId); *\/ */
+    /* 	(*env)->SetIntField(env, j_MsgRequestIn, field, crequest_in->obsInfo.obsId); */
+    /* } */
+
+    /* vendor header options */
+    /* -> Message.getOptions() */
+    /* field = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "vendorHeaderOptionCount", "I"); */
+    /* if (field == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for vendorHeaderOptionCount fld\n"); */
+    /* 	fflush(NULL); */
+    /* 	return NULL; */
+    /* } else { */
+    /* 	/\* printf("c nbf header options: %d\n", crequest_in->numRcvdVendorSpecificHeaderOptions); *\/ */
+    /* 	(*env)->SetIntField(env, j_MsgRequestIn, field, crequest_in->numRcvdVendorSpecificHeaderOptions); */
+    /* } */
 
     /* message ID */
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "messageId", "I");
-    if (field == NULL) { /* make sure we got the field */
-	printf("ERROR:  GetFieldID failed for messageId fld\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	/* printf("message ID in c: %d\n", crequest_in->messageID); */
-	(*env)->SetIntField(env, j_DocRequestIn, field, crequest_in->messageID);
-    }
+    (*env)->SetIntField(env, j_MsgRequestIn, FID_RQI_MSG_ID, crequest_in->messageID);
 
     /* payload - implemented as getter, using handle */
-    field = (*env)->GetFieldID(env, K_DOC_REQUEST_IN, "payloadHandle", "J");
-    if (field == NULL) {
-	printf("ERROR:  GetFieldID failed for payloadHandle fld\n");
-	fflush(NULL);
-    	return NULL;
-    } else {
-	/* printf("OCPayload ptr (in c): %ld\n", (long)crequest_in->payload); */
-	/* printf("OCPayload type: %ld\n", (long)((OCPayload*)crequest_in->payload)->type); */
-	(*env)->SetLongField(env, j_DocRequestIn, field, (intptr_t)crequest_in->payload);
-    }
-    return j_DocRequestIn;
-    /* printf("OCEntityHandlerRequest_to_DocRequestIn EXIT\n"); */
+    /* field = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "payloadHandle", "J"); */
+    /* if (field == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for payloadHandle fld\n"); */
+    /* 	fflush(NULL); */
+    /* 	return NULL; */
+    /* } else { */
+    /* 	/\* printf("OCPayload ptr (in c): %ld\n", (long)crequest_in->payload); *\/ */
+    /* 	/\* printf("OCPayload type: %ld\n", (long)((OCPayload*)crequest_in->payload)->type); *\/ */
+    (*env)->SetLongField(env, j_MsgRequestIn, FID_MSG_PAYLOAD_HANDLE, (intptr_t)crequest_in->payload);
+
+    return j_MsgRequestIn;
+    /* printf("OCEntityHandlerRequest_to_MsgRequestIn EXIT\n"); */
 }
 
 /* typedef OCEntityHandlerResult (*OCEntityHandler) */
 /* (OCEntityHandlerFlag flag, OCEntityHandlerRequest * entityHandlerRequest, void* callbackParam); */
 OCEntityHandlerResult service_request_in(OCEntityHandlerFlag flag,
-					 OCEntityHandlerRequest * c_OCEntityHandlerRequest, /* DocRequestIn */
+					 OCEntityHandlerRequest * c_OCEntityHandlerRequest, /* MsgRequestIn */
 					 void* j_IResourceServiceProvider)
 {
     OC_UNUSED(flag);
-    printf("\nocf_resource_manager.c/service_request_in ENTRY\n");
+    printf("\nocf_api_server.c/service_request_in ENTRY\n");
     /* printf("REQUEST URI: %s\n", ((OCResource*)(c_OCEntityHandlerRequest->resource))->uri); */
 
     /* printf("request resource properties: 0x%X\n", */
@@ -309,7 +179,7 @@ OCEntityHandlerResult service_request_in(OCEntityHandlerFlag flag,
 
     jmethodID mid_serviceRequestIn = (*env)->GetMethodID(env, k_IResourceServiceProvider,
 							 "serviceRequestIn",
-							 "(ILorg/iochibity/DocRequestIn;)I");
+							 "(Lorg/iochibity/MsgRequestIn;)I");
     if (mid_serviceRequestIn == NULL) {
     	printf("ERROR:  GetMethodID failed for serviceRequestIn of CallbackParam\n");
     	return OC_EH_INTERNAL_SERVER_ERROR;
@@ -318,24 +188,24 @@ OCEntityHandlerResult service_request_in(OCEntityHandlerFlag flag,
     fflush(NULL);
 
     /* create RequestIn object */
-    /* jclass k_request_in = (*env)->FindClass(env, "org/iochibity/DocRequestIn"); */
+    /* jclass k_request_in = (*env)->FindClass(env, "org/iochibity/MsgRequestIn"); */
     /* if (k_request_in == NULL) { */
-    /* 	printf("ERROR:  FindClass failed for org/iochibity/DocRequestIn\n"); */
+    /* 	printf("ERROR:  FindClass failed for org/iochibity/MsgRequestIn\n"); */
     /* 	fflush(NULL); */
     /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
     /* } */
 
-    /* jmethodID request_in_ctor = (*env)->GetMethodID(env, K_DOC_REQUEST_IN, "<init>", "()V"); */
+    /* jmethodID request_in_ctor = (*env)->GetMethodID(env, K_MSG_REQUEST_IN, "<init>", "()V"); */
     /* if (request_in_ctor == NULL) { */
-    /* 	printf("ERROR:  GetMethodID feilad for ctor for DocRequestIn"); */
+    /* 	printf("ERROR:  GetMethodID feilad for ctor for MsgRequestIn"); */
     /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
     /* } */
 
-    jobject j_DocRequestIn = NULL;
-    j_DocRequestIn = OCEntityHandlerRequest_to_DocRequestIn(env, c_OCEntityHandlerRequest);
+    jobject j_MsgRequestIn = NULL;
+    j_MsgRequestIn = OCEntityHandlerRequest_to_MsgRequestIn(env, c_OCEntityHandlerRequest);
     fflush(NULL);
-    if (j_DocRequestIn == NULL) {
-        printf("ERROR:  OCEntityHandlerRequest_to_DocRequestIn failed\n");
+    if (j_MsgRequestIn == NULL) {
+        printf("ERROR:  OCEntityHandlerRequest_to_MsgRequestIn failed\n");
     	return OC_EH_INTERNAL_SERVER_ERROR;
     }
 
@@ -343,7 +213,7 @@ OCEntityHandlerResult service_request_in(OCEntityHandlerFlag flag,
     int op_result = OC_EH_OK;
     op_result = (*env)->CallIntMethod(env, j_IResourceServiceProvider,
 				      mid_serviceRequestIn,
-				      j_DocRequestIn);
+				      j_MsgRequestIn);
     if (op_result != OC_STACK_OK) {
         printf("ERROR:  CallIntMethod failed for ResourceServiceProvider.serviceRequestIn\n");
     	return OC_EH_INTERNAL_SERVER_ERROR;
@@ -365,7 +235,7 @@ OCEntityHandlerResult service_request_in(OCEntityHandlerFlag flag,
 /*
  * Class:     org_iochibity_OCF
  * Method:    sendResponse
- * Signature: (Lorg/iochibity/DocResponseOut;)V
+ * Signature: (Lorg/iochibity/MsgResponseOut;)V
  */
 JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendResponse
 (JNIEnv * env, jclass klass, jobject j_response_out)
@@ -390,7 +260,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendResponse
 	return;
     }
     /* get the RequestIn object */
-    jfieldID fid_rqst_in = (*env)->GetFieldID(env, k_response_out, "_requestIn", "Lorg/iochibity/DocRequestIn;");
+    jfieldID fid_rqst_in = (*env)->GetFieldID(env, k_response_out, "_requestIn", "Lorg/iochibity/MsgRequestIn;");
     if (fid_rqst_in == NULL) {
 	THROW_JNI_EXCEPTION("GetFieldID failed for '_requestIn' on ResponseOut\n");
 	return;
@@ -488,7 +358,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendResponse
     }
 
     /* pfrs = PayloadForResourceState */
-    prep_pfrs(env); /* get all the field and method ids etc. needed for iteration */
+    /* prep_pfrs(env); /\* get all the field and method ids etc. needed for iteration *\/ */
 
     jobject j_payload = NULL;
     int c_type;

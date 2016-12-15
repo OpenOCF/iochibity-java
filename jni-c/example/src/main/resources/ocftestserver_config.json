@@ -93,7 +93,7 @@
                     "permission": 2
                 },
                 {
-                    "subjectuuid": "AAAAAAAA-BBBB-CCCC-DDDD-010101010101",
+                    "subjectuuid": "*",
                     "resources": [
                         {
                             "href": "/a/whatsit",

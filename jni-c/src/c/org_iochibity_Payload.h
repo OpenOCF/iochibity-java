@@ -7,6 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     org_iochibity_Payload
+ * Method:    setResourceTypes
+ * Signature: (Ljava/util/List;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_Payload_setResourceTypes
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_iochibity_Payload
+ * Method:    setInterfaces
+ * Signature: (Ljava/util/List;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_Payload_setInterfaces
+  (JNIEnv *, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif

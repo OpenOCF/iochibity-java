@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class PayloadForResourceMeta extends Payload // OCResourcePayload*
+public class PayloadForResourceMeta // extends Payload // OCResourcePayload*
 {
     // in struct OCDiscoveryPayload:
     //     /** This structure holds the old /oic/res response. */

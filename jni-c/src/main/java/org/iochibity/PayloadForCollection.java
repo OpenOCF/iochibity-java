@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class PayloadForCollection extends Payload
+public class PayloadForCollection // extends Payload
 {
     // octypes.h:
     // /** Resource collection payload. */

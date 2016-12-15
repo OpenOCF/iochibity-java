@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class PayloadForDevice extends Payload
+public class PayloadForDevice // extends Payload
 {
     // ocpayload.h
     // OC_EXPORT OCDevicePayload* OCDevicePayloadCreate(const char* sid, const char* dname,

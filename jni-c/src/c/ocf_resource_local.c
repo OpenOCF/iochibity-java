@@ -5,6 +5,7 @@
 #include "org_iochibity_ResourceLocal.h"
 #include "org_iochibity_ResourceLocal_InstanceId.h"
 #include "jni_utils.h"
+#include "ocf_init.h"
 #include "ocf_exceptions.h"
 
 #include "octypes.h"
@@ -87,41 +88,41 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceLocal_getTypes
     }
 
     /* create LinkedList for types */
-    jclass ll_clazz = (*env)->FindClass(env, "java/util/LinkedList");
-    if (ll_clazz == 0) {
-	printf("Find class method Failed.\n");
-    }else {
-	/* printf("Found class method succeeded.\n"); */
-    }
+    /* jclass ll_clazz = (*env)->FindClass(env, "java/util/LinkedList"); */
+    /* if (ll_clazz == 0) { */
+    /* 	printf("Find class method Failed.\n"); */
+    /* }else { */
+    /* 	/\* printf("Found class method succeeded.\n"); *\/ */
+    /* } */
 
-    jmethodID ctor = (*env)->GetMethodID(env, ll_clazz, "<init>", "()V");
-    if (ctor == 0) {
-	printf("Find ctor method Failed.\n");
-    }else {
-	/* printf("Found ctor method succeeded.\n"); */
-    }
-    jobject ll  = (*env)->NewObject(env, ll_clazz, ctor);
+    /* jmethodID ctor = (*env)->GetMethodID(env, ll_clazz, "<init>", "()V"); */
+    /* if (ctor == 0) { */
+    /* 	printf("Find ctor method Failed.\n"); */
+    /* }else { */
+    /* 	/\* printf("Found ctor method succeeded.\n"); *\/ */
+    /* } */
+    jobject ll  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
     if (ll == NULL) {
 	printf("NewObject failed for LinkedList\n");
-    } else {
-	jmethodID j_add = (*env)->GetMethodID(env, ll_clazz, "add", "(Ljava/lang/Object;)Z");
-	if (j_add == NULL) {
-	    printf("Find add method Failed.\n");
-	}else {
-	    /* printf("Found add method succeeded.\n"); */
-	}
+	return NULL;
+    }
+    /* jmethodID j_add = (*env)->GetMethodID(env, K_LINKED_LIST, "add", "(Ljava/lang/Object;)Z"); */
+    /* if (j_add == NULL) { */
+    /* 	printf("Find add method Failed.\n"); */
+    /* }else { */
+    /* 	/\* printf("Found add method succeeded.\n"); *\/ */
+    /* } */
 
-	OCResourceType* resource_types = ((OCResource*)(intptr_t) j_resource_handle)->rsrcType;
-	jstring j_resource_type;
-	while(resource_types) {
-	    /* printf("c resource type: %s\n", resource_types->resourcetypename); */
-	    j_resource_type = (*env)->NewStringUTF(env, resource_types->resourcetypename);
-	    jboolean jb = (*env)->CallBooleanMethod(env, ll, j_add, j_resource_type);
-	    if (!jb) {
-		printf("CallBooleanMethod Failed.\n");
-	    }
-	    resource_types = resource_types->next;
-    	}
+    OCResourceType* resource_types = ((OCResource*)(intptr_t) j_resource_handle)->rsrcType;
+    jstring j_resource_type;
+    while(resource_types) {
+	/* printf("c resource type: %s\n", resource_types->resourcetypename); */
+	j_resource_type = (*env)->NewStringUTF(env, resource_types->resourcetypename);
+	jboolean jb = (*env)->CallBooleanMethod(env, ll, MID_LL_ADD, j_resource_type);
+	if (!jb) {
+	    printf("CallBooleanMethod Failed.\n");
+	}
+	resource_types = resource_types->next;
     }
     /* printf("Java_org_iochibity_ResourceLocal_getTypes EXIT\n"); */
     return ll;

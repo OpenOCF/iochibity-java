@@ -8,5 +8,5 @@ public interface IResourceServiceProvider {
     // private long resourceHandle = 0;
 
     /*OCEntityHandlerResult*/
-    public int serviceRequestIn(DocRequestIn request);
+    public int serviceRequestIn(MsgRequestIn request);
 }

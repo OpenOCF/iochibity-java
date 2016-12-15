@@ -4,20 +4,18 @@ import org.iochibity.OCF;
 // import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.DocForServiceProvider;
+import org.iochibity.MsgForServiceProvider;
+import org.iochibity.MsgRequestIn;
+import org.iochibity.MsgResponseOut;
 import org.iochibity.Payload;
 import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
 import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
-import org.iochibity.DocRequestIn;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
-// import org.iochibity.Resource$InstanceId;
 import org.iochibity.ResourceManager;
 import org.iochibity.IResourceServiceProvider;
-// import org.iochibity.Response;
-import org.iochibity.DocResponseOut;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
@@ -50,7 +48,7 @@ public class OCFTestServer
 	int foo = 72;
 	public void hello() { System.out.println("Hello from callback: " + foo); }
 
-	private PayloadList<Payload> serviceGetRequest(DocRequestIn requestIn)
+	private PayloadList<Payload> serviceGetRequest(MsgRequestIn requestIn)
 	{
 	    System.out.println("TEST serviceGetRequest ENTRY");
 
@@ -102,7 +100,7 @@ public class OCFTestServer
 	}
 
 	@Override
-	public int serviceRequestIn(DocRequestIn requestIn)
+	public int serviceRequestIn(MsgRequestIn requestIn)
 	{
 	    System.out.println("TEST TemperatureSP.service routine ENTRY");
 	    Logger.logRequestIn(requestIn);
@@ -116,7 +114,7 @@ public class OCFTestServer
 	    // } OCEntityHandlerFlag;
 	    // if (entityHandlerRequest && (flag & OC_REQUEST_FLAG))
 
-	    switch (requestIn.method) {
+	    switch (requestIn.getMethod()) {
 	    case Method.GET:
 		payloadOut = serviceGetRequest(requestIn);
 		break;
@@ -129,11 +127,11 @@ public class OCFTestServer
 	    case Method.DELETE:
 		System.out.println("TEST method: DELETE");
 		break;
-	    case Method.OBSERVE:
+	    case Method.WATCH:
 		break;
-	    case Method.OBSERVE_ALL:
+	    case Method.WATCH_ALL:
 		break;
-	    case Method.CANCEL_OBSERVE:
+	    case Method.CANCEL_WATCH:
 		break;
 	    case Method.PRESENCE:
 		break;
@@ -145,7 +143,7 @@ public class OCFTestServer
 		break;
 	    }
 
-	    DocResponseOut responseOut = new DocResponseOut(requestIn, payloadOut);
+	    MsgResponseOut responseOut = new MsgResponseOut(requestIn, payloadOut);
 
 	    try {
 		OCF.sendResponse(responseOut);

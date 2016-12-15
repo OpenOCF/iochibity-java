@@ -4,18 +4,16 @@ import org.iochibity.OCF;
 // import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
+import org.iochibity.MsgRequestIn;
+import org.iochibity.MsgResponseOut;
 import org.iochibity.Payload;
+import org.iochibity.PayloadForResourceState;
 import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
-import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
-import org.iochibity.DocRequestIn;
 import org.iochibity.ResourceLocal;
-// import org.iochibity.Resource$InstanceId;
 import org.iochibity.ResourceManager;
 import org.iochibity.IResourceServiceProvider;
-// import org.iochibity.Response;
-import org.iochibity.DocResponseOut;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
@@ -38,8 +36,8 @@ public class LightSP implements IResourceServiceProvider
     int foo;			// instead of CallbackParam;
 
     // @Override
-    // public int serviceRequestIn(int flag, DocRequestIn request_in, CallbackParam callbackParam)
-    public int serviceRequestIn(DocRequestIn request_in)
+    // public int serviceRequestIn(int flag, MsgRequestIn request_in, CallbackParam callbackParam)
+    public int serviceRequestIn(MsgRequestIn request_in)
     {
 	System.out.println("LightSP.service routine ENTRY");
 	Logger.logRequestIn(request_in);
@@ -49,11 +47,11 @@ public class LightSP implements IResourceServiceProvider
 	// typedef enum
 	// {
 	//     OC_REQUEST_FLAG = (1 << 1),
-	//     OC_OBSERVE_FLAG = (1 << 2)
+	//     OC_WATCH_FLAG = (1 << 2)
 	// } OCEntityHandlerFlag;
 	// if (entityHandlerRequest && (flag & OC_REQUEST_FLAG))
 
-	switch (request_in.method) {
+	switch (request_in.getMethod()) {
 	case Method.GET:
 	    payloadOut = serviceGetRequest(request_in);
 	    break;
@@ -66,11 +64,15 @@ public class LightSP implements IResourceServiceProvider
 	case Method.DELETE:
 	    System.out.println("Light: method: DELETE");
 	    break;
-	case Method.OBSERVE:
+	    // NOTE: in C API, WATCH (OBSERVE) methods on RequestOut become GET
+	    // method plus OBSERVE flag (OC_REQUEST_FLAG) on RequestIn.
+	    // It is sent as a header option.
+	    // Our API reconsitutes the original method:
+	case Method.WATCH:	// = GET with OBSERVE_REGISTER option
 	    break;
-	case Method.OBSERVE_ALL:
+	case Method.WATCH_ALL:	// = GET with OBSERVE_REGISTER option plus ???
 	    break;
-	case Method.CANCEL_OBSERVE:
+	case Method.CANCEL_WATCH: // = GET with OBSERVE_DEREGISTER option
 	    break;
 	case Method.PRESENCE:
 	    break;
@@ -82,8 +84,8 @@ public class LightSP implements IResourceServiceProvider
 	    break;
 	}
 
-	DocResponseOut responseOut = new DocResponseOut(request_in, payloadOut);
-	// DocResponseOut responseOut = new DocResponseOut();
+	MsgResponseOut responseOut = new MsgResponseOut(request_in, payloadOut);
+	// MsgResponseOut responseOut = new MsgResponseOut();
 
 	// // Indicates that response is NOT in a persistent buffer
 	responseOut.persistentBufferFlag = 0;
@@ -99,7 +101,7 @@ public class LightSP implements IResourceServiceProvider
 	return ServiceResult.OK;
     }
 
-    static private PayloadList<Payload> serviceGetRequest(DocRequestIn request)
+    static private PayloadList<Payload> serviceGetRequest(MsgRequestIn request)
     {
 	System.out.println("Light: serviceGetRequest ENTRY");
 	ResourceLocal r = request.getResource();

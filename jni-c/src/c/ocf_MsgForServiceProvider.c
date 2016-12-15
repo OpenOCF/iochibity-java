@@ -1,8 +1,10 @@
+/* ocf_MsgForServiceProvider.c */
+
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "org_iochibity_DocForServiceProvider.h"
+#include "org_iochibity_MsgForServiceProvider.h"
 #include "jni_utils.h"
 #include "ocf_exceptions.h"
 
@@ -11,11 +13,11 @@
 #include "ocstack.h"
 
 /*
- * Class:     org_iochibity_DocForServiceProvider
+ * Class:     org_iochibity_MsgForServiceProvider
  * Method:    getResource
  * Signature: ()Lorg/iochibity/ResourceLocal;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_DocForServiceProvider_getResource
+JNIEXPORT jobject JNICALL Java_org_iochibity_MsgForServiceProvider_getResource
 (JNIEnv * env, jobject this)
 {
     /* printf("org_iochibity_MessageService/getResource ENTRY\n"); */
@@ -94,11 +96,11 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_DocForServiceProvider_getResource
 }
 
 /*
- * Class:     org_iochibity_DocForServiceProvider
+ * Class:     org_iochibity_MsgForServiceProvider
  * Method:    getPDUPayload
  * Signature: ()Lorg/iochibity/PayloadList;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_DocForServiceProvider_getPDUPayload
+JNIEXPORT jobject JNICALL Java_org_iochibity_MsgForServiceProvider_getPDUPayload
 (JNIEnv * env, jobject this)
 {
     /* printf("Java_org_iochibity_MessageService_getPayload ENTRY\n"); */
@@ -198,11 +200,11 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_DocForServiceProvider_getPDUPayload
 }
 
 /*
- * Class:     org_iochibity_DocForServiceProvider
+ * Class:     org_iochibity_MsgForServiceProvider
  * Method:    getVendorHeaderOptions
  * Signature: ()Ljava/util/ArrayList;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_DocForServiceProvider_getVendorHeaderOptions
+JNIEXPORT jobject JNICALL Java_org_iochibity_MsgForServiceProvider_getVendorHeaderOptions
 (JNIEnv * env, jobject this)
 {
     OC_UNUSED(env);

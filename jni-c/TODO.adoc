@@ -1,0 +1,18 @@
+= todo
+
+=== TODO
+
+* support iotivity logging for the jni bits called by stack, e.g. the
+  OCEntityHandler service routine.  needed so we can log errors since
+  we cannot throw java exceptions for that sort of error.
+
+* subclass LinkedList and HashMap so we can use them to add and remove items
+
+* cache field ids
+
+* memory leakage:  DeleteLocalRef, etc.
+
+== renaming
+
+
+

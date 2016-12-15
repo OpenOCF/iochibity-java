@@ -381,7 +381,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceManager_registerResource
 
     /* jmethodID mid_service = (*env)->GetMethodID(env, k_rsp, */
     /* 						"serviceRequestIn", */
-    /* 						"(ILorg/iochibity/DocRequestIn;Lorg/iochibity/CallbackParam;)I"); */
+    /* 						"(ILorg/iochibity/MsgRequestIn;Lorg/iochibity/CallbackParam;)I"); */
     /* if (mid_service == NULL) { */
     /* 	THROW_JNI_EXCEPTION("GetMethodID failed for serviceRequestIn of ResourceServiceProvider"); */
     /* 	return NULL; */

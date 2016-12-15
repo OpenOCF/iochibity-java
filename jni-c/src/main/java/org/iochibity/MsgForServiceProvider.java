@@ -3,12 +3,9 @@ package org.iochibity;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-// base for docs on server - DocRequestIn, DocResponseOut
-public class DocForServiceProvider extends Document
+// base for docs on server - MsgRequestIn, MsgResponseOut
+public class MsgForServiceProvider extends Message
 {
-    // Request local handle, for this OCEntityHandlerRequest
-    public long localHandle;
-
     // Request remote handle - request handle at ORIGIN (i.e. client)? */
     // OCRequestHandle requestHandle;
     public long remoteHandle;

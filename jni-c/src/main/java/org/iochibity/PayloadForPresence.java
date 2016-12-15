@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class PayloadForPresence extends Payload
+public class PayloadForPresence //extends Payload
 {
     // ocpayload.h
     // OC_EXPORT OCPresencePayload* OCPresencePayloadCreate(uint32_t seqNum, uint32_t maxAge,

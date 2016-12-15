@@ -1,21 +1,24 @@
 package org.iochibity.test;
 
 import org.iochibity.OCF;
+import org.iochibity.Message;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
+import org.iochibity.MsgRequestIn;
+import org.iochibity.MsgResponseIn;
+import org.iochibity.MsgResponseOut;
+import org.iochibity.IPayload;
 import org.iochibity.Payload;
 import org.iochibity.PayloadList;
-import org.iochibity.PropertyMap;
+import org.iochibity.PayloadForPlatform;
 import org.iochibity.PayloadForResourceState;
+import org.iochibity.PropertyMap;
 import org.iochibity.PropertyString;
-import org.iochibity.DocRequestIn;
-import org.iochibity.DocResponseIn;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
 // import org.iochibity.Resource$InstanceId;
 import org.iochibity.ResourceManager;
 import org.iochibity.IResourceServiceProvider;
-import org.iochibity.DocResponseOut;
 // import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
@@ -35,25 +38,17 @@ import java.util.Map;
 
 public class Logger
 {
-    static public void logDocResponseIn(DocResponseIn drspi)
-    {
-	System.out.println("JAVA: response uri:\t" + drspi.uri);
-	System.out.println("JAVA: response conn type:\t" + drspi.connType);
-	System.out.println("JAVA: response sec ID:\t" + drspi.secID);
-	System.out.println("JAVA: response stack result:\t" + drspi.result);
-	System.out.println("JAVA: response serial:\t" + drspi.serial);
-	System.out.println("JAVA: response option count:\t" + drspi.optionCount);
-	logDeviceAddress(drspi.deviceAddress);
-    }
-
     static public void logDeviceAddress(DeviceAddress da)
     {
-	System.out.println("JAVA: response dev address:\t" + da.address);
-	System.out.println("JAVA: response dev port:\t" + da.port);
-	System.out.println("JAVA: response dev adapter:\t" + da.adapter);
-	System.out.println("JAVA: response dev flags:\t" + da.flags);
-	System.out.println("JAVA: response dev ifindex:\t" + da.ifindex);
-	// System.out.println("JAVA: response dev route data: " + da.routeData);
+	System.out.println("LOG DeviceAddress address:\t" + da.address);
+	System.out.println("LOG DeviceAddress port:\t" + da.port);
+	System.out.println("LOG DeviceAddress adapter:\t" + da.adapter);
+	System.out.println("LOG DeviceAddress flags:\t" + da.flags);
+	System.out.println("LOG DeviceAddress ifindex:\t" + da.ifindex);
+	// System.out.println("REQUEST IN: devaddr route data: " + da.routeData);
+
+
+	// System.out.println("LOG DeviceAddress route data: " + da.routeData);
     }
 
     static public void logResourcePolicies(ResourceLocal resource)
@@ -122,38 +117,70 @@ public class Logger
 	System.out.println("RESOURCE: logResource EXIT");
     }
 
-    static public void logPayload(PayloadForResourceState pr)
+    static public void logPayload(Payload payload)
     {
 	// System.out.println("PAYLOAD: logPayload ENTRY");
-	System.out.println("PAYLOAD: uri: " + pr.getUri());
-	// System.out.println("PAYLOAD: logPayload EXIT");
+	System.out.println("LOG PAYLOAD uri: " + payload.getUriPath());
+
+	// log rtypes
+	List<String> rtypes = payload.getResourceTypes();
+	System.out.println("LOG PAYLOAD RESOURCE TYPES count: " + rtypes.size());
+	for (String t : (List<String>)rtypes) {
+	    System.out.println("LOG PAYLOAD rtype: " + t);
+	}
+
+	// log interfaces
+	List<String> ifaces = payload.getInterfaces();
+	System.out.println("LOG PAYLOAD INTERFACES count: " + ifaces.size());
+	for (String iface : ifaces) {
+	    System.out.println("LOG PAYLOAD interface: " + iface);
+	}
+
+	// log properties (PlatformInfo, DeviceInfo, or "values" for resources)
+	PropertyMap<String, Object> pmap = payload.getProperties();
+	System.out.println("LOG PAYLOAD PROPERTIES count: " + pmap.size());
+	for (Map.Entry<String, Object> entry : pmap.entrySet())
+	    {
+		System.out.println("LOG PAYLOAD property: "
+				   + entry.getKey()
+				   + " = "
+				   + entry.getValue());
+	    }
+	List<IPayload> kids = payload.getChildren();
+	if (kids != null) {
+	    System.out.println("LOG PAYLOAD CHILDREN count: " + kids.size());
+	    for (IPayload p : kids) {
+		System.out.println("================ CHILD");
+		logPayload((Payload)p);
+	    }
+	}
     }
 
     static public void logPayloadType(Payload p)
     {
 	switch (p.type) {
-	case Payload.INVALID:
+	case Message.INVALID:
 	    System.out.println("TEST payload type: INVALID (" + p.type + ")");
 	    break;
-	case Payload.DISCOVERY:
+	case Message.DISCOVERY:
 	    System.out.println("TEST payload type: DISCOVERY (" + p.type + ")");
 	    break;
-	case Payload.DEVICE:
+	case Message.DEVICE:
 	    System.out.println("TEST payload type: DEVICE (" + p.type + ")");
 	    break;
-	case Payload.PLATFORM:
+	case Message.PLATFORM:
 	    System.out.println("TEST payload type: PLATFORM (" + p.type + ")");
 	    break;
-	case Payload.REPRESENTATION:
+	case Message.REPRESENTATION:
 	    System.out.println("TEST payload type: REPRESENTATION (" + p.type + ")");
 	    break;
-	case Payload.SECURITY:
+	case Message.SECURITY:
 	    System.out.println("TEST payload type: SECURITY (" + p.type + ")");
 	    break;
-	case Payload.PRESENCE:
+	case Message.PRESENCE:
 	    System.out.println("TEST payload type: PRESENCE (" + p.type + ")");
 	    break;
-	case Payload.RD:
+	case Message.RD:
 	    System.out.println("TEST payload type: RD (" + p.type + ")");
 	    break;
 	default:
@@ -162,47 +189,98 @@ public class Logger
 	}
     }
 
-    static public void logPayloadList(PayloadList<PayloadForResourceState> pl)
+    static public void logMessageList(PayloadList<PayloadForResourceState> pl)
     {
 	System.out.println("Logging PayloadList");
 	for (PayloadForResourceState pr : (PayloadList<PayloadForResourceState>)pl) {
 	    logPayload(pr);
 	    PropertyMap pps = pr.getProperties();
-	    System.out.println("PAYLOAD: prop ct: " + pps.size());
+	    System.out.println("PAYLOAD prop ct: " + pps.size());
 	}
     }
 
-    static public void logRequestIn(DocRequestIn request)
+    static public void logRequestIn(MsgRequestIn requestIn)
     {
-	System.out.println("REQUEST IN: logRequestIn ENTRY");
-	System.out.println("REQUEST IN: this handle: " + request.localHandle);
-	System.out.println("REQUEST IN: handle at origin: " + request.remoteHandle);
-	System.out.println("REQUEST IN: resource handle: " + request.getResourceHandle());
-	System.out.println("REQUEST IN: request method: " + request.method);
-	System.out.println("REQUEST IN: query : \"" + request.query + "\"");
-	System.out.println("REQUEST IN: msg id : " + request.messageId);
+	System.out.println("LOG MsgRequestIn logRequestIn ENTRY");
+	System.out.println("LOG MsgRequestIn this handle: " + requestIn.localHandle);
+	System.out.println("LOG MsgRequestIn remote handle: " + requestIn.remoteHandle);
+	System.out.println("LOG MsgRequestIn resource handle: " + requestIn.getResourceHandle());
+	System.out.println("LOG MsgRequestIn request method: " + requestIn.getMethod());
+	System.out.println("LOG MsgRequestIn query : \"" + requestIn.getQueryString() + "\"");
+	System.out.println("LOG MsgRequestIn msg id : " + requestIn.getMessageId());
 
-	ResourceLocal resource = request.getResource();
+	ResourceLocal resource = requestIn.getResource();
 	logResource(resource);
 
-	System.out.println("REQUEST IN: devaddr adapter: " + request.deviceAddress.adapter);
-	System.out.println("REQUEST IN: devaddr flags: " + String.format("0x%04X", request.deviceAddress.flags & 0xFFFFF));
-	System.out.println("REQUEST IN: devaddr port: " + request.deviceAddress.port);
-	System.out.println("REQUEST IN: devaddr address: " + request.deviceAddress.address);
-	System.out.println("REQUEST IN: devaddr ifindex: " + request.deviceAddress.ifindex);
-	System.out.println("REQUEST IN: devaddr route data: " + request.deviceAddress.routeData);
+	logDeviceAddress(requestIn.getRemoteDeviceAddress());
 
-	System.out.println("REQUEST IN: observe action: " + request.observeAction);
-	System.out.println("REQUEST IN: observe id    : " + request.observeId);
+	// System.out.println("LOG MsgRequestIn watch action: " + requestIn.watchAction);
+	// System.out.println("LOG MsgRequestIn watch id    : " + requestIn.watchId);
 
-	List<HeaderOption> vendorOptions = request.getOptions();
-	System.out.println("REQUEST IN: vendor opts ct: " + vendorOptions.size());
+	List<HeaderOption> headerOptions = requestIn.getOptions();
+	if (headerOptions != null)
+	    System.out.println("LOG MsgRequestIn header opts ct: " + headerOptions.size());
 
-	PayloadList<PayloadForResourceState> payload = request.getPDUPayload();
-	if (payload != null) {
-	    System.out.println("REQUEST IN: payload type: " + payload.element().type);
-	} else {
-	    System.out.println("REQUEST IN: payload is null");
+	// PayloadList<PayloadForResourceState> payload = requestIn.getPDUPayload();
+	// if (payload != null) {
+	System.out.println("LOG MsgRequestIn doc type: " + requestIn.getMsgType());
+	// } else {
+	//     System.out.println("LOG MsgRequestIn payload is null");
+	// }
+    }
+
+    static public void logMsgResponseIn(MsgResponseIn msgResponseIn)
+    {
+	switch (msgResponseIn.getMsgType()) {
+	case Message.PLATFORM:
+	    System.out.println("LOG MsgResponseIn msg type is PLATFORM");
+	    break;
+	case Message.DEVICE:
+	    System.out.println("LOG: message type is DEVICE");
+	    break;
+	case Message.REPRESENTATION:
+	    System.out.println("LOG: message type is RESOURCE (REPRESENTATION)");
+	    break;
+	case Message.DISCOVERY:
+	    System.out.println("LOG: message type is DISCOVERY");
+	    break;
+	case Message.SECURITY:
+	    System.out.println("LOG: message type is SECURITY");
+	    break;
+	case Message.PRESENCE:
+	    System.out.println("LOG: message type is PRESENCE");
+	    break;
+	case Message.RD:
+	    System.out.println("LOG: message type is RD");
+	    break;
+	case Message.NOTIFICATION:
+	    System.out.println("LOG: message type is NOTIFICATION");
+	    break;
+	default:
+	    // something went wrong ...
+	    break;
+	}
+
+	System.out.println("LOG MsgResponseIn uri:\t" + msgResponseIn.uri);
+	System.out.println("LOG MsgResponseIn conn type:\t" + msgResponseIn.connType);
+	System.out.println("LOG MsgResponseIn sec ID:\t" + msgResponseIn.secID);
+	System.out.println("LOG MsgResponseIn stack result:\t" + msgResponseIn.result);
+	System.out.println("LOG MsgResponseIn serial:\t" + msgResponseIn.serial);
+
+	System.out.println("LOG MsgResponseIn REMOTE DEVICE ADDRESS:");
+	logDeviceAddress(msgResponseIn.getRemoteDeviceAddress());
+
+	List<HeaderOption> headerOptions = msgResponseIn.getOptions();
+	if (headerOptions != null)
+	    System.out.println("LOG MsgRequestIn header options ct: " + headerOptions.size());
+
+	System.out.println("LOG MsgResponseIn PAYLOAD:");
+	PayloadList<Payload> pll = msgResponseIn.getPayloadList();
+	System.out.println("LOG PAYLOAD count: " + pll.size());
+
+	for (Payload payload : (PayloadList<Payload>) pll) {
+	    logPayload(payload);
 	}
     }
+
 }

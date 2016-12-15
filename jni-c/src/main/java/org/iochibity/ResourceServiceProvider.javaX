@@ -8,5 +8,5 @@ public abstract class ResourceServiceProvider {
     private long resourceHandle = 0;
 
     /*OCEntityHandlerResult*/
-    public abstract int serviceRequestIn(int flag, DocRequestIn request, CallbackParam callbackParam);
+    public abstract int serviceRequestIn(int flag, MsgRequestIn request, CallbackParam callbackParam);
 }

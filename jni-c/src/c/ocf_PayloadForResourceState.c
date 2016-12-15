@@ -4,6 +4,7 @@
 
 #include "org_iochibity_PayloadForResourceState.h"
 #include "jni_utils.h"
+#include "ocf_init.h"
 #include "ocf_exceptions.h"
 
 #include "octypes.h"
@@ -132,24 +133,24 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     (*env)->SetObjectField(env, this, fid_this_uri, j_uri);
 
     /* prep LinkedList stuff */
-    /* FIXME: don't create LL in jni; pull it from the java object */
-    jclass ll_klass = (*env)->FindClass(env, "java/util/LinkedList");
-    if (ll_klass == 0) {
-	THROW_JNI_EXCEPTION("FindClass failed for LinkedList\n");
-	return NULL;
-    }
-    jmethodID ll_ctor = (*env)->GetMethodID(env, ll_klass, "<init>", "()V");
-    if (ll_ctor == 0) {
-	THROW_JNI_EXCEPTION("GetMethodID failed for ll ll_ctor.\n");
-	return NULL;
-    }
-    jmethodID mid_add = (*env)->GetMethodID(env, ll_klass, "add", "(Ljava/lang/Object;)Z");
-    if (mid_add == NULL) {
-	THROW_JNI_EXCEPTION("GetMethodID failed for add method of ll.\n");
-    }
+    /* FIXME: don't create LL in jni; pull it from the java object (?) */
+    /* jclass ll_klass = (*env)->FindClass(env, "java/util/LinkedList"); */
+    /* if (ll_klass == 0) { */
+    /* 	THROW_JNI_EXCEPTION("FindClass failed for LinkedList\n"); */
+    /* 	return NULL; */
+    /* } */
+    /* jmethodID ll_ctor = (*env)->GetMethodID(env, ll_klass, "<init>", "()V"); */
+    /* if (ll_ctor == 0) { */
+    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for ll ll_ctor.\n"); */
+    /* 	return NULL; */
+    /* } */
+    /* jmethodID mid_add = (*env)->GetMethodID(env, ll_klass, "add", "(Ljava/lang/Object;)Z"); */
+    /* if (mid_add == NULL) { */
+    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for add method of ll.\n"); */
+    /* } */
 
     /* do types */
-    jobject llts  = (*env)->NewObject(env, ll_klass, ll_ctor);
+    jobject llts  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
     if (llts == NULL) {
 	THROW_JNI_EXCEPTION("NewObject failed for _types LinkedList\n");
 	return NULL;
@@ -160,7 +161,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     while(c_rtype) {
 	/* printf("c payload type: %s\n", c_rtype->value); */
 	j_rtype = (*env)->NewStringUTF(env, c_rtype->value);
-	j_b = (*env)->CallBooleanMethod(env, llts, mid_add, j_rtype);
+	j_b = (*env)->CallBooleanMethod(env, llts, MID_LL_ADD, j_rtype);
 	if (!j_b) {
 	    THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_add\n");
 	}
@@ -174,7 +175,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     (*env)->SetObjectField(env, this, fid_rtypes, llts);
 
     /* do interfaces */
-    jobject llifs  = (*env)->NewObject(env, ll_klass, ll_ctor);
+    jobject llifs  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
     if (llifs == NULL) {
 	THROW_JNI_EXCEPTION("NewObject failed for _interfaces LinkedList\n");
 	return NULL;
@@ -184,7 +185,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     while(c_iface) {
 	/* printf("c payload interface: %s\n", c_iface->value); */
 	j_iface = (*env)->NewStringUTF(env, c_iface->value);
-	j_b = (*env)->CallBooleanMethod(env, llifs, mid_add, j_iface);
+	j_b = (*env)->CallBooleanMethod(env, llifs, MID_LL_ADD, j_iface);
 	if (!j_b) {
 	    THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_add\n");
 	}
@@ -198,23 +199,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     (*env)->SetObjectField(env, this, fid_ifs, llifs);
 
     /* do properties ('attributes') */
-    /* first prepare for PropertyMap stuff */
-    jclass pm_klass = (*env)->FindClass(env, "org/iochibity/PropertyMap");
-    if (pm_klass == 0) {
-	THROW_JNI_EXCEPTION("FindClass failed for PropertyMap\n");
-	return NULL;
-    }
-    jmethodID pm_ctor = (*env)->GetMethodID(env, pm_klass, "<init>", "()V");
-    if (pm_ctor == 0) {
-	THROW_JNI_EXCEPTION("GetMethodID failed for PropertyMap ctor.\n");
-	return NULL;
-    }
-    jmethodID mid_put = (*env)->GetMethodID(env, pm_klass, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    if (mid_add == NULL) {
-	THROW_JNI_EXCEPTION("GetMethodID failed for put method of pm.\n");
-    }
-
-    jobject pmps  = (*env)->NewObject(env, pm_klass, pm_ctor);
+    jobject pmps  = (*env)->NewObject(env, K_PMAP, MID_PMAP_CTOR);
     if (pmps == NULL) {
 	THROW_JNI_EXCEPTION("NewObject failed for _properties PropertyMap\n");
 	return NULL;
@@ -233,7 +218,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
 	    /* j_pval = c_prop->i; */
 	    printf("**** PROPERTY int, value: %lld\n", c_prop->i);
 	    jobject j_int = int2Integer(env, c_prop->i);
-	    (*env)->CallObjectMethod(env, pmps, mid_put,
+	    (*env)->CallObjectMethod(env, pmps, MID_PMAP_PUT,
 				     j_pname,
 				     j_int);
 	    /* if (!j_b) { */
@@ -243,25 +228,25 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
 	case OCREP_PROP_DOUBLE:
 	    printf("**** PROPERTY double, value: %f\n", c_prop->d);
 	    jobject j_d = double2Double(env, c_prop->d);
-	    (*env)->CallObjectMethod(env, pmps, mid_put, j_pname, j_d);
+	    (*env)->CallObjectMethod(env, pmps, MID_PMAP_PUT, j_pname, j_d);
 	    if (!j_d) {
-		THROW_JNI_EXCEPTION("CallObjectMethod failed for mid_put d\n");
+		THROW_JNI_EXCEPTION("CallObjectMethod failed for MID_PMAP_PUT d\n");
 	    }
 	    break;
 	case OCREP_PROP_BOOL:
 	    printf("**** PROPERTY boolean, value: %d\n", c_prop->b);
 	    jobject j_bool = bool2Boolean(env, c_prop->b);
-	    (*env)->CallObjectMethod(env, pmps, mid_put, j_pname, j_bool);
+	    (*env)->CallObjectMethod(env, pmps, MID_PMAP_PUT, j_pname, j_bool);
 	    /* if (!j_b) { */
-	    /* 	THROW_JNI_EXCEPTION("CallObjectMethod failed for mid_put b\n"); */
+	    /* 	THROW_JNI_EXCEPTION("CallObjectMethod failed for MID_PMAP_PUT b\n"); */
 	    /* } */
 	    break;
 	case OCREP_PROP_STRING:
 	    printf("**** PROPERTY string, value: %s\n", c_prop->str);
 	    jobject j_s = (*env)->NewStringUTF(env,  c_prop->str);
-	    (*env)->CallObjectMethod(env, pmps, mid_put, j_pname, j_s);
+	    (*env)->CallObjectMethod(env, pmps, MID_PMAP_PUT, j_pname, j_s);
 	    /* if (!j_b) { */
-	    /* 	THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_put str\n"); */
+	    /* 	THROW_JNI_EXCEPTION("CallBooleanMethod failed for MID_PMAP_PUT str\n"); */
 	    /* } */
 	    break;
 	case OCREP_PROP_BYTE_STRING:
@@ -276,9 +261,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
 	default:
 	    break;
 	}
-	/* j_b = (*env)->CallBooleanMethod(env, pmps, mid_put, j_pname, j_pval); */
+	/* j_b = (*env)->CallBooleanMethod(env, pmps, MID_PMAP_PUT, j_pname, j_pval); */
 	/* if (!j_b) { */
-	/*     THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_put\n"); */
+	/*     THROW_JNI_EXCEPTION("CallBooleanMethod failed for MID_PMAP_PUT\n"); */
 	/* } */
 	c_prop = c_prop->next;
     }

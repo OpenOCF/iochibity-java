@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class PayloadForDiscovery extends Payload
+public class PayloadForDiscovery // extends Payload
 {
     // typedef struct OCDiscoveryPayload
     // {

@@ -1,14 +1,14 @@
 package org.iochibity;
 
-public class DocResponseOut extends DocForServiceProvider //  OCEntityHandlerResponse
+public class MsgResponseOut extends MsgForServiceProvider //  OCEntityHandlerResponse
 {
     private long _handle;	// OCEntityHandlerResponse*
 
-    public  DocRequestIn _requestIn;
+    public  MsgRequestIn _requestIn;
     private PayloadList<Payload> _payloadList;
 
-    // private native long createResponseOut(DocRequestIn r, PayloadList<Payload> pll);
-    public DocResponseOut(DocRequestIn r, PayloadList<Payload> pll)
+    // private native long createResponseOut(MsgRequestIn r, PayloadList<Payload> pll);
+    public MsgResponseOut(MsgRequestIn r, PayloadList<Payload> pll)
     {
 	_requestIn = r;
 	_payloadList = pll;
