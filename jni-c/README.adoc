@@ -15,6 +15,15 @@ options:  VERBOSE=0 | 1, LOGGING= 0 | 1
 $ cd jni-c
 $ mvn install
 
+== examples
+
+The run the example:
+
+$ cd examples
+$ export MAVEN_OPTS="-Djava.library.path=${INSTALL_SYSROOT}/lib"
+$ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestClient"
+or
+$ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestServer"
 
 == naming conventions
 
