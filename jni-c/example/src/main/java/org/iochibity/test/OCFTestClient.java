@@ -138,7 +138,7 @@ public class OCFTestClient
 		}
 	    });
 
-	OCF.Init(null, 0, OCF.SERVER, "resources/ocftestclient_config.cbor");
+	OCF.Init(null, 0, OCF.SERVER, "src/main/resources/ocftestclient_config.cbor");
 
 	// ResourceManager.registerPlatform("Fartmaster",
 	// 				 "Acme Novelties",
@@ -191,7 +191,7 @@ public class OCFTestClient
 	    MsgRequestOut requestOut
 		= new MsgRequestOut(new WhatsitRequestor());
 	    requestOut.dest = gRemoteResourceAddr;
-	    requestOut.uri  = "/a/whatsit";
+	    requestOut.uri  = "/a/temperature";
 	    byte[] bs = OCF.sendRequest(Method.GET, requestOut);
 	} catch (Exception e) {
 	    System.out.println("ERROR: discoverResources");

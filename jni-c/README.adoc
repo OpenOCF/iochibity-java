@@ -25,6 +25,12 @@ $ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestClient"
 or
 $ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestServer"
 
+
+on the edison:
+
+# export LD_LIBRARY_PATH=$HOME/iochibity/lib
+# java -Djava.library.path=$HOME/iochibity/lib -cp "jni-c-0.1.0-SNAPSHOT.jar:iochibity-eg-0.1.0-SNAPSHOT.jar" org.iochibity.test.OCFTestServer
+
 == naming conventions
 
 
