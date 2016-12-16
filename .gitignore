@@ -2,6 +2,8 @@ GPATH
 GRTAGS
 GTAGS
 
+.scon*
+
 target/
 
 *.class

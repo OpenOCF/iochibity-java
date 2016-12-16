@@ -4,6 +4,7 @@ import org.iochibity.OCF;
 // import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
+import org.iochibity.Messenger;
 import org.iochibity.MsgRequestIn;
 import org.iochibity.MsgResponseOut;
 import org.iochibity.Payload;
@@ -12,8 +13,8 @@ import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
 import org.iochibity.PropertyString;
 import org.iochibity.ResourceLocal;
-import org.iochibity.ResourceManager;
-import org.iochibity.IResourceServiceProvider;
+import org.iochibity.ServicesManager;
+import org.iochibity.IServiceProvider;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class LightSP implements IResourceServiceProvider
+public class LightSP implements IServiceProvider
 {
     int foo;			// instead of CallbackParam;
 
@@ -92,7 +93,7 @@ public class LightSP implements IResourceServiceProvider
 
 	/* finally, send ResponeOut */
 	try {
-	    OCF.sendResponse(responseOut);
+	    Messenger.sendResponse(responseOut);
 	} catch (Exception e) {
 	    System.out.println("SEND RESPONSE EXCEPTION");
 	}
@@ -108,7 +109,6 @@ public class LightSP implements IResourceServiceProvider
 	System.out.println("Light: resource uri: " + r.getUri());
 
 	PayloadForResourceState pfrs = new PayloadForResourceState(r);
-	Logger.logPayloadType(pfrs);
 
 	List<String> llts = pfrs.getResourceTypes();
 	for (String s : (List<String>)llts) {

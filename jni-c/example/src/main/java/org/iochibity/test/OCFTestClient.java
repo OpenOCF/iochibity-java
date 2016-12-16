@@ -13,10 +13,12 @@ package org.iochibity.test;
 import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
 import org.iochibity.Message;
+import org.iochibity.Messenger;
 import org.iochibity.MsgRequestOut;
 import org.iochibity.MsgResponseIn;
 import org.iochibity.MsgResponseOut;
 import org.iochibity.HeaderOption;
+import org.iochibity.IPayload;
 import org.iochibity.Payload;
 import org.iochibity.PayloadList;
 import org.iochibity.PropertyMap;
@@ -24,8 +26,8 @@ import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
-import org.iochibity.ResourceManager;
-import org.iochibity.IResourceServiceRequestor;
+import org.iochibity.ServicesManager;
+import org.iochibity.IServiceRequestor;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
@@ -53,7 +55,7 @@ public class OCFTestClient
 	}
     }
 
-    public static class PlatformRequestor implements IResourceServiceRequestor
+    public static class PlatformRequestor implements IServiceRequestor
     {
 	private int cbdata = 99;
 
@@ -63,14 +65,14 @@ public class OCFTestClient
 	    System.out.println("JAVA: cbdata: " + cbdata);
 	    Logger.logMsgResponseIn(responseIn);
 
-	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
+	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
 	    // update screen ...
 	    return 0;
 	}
 
     }
 
-    public static class DeviceRequestor implements IResourceServiceRequestor
+    public static class DeviceRequestor implements IServiceRequestor
     {
 	private int cbdata = 123;
 
@@ -80,16 +82,53 @@ public class OCFTestClient
 	    System.out.println("LOG: cbdata: " + cbdata);
 	    Logger.logMsgResponseIn(responseIn);
 
-	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
+	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
 	    // update screen ...
 	    return 0;
 	}
 
     }
 
-    public static DeviceAddress gRemoteResourceAddr;
+    public static DeviceAddress gRemoteResourceAddress;
 
-    public static class DiscoverResourcesRequestor implements IResourceServiceRequestor
+    public static class DiscoverResourcesRequestor implements IServiceRequestor
+    {
+	private int cbdata = 123;
+
+	public int serviceResponseIn(MsgResponseIn responseIn)
+	{
+	    System.out.println("LOG: DiscoverResourcesRequestor.serviceResponse ENTRY");
+	    System.out.println("LOG: cbdata: " + cbdata);
+
+	    if (responseIn.result == OCStackResult.OK) {
+		if (responseIn.getPayloadType() == Payload.DISCOVERY) {
+		    PayloadList<Payload> pll = responseIn.getPayloadList();
+		    for (Payload payload : (PayloadList<Payload>) pll) {
+			List<IPayload> kids = payload.getChildren();
+			if (kids != null) {
+			    for (IPayload kid : kids) {
+				if (kid.getUriPath().equals("/a/temperature")) {
+				    System.out.println("LOG: found temperature resource");
+				    gRemoteResourceAddress = responseIn.getRemoteDeviceAddress();
+				    gRemoteResourceAddress.port
+					= ((Integer)kid.getProperties().get("port"))
+					.intValue();
+				    Logger.logDeviceAddress(gRemoteResourceAddress);
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	    Logger.logMsgResponseIn(responseIn);
+
+	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
+	    // update screen ...
+	    return 0;
+	}
+    }
+
+    public static class WhatsitRequestor implements IServiceRequestor
     {
 	private int cbdata = 123;
 
@@ -99,26 +138,7 @@ public class OCFTestClient
 	    System.out.println("LOG: cbdata: " + cbdata);
 	    Logger.logMsgResponseIn(responseIn);
 
-	    gRemoteResourceAddr = responseIn.getRemoteDeviceAddress();
-
-	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
-	    // update screen ...
-	    return 0;
-	}
-
-    }
-
-    public static class WhatsitRequestor implements IResourceServiceRequestor
-    {
-	private int cbdata = 123;
-
-	public int serviceResponseIn(MsgResponseIn responseIn)
-	{
-	    System.out.println("LOG: DiscoverResourcesRequestor.serviceResponse ENTRY");
-	    System.out.println("LOG: cbdata: " + cbdata);
-	    Logger.logMsgResponseIn(responseIn);
-
-	    // save incoming resource info - ResourceManager.registerRemoteResource(...)?
+	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
 	    // update screen ...
 	    return 0;
 	}
@@ -138,9 +158,9 @@ public class OCFTestClient
 		}
 	    });
 
-	OCF.Init(null, 0, OCF.SERVER, "src/main/resources/ocftestclient_config.cbor");
+	OCF.Init(null, 0, OCF.CLIENT_SERVER, "src/main/resources/ocftestclient_config.cbor");
 
-	// ResourceManager.registerPlatform("Fartmaster",
+	// ServicesManager.registerPlatform("Fartmaster",
 	// 				 "Acme Novelties",
 	// 				 "http://acme.example.org",
 	// 				 "modelnbr", "mfgdate", "platversion",
@@ -148,7 +168,7 @@ public class OCFTestClient
 	// 				 "http://acme.example.org/support",
 	// 				 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
 
-	// ResourceManager.registerDevice("Fartmaster2020 Client",
+	// ServicesManager.registerDevice("Fartmaster2020 Client",
 	// 			       new String[] {"type1", "type2"},
 	// 			       "version-0.1",
 	// 			       new String[] {"dmversion-0.1"});
@@ -158,8 +178,8 @@ public class OCFTestClient
 	try {
 	    MsgRequestOut requestOut
 		= new MsgRequestOut(new PlatformRequestor());
-		// = new MsgRequestOut((IResourceServiceRequestor)(new PlatformRequestor()));
-	    byte[] bs = OCF.discoverPlatforms(requestOut);
+		// = new MsgRequestOut((IServiceRequestor)(new PlatformRequestor()));
+	    byte[] bs = Messenger.discoverPlatforms(requestOut);
 	} catch (Exception e) {
 	    System.out.println("ERROR: discoverPlatforms");
 	}
@@ -167,7 +187,7 @@ public class OCFTestClient
 	try {
 	    MsgRequestOut requestOut
 		= new MsgRequestOut(new DeviceRequestor());
-	    byte[] bs = OCF.discoverDevices(requestOut);
+	    byte[] bs = Messenger.discoverDevices(requestOut);
 	} catch (Exception e) {
 	    System.out.println("ERROR: discoverDevices");
 	}
@@ -175,13 +195,13 @@ public class OCFTestClient
 	try {
 	    MsgRequestOut requestOut
 		= new MsgRequestOut(new DiscoverResourcesRequestor());
-	    byte[] bs = OCF.discoverResources(requestOut);
+	    byte[] bs = Messenger.discoverResources(requestOut);
 	} catch (Exception e) {
 	    System.out.println("ERROR: discoverResources");
 	}
 
 	try {
-	    Thread.sleep(1000);
+	    Thread.sleep(3000);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    msgError(TAG, e.toString());
@@ -190,11 +210,12 @@ public class OCFTestClient
 	try {
 	    MsgRequestOut requestOut
 		= new MsgRequestOut(new WhatsitRequestor());
-	    requestOut.dest = gRemoteResourceAddr;
+	    requestOut.dest = gRemoteResourceAddress;
 	    requestOut.uri  = "/a/temperature";
-	    byte[] bs = OCF.sendRequest(Method.GET, requestOut);
+	    byte[] bs = Messenger.sendRequest(Method.GET, requestOut);
 	} catch (Exception e) {
-	    System.out.println("ERROR: discoverResources");
+	    e.printStackTrace();
+	    msgError(TAG, e.toString());
 	}
 
 

@@ -17,19 +17,6 @@
 #include "oic_string.h"
 
 /* INTERNAL */
-jint get_msgtype(JNIEnv* env, jobject this)
-{
-    printf("get_msgtype ENTRY\n");
-    print_class_name(env, this);
-    OCPayload* j_payload = (OCPayload*)(intptr_t)
-	(*env)->GetLongField(env, this, FID_MsgRspIn_PAYLOAD_HANDLE);
-    if (j_payload == NULL) {
-	// ok, maybe no payload?
-	/* THROW_JNI_EXCEPTION("GetLongField failed for FID_MSG_PAYLOAD_HANDLE on Message"); */
-	return -1;
-    } else
-	return j_payload->type;
-}
 
 /*
  * OCPlatformPayload_to_Payload
@@ -589,17 +576,24 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 
 /*
  * Class:     org_iochibity_Message
- * Method:    getMsgType
+ * Method:    getPayloadType
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_Message_getMsgType
+JNIEXPORT jint JNICALL Java_org_iochibity_Message_getPayloadType
 (JNIEnv * env, jobject this)
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
     /* printf("Java_org_iochibity_Message_getPayloadType ENTRY\n"); */
     /* 1. get payloadHandle from this */
-    return get_msgtype(env,this);
+    OCPayload* j_payload = (OCPayload*)(intptr_t)
+	(*env)->GetLongField(env, this, FID_MsgRspIn_PAYLOAD_HANDLE);
+    if (j_payload == NULL) {
+	// ok, maybe no payload?
+	/* THROW_JNI_EXCEPTION("GetLongField failed for FID_MSG_PAYLOAD_HANDLE on Message"); */
+	return -1;
+    } else
+	return j_payload->type;
 }
 
 /*

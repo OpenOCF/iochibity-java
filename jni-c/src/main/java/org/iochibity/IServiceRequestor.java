@@ -1,7 +1,7 @@
 package org.iochibity;
 
 // client
-public interface IResourceServiceRequestor {
+public interface IServiceRequestor {
 
     public int serviceResponseIn(MsgResponseIn responseIn);
 

@@ -403,9 +403,9 @@ int init_Message(JNIEnv* env)
     (*env)->DeleteLocalRef(env, klass);
 
     if (MID_MSG_GET_PAYLOAD_TYPE == NULL) {
-	MID_MSG_GET_PAYLOAD_TYPE = (*env)->GetMethodID(env, K_MESSAGE, "getMsgType", "()I");
+	MID_MSG_GET_PAYLOAD_TYPE = (*env)->GetMethodID(env, K_MESSAGE, "getPayloadType", "()I");
 	if (MID_MSG_GET_PAYLOAD_TYPE == NULL) {
-	    printf("ERROR:  GetMethodID failed for 'getMsgType' for Message");
+	    printf("ERROR:  GetMethodID failed for 'getPayloadType' for Message");
 	    return -1;
 	}
     }
@@ -1249,7 +1249,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     if (FID_RQO_SERVICE_REQUESTOR == NULL) {
 	FID_RQO_SERVICE_REQUESTOR = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
 						       "serviceRequestor",
-						       "Lorg/iochibity/IResourceServiceRequestor;");
+						       "Lorg/iochibity/IServiceRequestor;");
 	if (FID_RQO_SERVICE_REQUESTOR == NULL) {
 	    printf("ERROR: GetFieldID failed for 'serviceRequestor' of MsgRequestOut\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
@@ -1290,8 +1290,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 
     init_pmap(env);		/* prep mid's etc. for iterating over pmap */
 
-    klass = (*env)->FindClass(env, "org/iochibity/IResourceServiceRequestor");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/IResourceServiceRequestor\n", 0);
+    klass = (*env)->FindClass(env, "org/iochibity/IServiceRequestor");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/IServiceRequestor\n", 0);
     K_IRESOURCE_SERVICE_REQUESTOR = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
@@ -1302,7 +1302,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 							   "serviceResponseIn",
 							   "(Lorg/iochibity/MsgResponseIn;)I");
 	if (MID_IRSR_SERVICE_RESPONSE_IN == NULL) {
-	    printf("ERROR: GetMethodID failed for 'serviceResponseIn' of IResourceServiceRequestor\n");
+	    printf("ERROR: GetMethodID failed for 'serviceResponseIn' of IServiceRequestor\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }

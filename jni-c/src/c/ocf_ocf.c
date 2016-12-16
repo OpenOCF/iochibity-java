@@ -16,6 +16,10 @@
 #include "oic_malloc.h"
 #include "oic_string.h"
 
+#include "debug.h"		/* libcoap debugging */
+#include "tinydtls/debug.h"		/* for tinydtls debugging */
+
+
 /* PRIVATE */
 pthread_t pt_work;
 bool g_quit_flag = false;
@@ -60,6 +64,9 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
 {
     OC_UNUSED(clazz);
     printf("Java_org_iochibity_OCF_Init\n");
+
+    coap_set_log_level(LOG_DEBUG);
+    dtls_set_log_level(DTLS_LOG_DEBUG);
 
     /* First configure security */
     if (j_config_fname == NULL) {
@@ -160,14 +167,6 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_stop
     OC_UNUSED(clazz);
     g_quit_flag = true;
 }
-
-/*
- * Class:     org_iochibity_OCF
- * Method:    OCDoResource
- * Signature: (Ljava/lang/Object;ILjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;IILjava/lang/Object;Ljava/lang/Object;B)I
- */
-/* JNIEXPORT jint JNICALL Java_org_iochibity_OCF_OCDoResource */
-/*   (JNIEnv *, jobject, jobject, jint, jstring, jobject, jobject, jint, jint, jobject, jobject, jbyte); */
 
 /*
  * Class:     org_iochibity_OCF

@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public interface IResourceServiceProvider {
+public interface IServiceProvider {
     // C API: OCEntityHandler
     // typedef OCEntityHandlerResult (*OCEntityHandler)
     // (OCEntityHandlerFlag flag, OCEntityHandlerRequest * entityHandlerRequest, void* callbackParam);

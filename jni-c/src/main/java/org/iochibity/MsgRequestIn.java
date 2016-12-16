@@ -3,7 +3,7 @@ package org.iochibity;
 public class MsgRequestIn extends MsgForServiceProvider // OCEntityHandlerRequest
 {
     // For internal (JNI) use only:
-    private IResourceServiceProvider serviceProvider; // JNI only
+    private IServiceProvider serviceProvider; // JNI only
 
     // typedef struct
     // {

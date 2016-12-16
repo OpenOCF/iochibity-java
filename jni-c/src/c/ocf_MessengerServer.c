@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#include "org_iochibity_OCF.h"
+#include "org_iochibity_Messenger.h"
 #include "ocf_init.h"
 #include "ocf_exceptions.h"
 #include "jni_utils.h"
@@ -233,15 +233,15 @@ OCEntityHandlerResult service_request_in(OCEntityHandlerFlag flag,
 /* PUBLIC */
 
 /*
- * Class:     org_iochibity_OCF
+ * Class:     org_iochibity_Messenger
  * Method:    sendResponse
  * Signature: (Lorg/iochibity/MsgResponseOut;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendResponse
+JNIEXPORT void JNICALL Java_org_iochibity_Messenger_sendResponse
 (JNIEnv * env, jclass klass, jobject j_response_out)
 {
     OC_UNUSED(klass);
-    printf("Java_org_iochibity_OCF_sendResponse ENTRY\n");
+    printf("Java_org_iochibity_Messenger_sendResponse ENTRY\n");
 
     /* prep_java(env); */
 
@@ -419,5 +419,5 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_sendResponse
 	return;
     }
 
-    printf("Java_org_iochibity_OCF_sendResponse EXIT\n");
+    printf("Java_org_iochibity_Messenger_sendResponse EXIT\n");
 }

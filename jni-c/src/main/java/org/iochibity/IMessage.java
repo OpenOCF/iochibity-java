@@ -23,7 +23,7 @@ public interface IMessage
 
     public PayloadList<Payload> getPayloadList();
 
-    public int getMsgType();
+    public int getPayloadType();
 
     // Number of vendor specific header options sent or recd.
     // MsgRequestIn:   uint8_t numRcvdVendorSpecificHeaderOptions;

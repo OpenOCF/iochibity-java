@@ -42,40 +42,14 @@ public class OCF
 
     public static native void /*OCStackResult*/ stop();
 
-    // setPlatformInfo =>  ResourceManager.registerPlatform
+    // setPlatformInfo =>  ServicesManager.registerPlatform
 
-    // setDeviceInfo =>  ResourceManager.registerDevice
+    // setDeviceInfo =>  ServicesManager.registerDevice
 
-    // OCDoResource =>  ResourceManager.sendResource
+    // OCDoResource =>  ServicesManager.sendResource
 
     public native void OCCancel(Object /*OCDoHandle*/ handle,
 				int /*OCQualityOfService*/ qos,
 				Object /*OCHeaderOption* */ options,
 				byte /*uint8_t*/ options_count);
-
-    /* OCStackResult OCDoResource */
-    static public native byte[] sendRequest(int method,
-					  MsgRequestOut requestOut); // QoS default: low
-    static public native byte[] sendRequest(int method,
-					  MsgRequestOut requestOut,
-					  int qualityOfService);
-
-    // e.g. sendRequest(Method.GET, lightRequestOut, OCF.QOS_HOW);
-    // e.g. sendRequest(Method.DISCOVER, platformRequestOut);
-
-    // discovery returns doHandle (token)
-    static public native byte[] discoverPlatforms(MsgRequestOut mro); // multicast
-    static public native byte[] discoverPlatforms(IResourceServiceRequestor rsr); // multicast
-    static public native byte[] discoverPlatforms(IResourceServiceRequestor rsr, DeviceAddress... da);
-
-    static public native byte[] discoverDevices(MsgRequestOut mro);
-    static public native byte[] discoverDevices(IResourceServiceRequestor rsr, DeviceAddress... da);
-
-    static public native byte[] discoverResources(MsgRequestOut mro);
-    static public native byte[] discoverResources(IResourceServiceRequestor rsr, DeviceAddress... da);
-
-
-
-    /* OCStackResult OCDoResponse */
-    static public native void sendResponse(MsgResponseOut responseOut); // OCEntityHandlerResponse*
 }

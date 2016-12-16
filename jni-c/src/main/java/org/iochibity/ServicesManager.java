@@ -1,11 +1,11 @@
 package org.iochibity;
 
-public class ResourceManager
+public class ServicesManager
 {
     // OCGetNumberOfResources
     public static native int resourceCount();
 
-    public static native void registerPlatform(String platform_id, // setPlatformInfo
+    public static native void registerPlatformProvider(String platform_id, // setPlatformInfo
 					      String manufacturer_name,
 					      String manufacturer_url,
 					      String model_number,
@@ -17,7 +17,7 @@ public class ResourceManager
 					      String support_url,
 					      String system_time);
 
-    public static native void registerDevice(String deviceName, // setDeviceInfo
+    public static native void registerDeviceProvider(String deviceName, // setDeviceInfo
 					    String[] types,
 					    String specVersion,
 					    String[] dataModelVersions);
@@ -28,17 +28,17 @@ public class ResourceManager
 	 Object /*void* */ callbackParam);
 
     // public static native int OCCreateResource(Object /*OCResourceHandle* */ handle,
-    public static native ResourceLocal registerResource(String Uri,
+    public static native ResourceLocal registerServiceProvider(String Uri,
 							String[] resourceTypeName,
 							String[] resourceInterfaceName,
-							IResourceServiceProvider serviceRoutine,
+							IServiceProvider serviceRoutine,
 							// CallbackParam /*void* */ callbackParam,
 							byte   /*uint8_t*/ policies);
 
-    public static native ResourceLocal registerWatchableResource(String Uri,
+    public static native ResourceLocal registerWatchableProvider(String Uri,
 								 String[] resourceTypeName,
 								 String[] resourceInterfaceName,
-								 IResourceServiceProvider serviceRoutine,
+								 IServiceProvider serviceRoutine,
 								 byte   /*uint8_t*/ policies);
 
     ////////////////////////////////////////////////////////////////

@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#include "org_iochibity_OCF.h"
+#include "org_iochibity_Messenger.h"
 #include "ocf_init.h"
 #include "ocf_exceptions.h"
 #include "jni_utils.h"
@@ -20,7 +20,7 @@
 
 jobject OCClientResponse_to_MsgResponseIn(JNIEnv* env, OCClientResponse* c_OCClientResponse)
 {
-    printf("OCClientResponse_to_MsgResponseIn ENTRY\n");
+    printf("%s: OCClientResponse_to_MsgResponseIn ENTRY\n", __FILE__);
     jobject j_MsgResponseIn = (*env)->NewObject(env,
 						K_MSG_RESPONSE_IN,
 						MID_MsgRspIn_CTOR); // request_in_ctor);
@@ -63,7 +63,7 @@ jobject OCClientResponse_to_MsgResponseIn(JNIEnv* env, OCClientResponse* c_OCCli
 			 (long)(intptr_t)c_OCClientResponse->payload);
 
     /* set optionCount and ptr_Options in Message */
-    printf("OCClientResponse_to_MsgResponseIn EXIT\n");
+    printf("%s: OCClientResponse_to_MsgResponseIn EXIT\n", __FILE__);
     return j_MsgResponseIn;
 }
 
@@ -116,7 +116,7 @@ OCStackApplicationResult service_response_in(void* c_MsgRequestOut, /* contains 
 								(jobject)c_MsgRequestOut,
 								FID_RQO_SERVICE_REQUESTOR);
     if (j_ResourceServiceRequestor == NULL) {
-	printf("Failed to get IResourceServiceRequestor object from MsgRequestOut\n");
+	printf("Failed to get IServiceRequestor object from MsgRequestOut\n");
 	return OC_STACK_KEEP_TRANSACTION;
     }
 
@@ -160,16 +160,16 @@ OCStackApplicationResult service_response_in(void* c_MsgRequestOut, /* contains 
 
 /* EXTERNAL */
 /*
- * Class:     org_iochibity_OCF
+ * Class:     org_iochibity_Messenger
  * Method:    discoverPlatforms
  * Signature: (Lorg/iochibity/MsgRequestOut;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatforms__Lorg_iochibity_MsgRequestOut_2
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_discoverPlatforms__Lorg_iochibity_MsgRequestOut_2
 (JNIEnv * env, jclass this, jobject j_MsgRequestOut)
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    /* printf("Java_org_iochibity_OCF_discoverPlatforms__Lorg_iochibity_MsgRequestOut_2 ENTRY\n"); */
+    /* printf("Java_org_iochibity_Messenger_discoverPlatforms__Lorg_iochibity_MsgRequestOut_2 ENTRY\n"); */
     OCStackResult ret;
     OCCallbackData cbData;
 
@@ -201,17 +201,17 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatforms__Lorg_ioch
 }
 
 /*
- * Class:     org_iochibity_OCF
+ * Class:     org_iochibity_Messenger
  * Method:    discoverPlatforms
- * Signature: (Lorg/iochibity/IResourceServiceRequestor;)[B
+ * Signature: (Lorg/iochibity/IServiceRequestor;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatforms__Lorg_iochibity_IResourceServiceRequestor_2
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_discoverPlatforms__Lorg_iochibity_IServiceRequestor_2
 (JNIEnv * env, jclass klass, jobject j_ResourceServiceRequestor)
 {
     OC_UNUSED(env);
     OC_UNUSED(klass);
     OC_UNUSED(j_ResourceServiceRequestor);
-    /* printf("Java_org_iochibity_OCF_discoverPlatforms__Lorg_iochibity_IResourceServiceRequestor_2 ENTRY\n"); */
+    /* printf("Java_org_iochibity_Messenger_discoverPlatforms__Lorg_iochibity_IServiceRequestor_2 ENTRY\n"); */
 
     /* get qos from j_ResourceServiceRequestor */
 
@@ -242,24 +242,24 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatforms__Lorg_ioch
 }
 
 /*
- * Class:     org_iochibity_OCF
+ * Class:     org_iochibity_Messenger
  * Method:    discoverPlatforms
- * Signature: (Lorg/iochibity/IResourceServiceRequestor;[Lorg/iochibity/DeviceAddress;)[B
+ * Signature: (Lorg/iochibity/IServiceRequestor;[Lorg/iochibity/DeviceAddress;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverPlatforms__Lorg_iochibity_IResourceServiceRequestor_2_3Lorg_iochibity_DeviceAddress_2
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_discoverPlatforms__Lorg_iochibity_IServiceRequestor_2_3Lorg_iochibity_DeviceAddress_2
   (JNIEnv *, jclass, jobject, jobjectArray);
 
 /*
- * Class:     org_iochibity_OCF
+ * Class:     org_iochibity_Messenger
  * Method:    discoverDevices
  * Signature: (Lorg/iochibity/MsgRequestOut;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverDevices__Lorg_iochibity_MsgRequestOut_2
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_discoverDevices__Lorg_iochibity_MsgRequestOut_2
 (JNIEnv * env, jclass klass, jobject j_MsgRequestOut)
 {
     OC_UNUSED(env);
     OC_UNUSED(klass);
-    /* printf("Java_org_iochibity_OCF_discoverDevices__Lorg_iochibity_MsgRequestOut_2 ENTRY\n"); */
+    /* printf("Java_org_iochibity_Messenger_discoverDevices__Lorg_iochibity_MsgRequestOut_2 ENTRY\n"); */
     OCStackResult ret;
     OCCallbackData cbData;
 
@@ -291,16 +291,16 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverDevices__Lorg_iochib
 }
 
 /*
- * Class:     org_iochibity_OCF
+ * Class:     org_iochibity_Messenger
  * Method:    discoverResources
  * Signature: (Lorg/iochibity/MsgRequestOut;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverResources__Lorg_iochibity_MsgRequestOut_2
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_discoverResources__Lorg_iochibity_MsgRequestOut_2
 (JNIEnv * env, jclass klass, jobject j_MsgRequestOut)
 {
     OC_UNUSED(env);
     OC_UNUSED(klass);
-    printf("Java_org_iochibity_OCF_discoverResources__Lorg_iochibity_MsgRequestOut_2 ENTRY\n");
+    printf("Java_org_iochibity_Messenger_discoverResources__Lorg_iochibity_MsgRequestOut_2 ENTRY\n");
     OCStackResult ret;
     OCCallbackData cbData;
 
@@ -332,16 +332,16 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_discoverResources__Lorg_ioch
 }
 
 /*
- * Class:     org_iochibity_OCF
+ * Class:     org_iochibity_Messenger
  * Method:    sendRequest
  * Signature: (ILorg/iochibity/MsgRequestOut;)V
  */
-JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_sendRequest__ILorg_iochibity_MsgRequestOut_2
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_sendRequest__ILorg_iochibity_MsgRequestOut_2
 (JNIEnv * env, jclass klass, jint j_method, jobject j_MsgRequestOut)
 {
     OC_UNUSED(env);
     OC_UNUSED(klass);
-    printf("Java_org_iochibity_OCF_sendRequest__ILorg_iochibity_MsgRequestOut_2 ENTRY\n");
+    printf("Java_org_iochibity_Messenger_sendRequest__ILorg_iochibity_MsgRequestOut_2 ENTRY\n");
 
     OCStackResult ret;
     OCCallbackData cbData;
@@ -376,6 +376,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_sendRequest__ILorg_iochibity
     strncpy(c_destDevAddr->addr, c_addr, MAX_ADDR_STR_SIZE);
     c_destDevAddr->ifindex = (*env)->GetIntField(env, j_destDevAddr, FID_DA_IFINDEX);
     printf("c addr: %s\n", c_addr);
+    printf("c port: %d\n", c_destDevAddr->port);
 
     /* uri */
     jobject j_uri         = (*env)->GetObjectField(env, j_MsgRequestOut, FID_RQO_URI);
@@ -396,7 +397,8 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_sendRequest__ILorg_iochibity
     OCDoHandle c_handle = NULL;
 
     ret = OCDoResource(&c_handle,	/* OCDoHandle = void* */
-    		       (OCMethod)j_method,
+    		       /* (OCMethod)j_method, */
+		       OC_REST_GET,
     		       c_uri,
     		       c_destDevAddr,    /* OCDevAddr* destination */
     		       0,		 /* OCPayload* payload */
@@ -407,7 +409,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_OCF_sendRequest__ILorg_iochibity
     		       NULL,	/* OCHeaderOptions* options */
     		       0);	/* uint8_t numOptions */
 
-    printf("Java_org_iochibity_OCF_sendRequest__ILorg_iochibity_MsgRequestOut_2 EXIT\n");
+    printf("Java_org_iochibity_Messenger_sendRequest__ILorg_iochibity_MsgRequestOut_2 EXIT\n");
     return c_handle;
 }
 

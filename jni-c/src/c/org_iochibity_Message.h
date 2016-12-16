@@ -7,24 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef org_iochibity_Message_INVALID
-#define org_iochibity_Message_INVALID 0L
-#undef org_iochibity_Message_DISCOVERY
-#define org_iochibity_Message_DISCOVERY 1L
-#undef org_iochibity_Message_DEVICE
-#define org_iochibity_Message_DEVICE 2L
-#undef org_iochibity_Message_PLATFORM
-#define org_iochibity_Message_PLATFORM 3L
-#undef org_iochibity_Message_REPRESENTATION
-#define org_iochibity_Message_REPRESENTATION 4L
-#undef org_iochibity_Message_SECURITY
-#define org_iochibity_Message_SECURITY 5L
-#undef org_iochibity_Message_PRESENCE
-#define org_iochibity_Message_PRESENCE 6L
-#undef org_iochibity_Message_RD
-#define org_iochibity_Message_RD 7L
-#undef org_iochibity_Message_NOTIFICATION
-#define org_iochibity_Message_NOTIFICATION 8L
 /*
  * Class:     org_iochibity_Message
  * Method:    getPayloadList

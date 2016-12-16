@@ -4,7 +4,8 @@ import org.iochibity.OCF;
 // import org.iochibity.CallbackParam;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.MsgForServiceProvider;
+import org.iochibity.Messenger;
+// import org.iochibity.MsgForServiceProvider;
 import org.iochibity.MsgRequestIn;
 import org.iochibity.MsgResponseOut;
 import org.iochibity.Payload;
@@ -14,8 +15,8 @@ import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
-import org.iochibity.ResourceManager;
-import org.iochibity.IResourceServiceProvider;
+import org.iochibity.IServiceProvider;
+import org.iochibity.ServicesManager;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
@@ -43,7 +44,7 @@ public class OCFTestServer
 	}
     }
 
-    static public class TemperatureSP implements IResourceServiceProvider
+    static public class TemperatureSP implements IServiceProvider
     {
 	int foo = 72;
 	public void hello() { System.out.println("Hello from callback: " + foo); }
@@ -59,7 +60,6 @@ public class OCFTestServer
 	    System.out.println("TEST resource uri: " + r.getUri());
 
 	    PayloadForResourceState pfrs = new PayloadForResourceState(r);
-	    Logger.logPayloadType(pfrs);
 
 	    System.out.println("TEST payload uri: " + pfrs.getUri());
 	    pfrs.setUri("/a/foo");
@@ -146,7 +146,7 @@ public class OCFTestServer
 	    MsgResponseOut responseOut = new MsgResponseOut(requestIn, payloadOut);
 
 	    try {
-		OCF.sendResponse(responseOut);
+		Messenger.sendResponse(responseOut);
 	    } catch (Exception e) {
 		System.out.println("SEND RESPONSE EXCEPTION");
 	    }
@@ -173,7 +173,7 @@ public class OCFTestServer
 	// System.out.println(System.getProperty("java.library.path"));
 	OCF.Init(null, 0, OCMode.SERVER, "src/main/resources/ocftestserver_config.cbor");
 
-	ResourceManager.registerPlatform("Fartmaster",
+	ServicesManager.registerPlatformProvider("Fartmaster",
 					 "Acme Novelties",
 					 "http://acme.example.org",
 					 "modelnbr", "mfgdate", "platversion",
@@ -181,23 +181,23 @@ public class OCFTestServer
 					 "http://acme.example.org/support",
 					 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
 
-	ResourceManager.registerDevice("Fartmaster2020 Server",
+	ServicesManager.registerDeviceProvider("Fartmaster2020 Server",
 				       new String[] {"type1", "type2"},
 				       "version-0.1",
 				       new String[] {"dmversion-0.1"});
 
 	ResourceLocal l = null;
-	l = ResourceManager.registerResource("/a/light",	          // uri String
+	l = ServicesManager.registerServiceProvider("/a/light",	          // uri String
 					     new String[] {"core.light"}, // array of typenames
 					     new String[] {"oc.mi.l"}, // array of ifnames
-					     new LightSP(),            // IResourceServiceProvider
+					     new LightSP(),            // IServiceProvider
 					     // lspData,
 					     (byte)(Resource.DISCOVERABLE
 						     | Resource.SECURE));
 	Logger.logResource(l);
 
 	ResourceLocal tr = null;
-	tr = ResourceManager.registerResource("/a/temperature",
+	tr = ServicesManager.registerServiceProvider("/a/temperature",
 					      new String[] {"core.temperature"},
 					      new String[] {"oc.mi.def"},
 					      tempSP,
@@ -207,7 +207,7 @@ public class OCFTestServer
 	Logger.logResource(tr);
 
 	ResourceLocal whatsit = null;
-	whatsit = ResourceManager.registerResource("/a/whatsit",
+	whatsit = ServicesManager.registerServiceProvider("/a/whatsit",
 						   new String[] {"core.whatist"},
 						   new String[] {"oc.mi.whatsit"},
 						   new WhatsitSP(),

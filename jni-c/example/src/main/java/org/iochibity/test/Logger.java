@@ -16,10 +16,7 @@ import org.iochibity.PropertyMap;
 import org.iochibity.PropertyString;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
-// import org.iochibity.Resource$InstanceId;
-import org.iochibity.ResourceManager;
-import org.iochibity.IResourceServiceProvider;
-// import org.iochibity.constants.Method;
+import org.iochibity.IServiceProvider;
 import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
@@ -32,12 +29,35 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class Logger
 {
+    public static final HashMap errcodeMap;
+    public static final HashMap payloadTypes;
+    static {
+	errcodeMap = new HashMap<Integer, String>();
+        errcodeMap.put(0, "OK");
+	errcodeMap.put(1, "RESOURCE_CREATED");
+	errcodeMap.put(2, "RESOURCE_DELETED");
+	errcodeMap.put(3, "CONTINUE");
+	errcodeMap.put(4, "RESOURCE_CHANGED");
+	errcodeMap.put(46, "UNAUTHORIZED_REQ");
+
+	payloadTypes = new HashMap<Integer, String>();
+	payloadTypes.put(Payload.PLATFORM, "PLATFORM");
+	payloadTypes.put(Payload.DEVICE, "DEVICE");
+	payloadTypes.put(Payload.REPRESENTATION, "REPRESENTATION");
+	payloadTypes.put(Payload.DISCOVERY, "DISCOVERY");
+	payloadTypes.put(Payload.SECURITY, "SECURITY");
+	payloadTypes.put(Payload.PRESENCE, "PRESENCE");
+	payloadTypes.put(Payload.RD, "RD");
+	payloadTypes.put(Payload.NOTIFICATION, "NOTIFICATION");
+    }
+
     static public void logDeviceAddress(DeviceAddress da)
     {
 	System.out.println("LOG DeviceAddress address:\t" + da.address);
@@ -156,39 +176,6 @@ public class Logger
 	}
     }
 
-    static public void logPayloadType(Payload p)
-    {
-	switch (p.type) {
-	case Message.INVALID:
-	    System.out.println("TEST payload type: INVALID (" + p.type + ")");
-	    break;
-	case Message.DISCOVERY:
-	    System.out.println("TEST payload type: DISCOVERY (" + p.type + ")");
-	    break;
-	case Message.DEVICE:
-	    System.out.println("TEST payload type: DEVICE (" + p.type + ")");
-	    break;
-	case Message.PLATFORM:
-	    System.out.println("TEST payload type: PLATFORM (" + p.type + ")");
-	    break;
-	case Message.REPRESENTATION:
-	    System.out.println("TEST payload type: REPRESENTATION (" + p.type + ")");
-	    break;
-	case Message.SECURITY:
-	    System.out.println("TEST payload type: SECURITY (" + p.type + ")");
-	    break;
-	case Message.PRESENCE:
-	    System.out.println("TEST payload type: PRESENCE (" + p.type + ")");
-	    break;
-	case Message.RD:
-	    System.out.println("TEST payload type: RD (" + p.type + ")");
-	    break;
-	default:
-	    System.out.println("TEST payload type: UNKNOWN (" + p.type + ")");
-	    break;
-	}
-    }
-
     static public void logMessageList(PayloadList<PayloadForResourceState> pl)
     {
 	System.out.println("Logging PayloadList");
@@ -223,7 +210,7 @@ public class Logger
 
 	// PayloadList<PayloadForResourceState> payload = requestIn.getPDUPayload();
 	// if (payload != null) {
-	System.out.println("LOG MsgRequestIn doc type: " + requestIn.getMsgType());
+	System.out.println("LOG MsgRequestIn payload type: " + requestIn.getPayloadType());
 	// } else {
 	//     System.out.println("LOG MsgRequestIn payload is null");
 	// }
@@ -231,35 +218,10 @@ public class Logger
 
     static public void logMsgResponseIn(MsgResponseIn msgResponseIn)
     {
-	switch (msgResponseIn.getMsgType()) {
-	case Message.PLATFORM:
-	    System.out.println("LOG MsgResponseIn msg type is PLATFORM");
-	    break;
-	case Message.DEVICE:
-	    System.out.println("LOG: message type is DEVICE");
-	    break;
-	case Message.REPRESENTATION:
-	    System.out.println("LOG: message type is RESOURCE (REPRESENTATION)");
-	    break;
-	case Message.DISCOVERY:
-	    System.out.println("LOG: message type is DISCOVERY");
-	    break;
-	case Message.SECURITY:
-	    System.out.println("LOG: message type is SECURITY");
-	    break;
-	case Message.PRESENCE:
-	    System.out.println("LOG: message type is PRESENCE");
-	    break;
-	case Message.RD:
-	    System.out.println("LOG: message type is RD");
-	    break;
-	case Message.NOTIFICATION:
-	    System.out.println("LOG: message type is NOTIFICATION");
-	    break;
-	default:
-	    // something went wrong ...
-	    break;
-	}
+	System.out.println("LOG MsgResponseIn STACK RESULT:\t"
+			   + msgResponseIn.result
+			   + ": "
+			   + errcodeMap.get(msgResponseIn.result));
 
 	System.out.println("LOG MsgResponseIn uri:\t" + msgResponseIn.uri);
 	System.out.println("LOG MsgResponseIn conn type:\t" + msgResponseIn.connType);
@@ -274,13 +236,20 @@ public class Logger
 	if (headerOptions != null)
 	    System.out.println("LOG MsgRequestIn header options ct: " + headerOptions.size());
 
-	System.out.println("LOG MsgResponseIn PAYLOAD:");
-	PayloadList<Payload> pll = msgResponseIn.getPayloadList();
-	System.out.println("LOG PAYLOAD count: " + pll.size());
+	// FIXME:
+	if (msgResponseIn.result == OCStackResult.OK) {
 
-	for (Payload payload : (PayloadList<Payload>) pll) {
-	    logPayload(payload);
+	    System.out.println("LOG MsgResponseIn PAYLOAD:");
+	    System.out.println("LOG MsgResponseIn PAYLOAD type: "
+			       + msgResponseIn.getPayloadType()
+			       + ": "
+			       + payloadTypes.get(msgResponseIn.getPayloadType()));
+
+	    PayloadList<Payload> pll = msgResponseIn.getPayloadList();
+	    System.out.println("LOG PAYLOAD count: " + pll.size());
+	    for (Payload payload : (PayloadList<Payload>) pll) {
+		logPayload(payload);
+	    }
 	}
     }
-
 }

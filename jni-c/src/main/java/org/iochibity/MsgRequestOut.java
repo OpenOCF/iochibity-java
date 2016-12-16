@@ -31,7 +31,7 @@ public class MsgRequestOut extends MsgForServiceRequestor
     int qualityOfService; // OCF.QOS_LOW, MED, HI, NA
 
     // OCCallbackData fields:
-    IResourceServiceRequestor serviceRequestor; // OCClientResponseHandler
+    IServiceRequestor serviceRequestor; // OCClientResponseHandler
     long context;	       // void*
     long contextDeleter;       // typedef void (* OCClientContextDeleter)(void *context);
 
@@ -39,11 +39,11 @@ public class MsgRequestOut extends MsgForServiceRequestor
 
     // Discovery requests: OCF.discoverPlatform, OCF.discoverDevice, OCF.discoverResources?
 
-    public MsgRequestOut(IResourceServiceRequestor requestor) {
+    public MsgRequestOut(IServiceRequestor requestor) {
 	serviceRequestor = requestor;
     }
 
-    public MsgRequestOut(String theUri, IResourceServiceRequestor requestor) {
+    public MsgRequestOut(String theUri, IServiceRequestor requestor) {
 	uri              = theUri;
 	// method           = theMethod;
 	dest             = null;

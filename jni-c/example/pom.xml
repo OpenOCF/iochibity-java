@@ -21,8 +21,8 @@
     <!-- </dependency> -->
 
     <dependency>
-      <groupId>iochibity</groupId>
-      <artifactId>jni-c</artifactId>
+      <groupId>org.iochibity</groupId>
+      <artifactId>libocfjni-c</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>

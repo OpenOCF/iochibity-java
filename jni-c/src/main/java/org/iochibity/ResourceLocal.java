@@ -53,7 +53,7 @@ public class ResourceLocal extends Resource // OCResource
     // This handler has to be explicitly defined by the programmer.
     // OCEntityHandler entityHandler;   /* fn pointer */
     // we instead return the ResourceServiceProvider object
-    public native IResourceServiceProvider getServiceProvider();
+    public native IServiceProvider getServiceProvider();
 
     // Callback parameter.*/
     // void * entityHandlerCallbackParam;

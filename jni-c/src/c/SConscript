@@ -73,7 +73,10 @@ if env['ENV']['IOTIVITY_FLAVOR'] == 'IOCHIBITY':
                source_root + '/resource/csdk/stack',
                source_root + '/resource/csdk/stack/internal',
                source_root + '/resource/csdk/connectivity/api',
+               source_root + '/resource/csdk/connectivity/lib/libcoap-4.1.1',
+               source_root + '/resource/csdk/security',
                source_root + '/resource/csdk/security/ocsecurity',
+               source_root + '/extlibs', # for tinydtls debug.h
                install_sysroot + '/include',
                jdk_home + '/include',
                jdk_home + '/include/' + jvm_host]
@@ -117,6 +120,9 @@ local_env.AppendUnique(CPPPATH = CPPPATHS)
 #     local_env.AppendUnique(CFLAGS = ['-install_name' + install_sysroot + '/lib/libocfjni-c.jnilib',
 #                                      '-dynamiclib'])
 
+ 	# if secured == '1':
+local_env.AppendUnique(LIBS=['tinydtls'])
+
 ######################################################################
 # Source files and Targets
 ######################################################################
@@ -128,16 +134,16 @@ if target_os == 'darwin':
 jni_clib_src = ['ocf_init.c',
 	        'ocf_ocf.c',
 		'ocf_Message.c',
+		'ocf_MessengerServer.c',
+	        'ocf_MessengerClient.c',
 	        'ocf_MsgForServiceProvider.c',
 	        'ocf_PayloadForResourceState.c',
 	        'ocf_property_map.c',
 	        'ocf_resource_local.c',
-	        'ocf_resource_manager.c',
+	        'ocf_ServicesManager.c',
 	        'ocf_MsgResponseIn.c',
 	        'ocf_MsgResponseOut.c',
 	        'ocf_exceptions.c',
-		'ocf_api_server.c',
-	        'ocf_api_client.c',
 	        'jni_utils.c']
 
 # if target_os in ['windows']:

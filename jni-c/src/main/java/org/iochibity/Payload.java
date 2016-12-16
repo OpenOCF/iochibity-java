@@ -17,6 +17,17 @@ import java.util.List;
 // OCLinksPayload - substruct used in OCResourceCollectionPayload
 public class Payload implements IPayload
 {
+    // OCPayloadType enum
+    public static final int INVALID        = 0;
+    public static final int DISCOVERY      = 1;
+    public static final int DEVICE         = 2;
+    public static final int PLATFORM       = 3;
+    public static final int REPRESENTATION = 4;
+    public static final int SECURITY       = 5;
+    public static final int PRESENCE       = 6;
+    public static final int RD             = 7;
+    public static final int NOTIFICATION   = 8;
+
     private long _handle;      // OCPayload*
     public  long getHandle() { return _handle; }
 

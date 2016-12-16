@@ -1,8 +1,10 @@
+/* ocf_ServicesManager.c */
+
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "org_iochibity_ResourceManager.h"
+#include "org_iochibity_ServicesManager.h"
 #include "ocf_init.h"
 #include "ocf_exceptions.h"
 #include "jni_utils.h"
@@ -20,11 +22,11 @@
 /* **************************************************************** */
 
 /*
- * Class:     org_iochibity_ResourceManager
+ * Class:     org_iochibity_ServicesManager
  * Method:    resourceCount
  * Signature: (B)I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_resourceCount
+JNIEXPORT jint JNICALL Java_org_iochibity_ServicesManager_resourceCount
 (JNIEnv * env, jclass klass)
 {
     OC_UNUSED(env);
@@ -38,11 +40,11 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ResourceManager_resourceCount
 }
 
 /*
- * Class:     org_iochibity_ResourceManager
- * Method:    registerPlatform
+ * Class:     org_iochibity_ServicesManager
+ * Method:    registerPlatformProvider
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerPlatform
+JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerPlatformProvider
   (JNIEnv * env, jclass klass,
    jstring j_platform_id,
    jstring j_mfg_name,
@@ -225,11 +227,11 @@ JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerPlatform
 }
 
 /*
- * Class:     org_iochibity_ResourceManager
- * Method:    registerDevice
+ * Class:     org_iochibity_ServicesManager
+ * Method:    registerDeviceProvider
  * Signature: (Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerDevice
+JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDeviceProvider
   (JNIEnv * env, jclass klass,
    jstring j_device_name,
    jobjectArray j_types,
@@ -296,11 +298,11 @@ JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerDevice
 }
 
 /*
- * Class:     org_iochibity_ResourceManager
+ * Class:     org_iochibity_ServicesManager
  * Method:    RegisterDefaultServiceRoutine
  * Signature: (Ljava/lang/Object;Ljava/lang/Object;)I
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerDefaultServiceRoutine
+JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDefaultServiceRoutine
 (JNIEnv * env, jclass klass, jobject j_resource_service_provider, jobject j_callback_param)
 {
     OC_UNUSED(env);
@@ -310,11 +312,11 @@ JNIEXPORT void JNICALL Java_org_iochibity_ResourceManager_registerDefaultService
 }
 
 /*
- * Class:     org_iochibity_ResourceManager
- * Method:    registerResource
+ * Class:     org_iochibity_ServicesManager
+ * Method:    registerServiceProvider
  * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IResourceServiceProvider;B)Lorg/iochibity/ResourceLocal;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceManager_registerResource
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProvider
 (JNIEnv * env, jclass klass,
  jstring j_uri,
  jobjectArray j_tnames,
@@ -324,7 +326,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceManager_registerResource
    jbyte   j_policies)
 {
     OC_UNUSED(klass);
-    printf("Java_org_iochibity_ResourceManager_registerResource ENTRY\n");
+    printf("Java_org_iochibity_ServicesManager_registerServiceProvider ENTRY\n");
 
     jobject j_resource_type_name = (*env)->GetObjectArrayElement(env, j_tnames, 0);
     const char *c_resource_type_name = "";
@@ -474,6 +476,6 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ResourceManager_registerResource
     (*env)->ReleaseStringUTFChars(env, j_resource_if_name, c_resource_if_name);
     (*env)->ReleaseStringUTFChars(env, j_uri, c_uri);
 
-    printf("org_iochibity_ResourceManager/registerResource EXIT\n");
+    printf("org_iochibity_ServicesManager/registerServiceProvider EXIT\n");
     return j_resource;
 }
