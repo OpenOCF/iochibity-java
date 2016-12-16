@@ -1,8 +1,11 @@
 # iotivity-java
 
-Java API/SDK for Iotivity
+Java API/SDK for Iotivity C++ API
 
-This is the Java API and JNI wrapper code for Iotivity, broken out
+*Deprecated* - I've switched to the new jni-c API and probably will
+ not be working further on this one.
+
+This is the (legacy) Java API and JNI wrapper code for Iotivity, broken out
 into a stand-alone project.  It is derived from work by Petre Eftime
 (https://gerrit.iotivity.org/gerrit/#/c/7895/[patch 7895]).
 
