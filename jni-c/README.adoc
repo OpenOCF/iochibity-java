@@ -217,4 +217,4 @@ new: MsgForServiceRequestor extends Message
 
 OCClientResponse         => MsgResponseIn  extends MsgForServiceRequestor
 
-new:                        MsgReQuestOut  extends MsgForServiceRequestor
+new:                        MsgRequestOut  extends MsgForServiceRequestor
