@@ -2,6 +2,9 @@
 
 A Java wrapper around the Iotivity C API.
 
+WARNING: Work-in-Progress.  Discovery seems to work, and GET works for
+resources with "*" permissions.
+
 == build
 
 The build mechanism uses environment variables set using the `source`
@@ -53,6 +56,12 @@ your local Maven repo
 (e.g. `$HOME/.m2/repository/org/iochibity/jni-c/0.1.0-SNAPSHOT/jni-c-0.1.0-SNAPSHOT.pom`)
 
 == examples
+
+Security configuration is *required*.  You must create the appropriate
+CBOR files and tell the implementation where to find them (in the
+"Init" call); see the link:jni-c/example[example] code.  I expect to
+have a more-or-less complete (but basic) implementation within a week
+or so.
 
 Then run the example:
 
