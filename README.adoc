@@ -17,6 +17,12 @@ This is a new Java API, written from scratch, with the following goals:
 * Simplicity.  The C API exposes a lot of detail that application
   programmers should not have to worry about.  The jni-c API tries to
   minimize this.
+* Consistency.  The C API has consistency problems; the same thing is
+  referred to by different names alarmingly often.  For example, the
+  list of interfaces associated with a resource is sometimes
+  "interfaces", sometimes "ifaces" and sometimes "ifs".  Resource
+  properties are called "properties" in some places, and "attributes"
+  in others.  Etc.
 * Symmetry.  The C API obscures the many symmetries involved in the
   Client-Server model; for example, it calls the incoming message
   handled by servers "OCEntityHandlerRequest", and the incoming

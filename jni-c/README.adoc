@@ -1,35 +1,100 @@
-= java wrapper on c api
+= jni-c
+
+A Java wrapper around the Iotivity C API.
 
 == build
 
-First source devhost and targethost files, e.g.
+The build mechanism uses environment variables set using the `source`
+shell command.  The files to be `source` -ed are located in a separate
+repository, https://github.com/iotk/xc[xc].  This is admittedly
+clunky, but the files are used across multiple projects
+(e.g. https://github.com/iotk/iochibity[iochibity],
+https://github.com/iotk/iochibity-java[iochibity-java], etc.).
 
-```
+First clone https://github.com/iotk/xc[xc] and edit the devhost and
+target host files as needed.  For example, you need to set
+IOTIVITY_FLAVOR to either "iotivity" or "iochibity", depending on
+which implementation you're targeting.  You'll also need to set some
+paths, e.g. `IOTIVITY_HOME`, `PREFIX`, etc.  See `darwin.devhost` and
+`darwin.targethost` as examples.
+
+Then source the devhost and targethost files; e.g. to develop on a
+mac, targeting the mac, do:
+
+[source,sh]
+----
 source ~/xc/source.me/darwin.devhost
 source ~/xc/source.me/darwin.targethost
-```
+----
 
+Build the jni-c shared library:
+
+[source,sh]
+----
 $ scons jni-c
-options:  VERBOSE=0 | 1, LOGGING= 0 | 1
+## options:  VERBOSE=0 | 1, LOGGING= 0 | 1
+----
 
+This will put the shared lib in `${INSTALL_SYSROOT}/lib.  For example,
+`$HOME/iochibity/sysroot/darwin/x86_64/debug/lib/libocfjni_c.jnilib`
+on the Mac (`libocfjni_c.so` on Linux).
+
+
+Then build the jni-c Java library:
+
+[source,sh]
+----
 $ cd jni-c
 $ mvn install
+----
+
+This will create the jar file in the `targets` subdir, and copy it to
+your local Maven repo
+(e.g. `$HOME/.m2/repository/org/iochibity/jni-c/0.1.0-SNAPSHOT/jni-c-0.1.0-SNAPSHOT.pom`)
 
 == examples
 
-The run the example:
+Then run the example:
 
+[source,sh]
+----
 $ cd examples
 $ export MAVEN_OPTS="-Djava.library.path=${INSTALL_SYSROOT}/lib"
 $ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestClient"
 or
-$ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestServer"
+$ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestServer"
+----
 
 
-on the edison:
+== edison
 
-# export LD_LIBRARY_PATH=$HOME/iochibity/lib
-# java -Djava.library.path=$HOME/iochibity/lib -cp "jni-c-0.1.0-SNAPSHOT.jar:iochibity-eg-0.1.0-SNAPSHOT.jar" org.iochibity.test.OCFTestServer
+You can cross-compile to target the Intel Edison.  Currently this has
+only been tested on OS X as the dev host, but it should work for Linux
+as well.
+
+To target the Intel Edison, source the appropriate devhost file, then
+`edison.targethost`.  E.g., I develop on the Mac, so I do this:
+
+[source,sh]
+----
+source ~/xc/source.me/darwin.devhost
+source ~/xc/source.me/edison.targethost
+----
+
+*NOTE*: you may need to edit the devhost and targethost files to fit
+ your system.
+
+Then build the library as above, and `scp` the result to the Edison.
+
+Open a terminal to the Edison and (assuming you've copied
+Iochibity/Iotivity and the jni- lib to `$HOME/iochibity`, and the jar
+files to `$HOME`) do:
+
+[source,sh]
+----
+$ export LD_LIBRARY_PATH=$HOME/iochibity/lib
+$ java -Djava.library.path=$HOME/iochibity/lib -cp "jni-c-0.1.0-SNAPSHOT.jar:iochibity-eg-0.1.0-SNAPSHOT.jar" org.iochibity.test.OCFTestServer
+----
 
 == naming conventions
 
@@ -45,7 +110,9 @@ JNI:
 * j_ - prefix for java objects
 * c_ - prefix for native c data
 
-UPPER_CASE prefixes: file scope, for caching; e.g. K_PAYLOAD.
+UPPER_CASE prefixes are used for global vars, set by `JNI_OnLoad` (in
+`ocf_init.c`); e.g. K_LINKED_LIST for the java.util.LinkedList
+class, MID_LL_CTOR for the LinkedList constructor etc.
 
 
 Java:
@@ -60,35 +127,74 @@ Instead of returning an OCStackResult code we return void and throw
 Java exceptions as needed.
 
 
-== mapping to iotivity c api
+== conceptual structure
 
-Metaphor: bureaucracy.  Documents contain (inscribed) messages.
-ServiceProviders (respondants) receive (from ServiceRequestors)
-incoming request documents (DocRequestIn), which refer to Resources
-(ResourceLocal).  They create an outgoing document (DocResponseOut)
-and send it to the ServiceRequestor.
+We eschew talk of "Resources" and "Representations", because those
+terms are so abstract as to be useless; in software, everything is
+both a "resource" and a "representation".
 
-Resources:
-ServiceRequestors create outgoing request documents (DocRequestOut)
-and send them to a ServiceProvider.  receive (from ServiceProviders)
-incoming response documents (DocResponseIn)
+The basic idea is that servers are ServiceProviders, and clients are
+ServiceRequestors.  The mechanism of communication is the message.
+Messages may contain payloads, and may reference state ("Resource").
+
+The library itself provides services to clients and servers.  The
+`Messenger` provides messaging services; the `ServiceManager` keeps
+track of service requestors and providers (callbacks).
+
+ServiceProviders are composed of some meta-data, such as a URL path, a
+state machine that functions as a callback/handler for dealing with
+incoming messages requesting services, and data.  The data are state
+data (conventionally, they are a "resource representation).  The state
+machine may maintain state data in memory, or it may acquire it
+dynamically (as in the case of "reading" a sensor instrument).
+
+On a ServiceProvider (server), the state machine is a routine called
+`serviceRequestIn`; on a ServiceRequestor (client), it's a routine
+called `serviceResponseIn`;
+
+ServiceProviders must be registered with the ServiceManager.
+
+A Client (ServiceRequestor) creates an outgoing service request
+message (MsgRequestOut), and uses the Messenger to send it
+(Messenger.sendRequest(...)).
+
+A (application) Server (ServiceProvider) receives (from a client
+ServiceRequestor) an incoming request message (MsgRequestIn), which
+refers to Resources (ResourceLocal).  The ServiceProvider creates an
+outgoing message (MsgResponseOut), creates a Payload containing
+relevant (state) data, inserts it in the MsgResponseOut, and asks the
+Messenger to send it to the client ServiceRequestor.
+
+The client ServiceRequestor then receives an incoming response message
+(MsgResponseIn) that corresponds to the MsgResponseOut sent by the
+ServiceProvider.
+
+ServiceProviders (on the server side) are always associated with
+state, and the messages handled by ServiceProviders
+(MsgRequestIn/MsgResponseOut) always contain a reference to that
+state.
+
+Messages may also contain payloads.
 
 
 
 setPlatformInfo  => ResourceManager.registerPlatform
-setDeviceInfo    => ResourceManager.registerDevice
-OCCreateResource => ResourceManager.registerResource
-OCDoResource     => ResourceManager.sendRequest
+setDeviceInfo    => ResourceManager.registerDeviceProvider
+OCCreateResource => ResourceManager.registerServiceProvider
+
+new: Messenger
+OCDoResource     => Messenger.sendRequest
+OCDoResponse     => Messenger.sendResponse
 
 OCResource       => Resource
 			        ResourceLocal  (new; resource on server)
 			        ResourceRemote (new; resource on client, rec'd from server)
 
-new: Document
-new: DocForServiceProvider extends Document
-OCEntityHandlerRequest   => DocRequestIn   extends DocForServiceProvider
-OCEntityHandlerResponse  => DocResponseOut extends DocForServiceProvider
+new: IMessage, Message implements IMessage
+new: MsgForServiceProvider extends Message
+OCEntityHandlerRequest   => MsgRequestIn   extends MsgForServiceProvider
+OCEntityHandlerResponse  => MsgResponseOut extends MsgForServiceProvider
 
-new: DocForServiceRequestor extends Document
-OCClientResponse         => DocResponseIn  extends DocForServiceRequestor
-new:                        DocReQuestOut  extends DocForServiceRequestor
+new: MsgForServiceRequestor extends Message
+OCClientResponse         => MsgResponseIn  extends MsgForServiceRequestor
+new:                        MsgReQuestOut  extends MsgForServiceRequestor
