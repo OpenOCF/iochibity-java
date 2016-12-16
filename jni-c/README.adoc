@@ -61,7 +61,7 @@ your local Maven repo
 
 Security configuration is *required*.  You must create the appropriate
 CBOR files and tell the implementation where to find them (in the
-"Init" call); see the link:jni-c/example[example] code.
+"Init" call); see the link:example[example] code.
 
 Then run the example:
 
