@@ -187,23 +187,34 @@ Messages may also contain payloads.
 
 
 
-setPlatformInfo  => ResourceManager.registerPlatform
-setDeviceInfo    => ResourceManager.registerDeviceProvider
-OCCreateResource => ResourceManager.registerServiceProvider
+setPlatformInfo  => ServicesManager.registerPlatformProvider
+
+setDeviceInfo    => ServicesManager.registerDeviceProvider
+
+OCCreateResource => ServicesManager.registerServiceProvider
 
 new: Messenger
+
 OCDoResource     => Messenger.sendRequest
+
 OCDoResponse     => Messenger.sendResponse
 
 OCResource       => Resource
+
 			        ResourceLocal  (new; resource on server)
+
 			        ResourceRemote (new; resource on client, rec'd from server)
 
 new: IMessage, Message implements IMessage
+
 new: MsgForServiceProvider extends Message
+
 OCEntityHandlerRequest   => MsgRequestIn   extends MsgForServiceProvider
+
 OCEntityHandlerResponse  => MsgResponseOut extends MsgForServiceProvider
 
 new: MsgForServiceRequestor extends Message
+
 OCClientResponse         => MsgResponseIn  extends MsgForServiceRequestor
+
 new:                        MsgReQuestOut  extends MsgForServiceRequestor
