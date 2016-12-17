@@ -121,7 +121,7 @@ local_env.AppendUnique(CPPPATH = CPPPATHS)
 #                                      '-dynamiclib'])
 
  	# if secured == '1':
-local_env.AppendUnique(LIBS=['tinydtls'])
+#local_env.AppendUnique(LIBS=['tinydtls'])
 
 ######################################################################
 # Source files and Targets

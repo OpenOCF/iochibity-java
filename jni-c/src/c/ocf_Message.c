@@ -423,7 +423,6 @@ jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
 	c_rtypes = c_rtypes->next;
     }
     (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_RTYPES, j_rtypes);
-    printf("AAAAAAAAAAAAAAAA\n");
     /* _interfaces */
     jobject j_ifaces  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
     if (j_ifaces == NULL) {
@@ -442,7 +441,6 @@ jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
 	c_ifaces = c_ifaces->next;
     }
     (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_IFS, j_ifaces);
-    printf("BBBBBBBBBBBBBBBB\n");
 
     /* _uri */
     jstring j_uri = (*env)->NewStringUTF(env, c_payload->uri);
@@ -464,13 +462,21 @@ jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
 	case OCREP_PROP_NULL:
 	    break;
 	case OCREP_PROP_INT:
+	    j_val = (*env)->NewObject(env, K_INTEGER, MID_INT_CTOR, vmap->i);
+	    (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_key, j_val);
 	    break;
 	case OCREP_PROP_DOUBLE:
+	    j_val = (*env)->NewObject(env, K_DOUBLE, MID_DBL_CTOR, vmap->d);
+	    (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_key, j_val);
 	    break;
 	case OCREP_PROP_BOOL:
 	    j_val = (*env)->NewObject(env, K_BOOLEAN, MID_BOOL_CTOR, vmap->b);
+	    (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_key, j_val);
 	    break;
 	case OCREP_PROP_STRING:
+	    j_val = (*env)->NewStringUTF(env, vmap->str);
+	    /* j_val = (*env)->NewObject(env, K_STRING, MID_STR_CTOR, j_s); */
+	    (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_key, j_val);
 	    break;
 	case OCREP_PROP_BYTE_STRING:
 	    break;
@@ -481,7 +487,6 @@ jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
 	default:
 	    break;
 	}
-	(*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_key, j_val);
 	vmap = vmap->next;
     }
     (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_PROPERTIES, j_pmap);
@@ -523,7 +528,6 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
     jobject j_payload = NULL;
     jboolean j_b;
     while (c_payload != NULL) {
-	printf("xxxxxxxxxxxxxxxx\n");
 	switch (c_payload->type) {
 	case PAYLOAD_TYPE_DISCOVERY:
 	    j_payload = OCDiscoveryPayload_to_Payload(env, (OCDiscoveryPayload*) c_payload);

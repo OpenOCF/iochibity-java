@@ -35,15 +35,19 @@ jobject OCClientResponse_to_MsgResponseIn(JNIEnv* env, OCClientResponse* c_OCCli
     /* OCDevAddr */
     jobject j_DeviceAddress = (*env)->NewObject(env, K_DEVICE_ADDRESS, MID_RQI_CTOR);
     (*env)->SetIntField(env, j_DeviceAddress, FID_DA_ADAPTER, c_OCClientResponse->devAddr.adapter);
-    (*env)->SetIntField(env, j_DeviceAddress, FID_DA_FLAGS,   c_OCClientResponse->devAddr.flags);
+    (*env)->SetIntField(env, j_DeviceAddress, FID_DA_FLAGS, c_OCClientResponse->devAddr.flags);
+    printf("TRANSPORT FLAGS: 0x%08X\n", c_OCClientResponse->devAddr.flags);
     (*env)->SetIntField(env, j_DeviceAddress, FID_DA_PORT,    c_OCClientResponse->devAddr.port);
+
     jstring j_addr = (*env)->NewStringUTF(env, c_OCClientResponse->devAddr.addr);
     (*env)->SetObjectField(env, j_DeviceAddress, FID_DA_ADDRESS, j_addr);
+
     (*env)->SetIntField(env, j_DeviceAddress, FID_DA_IFINDEX, c_OCClientResponse->devAddr.ifindex);
     /* jstring j_route = (*env)->NewStringUTF(env, c_OCClientResponse->devAddr.routeData); */
     /* (*env)->SetObjectField(env, j_DeviceAddress, FID_DA_ROUTE_DATA, j_route); */
     (*env)->SetObjectField(env, j_MsgResponseIn, FID_MsgRspIn_REMOTE_DEVADDR, j_DeviceAddress);
 
+    printf("RESPONSE CONNECTION TYPE: 0x%08X\n",  c_OCClientResponse->connType);
     (*env)->SetIntField(env, j_MsgResponseIn, FID_MsgRspIn_CONN_TYPE, c_OCClientResponse->connType);
 
     /* FIXME: use id_length */
@@ -366,6 +370,8 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_sendRequest__ILorg_ioc
     }
     c_destDevAddr->adapter = (*env)->GetIntField(env, j_destDevAddr, FID_DA_ADAPTER);
     c_destDevAddr->flags = (*env)->GetIntField(env, j_destDevAddr, FID_DA_FLAGS);
+    printf("SEND TRANSPORT FLAGS: 0x%08X\n", c_destDevAddr->flags);
+    c_destDevAddr->flags |= OC_SECURE;
     c_destDevAddr->port = (*env)->GetIntField(env, j_destDevAddr, FID_DA_PORT);
     jstring j_addr = (*env)->GetObjectField(env, j_destDevAddr, FID_DA_ADDRESS);
     if (j_addr == NULL) {
@@ -401,8 +407,11 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_sendRequest__ILorg_ioc
 		       OC_REST_GET,
     		       c_uri,
     		       c_destDevAddr,    /* OCDevAddr* destination */
-    		       0,		 /* OCPayload* payload */
-    		       CT_DEFAULT,	 /* OCConnectivityType conn_type */
+    		       NULL,		 /* OCPayload* payload */
+		       CT_DEFAULT,
+    		       /* CT_IP_USE_V4 */
+		       /* | CT_ADAPTER_IP */
+		       /* | CT_FLAG_SECURE,	 /\* OCConnectivityType conn_type *\/ */
     		       OC_LOW_QOS,
                        /* (qos == OC_HIGH_QOS) ? OC_HIGH_QOS : OC_LOW_QOS, /\* OCQualityOfService *\/ */
                        &cbData,	/* OCCallbackData* cbData */

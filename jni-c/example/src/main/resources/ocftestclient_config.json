@@ -92,7 +92,7 @@
                 "subjectuuid": "FFFFFFFF-1111-2222-3333-444444444444",
                 "credtype": 1,
                 "privatedata": {
-                    "data": "FFFFFFFFFFFFFFFF",
+                    "data": "AAAAAAAAAAAAAAAA",
                     "encoding": "oic.sec.encoding.raw"
                 }
             },
@@ -101,7 +101,7 @@
                 "subjectuuid": "AAAAAAAA-BBBB-CCCC-DDDD-010101010101",
                 "credtype": 1,
                 "privatedata": {
-                    "data": "AAAAAAAAAAAAAAAA",
+                    "data": "FFFFFFFFFFFFFFFF",
                     "encoding": "oic.sec.encoding.raw"
                 }
             }

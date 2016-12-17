@@ -7,7 +7,12 @@ resources with "*" permissions.  I expect to
 have a more-or-less complete (but basic) implementation within a week
 or so.
 
-== build
+See also
+
+* link:doc/Design.adoc[Design Considerations]
+* link:doc/Implementation.adoc[Implementation Notes]
+
+== building
 
 The build mechanism uses environment variables set using the `source`
 shell command.  The files to be `source` -ed are located in a separate

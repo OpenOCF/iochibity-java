@@ -28,7 +28,7 @@ public class ServicesManager
 	 Object /*void* */ callbackParam);
 
     // public static native int OCCreateResource(Object /*OCResourceHandle* */ handle,
-    public static native ResourceLocal registerServiceProvider(String Uri,
+    public synchronized static native ResourceLocal registerServiceProvider(String Uri,
 							String[] resourceTypeName,
 							String[] resourceInterfaceName,
 							IServiceProvider serviceRoutine,

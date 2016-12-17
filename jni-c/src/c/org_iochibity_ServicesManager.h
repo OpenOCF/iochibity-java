@@ -42,7 +42,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDefaultService
 /*
  * Class:     org_iochibity_ServicesManager
  * Method:    registerServiceProvider
- * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IResourceServiceProvider;B)Lorg/iochibity/ResourceLocal;
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IServiceProvider;B)Lorg/iochibity/ResourceLocal;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProvider
   (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray, jobject, jbyte);
@@ -50,7 +50,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 /*
  * Class:     org_iochibity_ServicesManager
  * Method:    registerWatchableProvider
- * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IResourceServiceProvider;B)Lorg/iochibity/ResourceLocal;
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IServiceProvider;B)Lorg/iochibity/ResourceLocal;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerWatchableProvider
   (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray, jobject, jbyte);

@@ -1,0 +1,7 @@
+= jni-c implementation
+
+Calling across the JVM boundary is expensive, so one implementation
+goal is to minimize such calls.
+
+There are two basic strategies, which roughly correspond to Ahead Of
+Time (AOT) and Just In Time (JIT) compilation.

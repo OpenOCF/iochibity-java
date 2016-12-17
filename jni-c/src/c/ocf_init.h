@@ -38,11 +38,13 @@ extern jclass K_BOOLEAN;
 extern jmethodID MID_BOOL_CTOR;
 extern jmethodID MID_BOOL_BOOLVALUE;	/* Boolean.booleanValue() returns boolean */
 extern jclass K_DOUBLE;
+extern jmethodID MID_DBL_CTOR;
 extern jmethodID MID_DBL_DBLVALUE;	/* Double.doubleValue() returns double */
 extern jclass K_SHORT;
 extern jmethodID MID_SHORT_CTOR;
 extern jmethodID MID_SHORT_SHORTVALUE;
 extern jclass K_STRING;
+extern jmethodID MID_STR_CTOR;
 extern jclass K_LIST;		   /* OCByteString => List<Byte> */
 extern jclass K_BYTE;
 extern jmethodID MID_BYTE_CTOR;

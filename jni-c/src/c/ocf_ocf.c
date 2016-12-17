@@ -87,8 +87,8 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
     const char *cip_addr = "";
     if (j_ip_addr == NULL) {
 	printf("ip addr null\n");
-	j_ip_addr = (*env)->NewStringUTF(env, cip_addr);
-	cip_addr = (*env)->GetStringUTFChars(env, j_ip_addr, NULL);
+	/* j_ip_addr = (*env)->NewStringUTF(env, cip_addr); */
+	cip_addr = NULL;  /* (*env)->GetStringUTFChars(env, j_ip_addr, NULL); */
     } else {
 	cip_addr = (*env)->GetStringUTFChars(env, j_ip_addr, NULL);
 	if (cip_addr == NULL) {
@@ -97,7 +97,8 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
     }
     printf("ip addr: [%s]\n", cip_addr);
 
-    op_result = OCInit(cip_addr, (uint16_t)port, mode);
+    /* op_result = OCInit(cip_addr, (uint16_t)port, mode); */
+    op_result = OCInit1(mode, OC_FLAG_SECURE, OC_FLAG_SECURE);
     if (op_result != OC_STACK_OK) {
 	printf("OCStack init error\n");
 	THROW_STACK_EXCEPTION(op_result, "Initialization failure");

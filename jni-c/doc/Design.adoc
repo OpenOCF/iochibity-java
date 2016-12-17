@@ -1,0 +1,38 @@
+= jni-c design considerations
+
+
+== goals
+
+* Minimalism.  This is a 100% C, direct-to-c-api implementation.  It's
+  a wrapper around the Iotivity C API; the C++ API is not used.
+* Alignment with the OCF (OIC) protocol specification.  The Iotivity C
+  API terminology (var and function names) deviates from the language
+  of the protocol specification.
+* Conceptual clarity. The Iotivity C API uses some rather opaque
+  names, like "OCDoResource", which really should be something like
+  "sendRequest".
+* Simplicity.  The C API exposes a lot of detail that application
+  programmers should not have to worry about.  The jni-c API tries to
+  minimize this.
+* Consistency.  The C API has consistency problems; the same thing is
+  referred to by different names alarmingly often.  For example, the
+  list of interfaces associated with a resource is sometimes
+  "interfaces", sometimes "ifaces" and sometimes "ifs".  Resource
+  properties are called "properties" in some places, and "attributes"
+  in others.  Etc.
+* Symmetry.  The C API obscures the many symmetries involved in the
+  Client-Server model; for example, it calls the incoming message
+  handled by servers "OCEntityHandlerRequest", and the incoming
+  message handled by clients "OCClientResponse", which I find just
+  confusing.  The jni-c API uses "MsgRequestIn" and "MsgResponseIn",
+  respectively.  See the link:jni-c/README.adoc[jni-c README] for more details.
+* Implementation independence. Works with both
+  https://www.iotivity.org/[Iotivity] (version 1.2.1) and
+  https://github.com/iotk/iochibity[Iochibity].
+
+
+== non-goals
+
+* One-to-one mirroring of the C API
+* Performance.  We will optimize later; for now, the goals of
+  simplicity, conceptual clarity, etc. take priority.

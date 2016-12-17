@@ -159,7 +159,6 @@ public class OCFTestClient
 	    });
 
 	OCF.Init(null, 0, OCF.CLIENT_SERVER, "src/main/resources/ocftestclient_config.cbor");
-
 	// ServicesManager.registerPlatform("Fartmaster",
 	// 				 "Acme Novelties",
 	// 				 "http://acme.example.org",
@@ -201,7 +200,7 @@ public class OCFTestClient
 	}
 
 	try {
-	    Thread.sleep(3000);
+	    Thread.sleep(500);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    msgError(TAG, e.toString());

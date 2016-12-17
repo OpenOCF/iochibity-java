@@ -32,11 +32,13 @@ jclass K_BOOLEAN                 = NULL;
 jmethodID MID_BOOL_CTOR          = NULL;
 jmethodID MID_BOOL_BOOLVALUE     = NULL; /* Boolean.booleanValue() returns boolean */
 jclass K_DOUBLE                  = NULL;
+jmethodID MID_DBL_CTOR           = NULL; /* Double.doubleValue() returns double */
 jmethodID MID_DBL_DBLVALUE       = NULL; /* Double.doubleValue() returns double */
 jclass K_SHORT                   = NULL;
 jmethodID MID_SHORT_CTOR         = NULL;
 jmethodID MID_SHORT_SHORTVALUE   = NULL;
 jclass K_STRING                  = NULL;
+jmethodID MID_STR_CTOR           = NULL;
 jclass K_LIST                    = NULL; /* OCByteString => List<Byte> */
 jclass K_BYTE                    = NULL;
 jmethodID MID_BYTE_CTOR          = NULL;
@@ -266,6 +268,13 @@ int init_java(JNIEnv* env)
 	K_DOUBLE = (jclass)(*env)->NewGlobalRef(env, klass);
 	(*env)->DeleteLocalRef(env, klass);
     }
+    if (MID_DBL_CTOR == NULL) {
+	MID_DBL_CTOR = (*env)->GetMethodID(env, K_DOUBLE, "<init>", "(D)V");
+	if (MID_DBL_CTOR == NULL) {
+	    printf("ERROR: GetMethodID failed for ctor of Double\n");
+	    return -1;
+	}
+    }
     if (MID_DBL_DBLVALUE == NULL) {
 	MID_DBL_DBLVALUE = (*env)->GetMethodID(env, K_DOUBLE, "doubleValue", "()D");
 	if (MID_DBL_DBLVALUE == NULL) {
@@ -282,6 +291,14 @@ int init_java(JNIEnv* env)
 	K_STRING = (jclass)(*env)->NewGlobalRef(env, klass);
 	(*env)->DeleteLocalRef(env, klass);
     }
+    if (MID_STR_CTOR == NULL) {
+	MID_STR_CTOR = (*env)->GetMethodID(env, K_STRING, "<init>", "([C)V");
+	if (MID_STR_CTOR == NULL) {
+	    printf("ERROR: GetMethodID failed for ctor of String\n");
+	    return -1;
+	}
+    }
+
     /* a byte array must be stored as List<Byte> */
     if (K_LIST == NULL) {
 	klass = (*env)->FindClass(env, "java/util/List");
