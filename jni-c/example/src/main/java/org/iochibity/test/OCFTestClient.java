@@ -44,6 +44,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
+import java.util.regex.Pattern;
 
 public class OCFTestClient
 {
@@ -54,6 +57,8 @@ public class OCFTestClient
 	    System.out.println(e.toString());
 	}
     }
+
+    static CountDownLatch gLatch;
 
     public static class PlatformRequestor implements IServiceRequestor
     {
@@ -67,6 +72,7 @@ public class OCFTestClient
 
 	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
 	    // update screen ...
+	    System.out.flush();
 	    return 0;
 	}
 
@@ -84,6 +90,7 @@ public class OCFTestClient
 
 	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
 	    // update screen ...
+	    System.out.flush();
 	    return 0;
 	}
 
@@ -145,6 +152,112 @@ public class OCFTestClient
 
     }
 
+    public static synchronized void promptUser()
+    {
+	Scanner sc = new Scanner(System.in);
+	String action = null;
+
+	Pattern top  = Pattern.compile("[0-9x]");
+	Pattern pdrx = Pattern.compile("[dprx]");
+
+	boolean again = true;
+	while(again) {
+	    System.out.println("Choose an action:");
+	    System.out.println("\t1) Discover resources");
+	    System.out.println("\t2) List discovered resources");
+	    System.out.println("\t3) GET");
+	    System.out.println("\t3) WATCH");
+	    System.out.println("\t4) PUT");
+	    System.out.println("\t5) POST");
+	    System.out.println("\t8) DELETE");
+	    System.out.println("\tx) Exit\n");
+	    while (!sc.hasNext(top)) { System.out.println("Invalid input, try again"); sc.next(); }
+	    action = sc.next(top);
+	    switch(action) {
+	    case "1":			// Discover resources
+		System.out.println("Discover:");
+		System.out.println("\tp) Platforms (GET oic/p) ");
+		System.out.println("\td) Devices   (GET oic/d)");
+		System.out.println("\tr) Resources (GET oic/res");
+		System.out.println("\tx) Cancel");
+		while (!sc.hasNext(pdrx)) {  System.out.println("Invalid input, try again"); sc.next(); }
+		action = sc.next(pdrx);
+		switch(action) {
+		case "p":
+		    System.out.println("requested DISCOVER PLATFORMS");
+		    try {
+			MsgRequestOut requestOut
+			    = new MsgRequestOut(new PlatformRequestor());
+			// = new MsgRequestOut((IServiceRequestor)(new PlatformRequestor()));
+			byte[] bs = Messenger.discoverPlatforms(requestOut);
+			Thread.sleep(1000);
+		    } catch (Exception e) {
+			System.out.println("ERROR: discovering platforms");
+		    }
+		    break;
+		case "d":
+		    System.out.println("requested DISCOVER DEVICES");
+		    try {
+			MsgRequestOut requestOut
+			    = new MsgRequestOut(new DeviceRequestor());
+			byte[] bs = Messenger.discoverDevices(requestOut);
+			Thread.sleep(1000);
+		    } catch (Exception e) {
+			System.out.println("ERROR: discoverDevices");
+		    }
+		    break;
+		case "r":
+		    System.out.println("requested DISCOVER RESOURCES");
+		    try {
+			MsgRequestOut requestOut
+			    = new MsgRequestOut(new DiscoverResourcesRequestor());
+			byte[] bs = Messenger.discoverResources(requestOut);
+			Thread.sleep(1000);
+		    } catch (Exception e) {
+			System.out.println("ERROR: discoverResources");
+		    }
+		    break;
+		case "x":
+		    System.out.println("CANCELLED");
+		    break;
+		}
+		break;
+	    case "2":
+
+		break;
+	    case "3":
+		System.out.println("requested GET");
+		try {
+		    MsgRequestOut requestOut
+			= new MsgRequestOut(new WhatsitRequestor());
+		    requestOut.dest = gRemoteResourceAddress;
+		    requestOut.uri  = "/a/temperature";
+		    byte[] bs = Messenger.sendRequest(Method.GET, requestOut);
+		    Thread.sleep(1000);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    msgError(TAG, e.toString());
+		}
+		break;
+	    // case 4:
+
+	    // 	break;
+	    // case 6:
+
+	    // 	break;
+	    // case 7:
+
+	    // 	break;
+	    case "x":
+		System.out.println("EXITING");
+		again = false;
+		break;
+	    default:
+		break;
+	    }
+	}
+    }
+
     // ****************************************************************
     public static void main(String[] args)
     {
@@ -174,48 +287,15 @@ public class OCFTestClient
 
 	OCF.run();
 
-	try {
-	    MsgRequestOut requestOut
-		= new MsgRequestOut(new PlatformRequestor());
-		// = new MsgRequestOut((IServiceRequestor)(new PlatformRequestor()));
-	    byte[] bs = Messenger.discoverPlatforms(requestOut);
-	} catch (Exception e) {
-	    System.out.println("ERROR: discoverPlatforms");
-	}
+	promptUser();
 
-	try {
-	    MsgRequestOut requestOut
-		= new MsgRequestOut(new DeviceRequestor());
-	    byte[] bs = Messenger.discoverDevices(requestOut);
-	} catch (Exception e) {
-	    System.out.println("ERROR: discoverDevices");
-	}
+	// try {
+	//     Thread.sleep(500);
+	// } catch (Exception e) {
+	//     e.printStackTrace();
+	//     msgError(TAG, e.toString());
+	// }
 
-	try {
-	    MsgRequestOut requestOut
-		= new MsgRequestOut(new DiscoverResourcesRequestor());
-	    byte[] bs = Messenger.discoverResources(requestOut);
-	} catch (Exception e) {
-	    System.out.println("ERROR: discoverResources");
-	}
-
-	try {
-	    Thread.sleep(500);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    msgError(TAG, e.toString());
-	}
-
-	try {
-	    MsgRequestOut requestOut
-		= new MsgRequestOut(new WhatsitRequestor());
-	    requestOut.dest = gRemoteResourceAddress;
-	    requestOut.uri  = "/a/temperature";
-	    byte[] bs = Messenger.sendRequest(Method.GET, requestOut);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    msgError(TAG, e.toString());
-	}
 
 
 	// // Setup terminal and screen layers
@@ -250,15 +330,15 @@ public class OCFTestClient
 	// 						new EmptySpace(TextColor.ANSI.BLUE));
         // gui.addWindowAndWait(window);
 
-        while(true){
-	    try {
-		Thread.sleep(2000);
-		System.out.println("GUI thread loop");
-	    } catch (InterruptedException e) {
-		e.printStackTrace();
-		msgError(TAG, e.toString());
-	    }
-        }
+        // while(true){
+	//     try {
+	// 	Thread.sleep(2000);
+	// 	System.out.println("GUI thread loop");
+	//     } catch (InterruptedException e) {
+	// 	e.printStackTrace();
+	// 	msgError(TAG, e.toString());
+	//     }
+        // }
     }
 
     public static void msgError(final String tag ,final String text) {
