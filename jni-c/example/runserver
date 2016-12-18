@@ -1,0 +1,18 @@
+#!/bin/sh
+
+
+## iochibity
+#export MAVEN_OPTS=-Djava.library.path=${INSTALL_SYSROOT}/lib
+
+## iotivity
+export MAVEN_OPTS=-Djava.library.path=${INSTALL_SYSROOT}
+
+## ${HOME}/iotivity/iochibity/sysroots/${TARGET_PLATFORM}/x86_64/release/lib
+
+## linux iochibity:
+export LD_LIBRARY_PATH=${INSTALL_SYSROOT}/lib
+
+## linux iotivity
+export LD_LIBRARY_PATH=${INSTALL_SYSROOT}
+
+mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestServer"
