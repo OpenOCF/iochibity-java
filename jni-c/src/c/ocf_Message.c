@@ -18,6 +18,7 @@
 
 /* INTERNAL */
 
+#ifdef IOCHIBITY    /* 1.1.1: */
 /*
  * OCPlatformPayload_to_Payload
  * compensate for OCPlatformInfo wierdness
@@ -220,6 +221,8 @@ jobject OCDevicePayload_to_Payload(JNIEnv* env, OCDevicePayload* c_payload)
     /* printf("OCDevicePayload_to_Payload EXIT\n"); */
     return j_Payload;
 }
+
+#endif	/* IOCHIBITY defined */
 
 /*
  * OCResourcePayload_to_Payload
@@ -539,7 +542,12 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 	    c_payload = (OCPayload*) ((OCDiscoveryPayload*)c_payload)->next;
 	    break;
 	case PAYLOAD_TYPE_DEVICE:
+#ifdef IOCHIBITY    /* 1.1.1: */
 	    j_payload = OCDevicePayload_to_Payload(env, (OCDevicePayload*) c_payload);
+#else
+	    // OCDevicePayload has been removed.
+	    printf("XXXXXXXXXXXXXXXX: received PAYLOAD_TYPE_DEVICE\n");
+#endif
 	    /* add payload to payload list */
 	    j_b = (*env)->CallBooleanMethod(env, pll, MID_PLL_ADD, j_payload);
 	    if (!j_b) {
@@ -548,7 +556,12 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 	    c_payload = NULL;
 	    break;
 	case PAYLOAD_TYPE_PLATFORM:
+#ifdef IOCHIBITY    /* 1.1.1: */
 	    j_payload = OCPlatformPayload_to_Payload(env, (OCPlatformPayload*) c_payload);
+#else
+	    // OCPlatformPayload has been removed.
+	    printf("XXXXXXXXXXXXXXXX: received PAYLOAD_TYPE_PLATFORM\n");
+#endif
 	    /* add payload to payload list */
 	    j_b = (*env)->CallBooleanMethod(env, pll, MID_PLL_ADD, j_payload);
 	    if (!j_b) {
@@ -568,7 +581,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 	case PAYLOAD_TYPE_INVALID:
 	case PAYLOAD_TYPE_SECURITY:
 	case PAYLOAD_TYPE_PRESENCE:
-	case PAYLOAD_TYPE_RD:
+	/* case PAYLOAD_TYPE_RD: */
 	default:
 	    c_payload = NULL;
 	    break;

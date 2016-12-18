@@ -44,7 +44,7 @@ print "JDK:", jdk_home
 ######################################################################
 # Build flags
 ######################################################################
-if env['ENV']['IOTIVITY_FLAVOR'] == 'IOTIVITY':
+if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOTIVITY':
    CPPPATHS = ['#src',
 	       jdk_home + '/include',
 	       jdk_home + '/include/' + jvm_host,
@@ -59,15 +59,16 @@ if env['ENV']['IOTIVITY_FLAVOR'] == 'IOTIVITY':
 	       iotivity_home + '/resource/csdk/stack/include/internal',
 	       iotivity_home + '/resource/csdk/logger/include',
 	       iotivity_home + '/resource/oc_logger/include',
+	       iotivity_home + '/extlibs/',
 	       iotivity_home + '/extlibs/cjson',
-	       iotivity_home + '/resource/csdk/connectivity/lib/libcoap-4.1.1',
+	       iotivity_home + '/resource/csdk/connectivity/lib/libcoap-4.1.1/include/coap',
 	       iotivity_home + '/resource/csdk/security/include',
 	       iotivity_home + '/resource/csdk/security/include/internal']
    install_dir = install_sysroot
    local_env.AppendUnique(LIBS=['octbstack', 'logger', 'oc_logger','connectivity_abstraction', 'ocsrm', 'c_common', 'routingmanager'])
    local_env.AppendUnique(LIBPATH = [local_env.get('INSTALL_SYSROOT')])
 
-if env['ENV']['IOTIVITY_FLAVOR'] == 'IOCHIBITY':
+if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOCHIBITY':
    CPPPATHS = ['#src',
                source_root + '/resource/c_common',
                source_root + '/resource/csdk/stack',

@@ -38,6 +38,7 @@ public class OCFTestServer
 {
     static{
 	try{
+	    System.out.println(System.getProperty("java.library.path"));
 	    System.loadLibrary("ocfjni_c");
 	}catch(Exception e){
 	    System.out.println(e.toString());
