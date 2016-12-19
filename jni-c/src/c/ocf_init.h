@@ -54,6 +54,7 @@ extern jclass K_OBJECT;
 extern jclass    K_LINKED_LIST;
 extern jmethodID MID_LL_CTOR;
 extern jmethodID MID_LL_ADD;
+extern jmethodID MID_LL_GET;
 
 extern jclass    K_PAYLOAD;
 extern jfieldID  FID_PAYLOAD_HANDLE;
@@ -107,6 +108,7 @@ extern jmethodID MID_ENTRY_GETKEY;
 extern jmethodID MID_ENTRY_GETVALUE;
 
 extern jclass    K_DEVICE_ADDRESS;
+extern jmethodID MID_DA_CTOR;
 extern jfieldID  FID_DA_ADAPTER;
 extern jfieldID  FID_DA_FLAGS;
 extern jfieldID  FID_DA_PORT;
@@ -114,16 +116,39 @@ extern jfieldID  FID_DA_ADDRESS;
 extern jfieldID  FID_DA_IFINDEX;
 extern jfieldID  FID_DA_ROUTE_DATA;
 
+extern jclass    K_ISERVICE_PROVIDER;
+/* extern jmethodID MID_ISP_CTOR; */
+extern jmethodID MID_ISP_SERVICE_REQUEST_IN;
+
+extern jclass    K_ASERVICE_PROVIDER;
+/* extern jmethodID MID_ISP_CTOR; */
+extern jfieldID FID_ASP_HANDLE;
+extern jfieldID FID_ASP_ID;
+extern jfieldID FID_ASP_URI_PATH;
+extern jfieldID FID_ASP_TYPES;
+extern jfieldID FID_ASP_INTERFACES;
+extern jfieldID FID_ASP_PROPERTIES;
+extern jfieldID FID_ASP_CHILDREN;
+extern jfieldID FID_ASP_ACTION_SET;
+extern jfieldID FID_ASP_POLICIES;
+
 extern jclass    K_RESOURCE_LOCAL;
 
 extern jclass   K_MESSAGE;
 extern jfieldID  FID_MSG_LOCAL_HANDLE;
 extern jfieldID  FID_MSG_PAYLOAD_HANDLE;
 extern jmethodID MID_MSG_GET_PAYLOAD_TYPE;
-extern jfieldID  FID_MSG_PTR_OPTIONS;
+extern jfieldID  FID_MSG_METHOD;
+extern jmethodID MID_MSG_GET_METHOD;
+extern jfieldID  FID_MSG_OPTIONS;
 extern jmethodID MID_MSG_GET_OPTIONS;
+/* extern jfieldID  FID_MSG_PTR_OPTIONS; */
 extern jfieldID  FID_MSG_REMOTE_DEVADDR;
 extern jmethodID MID_MSG_GET_REMOTE_DEVADDR;
+
+extern jclass    K_MSG_FOR_SERVICE_PROVIDER;
+extern jfieldID  FID_MFSP_REMOTE_RQST_HANDLE;
+extern jfieldID  FID_MFSP_RESOURCE_HANDLE;
 
 extern jclass    K_MSG_REQUEST_IN;
 
@@ -139,9 +164,9 @@ extern jclass    K_MSG_REQUEST_IN;
 extern jmethodID MID_RQI_CTOR;
 extern jfieldID  FID_RQI_SERVICE_REQUESTOR;
 extern jfieldID  FID_RQI_IS_WATCH;
-extern jfieldID  FID_RQI_LOCAL_HANDLE;
-extern jfieldID  FID_RQI_REMOTE_HANDLE;
-extern jfieldID  FID_RQI_RESOURCE_HANDLE;
+/* extern jfieldID  FID_RQI_LOCAL_HANDLE; */
+/* extern jfieldID  FID_RQI_REMOTE_RQST_HANDLE; */
+/* extern jfieldID  FID_RQI_RESOURCE_HANDLE; */
 extern jfieldID  FID_RQI_METHOD;
 extern jmethodID MID_RQI_GET_METHOD;
 extern jfieldID  FID_RQI_QUERY;

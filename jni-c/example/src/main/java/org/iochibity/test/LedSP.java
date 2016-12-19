@@ -22,6 +22,13 @@ import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
 import org.iochibity.exceptions.OCFNotImplementedException;
 
+import mraa.Dir;
+import mraa.Gpio;
+import mraa.IntelEdison;
+import mraa.mraa;
+import mraa.Platform;
+import mraa.Result;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,26 +39,36 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class WhatsitSP
+public class LedSP
     extends    AServiceProvider
     implements IServiceProvider
 {
 
     int foo = 99;
 
-    WhatsitSP() {
-	setUriPath("/a/whatsit");
-	addType("core.whatsit");
-	addInterface("oc.mi.whatsit");
+    final static int DEFAULT_IOPIN = 8;
+    Gpio gpio;
+
+    LedSP() {
+	setUriPath("/a/led");
+	addType("core.led");
+	addInterface("oc.mi.led");
 	setPolicies(Resource.DISCOVERABLE | Resource.SECURE);
+	// gpio = new Gpio(182);
+	gpio = new Gpio(IntelEdison.INTEL_EDISON_GP128.swigValue());
+	Result result = gpio.dir(Dir.DIR_OUT);
+	if (result != Result.SUCCESS) {
+            mraa.printError(result);
+            System.exit(1);
+        }
     }
 
     public int serviceRequestIn(MsgRequestIn requestIn)
     {
-	System.out.println("WhatsitSP.service routine ENTRY");
+	System.out.println("LedSP.service routine ENTRY");
 	Logger.logRequestIn(requestIn);
 
-	System.out.println("WhatsitSP: requestIn callback param foo = " + foo);
+	System.out.println("LedSP: requestIn callback param foo = " + foo);
 
 	PayloadList<Payload> payloadOut = null;
 
@@ -67,14 +84,14 @@ public class WhatsitSP
 	    payloadOut = serviceGetRequest(requestIn);
 	    break;
 	case Method.PUT:
-	    System.out.println("WhatsitSP: method: PUT");
+	    System.out.println("LedSP: method: PUT");
 	    break;
 	case Method.POST:
-	    System.out.println("WhatsitSP: method: POST");
+	    System.out.println("LedSP: method: POST");
 	    payloadOut = servicePostRequest(requestIn);
 	    break;
 	case Method.DELETE:
-	    System.out.println("WhatsitSP: method: DELETE");
+	    System.out.println("LedSP: method: DELETE");
 	    break;
 	case Method.WATCH:
 	    break;
@@ -116,7 +133,7 @@ public class WhatsitSP
 	try {
 	    Messenger.sendResponse(responseOut);
 	} catch (Exception e) {
-	    System.out.println("[E] WhatisSP" + " | " + "sendResponse exception");
+	    System.out.println("[E] LedSP" + " | " + "sendResponse exception");
 	    e.printStackTrace();
 	}
 	// 	    // Send the response
@@ -129,42 +146,42 @@ public class WhatsitSP
 	//     return ehResult;
 
 
-	System.out.println("WhatsitSP.service EXIT");
+	System.out.println("LedSP.service EXIT");
 	return ServiceResult.OK;
     }
 
     private PayloadList<Payload> serviceGetRequest(MsgRequestIn request)
     {
-	System.out.println("WhatsitSP.serviceGetRequest ENTRY");
+	System.out.println("LedSP.serviceGetRequest ENTRY");
 
 	// ResourceLocal r = request.getResource();
-	System.out.println("WhatsitSP: resource uri: " + this.getUriPath());
+	System.out.println("LedSP: resource uri: " + this.getUriPath());
 
 	PayloadForResourceState pfrs = new PayloadForResourceState(request);
 
-	System.out.println("WhatsitSP: payload uri: " + pfrs.getUri());
+	System.out.println("LedSP: payload uri: " + pfrs.getUri());
 	// pfrs.setUri("/a/foo");
-	// System.out.println("WhatsitSP: payload new uri: " + pfrs.getUri());
+	// System.out.println("LedSP: payload new uri: " + pfrs.getUri());
 
 	pfrs.addResourceType("foo.t.a");
 	// pfrs.addResourceType("foo.t.b");
 	// List<String> llts = pfrs.getResourceTypes();
 	// for (String s : (List<String>)llts) {
-	//     System.out.println("WhatsitSP: payload r type: " + s);
+	//     System.out.println("LedSP: payload r type: " + s);
 	// }
 	List<String> llifs = pfrs.getInterfaces();
 	llifs.add("foo.if.a");
 	// for (String s : (List<String>)llifs) {
-	//     System.out.println("WhatsitSP: payload r interface: " + s);
+	//     System.out.println("LedSP: payload r interface: " + s);
 	// }
 
 	PropertyMap<String, Object> pmps = pfrs.getProperties();
-	pmps.put("whatsit int", 1);
-	pmps.put("whatsit d", 1.1);
-	pmps.put("whatsit str", "Hello world");
-	pmps.put("whatsit bool", true);
+	pmps.put("LED int", 1);
+	pmps.put("LED d", 1.1);
+	pmps.put("LED str", "Hello world");
+	pmps.put("LED bool", true);
 	// for(Map.Entry<String, Object> entry : pmps.entrySet()) {
-	//     System.out.println("WhatsitSP: payload r prop: " + entry.getKey() + " = " + entry.getValue());
+	//     System.out.println("LedSP: payload r prop: " + entry.getKey() + " = " + entry.getValue());
 	// }
 
 	PayloadList<Payload> pll = new PayloadList<Payload>();
@@ -176,41 +193,19 @@ public class WhatsitSP
 
     private PayloadList<Payload> servicePostRequest(MsgRequestIn request)
     {
-	System.out.println("WhatsitSP.servicePostRequest ENTRY");
+	System.out.println("LedSP.servicePostRequest ENTRY");
 
 	// ResourceLocal r = request.getResource();
-	System.out.println("WhatsitSP: resource uri: " + this.getUriPath());
+	System.out.println("LedSP: resource uri: " + this.getUriPath());
 
-	PayloadForResourceState pfrs = new PayloadForResourceState(request);
-
-	System.out.println("WhatsitSP: payload uri: " + pfrs.getUri());
-	// pfrs.setUri("/a/foo");
-	// System.out.println("WhatsitSP: payload new uri: " + pfrs.getUri());
-
-	pfrs.addResourceType("foo.t.a");
-	// pfrs.addResourceType("foo.t.b");
-	// List<String> llts = pfrs.getResourceTypes();
-	// for (String s : (List<String>)llts) {
-	//     System.out.println("WhatsitSP: payload r type: " + s);
-	// }
-	List<String> llifs = pfrs.getInterfaces();
-	llifs.add("foo.if.a");
-	// for (String s : (List<String>)llifs) {
-	//     System.out.println("WhatsitSP: payload r interface: " + s);
-	// }
-
-	PropertyMap<String, Object> pmps = pfrs.getProperties();
-	pmps.put("whatsit int", 1);
-	pmps.put("whatsit d", 1.1);
-	pmps.put("whatsit str", "Hello world");
-	pmps.put("whatsit bool", true);
-	// for(Map.Entry<String, Object> entry : pmps.entrySet()) {
-	//     System.out.println("WhatsitSP: payload r prop: " + entry.getKey() + " = " + entry.getValue());
-	// }
+	 int val = gpio.read();
+	 if (val > 0) {
+	     gpio.write(0);
+	 } else {
+	     gpio.write(1);
+	 }
 
 	PayloadList<Payload> pll = new PayloadList<Payload>();
-
-	pll.add(pfrs);
 
 	return pll; //payload;
     }

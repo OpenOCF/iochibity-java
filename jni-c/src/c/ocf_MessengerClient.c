@@ -403,8 +403,8 @@ JNIEXPORT jbyteArray JNICALL Java_org_iochibity_Messenger_sendRequest__ILorg_ioc
     OCDoHandle c_handle = NULL;
 
     ret = OCDoResource(&c_handle,	/* OCDoHandle = void* */
-    		       /* (OCMethod)j_method, */
-		       OC_REST_GET,
+    		       (OCMethod)j_method,
+		       /* OC_REST_GET, */
     		       c_uri,
     		       c_destDevAddr,    /* OCDevAddr* destination */
     		       NULL,		 /* OCPayload* payload */

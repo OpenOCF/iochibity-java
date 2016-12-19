@@ -22,7 +22,7 @@ public class MsgRequestOut extends MsgForServiceRequestor
     public String        uri;
     // method supplied as arg to sendRequest, not as data
     // int           method;
-    public DeviceAddress dest = null;
+    public DeviceAddress dest;
     Payload       payload;
 
     int protocol; // ConnectivityType.DEFAULT, etc.

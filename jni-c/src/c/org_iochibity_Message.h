@@ -17,10 +17,10 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 
 /*
  * Class:     org_iochibity_Message
- * Method:    getMsgType
+ * Method:    getPayloadType
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_Message_getMsgType
+JNIEXPORT jint JNICALL Java_org_iochibity_Message_getPayloadType
   (JNIEnv *, jobject);
 
 /*

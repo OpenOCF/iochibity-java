@@ -6,7 +6,7 @@ import java.util.List;
 public class Message implements IMessage
 {
     // Request local handle, for this (OCEntityHandlerRequest, OCClientResponse)
-    public long localHandle;
+    private long _localHandle;
 
     private int _method;
     public int getMethod() { return _method; }; // IMessage
@@ -28,7 +28,8 @@ public class Message implements IMessage
     // MsgResponseOut: uint8_t numSendVendorSpecificHeaderOptions;
     //              OCHeaderOption sendVendorSpecificHeaderOptions[MAX_HEADER_OPTIONS];
     // public  int  optionCount;
-    private long ptr_Options;	// OCHeaderOption*
+    // private long ptr_Options;	// OCHeaderOption*
+
     private List<HeaderOption> _options;
     public native List<HeaderOption> getOptions(); // IMessage
 }

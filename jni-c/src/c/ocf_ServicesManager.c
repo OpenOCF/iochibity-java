@@ -316,12 +316,12 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDefaultService
  * Method:    registerServiceProvider
  * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IResourceServiceProvider;B)Lorg/iochibity/ResourceLocal;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProvider
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProvider__Ljava_lang_String_2_3Ljava_lang_String_2_3Ljava_lang_String_2Lorg_iochibity_IServiceProvider_2B
 (JNIEnv * env, jclass klass,
  jstring j_uri,
  jobjectArray j_tnames,
  jobjectArray j_ifnames,
- jobject j_IResourceServiceProvider,
+ jobject j_ServiceProvider,
    /* jobject j_callback_param, */
    jbyte   j_policies)
 {
@@ -368,92 +368,66 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
     /* (*env)->GetJavaVM(env, &g_jvm); */
     /* bool returnValue = true; */
 
-    jobject x_IResourceServiceProvider = NULL;
+    jobject x_ServiceProvider = NULL;
     /* jobject x_callback_param = NULL; */
-    if (j_IResourceServiceProvider == NULL) {
+    if (j_ServiceProvider == NULL) {
 	THROW_STACK_EXCEPTION(OC_STACK_INVALID_PARAM, "ResourceServiceProvider must not be null");
 	return NULL;
     }
     // convert local to global references to be passed
-    x_IResourceServiceProvider = (*env)->NewGlobalRef(env, j_IResourceServiceProvider);
-    jclass k_rsp = (*env)->GetObjectClass(env, x_IResourceServiceProvider);
+    x_ServiceProvider = (*env)->NewGlobalRef(env, j_ServiceProvider);
+    jclass k_rsp = (*env)->GetObjectClass(env, x_ServiceProvider);
     if (k_rsp == NULL) {
 	THROW_JNI_EXCEPTION("GetObjectClass for ResourceServiceProvider impl");
     }
 
-    /* jmethodID mid_service = (*env)->GetMethodID(env, k_rsp, */
-    /* 						"serviceRequestIn", */
-    /* 						"(ILorg/iochibity/MsgRequestIn;Lorg/iochibity/CallbackParam;)I"); */
-    /* if (mid_service == NULL) { */
-    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for serviceRequestIn of ResourceServiceProvider"); */
-    /* 	return NULL; */
-    /* } */
-
-    /* now malloc a callbackParam struct and pack obj and method id into it */
-    /* x_callback_param = (*env)->NewGlobalRef(env, j_callback_param); */
-    /* jclass k_cbparam = (*env)->GetObjectClass(env, x_callback_param); */
-    /* if (k_cbparam == NULL) { */
-    /* 	THROW_JNI_EXCEPTION("GetObjectClass failed for CallbackParam\n"); */
-    /* 	return NULL; */
-    /* } */
-
-    /* jfieldID fid_rsp = (*env)->GetFieldID(env, k_cbparam, */
-    /* 					  "serviceProvider", "Lorg/iochibity/ResourceServiceProvider;"); */
-    /* if (fid_rsp == NULL) { */
-    /* 	THROW_JNI_EXCEPTION("GetFieldID failed for serviceProvider"); */
-    /* } else { */
-    /* 	(*env)->SetObjectField(env, x_callback_param, fid_rsp, x_IResourceServiceProvider); */
-    /* } */
-
     OCResourceHandle c_resource_handle;
     OCStackResult op_result;
-    /* NB: callback service_request_in is in ocf_api_server.c */
     op_result = OCCreateResource( &c_resource_handle,    /* **Resource */
 				  c_resource_type_name,  /* const char *resourceTypeName, */
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
-				  service_request_in, /* OCEntityHandler entityHandler, */
+				  service_request_in,    /* cb impl in ocf_MessengerServer */
 				  /* x_callback_param, */
-				  x_IResourceServiceProvider,
+				  x_ServiceProvider,
 				  (uint8_t) j_policies);  /* uint8_t resourceProperties */
 
     if (op_result != OC_STACK_OK) THROW_STACK_EXCEPTION(op_result, "OCCreateResource failed");
 
-    jmethodID mid_resource_ctor = (*env)->GetMethodID(env, K_RESOURCE_LOCAL, "<init>", "()V");
-    if (mid_resource_ctor == NULL) {
-	THROW_JNI_EXCEPTION("GetMethodID failed for ResourceLocal ctor\n");
-    	return NULL;
-    }
-    jobject j_resource = (*env)->NewObject(env, K_RESOURCE_LOCAL, mid_resource_ctor);
+    /* we already have j_ServiceProvider, the ServiceProvider object;
+       now we just need to link it to the resource created by
+       OCCreateResource and populate it */
 
-    /* insert handle to OCResource */
-    if (K_RESOURCE_LOCAL != NULL) { /* cannot be null in this case */
-        jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J");
-        if (fid_handle != NULL) {
-	    (*env)->SetLongField(env, j_resource, fid_handle, (intptr_t) (OCResource*)c_resource_handle);
-	}
-        jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;");
-        if (urifield != NULL) {
+    /* jmethodID mid_resource_ctor = (*env)->GetMethodID(env, K_RESOURCE_LOCAL, "<init>", "()V"); */
+    /* if (mid_resource_ctor == NULL) { */
+    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for ResourceLocal ctor\n"); */
+    /* 	return NULL; */
+    /* }    /\* insert handle to OCResource *\/ */
+    /* if (K_RESOURCE_LOCAL != NULL) { /\* cannot be null in this case *\/ */
+    /*     jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J"); */
+    /*     if (fid_handle != NULL) { */
+	    (*env)->SetLongField(env, j_ServiceProvider,
+				 FID_ASP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
+	/* } */
+        /* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); */
+        /* if (urifield != NULL) { */
             jstring jString = (*env)->NewStringUTF(env, ((OCResource*)c_resource_handle)->uri);
             if (jString != NULL) {
-                (*env)->SetObjectField(env, j_resource, urifield, jString);
+                (*env)->SetObjectField(env, j_ServiceProvider,
+				       FID_ASP_URI_PATH, jString);
             }
-	}
+	/* } */
 
-        jfieldID fid_policies = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "policies", "I");
-        if (fid_policies != NULL) {
-	    (*env)->SetIntField(env, j_resource, fid_policies,
+        /* jfieldID fid_policies = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "policies", "I"); */
+        /* if (fid_policies != NULL) { */
+	    (*env)->SetIntField(env, j_ServiceProvider,
+				FID_ASP_POLICIES,
 				(jint)((OCResource*)c_resource_handle)->resourceProperties);
-	} else {
-	    THROW_JNI_EXCEPTION("SetIntField failed for fid_policies\n");
-	}
+	/* } else { */
+	/*     THROW_JNI_EXCEPTION("SetIntField failed for fid_policies\n"); */
+	/* } */
 
-	/* printf("resource seq nbr: %d\n", (jint) ((OCResource*)c_resource_handle)->sequenceNum); */
-        jfieldID fid_sn = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "sn", "I");
-        if (fid_sn != NULL) {
-	    (*env)->SetIntField(env, j_resource, fid_sn,
-				(jint) ((OCResource*)c_resource_handle)->sequenceNum);
-	}
+	    /* FIXME: deal with OCResource.sequenceNumber */
 
 	/* instance id ∪nion */
 	/* printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins); */
@@ -461,6 +435,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 	/* printf("instance uuid ln: %d\n", ((OCResource*)c_resource_handle)->uniqueUUID.id_length); */
 	/* printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); */
 
+	    /* FIXME: deal with OCResource instance Id union */
 	if ( ((OCResource*)c_resource_handle)->ins > 0) {
 	    printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins);
 	} else if ( ((OCResource*)c_resource_handle)->uniqueStr != NULL) {
@@ -470,12 +445,153 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 	} else {
 	    /* printf("NO INSTANCE ID\n"); */
 	}
-    }
+    /* } */
 
-    (*env)->ReleaseStringUTFChars(env, j_resource_type_name, c_resource_type_name);
-    (*env)->ReleaseStringUTFChars(env, j_resource_if_name, c_resource_if_name);
+    /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_type_name, c_resource_type_name); */
+    /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_if_name, c_resource_if_name); */
     (*env)->ReleaseStringUTFChars(env, j_uri, c_uri);
 
     printf("org_iochibity_ServicesManager/registerServiceProvider EXIT\n");
-    return j_resource;
+    return j_ServiceProvider;
 }
+
+/*
+ * Class:     org_iochibity_ServicesManager
+ * Method:    registerServiceProvider
+ * Signature: (Lorg/iochibity/AServiceProvider;)Lorg/iochibity/AServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProvider__Lorg_iochibity_AServiceProvider_2
+(JNIEnv * env, jclass klass, jobject j_ServiceProvider)
+{
+    OC_UNUSED(klass);
+    printf("Java_org_iochibity_ServicesManager_registerServiceProvider__Lorg_iochibity_AServiceProvider_2, ENTRY\n");
+
+    jobject j_Types = (*env)->GetObjectField(env, j_ServiceProvider, FID_ASP_TYPES);
+    const char *c_resource_type_name = "";
+    jobject j_resource_type_name = (*env)->CallObjectMethod(env, j_Types, MID_LL_GET, 0);
+    if (j_resource_type_name == NULL) {
+	j_resource_type_name = (*env)->NewStringUTF(env, c_resource_type_name);
+	c_resource_type_name = (char*) (*env)->GetStringUTFChars(env, j_resource_type_name, NULL);
+    } else {
+	c_resource_type_name = (char*) (*env)->GetStringUTFChars(env, j_resource_type_name, NULL);
+	if (c_resource_type_name == NULL) {
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
+	    return NULL;
+	}
+    }
+    jobject j_Interfaces = (*env)->GetObjectField(env, j_ServiceProvider, FID_ASP_INTERFACES);
+    jobject j_resource_if_name = (*env)->CallObjectMethod(env, j_Interfaces, MID_LL_GET, 0);
+    const char *c_resource_if_name = "";
+    if (j_resource_if_name == NULL) {
+	j_resource_if_name = (*env)->NewStringUTF(env, c_resource_if_name);
+	c_resource_if_name = (char*) (*env)->GetStringUTFChars(env, j_resource_if_name, NULL);
+    } else {
+	c_resource_if_name = (char*) (*env)->GetStringUTFChars(env, j_resource_if_name, NULL);
+	if (c_resource_if_name == NULL) {
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
+	    return NULL;
+	}
+    }
+    jobject j_Uri = (*env)->GetObjectField(env, j_ServiceProvider, FID_ASP_URI_PATH);
+    const char *c_uri = "";
+    if (j_Uri == NULL) {
+	j_Uri = (*env)->NewStringUTF(env, c_uri);
+	c_uri = (char*) (*env)->GetStringUTFChars(env, j_Uri, NULL);
+    } else {
+	c_uri = (char*) (*env)->GetStringUTFChars(env, j_Uri, NULL);
+	if (c_uri == NULL) {
+	    THROW_JNI_EXCEPTION("GetStringUTFChars");
+	}
+    }
+
+    int c_policies = (*env)->GetIntField(env, j_ServiceProvider, FID_ASP_POLICIES);
+
+    /* prep callback */
+    /* (*env)->GetJavaVM(env, &g_jvm); */
+    /* bool returnValue = true; */
+
+    jobject x_ServiceProvider = NULL;
+    if (j_ServiceProvider == NULL) {
+	THROW_STACK_EXCEPTION(OC_STACK_INVALID_PARAM, "ResourceServiceProvider must not be null");
+	return NULL;
+    }
+    // convert local to global references to be passed
+    x_ServiceProvider = (*env)->NewGlobalRef(env, j_ServiceProvider);
+    jclass k_rsp = (*env)->GetObjectClass(env, x_ServiceProvider);
+    if (k_rsp == NULL) {
+	THROW_JNI_EXCEPTION("GetObjectClass for ResourceServiceProvider impl");
+    }
+
+    OCResourceHandle c_resource_handle;
+    OCStackResult op_result;
+    op_result = OCCreateResource( &c_resource_handle,    /* **Resource */
+				  c_resource_type_name,  /* const char *resourceTypeName, */
+				  c_resource_if_name,    /* const char *resourceInterfaceName, */
+				  c_uri,                 /* const char *uri, */
+				  service_request_in,    /* cb impl in ocf_MessengerServer */
+				  x_ServiceProvider,
+				  (uint8_t) c_policies);  /* uint8_t resourceProperties */
+
+    if (op_result != OC_STACK_OK) THROW_STACK_EXCEPTION(op_result, "OCCreateResource failed");
+
+    /* we already have j_ServiceProvider, the ServiceProvider object;
+       now we just need to link it to the resource created by
+       OCCreateResource and populate it */
+
+    /* jmethodID mid_resource_ctor = (*env)->GetMethodID(env, K_RESOURCE_LOCAL, "<init>", "()V"); */
+    /* if (mid_resource_ctor == NULL) { */
+    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for ResourceLocal ctor\n"); */
+    /* 	return NULL; */
+    /* }    /\* insert handle to OCResource *\/ */
+    /* if (K_RESOURCE_LOCAL != NULL) { /\* cannot be null in this case *\/ */
+    /*     jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J"); */
+    /*     if (fid_handle != NULL) { */
+	    (*env)->SetLongField(env, j_ServiceProvider,
+				 FID_ASP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
+	/* } */
+        /* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); */
+        /* if (urifield != NULL) { */
+            jstring jString = (*env)->NewStringUTF(env, ((OCResource*)c_resource_handle)->uri);
+            if (jString != NULL) {
+                (*env)->SetObjectField(env, j_ServiceProvider,
+				       FID_ASP_URI_PATH, jString);
+            }
+	/* } */
+
+        /* jfieldID fid_policies = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "policies", "I"); */
+        /* if (fid_policies != NULL) { */
+	    (*env)->SetIntField(env, j_ServiceProvider,
+				FID_ASP_POLICIES,
+				(jint)((OCResource*)c_resource_handle)->resourceProperties);
+	/* } else { */
+	/*     THROW_JNI_EXCEPTION("SetIntField failed for fid_policies\n"); */
+	/* } */
+
+	    /* FIXME: deal with OCResource.sequenceNumber */
+
+	/* instance id ∪nion */
+	/* printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins); */
+	/* printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr); */
+	/* printf("instance uuid ln: %d\n", ((OCResource*)c_resource_handle)->uniqueUUID.id_length); */
+	/* printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); */
+
+	    /* FIXME: deal with OCResource instance Id union */
+	if ( ((OCResource*)c_resource_handle)->ins > 0) {
+	    printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins);
+	} else if ( ((OCResource*)c_resource_handle)->uniqueStr != NULL) {
+	    printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr);
+	} else if ( ((OCResource*)c_resource_handle)->uniqueUUID.id_length > 0) {
+	    printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id);
+	} else {
+	    /* printf("NO INSTANCE ID\n"); */
+	}
+    /* } */
+
+    /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_type_name, c_resource_type_name); */
+    /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_if_name, c_resource_if_name); */
+    (*env)->ReleaseStringUTFChars(env, j_Uri, c_uri);
+
+    printf("org_iochibity_ServicesManager/registerServiceProvider EXIT\n");
+    return j_ServiceProvider;
+}
+

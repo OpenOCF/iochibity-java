@@ -23,62 +23,6 @@ extern "C" {
 #define org_iochibity_Resource_SECURE 16L
 #undef org_iochibity_Resource_EXPLICIT_DISCOVERABLE
 #define org_iochibity_Resource_EXPLICIT_DISCOVERABLE 32L
-/*
- * Class:     org_iochibity_Resource
- * Method:    getTypes
- * Signature: ()Ljava/util/LinkedList;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getTypes
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getInterfaces
- * Signature: ()Ljava/util/LinkedList;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getInterfaces
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getProperties
- * Signature: ()Ljava/util/LinkedList;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getProperties
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getChildren
- * Signature: ()Ljava/util/LinkedList;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getChildren
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getServiceProvider
- * Signature: ()Lorg/iochibity/ResourceServiceProvider;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getServiceProvider
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getCallbackParam
- * Signature: ()Lorg/iochibity/CallbackParam;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getCallbackParam
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Resource
- * Method:    getActionSet
- * Signature: ()Ljava/util/LinkedList;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Resource_getActionSet
-  (JNIEnv *, jobject);
-
 #ifdef __cplusplus
 }
 #endif

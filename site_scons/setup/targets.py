@@ -563,10 +563,10 @@ def edison(env):
         except:
                 pass
 
-        try:
-                env.Replace(GCOV      = env['ENV']['GCOV'])
-        except:
-                pass
+        # try:
+        #         env.Replace(GCOV      = env['ENV']['GCOV'])
+        # except:
+        #         pass
 
         try:
                 env.Replace(GDB       = env['ENV']['GDB'])

@@ -7,12 +7,16 @@ import java.util.LinkedList;
 public class MsgForServiceProvider extends Message
 {
     // Request remote handle - request handle at ORIGIN (i.e. client)? */
-    // OCRequestHandle requestHandle;
-    public long remoteHandle;
 
-    private long resourceHandle;
-    public long getResourceHandle() { return resourceHandle; }
-    public native ResourceLocal getResource();
+    private long                     _remoteRequestHandle; // OCRequestHandle requestHandle = OCRequest*
+    // public  long                    getRemoteRequestHandle() { return _remoteHandle; }
+
+    private long                    _resourceHandle; // OCResource*
+    // public  long                    getResourceHandle() { return _resourceHandle; }
+
+    // since this MsgRequestIn gets passed to ServiceProvider, we do
+    // not be able to get it
+    // public  native IServiceProvider getServiceProvider();   // getResource();
 
     //     /** Pointer of ActionSet which to support group action.*/
     //     OCActionSet *actionsetHead;

@@ -7,24 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef org_iochibity_MsgRequestIn_INVALID
-#define org_iochibity_MsgRequestIn_INVALID 0L
-#undef org_iochibity_MsgRequestIn_DISCOVERY
-#define org_iochibity_MsgRequestIn_DISCOVERY 1L
-#undef org_iochibity_MsgRequestIn_DEVICE
-#define org_iochibity_MsgRequestIn_DEVICE 2L
-#undef org_iochibity_MsgRequestIn_PLATFORM
-#define org_iochibity_MsgRequestIn_PLATFORM 3L
-#undef org_iochibity_MsgRequestIn_REPRESENTATION
-#define org_iochibity_MsgRequestIn_REPRESENTATION 4L
-#undef org_iochibity_MsgRequestIn_SECURITY
-#define org_iochibity_MsgRequestIn_SECURITY 5L
-#undef org_iochibity_MsgRequestIn_PRESENCE
-#define org_iochibity_MsgRequestIn_PRESENCE 6L
-#undef org_iochibity_MsgRequestIn_RD
-#define org_iochibity_MsgRequestIn_RD 7L
-#undef org_iochibity_MsgRequestIn_NOTIFICATION
-#define org_iochibity_MsgRequestIn_NOTIFICATION 8L
 #ifdef __cplusplus
 }
 #endif

@@ -19,10 +19,10 @@ public class PayloadForResourceState extends Payload // OCRepPayload
     public PayloadForResourceState() {}
 
     // ctor
-    public native PayloadForResourceState createPayload(Resource r);
-    public PayloadForResourceState(Resource r)
+    public native PayloadForResourceState createPayload(MsgRequestIn r);
+    public PayloadForResourceState(MsgRequestIn mri)
     {
-	createPayload(r);
+	createPayload(mri);
     }
 
     // octypes.h:

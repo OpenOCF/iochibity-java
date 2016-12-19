@@ -97,6 +97,8 @@ public class OCFTestClient
     }
 
     public static DeviceAddress gRemoteResourceAddress;
+    public static DeviceAddress gLEDAddress;
+    public static DeviceAddress gWhatsitAddress;
 
     public static class DiscoverResourcesRequestor implements IServiceRequestor
     {
@@ -114,6 +116,7 @@ public class OCFTestClient
 			List<IPayload> kids = payload.getChildren();
 			if (kids != null) {
 			    for (IPayload kid : kids) {
+				System.out.println("LOG KID URIPATH: " + kid.getUriPath());
 				if (kid.getUriPath().equals("/a/temperature")) {
 				    System.out.println("LOG: found temperature resource");
 				    gRemoteResourceAddress = responseIn.getRemoteDeviceAddress();
@@ -121,6 +124,22 @@ public class OCFTestClient
 					= ((Integer)kid.getProperties().get("port"))
 					.intValue();
 				    Logger.logDeviceAddress(gRemoteResourceAddress);
+				}
+				if (kid.getUriPath().equals("/a/led")) {
+				    System.out.println("LOG: found LED resource");
+				    gLEDAddress = responseIn.getRemoteDeviceAddress();
+				    gLEDAddress.port
+					= ((Integer)kid.getProperties().get("port"))
+					.intValue();
+				    Logger.logDeviceAddress(gLEDAddress);
+				}
+				if (kid.getUriPath().equals("/a/whatsit")) {
+				    System.out.println("LOG: found whatsit resource");
+				    gWhatsitAddress = responseIn.getRemoteDeviceAddress();
+				    gWhatsitAddress.port
+					= ((Integer)kid.getProperties().get("port"))
+					.intValue();
+				    Logger.logDeviceAddress(gWhatsitAddress);
 				}
 			    }
 			}
@@ -230,8 +249,8 @@ public class OCFTestClient
 		try {
 		    MsgRequestOut requestOut
 			= new MsgRequestOut(new WhatsitRequestor());
-		    requestOut.dest = gRemoteResourceAddress;
-		    requestOut.uri  = "/a/temperature";
+		    requestOut.dest = gWhatsitAddress;
+		    requestOut.uri  = "/a/whatsit";
 		    byte[] bs = Messenger.sendRequest(Method.GET, requestOut);
 		    Thread.sleep(1000);
 		} catch (Exception e) {
@@ -242,6 +261,20 @@ public class OCFTestClient
 	    // case 4:
 
 	    // 	break;
+	    case "5":
+		System.out.println("requested POST");
+		try {
+		    MsgRequestOut requestOut
+			= new MsgRequestOut(new WhatsitRequestor());
+		    requestOut.dest = gWhatsitAddress;
+		    requestOut.uri  = "/a/led";
+		    byte[] bs = Messenger.sendRequest(Method.POST, requestOut);
+		    Thread.sleep(1000);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    msgError(TAG, e.toString());
+		}
+	    	break;
 	    // case 6:
 
 	    // 	break;

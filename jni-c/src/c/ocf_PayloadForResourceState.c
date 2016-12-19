@@ -33,14 +33,18 @@ OCRepPayload* getObjectHandle(JNIEnv* env, jobject this)
 /*
  * Class:     org_iochibity_PayloadForResourceState
  * Method:    createPayload
- * Signature: (Lorg/iochibity/Resource;)Lorg/iochibity/PayloadForResourceState;
+ * Signature: (Lorg/iochibity/MsgRequestIn;)Lorg/iochibity/PayloadForResourceState;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPayload
-(JNIEnv * env, jobject this, jobject j_resource)
+(JNIEnv * env, jobject this, jobject j_MsgRequestIn)
 {
-    /* printf("Java_org_iochibity_PayloadForResource_createPayload ENTRY\n"); */
+    printf("Java_org_iochibity_PayloadForResource_createPayload ENTRY\n");
 
-    OCResource* c_resource_handle = (OCResource*) getObjectHandle(env, j_resource);
+    /* OCResource* c_resource_handle = (OCResource*) getObjectHandle(env, j_MsgRequestIn); */
+    OCEntityHandlerRequest* c_ehr = (OCEntityHandlerRequest*)
+	(*env)->GetLongField(env, j_MsgRequestIn, FID_MSG_LOCAL_HANDLE);
+    OCResource* c_resource_handle = c_ehr->resource;
+
     OCStackResult op_result = OC_STACK_OK;
     OCRepPayload* c_payload = NULL;  //OCRepPayloadCreate();
 #ifdef IOCHIBITY    /* 1.1.1: */
@@ -55,28 +59,6 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     }
 
     /* /\* 1. create a new OCRepPayload struct *\/ */
-    /* OCRepPayload *c_payload = (OCRepPayload *) OCRepPayloadCreate(); */
-    /* if (!c_payload) { */
-    /* 	THROW_EH_EXCEPTION(OC_EH_ERROR, "OCRepPayloadCreate failure"); */
-    /* 	return NULL; */
-    /* } */
-
-    /* tests */
-    /* OCRepPayloadSetPropInt(c_payload, "i1", -1); */
-    /* OCRepPayloadSetPropInt(c_payload, "i2", 0); */
-    /* OCRepPayloadSetPropInt(c_payload, "i3", 1); */
-
-    /* OCRepPayloadSetPropDouble(c_payload, "d1", 1.1); */
-    /* OCRepPayloadSetPropDouble(c_payload, "d2", -9.9); */
-
-    /* OCRepPayloadSetPropBool(c_payload, "b1", true); */
-    /* OCRepPayloadSetPropBool(c_payload, "b2", false); */
-
-    /* OCRepPayloadSetPropString(c_payload, "s1", "Hello, world"); */
-    /* OCRepPayloadSetPropString(c_payload, "s2", "Goodbye, world"); */
-
-    /* OCRepPayloadAddResourceType(c_payload, "foo.t.test1"); */
-    /* OCRepPayloadAddResourceType(c_payload, "foo.t.test2"); */
 
     char msg[80];
     jclass k_this = (*env)->GetObjectClass(env, this);
@@ -104,34 +86,36 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     (*env)->SetLongField(env, this, fid_this_handle, (intptr_t)c_payload);
 
     /* 3. populate the payload object from the resource param */
-    jclass r_klass = (*env)->GetObjectClass(env, j_resource);
+    jclass r_klass = (*env)->GetObjectClass(env, j_MsgRequestIn);
     if (r_klass == NULL) {
 	THROW_JNI_EXCEPTION("GetObjectClass failed for Resource");
 	return NULL;
     }
     /* get uri from incoming resource object */
-    jfieldID fid_uri = (*env)->GetFieldID(env, r_klass, "uri", "Ljava/lang/String;");
-    if (fid_uri == NULL) {
-	sprintf(msg, "GetFieldID failed for 'uri' of Resource\n");
-	THROW_JNI_EXCEPTION(msg);
-	return NULL;
-    }
-    jobject j_uri = (*env)->GetObjectField(env, j_resource, fid_uri);
-    if (j_uri == NULL) {
-	THROW_JNI_EXCEPTION("Failed to get j_uri object\n");
-	return NULL;
-    }
+    /* jfieldID fid_uri = (*env)->GetFieldID(env, r_klass, "uri", "Ljava/lang/String;"); */
+    /* if (fid_uri == NULL) { */
+    /* 	sprintf(msg, "GetFieldID failed for 'uri' of Resource\n"); */
+    /* 	THROW_JNI_EXCEPTION(msg); */
+    /* 	return NULL; */
+    /* } */
+    /* jobject j_uri = (*env)->GetObjectField(env, j_MsgRequestIn, fid_uri); */
+    /* if (j_uri == NULL) { */
+    /* 	THROW_JNI_EXCEPTION("Failed to get j_uri object\n"); */
+    /* 	return NULL; */
+    /* } */
     /* char* c_uri = (char*) (*env)->GetStringUTFChars(env, j_uri, NULL); */
     /* printf("c uri from resource: %s\n", c_uri); */
 
-    jfieldID fid_this_uri = (*env)->GetFieldID(env, k_this, "_uri", "Ljava/lang/String;");
-    if (fid_this_uri == NULL) {
-	sprintf(msg, "GetFieldID failed for 'uri' of this PayloadForResource\n");
-	THROW_JNI_EXCEPTION(msg);
-	return NULL;
-    }
-    (*env)->SetObjectField(env, this, fid_this_uri, j_uri);
+    jstring j_uri = (*env)->NewStringUTF(env,  c_resource_handle->uri);
 
+    jfieldID fid_this_uri = (*env)->GetFieldID(env, k_this, "_uri", "Ljava/lang/String;");
+    /* if (fid_this_uri == NULL) { */
+    /* 	sprintf(msg, "GetFieldID failed for 'uri' of this PayloadForResource\n"); */
+    /* 	THROW_JNI_EXCEPTION(msg); */
+    /* 	return NULL; */
+    /* } */
+    (*env)->SetObjectField(env, this, fid_this_uri, j_uri);
+    printf("AAAAAAAAAAAAAAAA\n");
     /* prep LinkedList stuff */
     /* FIXME: don't create LL in jni; pull it from the java object (?) */
     /* jclass ll_klass = (*env)->FindClass(env, "java/util/LinkedList"); */
@@ -274,7 +258,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPaylo
     }
     (*env)->SetObjectField(env, this, fid_ps, pmps);
 
-    /* printf("Java_org_iochibity_PayloadForResource_createPayload EXIT\n"); */
+    printf("Java_org_iochibity_PayloadForResource_createPayload EXIT\n");
     return this;
 }
 

@@ -23,10 +23,12 @@ extern "C" {
 #define org_iochibity_PayloadForResourceState_PRESENCE 6L
 #undef org_iochibity_PayloadForResourceState_RD
 #define org_iochibity_PayloadForResourceState_RD 7L
+#undef org_iochibity_PayloadForResourceState_NOTIFICATION
+#define org_iochibity_PayloadForResourceState_NOTIFICATION 8L
 /*
  * Class:     org_iochibity_PayloadForResourceState
  * Method:    createPayload
- * Signature: (Lorg/iochibity/Resource;)Lorg/iochibity/PayloadForResourceState;
+ * Signature: (Lorg/iochibity/MsgRequestIn;)Lorg/iochibity/PayloadForResourceState;
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_PayloadForResourceState_createPayload
   (JNIEnv *, jobject, jobject);

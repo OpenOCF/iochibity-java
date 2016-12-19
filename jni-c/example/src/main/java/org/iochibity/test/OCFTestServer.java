@@ -15,6 +15,7 @@ import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
 import org.iochibity.Resource;
 import org.iochibity.ResourceLocal;
+import org.iochibity.AServiceProvider;
 import org.iochibity.IServiceProvider;
 import org.iochibity.ServicesManager;
 import org.iochibity.constants.Method;
@@ -23,6 +24,11 @@ import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
 import org.iochibity.exceptions.OCFNotImplementedException;
+
+import mraa.mraa;
+import mraa.IntelEdison;
+import mraa.Platform;
+import mraa.Result;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,15 +46,32 @@ public class OCFTestServer
 	try{
 	    System.out.println(System.getProperty("java.library.path"));
 	    System.loadLibrary("ocfjni_c");
+	    System.loadLibrary("mraajava");
 	}catch(Exception e){
 	    System.out.println(e.toString());
 	}
     }
 
-    static public class TemperatureSP implements IServiceProvider
+    static public class TemperatureSP
+	extends    AServiceProvider
+	implements IServiceProvider
     {
 	int foo = 72;
 	public void hello() { System.out.println("Hello from callback: " + foo); }
+
+	TemperatureSP() {
+	    setUriPath("/a/temperature");
+	    addType("core.temp");
+	    addInterface("oc.mi.temp");
+	    setPolicies(Resource.DISCOVERABLE | Resource.SECURE);
+	}
+		// whatsit = ServicesManager.registerServiceProvider("/a/whatsit",
+	// 					   new String[] {"core.whatist"},
+	// 					   new String[] {"oc.mi.whatsit"},
+	// 					   new WhatsitSP(),
+	// 					   // new WhatsitSP.CBData(123),
+	// 					   (byte)(Resource.DISCOVERABLE
+	// 						  | Resource.SECURE));
 
 	private PayloadList<Payload> serviceGetRequest(MsgRequestIn requestIn)
 	{
@@ -57,47 +80,48 @@ public class OCFTestServer
 	    System.out.println("TEST callback param: " + foo);
 	    hello();
 
-	    ResourceLocal r = requestIn.getResource();
-	    System.out.println("TEST resource uri: " + r.getUri());
+	    // ResourceLocal r = requestIn.getResource();
+	    System.out.println("TEST resource uri: " + this.getUriPath());
 
-	    PayloadForResourceState pfrs = new PayloadForResourceState(r);
+	    // PayloadForResourceState pfrs = new PayloadForResourceState(r);
 
-	    System.out.println("TEST payload uri: " + pfrs.getUri());
-	    pfrs.setUri("/a/foo");
-	    System.out.println("TEST payload new uri: " + pfrs.getUri());
+	    // System.out.println("TEST payload uri: " + pfrs.getUri());
+	    // pfrs.setUri("/a/foo");
+	    // System.out.println("TEST payload new uri: " + pfrs.getUri());
 
-	    pfrs.addResourceType("foo.t.a");
-	    pfrs.addResourceType("foo.t.b");
-	    List<String> llts = pfrs.getResourceTypes();
-	    for (String s : (List<String>)llts) {
-		System.out.println("TEST payload r type: " + s);
-	    }
-	    List<String> llifs = pfrs.getInterfaces();
-	    llifs.add("foo.if.a");
-	    for (String s : (List<String>)llifs) {
-		System.out.println("TEST payload r interface: " + s);
-	    }
+	    // pfrs.addResourceType("foo.t.a");
+	    // pfrs.addResourceType("foo.t.b");
+	    // List<String> llts = pfrs.getResourceTypes();
+	    // for (String s : (List<String>)llts) {
+	    // 	System.out.println("TEST payload r type: " + s);
+	    // }
+	    // List<String> llifs = pfrs.getInterfaces();
+	    // llifs.add("foo.if.a");
+	    // for (String s : (List<String>)llifs) {
+	    // 	System.out.println("TEST payload r interface: " + s);
+	    // }
 
-	    PropertyMap<String, Object> pmps = pfrs.getProperties();
-	    pmps.put("i1", -1);
-	    pmps.put("i2", 0);
-	    pmps.put("i3", 1);
-	    pmps.put("d1", -1.1);
-	    pmps.put("d2", 0.0);
-	    pmps.put("d3", 1.1);
-	    pmps.put("s1", "Hello world");
-	    pmps.put("s2", "Goodbye world");
-	    pmps.put("b1", true);
-	    pmps.put("b2", false);
-	    for(Map.Entry<String, Object> entry : pmps.entrySet()) {
-		System.out.println("TEST payload r prop: " + entry.getKey() + " = " + entry.getValue());
-	    }
+	    // PropertyMap<String, Object> pmps = pfrs.getProperties();
+	    // pmps.put("i1", -1);
+	    // pmps.put("i2", 0);
+	    // pmps.put("i3", 1);
+	    // pmps.put("d1", -1.1);
+	    // pmps.put("d2", 0.0);
+	    // pmps.put("d3", 1.1);
+	    // pmps.put("s1", "Hello world");
+	    // pmps.put("s2", "Goodbye world");
+	    // pmps.put("b1", true);
+	    // pmps.put("b2", false);
+	    // for(Map.Entry<String, Object> entry : pmps.entrySet()) {
+	    // 	System.out.println("TEST payload r prop: " + entry.getKey() + " = " + entry.getValue());
+	    // }
 
-	    PayloadList<Payload> pll = new PayloadList<Payload>();
+	    // PayloadList<Payload> pll = new PayloadList<Payload>();
 
-	    pll.add(pfrs);
+	    // pll.add(pfrs);
 
-	    return pll; //payload;
+	    // return pll; //payload;
+	    return null;
 	}
 
 	@Override
@@ -157,10 +181,14 @@ public class OCFTestServer
 	}
     }
 
-    static TemperatureSP tempSP = new TemperatureSP();
-
     public static void main(String[] args)
     {
+	Platform platform = mraa.getPlatformType();
+	if (platform != Platform.INTEL_EDISON_FAB_C) {
+	    System.err.println("Error: This program can only be run on edison");
+	    System.exit(Result.ERROR_INVALID_PLATFORM.swigValue());
+	}
+
 	Runtime.getRuntime().addShutdownHook(new Thread()
 	    {
 		@Override
@@ -187,36 +215,50 @@ public class OCFTestServer
 				       "version-0.1",
 				       new String[] {"dmversion-0.1"});
 
-	ResourceLocal l = null;
-	l = ServicesManager.registerServiceProvider("/a/light",	          // uri String
-					     new String[] {"core.light"}, // array of typenames
-					     new String[] {"oc.mi.l"}, // array of ifnames
-					     new LightSP(),            // IServiceProvider
-					     // lspData,
-					     (byte)(Resource.DISCOVERABLE
-						     | Resource.SECURE));
-	Logger.logResource(l);
+	// ResourceLocal l = null;
+	// l = ServicesManager.registerServiceProvider("/a/light",	          // uri String
+	// 				     new String[] {"core.light"}, // array of typenames
+	// 				     new String[] {"oc.mi.l"}, // array of ifnames
+	// 				     new LightSP(),            // IServiceProvider
+	// 				     // lspData,
+	// 				     (byte)(Resource.DISCOVERABLE
+	// 					     | Resource.SECURE));
+	// // Logger.logResource(l);
 
-	ResourceLocal tr = null;
-	tr = ServicesManager.registerServiceProvider("/a/temperature",
-					      new String[] {"core.temperature"},
-					      new String[] {"oc.mi.def"},
-					      tempSP,
-					      // new MyParam(99),
-					      (byte)(Resource.DISCOVERABLE
-						     | Resource.SECURE));
-	Logger.logResource(tr);
+	// ResourceLocal tr = null;
+	// tr = ServicesManager.registerServiceProvider("/a/temperature",
+	// 				      new String[] {"core.temperature"},
+	// 				      new String[] {"oc.mi.def"},
+	// 				      tempSP,
+	// 				      // new MyParam(99),
+	// 				      (byte)(Resource.DISCOVERABLE
+	// 					     | Resource.SECURE));
+	// // Logger.logResource(tr);
 
-	ResourceLocal whatsit = null;
-	whatsit = ServicesManager.registerServiceProvider("/a/whatsit",
-						   new String[] {"core.whatist"},
-						   new String[] {"oc.mi.whatsit"},
-						   new WhatsitSP(),
-						   // new WhatsitSP.CBData(123),
-						   (byte)(Resource.DISCOVERABLE
-							  | Resource.SECURE));
+	TemperatureSP tempSP = new TemperatureSP();
+	System.out.println("ASP URI PATH: " + tempSP.getUriPath());
+	List<String> ts = tempSP.getTypes();
+	ts.forEach(typ -> System.out.println("ASP TYPE: " + typ));
 
-	Logger.logResource(whatsit);
+	List<String> ifs = tempSP.getInterfaces();
+	ifs.forEach(iface -> System.out.println("ASP IFACE: " + iface));
+
+	AServiceProvider tSP = null;
+	tSP = ServicesManager.registerServiceProvider(tempSP);
+
+	ServicesManager.registerServiceProvider(new WhatsitSP());
+
+	ServicesManager.registerServiceProvider(new LedSP());
+
+	// whatsit = ServicesManager.registerServiceProvider("/a/whatsit",
+	// 					   new String[] {"core.whatist"},
+	// 					   new String[] {"oc.mi.whatsit"},
+	// 					   new WhatsitSP(),
+	// 					   // new WhatsitSP.CBData(123),
+	// 					   (byte)(Resource.DISCOVERABLE
+	// 						  | Resource.SECURE));
+
+	// Logger.logResource(whatsit);
 
 	OCF.run();
 

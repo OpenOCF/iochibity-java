@@ -48,6 +48,7 @@ jclass K_OBJECT                  = NULL;
 jclass    K_LINKED_LIST          = NULL;
 jmethodID MID_LL_CTOR            = NULL;
 jmethodID MID_LL_ADD             = NULL;
+jmethodID MID_LL_GET             = NULL;
 
 jclass    K_PAYLOAD                       = NULL;
 jfieldID  FID_PAYLOAD_HANDLE              = NULL;
@@ -96,29 +97,52 @@ jmethodID MID_ITER_HASNEXT       = NULL;
 jmethodID MID_ITER_NEXT          = NULL;
 jmethodID MID_ITER_REMOVE        = NULL;
 
-jclass   K_MAPENTRY              = NULL; /* interface java.util.Map.Entry */
-jmethodID MID_ENTRY_GETKEY       = NULL;
-jmethodID MID_ENTRY_GETVALUE     = NULL;
+jclass   K_MAPENTRY                  = NULL; /* interface java.util.Map.Entry */
+jmethodID MID_ENTRY_GETKEY           = NULL;
+jmethodID MID_ENTRY_GETVALUE         = NULL;
 
-jclass K_DEVICE_ADDRESS       = NULL;
-jfieldID  FID_DA_ADAPTER      = NULL;
-jfieldID  FID_DA_FLAGS        = NULL;
-jfieldID  FID_DA_PORT         = NULL;
-jfieldID  FID_DA_ADDRESS      = NULL;
-jfieldID  FID_DA_IFINDEX      = NULL;
-jfieldID  FID_DA_ROUTE_DATA   = NULL;
+jclass    K_DEVICE_ADDRESS           = NULL;
+jmethodID MID_DA_CTOR                = NULL;
+jfieldID  FID_DA_ADAPTER             = NULL;
+jfieldID  FID_DA_FLAGS               = NULL;
+jfieldID  FID_DA_PORT                = NULL;
+jfieldID  FID_DA_ADDRESS             = NULL;
+jfieldID  FID_DA_IFINDEX             = NULL;
+jfieldID  FID_DA_ROUTE_DATA          = NULL;
 
-jclass K_RESOURCE_LOCAL       = NULL;
+jclass    K_ISERVICE_PROVIDER        = NULL;
+/* jmethodID MID_ISP_CTOR            = NULL; */
+jmethodID MID_ISP_SERVICE_REQUEST_IN = NULL;
 
-jclass    K_MESSAGE               = NULL;
-jfieldID  FID_MSG_LOCAL_HANDLE    = NULL;
-jfieldID  FID_MSG_PAYLOAD_HANDLE  = NULL;
-jfieldID  FID_MSG_PTR_OPTIONS     = NULL;
-jfieldID  FID_MSG_OPTIONS         = NULL;
-jmethodID MID_MSG_GET_OPTIONS     = NULL;
-jmethodID MID_MSG_GET_PAYLOAD_TYPE= NULL;
-jfieldID  FID_MSG_REMOTE_DEVADDR    = NULL;
-jmethodID MID_MSG_GET_REMOTE_DEVADDR= NULL;
+jclass    K_ASERVICE_PROVIDER        = NULL;
+/* extern jmethodID MID_ISP_CTOR; */
+jfieldID FID_ASP_HANDLE              = NULL;
+jfieldID FID_ASP_ID                  = NULL;
+jfieldID FID_ASP_URI_PATH            = NULL;
+jfieldID FID_ASP_TYPES               = NULL;
+jfieldID FID_ASP_INTERFACES          = NULL;
+jfieldID FID_ASP_PROPERTIES          = NULL;
+jfieldID FID_ASP_CHILDREN            = NULL;
+jfieldID FID_ASP_ACTION_SET          = NULL;
+jfieldID FID_ASP_POLICIES            = NULL;
+
+jclass    K_RESOURCE_LOCAL           = NULL;
+
+jclass    K_MESSAGE                  = NULL;
+jfieldID  FID_MSG_LOCAL_HANDLE       = NULL;
+jfieldID  FID_MSG_PAYLOAD_HANDLE     = NULL;
+jmethodID MID_MSG_GET_PAYLOAD_TYPE   = NULL;
+jfieldID  FID_MSG_METHOD             = NULL;
+jmethodID MID_MSG_GET_METHOD         = NULL;
+jfieldID  FID_MSG_OPTIONS            = NULL;
+jmethodID MID_MSG_GET_OPTIONS        = NULL;
+/* jfieldID  FID_MSG_PTR_OPTIONS        = NULL; */
+jfieldID  FID_MSG_REMOTE_DEVADDR     = NULL;
+jmethodID MID_MSG_GET_REMOTE_DEVADDR = NULL;
+
+jclass   K_MSG_FOR_SERVICE_PROVIDER = NULL;
+jfieldID FID_MFSP_REMOTE_RQST_HANDLE   = NULL;
+jfieldID FID_MFSP_RESOURCE_HANDLE   = NULL;
 
 jclass   K_MSG_REQUEST_OUT          = NULL;
 jfieldID FID_RQO_SERVICE_REQUESTOR  = NULL;
@@ -129,9 +153,9 @@ jclass    K_MSG_REQUEST_IN          = NULL;
 jmethodID MID_RQI_CTOR              = NULL;
 jfieldID  FID_RQI_SERVICE_REQUESTOR = NULL;
 jfieldID  FID_RQI_IS_WATCH          = NULL;
-jfieldID  FID_RQI_LOCAL_HANDLE      = NULL;
-jfieldID  FID_RQI_REMOTE_HANDLE     = NULL;
-jfieldID  FID_RQI_RESOURCE_HANDLE   = NULL;
+/* jfieldID  FID_RQI_LOCAL_HANDLE      = NULL; */
+/* jfieldID  FID_RQI_REMOTE_RQST_HANDLE= NULL; */
+/* jfieldID  FID_RQI_RESOURCE_HANDLE   = NULL; */
 jfieldID  FID_RQI_METHOD            = NULL;
 jmethodID MID_RQI_GET_METHOD        = NULL;
 jfieldID  FID_RQI_QUERY             = NULL;
@@ -359,6 +383,10 @@ int init_java(JNIEnv* env)
 	    return -1;
 	}
     }
+    MID_LL_GET = (*env)->GetMethodID(env, K_LINKED_LIST, "get", "(I)Ljava/lang/Object;");
+    if (MID_LL_ADD == NULL) {
+	printf("ERROR: GetMethodID failed for add method of LinkedList\n");
+    }
     /* SET */
     if (K_SET == NULL) {
 	klass = (*env)->FindClass(env, "java/util/Set");
@@ -411,7 +439,107 @@ int init_java(JNIEnv* env)
     return 0;
 }
 
-int init_Message(JNIEnv* env)
+int init_ServiceProviders(JNIEnv* env)
+{
+    /* first, the interface IServiceProvider */
+    jclass klass = NULL;
+    klass = (*env)->FindClass(env, "org/iochibity/IServiceProvider");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/IServiceProvider\n", 0);
+    K_ISERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
+    (*env)->DeleteLocalRef(env, klass);
+
+    if (MID_ISP_SERVICE_REQUEST_IN == NULL) {
+	MID_ISP_SERVICE_REQUEST_IN = (*env)->GetMethodID(env,
+							 K_ISERVICE_PROVIDER,
+							 "serviceRequestIn",
+							 "(Lorg/iochibity/MsgRequestIn;)I");
+	if (MID_ISP_SERVICE_REQUEST_IN == NULL) {
+	    printf("ERROR: GetMethodID failed for 'serviceRequestIn' of IServiceProvider\n");
+	    return -1;
+	}
+    }
+
+    /* then, the abstract class AServiceProvider */
+    klass = (*env)->FindClass(env, "org/iochibity/AServiceProvider");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/AServiceProvider\n", 0);
+    K_ASERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
+    (*env)->DeleteLocalRef(env, klass);
+
+    if (FID_ASP_HANDLE == NULL) {
+	FID_ASP_HANDLE = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER, "_handle", "J");
+	if (FID_ASP_HANDLE == NULL) {
+	    printf("ERROR: GetFieldID failed for '_handle' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_ID == NULL) {
+	FID_ASP_ID = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+					"_id", "Lorg/iochibity/InstanceId;");
+	if (FID_ASP_ID == NULL) {
+	    printf("ERROR: GetFieldID failed for '_id' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_URI_PATH == NULL) {
+	FID_ASP_URI_PATH = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+					      "_uriPath", "Ljava/lang/String;");
+	if (FID_ASP_URI_PATH == NULL) {
+	    printf("ERROR: GetFieldID failed for 'x' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_TYPES == NULL) {
+	FID_ASP_TYPES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+					   "_types", "Ljava/util/List;");
+	if (FID_ASP_TYPES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_types' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_INTERFACES == NULL) {
+	FID_ASP_INTERFACES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+						"_interfaces", "Ljava/util/List;");
+	if (FID_ASP_INTERFACES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_interfaces' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_PROPERTIES == NULL) {
+	FID_ASP_PROPERTIES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+						"_properties", "Lorg/iochibity/PropertyMap;");
+	if (FID_ASP_PROPERTIES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_properties' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_CHILDREN == NULL) {
+	FID_ASP_CHILDREN = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+					      "_children", "Ljava/util/List;");
+	if (FID_ASP_CHILDREN == NULL) {
+	    printf("ERROR: GetFieldID failed for '_children' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_ACTION_SET == NULL) {
+	FID_ASP_ACTION_SET = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+						"_actionSet", "Ljava/util/List;");
+	if (FID_ASP_ACTION_SET == NULL) {
+	    printf("ERROR: GetFieldID failed for '_actionSet' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+    if (FID_ASP_POLICIES == NULL) {
+	FID_ASP_POLICIES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER, "_policies", "I");
+	if (FID_ASP_POLICIES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_policies' of AServiceProvider\n");
+	    return -1;
+	}
+    }
+
+    return 0;
+}
+
+int init_Messages(JNIEnv* env)
 {
     jclass klass;
     klass = (*env)->FindClass(env, "org/iochibity/Message");
@@ -434,10 +562,19 @@ int init_Message(JNIEnv* env)
 	}
     }
     if (FID_MSG_LOCAL_HANDLE == NULL) {
-	FID_MSG_LOCAL_HANDLE = (*env)->GetFieldID(env, K_MESSAGE, "localHandle", "J");
+	FID_MSG_LOCAL_HANDLE = (*env)->GetFieldID(env, K_MESSAGE, "_localHandle", "J");
 	if (FID_MSG_LOCAL_HANDLE == NULL) {
-	    printf("ERROR: GetFieldID failed for 'localHandle' of Message\n");
+	    printf("ERROR: GetFieldID failed for '_localHandle' of Message\n");
 	    return -1;
+	}
+    }
+    if (FID_MSG_REMOTE_DEVADDR == NULL) {
+	FID_MSG_REMOTE_DEVADDR = (*env)->GetFieldID(env, K_MESSAGE,
+						    "_remoteDeviceAddress",
+						    "Lorg/iochibity/DeviceAddress;");
+	if (FID_MSG_REMOTE_DEVADDR == NULL) {
+	    printf("ERROR:  GetFieldID failed for '_remoteDeviceAddress' of Message\n");
+    	return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
     if (MID_MSG_GET_REMOTE_DEVADDR == NULL) {
@@ -449,13 +586,43 @@ int init_Message(JNIEnv* env)
 	    return -1;
 	}
     }
-    if (FID_MSG_REMOTE_DEVADDR == NULL) {
-	FID_MSG_REMOTE_DEVADDR = (*env)->GetFieldID(env, K_MESSAGE,
-						    "_remoteDeviceAddress",
-						    "Lorg/iochibity/DeviceAddress;");
-	if (FID_MSG_REMOTE_DEVADDR == NULL) {
-	    printf("ERROR:  GetFieldID failed for '_remoteDeviceAddress' of Message\n");
+    if (FID_MSG_METHOD == NULL) {
+	FID_MSG_METHOD = (*env)->GetFieldID(env, K_MESSAGE, "_method", "I");
+	if (FID_MSG_METHOD == NULL) {
+	    printf("ERROR:  GetFieldID failed for '_method' of Message\n");
     	return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (MID_MSG_GET_METHOD == NULL) {
+	MID_MSG_GET_METHOD = (*env)->GetMethodID(env, K_MESSAGE, "getMethod", "()I");
+	if (MID_MSG_GET_METHOD == NULL) {
+	    printf("ERROR:  GetMethodID failed for getMethod for Message\n");
+	    return -1;
+	}
+    }
+
+    /* MsgForServiceProvider */
+    klass = (*env)->FindClass(env, "org/iochibity/MsgForServiceProvider");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/MsgForServiceProvider\n", -1);
+    K_MSG_FOR_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
+    (*env)->DeleteLocalRef(env, klass);
+
+    if (FID_MFSP_RESOURCE_HANDLE == NULL) {
+	FID_MFSP_RESOURCE_HANDLE = (*env)->GetFieldID(env,
+						      K_MSG_FOR_SERVICE_PROVIDER,
+						      "_resourceHandle", "J");
+	if (FID_MFSP_RESOURCE_HANDLE == NULL) {
+	    printf("ERROR:  GetFieldID failed for '_resourceHandle' for MsgForServiceProvider");
+	    return -1;
+	}
+    }
+    if (FID_MFSP_REMOTE_RQST_HANDLE == NULL) {
+	FID_MFSP_REMOTE_RQST_HANDLE = (*env)->GetFieldID(env,
+						      K_MSG_FOR_SERVICE_PROVIDER,
+						      "_resourceHandle", "J");
+	if (FID_MFSP_REMOTE_RQST_HANDLE == NULL) {
+	    printf("ERROR:  GetFieldID failed for '_resourceHandle' for MsgForServiceProvider");
+	    return -1;
 	}
     }
 
@@ -484,27 +651,28 @@ int init_MsgRequestIn(JNIEnv* env)
     /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
     /* 	} */
     /* } */
-    if (FID_RQI_LOCAL_HANDLE == NULL) {
-	FID_RQI_LOCAL_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "localHandle", "J");
-	if (FID_RQI_LOCAL_HANDLE == NULL) {
-	    printf("ERROR:  GetFieldID failed for localHandle for MsgRequestIn\n");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
-    if (FID_RQI_REMOTE_HANDLE == NULL) {
-	FID_RQI_REMOTE_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "remoteHandle", "J");
-	if (FID_RQI_REMOTE_HANDLE == NULL) {
-	    printf("ERROR:  GetFieldID failed for remoteHandle of MsgRequestIn\n");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
-    if (FID_RQI_RESOURCE_HANDLE == NULL) {
-	FID_RQI_RESOURCE_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "resourceHandle", "J");
-	if (FID_RQI_RESOURCE_HANDLE == NULL) {
-	printf("ERROR:  GetFieldID failed for resourceHandle of MsgRequestIn\n");
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
+    /* if (FID_RQI_LOCAL_HANDLE == NULL) { */
+    /* 	FID_RQI_LOCAL_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "localHandle", "J"); */
+    /* 	if (FID_RQI_LOCAL_HANDLE == NULL) { */
+    /* 	    printf("ERROR:  GetFieldID failed for localHandle for MsgRequestIn\n"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
+    /* if (FID_RQI_REMOTE_RQST_HANDLE == NULL) { */
+    /* 	FID_RQI_REMOTE_RQST_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_remoteRequestHandle", "J"); */
+    /* 	if (FID_RQI_REMOTE_RQST_HANDLE == NULL) { */
+    /* 	    printf("ERROR:  GetFieldID failed for '_remoteRequestHandle' of MsgRequestIn\n"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
+    /* if (FID_RQI_RESOURCE_HANDLE == NULL) { */
+    /* 	FID_RQI_RESOURCE_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_resourceHandle", "J"); */
+    /* 	if (FID_RQI_RESOURCE_HANDLE == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for '_resourceHandle' of MsgRequestIn\n"); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
+
     /* method */
     if (FID_RQI_METHOD == NULL) {
 	FID_RQI_METHOD = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_method", "I");
@@ -1156,9 +1324,10 @@ OCRepPayload* pfrs_to_OCRepPayload(JNIEnv* env, jobject j_pfrs)
     sz = (*env)->CallIntMethod(env, j_properties, MID_PMAP_SIZE);
     printf("PropertyMap SIZE: %d\n", sz);
 
-    OCRepPayloadValue* properties = props_to_OCRepPayloadValue(env, j_properties);
-
-    c_payload->values = properties;
+    if (sz > 0) {
+	OCRepPayloadValue* properties = props_to_OCRepPayloadValue(env, j_properties);
+	c_payload->values = properties;
+    }
 
     return c_payload;
 }
@@ -1213,6 +1382,11 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 	K_DEVICE_ADDRESS = (jclass)(*env)->NewGlobalRef(env, klass);
 	(*env)->DeleteLocalRef(env, klass);
     }
+    MID_DA_CTOR = (*env)->GetMethodID(env, K_PAYLOAD_LIST, "<init>", "()V");
+    if (MID_DA_CTOR == 0) {
+	printf("ERROR: GetMethodID failed for ctor of DeviceAddress.\n");
+	return -1;
+    }
     FID_DA_ADAPTER = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "adapter", "I");
     if (FID_DA_ADAPTER == NULL) {
 	printf("ERROR:  GetFieldID failed for adapter for DeviceAddress\n");
@@ -1251,12 +1425,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     	    printf("ERROR: GetFieldID failed routeData of DeviceAddress\n");
     }
 
-
     klass = (*env)->FindClass(env, "org/iochibity/ResourceLocal");
     JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ResourceLocal\n", 0);
     K_RESOURCE_LOCAL = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
-
 
     klass = (*env)->FindClass(env, "org/iochibity/MsgRequestOut");
     JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/MsgRequestOut\n", 0);
@@ -1291,7 +1463,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 	}
     }
 
-    if (init_Message(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
+    if (init_Messages(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
+
+    init_ServiceProviders(env);
 
     init_MsgRequestIn(env);
 

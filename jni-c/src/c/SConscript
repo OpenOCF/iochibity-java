@@ -83,7 +83,7 @@ if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOCHIBITY':
                jdk_home + '/include/' + jvm_host]
    local_env.PrependUnique(LIBS = ['chibity'])
    install_dir = install_sysroot + '/lib'
-   local_env.AppendUnique(LIBPATH = [install_dir])
+   local_env.AppendUnique(LIBPATH = [install_dir, "."])
    local_env.AppendUnique(CPPDEFINES = ['IOCHIBITY'])
 
 
@@ -132,19 +132,19 @@ if target_os == 'darwin':
     local_env.AppendUnique(LINKFLAGS = ['-install_name', install_sysroot + '/lib/libocfjni_c.jnilib'])
     local_env['SHLIBSUFFIX'] = '.jnilib'
 
-jni_clib_src = ['ocf_init.c',
-	        'ocf_ocf.c',
-		'ocf_Message.c',
-		'ocf_MessengerServer.c',
+jni_clib_src = ['ocf_Message.c',
 	        'ocf_MessengerClient.c',
+		'ocf_MessengerServer.c',
 	        'ocf_MsgForServiceProvider.c',
-	        'ocf_PayloadForResourceState.c',
-	        'ocf_property_map.c',
-	        'ocf_resource_local.c',
-	        'ocf_ServicesManager.c',
 	        'ocf_MsgResponseIn.c',
 	        'ocf_MsgResponseOut.c',
+	        'ocf_PayloadForResourceState.c',
+	        'ocf_ServicesManager.c',
 	        'ocf_exceptions.c',
+		'ocf_init.c',
+	        'ocf_ocf.c',
+	        'ocf_property_map.c',
+	        'ocf_resource_local.c',
 	        'jni_utils.c']
 
 # if target_os in ['windows']:

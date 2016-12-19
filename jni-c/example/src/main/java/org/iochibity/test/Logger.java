@@ -189,17 +189,18 @@ public class Logger
     static public void logRequestIn(MsgRequestIn requestIn)
     {
 	System.out.println("LOG MsgRequestIn logRequestIn ENTRY");
-	System.out.println("LOG MsgRequestIn this handle: " + requestIn.localHandle);
-	System.out.println("LOG MsgRequestIn remote handle: " + requestIn.remoteHandle);
-	System.out.println("LOG MsgRequestIn resource handle: " + requestIn.getResourceHandle());
+	// System.out.println("LOG MsgRequestIn this handle: " + requestIn.localHandle);
+	// System.out.println("LOG MsgRequestIn remote handle: " + requestIn.getRemoteHandle);
+	// System.out.println("LOG MsgRequestIn resource handle: " + requestIn.getResourceHandle());
 	System.out.println("LOG MsgRequestIn request method: " + requestIn.getMethod());
 	System.out.println("LOG MsgRequestIn query : \"" + requestIn.getQueryString() + "\"");
+	System.out.println("LOG MsgRequestIn method : " + requestIn.getMethod());
 	System.out.println("LOG MsgRequestIn msg id : " + requestIn.getMessageId());
 
-	ResourceLocal resource = requestIn.getResource();
-	logResource(resource);
+	// ResourceLocal resource = requestIn.getResource();
+	// logResource(resource);
 
-	logDeviceAddress(requestIn.getRemoteDeviceAddress());
+	// logDeviceAddress(requestIn.getRemoteDeviceAddress());
 
 	// System.out.println("LOG MsgRequestIn watch action: " + requestIn.watchAction);
 	// System.out.println("LOG MsgRequestIn watch id    : " + requestIn.watchId);
@@ -246,9 +247,11 @@ public class Logger
 			       + payloadTypes.get(msgResponseIn.getPayloadType()));
 
 	    PayloadList<Payload> pll = msgResponseIn.getPayloadList();
-	    System.out.println("LOG PAYLOAD count: " + pll.size());
-	    for (Payload payload : (PayloadList<Payload>) pll) {
-		logPayload(payload);
+	    if (pll != null) {
+		System.out.println("LOG PAYLOAD count: " + pll.size());
+		for (Payload payload : (PayloadList<Payload>) pll) {
+		    logPayload(payload);
+		}
 	    }
 	}
     }

@@ -102,7 +102,7 @@
                             "if": ["oic.if.baseline"]
                         }
                     ],
-                    "permission": 2
+                    "permission": 6
                 },
                 {
                     "subjectuuid": "*",
@@ -115,6 +115,18 @@
                         }
                     ],
                     "permission": 2
+                },
+                {
+                    "subjectuuid": "*",
+                    "resources": [
+                        {
+                            "href": "/a/led",
+                            "rel": "",
+                            "rt": ["oic.core"],
+                            "if": ["oic.if.baseline"]
+                        }
+                    ],
+                    "permission": 6
                 },
                 {
                     "subjectuuid": "37373737-3737-3737-3737-373737373737",

@@ -14,6 +14,7 @@ import org.iochibity.PropertyMap;
 import org.iochibity.PropertyString;
 import org.iochibity.ResourceLocal;
 import org.iochibity.ServicesManager;
+import org.iochibity.AServiceProvider;
 import org.iochibity.IServiceProvider;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCMode;
@@ -32,7 +33,9 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class LightSP implements IServiceProvider
+public class LightSP
+    extends    AServiceProvider
+    implements IServiceProvider
 {
     int foo;			// instead of CallbackParam;
 
@@ -102,34 +105,35 @@ public class LightSP implements IServiceProvider
 	return ServiceResult.OK;
     }
 
-    static private PayloadList<Payload> serviceGetRequest(MsgRequestIn request)
+    private PayloadList<Payload> serviceGetRequest(MsgRequestIn request)
     {
 	System.out.println("Light: serviceGetRequest ENTRY");
-	ResourceLocal r = request.getResource();
-	System.out.println("Light: resource uri: " + r.getUri());
+	// ResourceLocal r = request.getResource();
+	System.out.println("Light: resource uri: " + this.getUriPath());
 
-	PayloadForResourceState pfrs = new PayloadForResourceState(r);
+	// PayloadForResourceState pfrs = new PayloadForResourceState(r);
 
-	List<String> llts = pfrs.getResourceTypes();
-	for (String s : (List<String>)llts) {
-	    System.out.println("Light: payload r type: " + s);
-	}
+	// List<String> llts = pfrs.getResourceTypes();
+	// for (String s : (List<String>)llts) {
+	//     System.out.println("Light: payload r type: " + s);
+	// }
 
-	List<String> llifs = pfrs.getInterfaces();
-	for (String s : (List<String>)llifs) {
-	    System.out.println("Light: payload r interface: " + s);
-	}
+	// List<String> llifs = pfrs.getInterfaces();
+	// for (String s : (List<String>)llifs) {
+	//     System.out.println("Light: payload r interface: " + s);
+	// }
 
-	PropertyMap<String, Object> pmps = pfrs.getProperties();
-	pmps.put("state", true);
-	for(Map.Entry<String, Object> entry : pmps.entrySet()) {
-	    System.out.println("Light: payload r prop: " + entry.getKey() + " = " + entry.getValue());
-	}
+	// PropertyMap<String, Object> pmps = pfrs.getProperties();
+	// pmps.put("state", true);
+	// for(Map.Entry<String, Object> entry : pmps.entrySet()) {
+	//     System.out.println("Light: payload r prop: " + entry.getKey() + " = " + entry.getValue());
+	// }
 
-	PayloadList<Payload> pll = new PayloadList<Payload>();
-	pll.add(pfrs);
+	// PayloadList<Payload> pll = new PayloadList<Payload>();
+	// pll.add(pfrs);
 
-	return pll; //payload;
+	// return pll; //payload;
+	return null;
     }
 
 }
