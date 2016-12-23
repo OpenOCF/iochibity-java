@@ -1,3 +1,11 @@
+/**
+ * @file jni_utils.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief Utility functions for working in JNI
+ */
+
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>

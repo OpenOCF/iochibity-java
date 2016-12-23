@@ -1,3 +1,11 @@
+/**
+ * @file ocf_ocf.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief Wrappers for Init, OCProcess, etc.
+ */
+
 #include <ctype.h>
 #include <pthread.h>
 #include <string.h>
@@ -57,16 +65,16 @@ FILE* server_fopen(const char *path, const char *mode)
 /*
  * Class:     org_iochibity_OCF
  * Method:    Init
- * Signature: (Ljava/lang/String;IILjava/lang/String;)V
+ * Signature: (ILjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
-(JNIEnv * env, jclass clazz, jstring j_ip_addr, jint port, jint mode, jstring j_config_fname)
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init__ILjava_lang_String_2
+(JNIEnv * env, jclass klass, jint mode, jstring j_config_fname)
 {
-    OC_UNUSED(clazz);
-    printf("Java_org_iochibity_OCF_Init\n");
+    OC_UNUSED(klass);
+    printf("%s | %s ENTRY\n", __FILE__, __func__);
 
-    coap_set_log_level(LOG_DEBUG);
-    dtls_set_log_level(DTLS_LOG_DEBUG);
+    /* coap_set_log_level(LOG_DEBUG); */
+    /* dtls_set_log_level(DTLS_LOG_DEBUG); */
 
     /* First configure security */
     if (j_config_fname == NULL) {
@@ -80,40 +88,44 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
     OCPersistentStorage ps = {server_fopen, fread, fwrite, fclose, unlink};
     printf("calling OCRegisterPersistentStorageHandler: %s\n", g_config_fname);
     OCRegisterPersistentStorageHandler(&ps);
+    printf("XXXXXXXXXXXXXXXX\n");
+
+
     /* (*env)->ReleaseStringUTFChars(env, j_config_fname, g_config_fname); */
+
+    /* const char *cip_addr = ""; */
+    /* if (j_ip_addr == NULL) { */
+    /* 	printf("ip addr null\n"); */
+    /* 	/\* j_ip_addr = (*env)->NewStringUTF(env, cip_addr); *\/ */
+    /* 	cip_addr = NULL;  /\* (*env)->GetStringUTFChars(env, j_ip_addr, NULL); *\/ */
+    /* } else { */
+    /* 	cip_addr = (*env)->GetStringUTFChars(env, j_ip_addr, NULL); */
+    /* 	if (cip_addr == NULL) { */
+    /* 	    THROW_JNI_EXCEPTION("GetStringUTFChars"); */
+    /* 	} */
+    /* } */
+    /* printf("ip addr: [%s]\n", cip_addr); */
+
 
     /* Then initialize supervisor */
     OCStackResult op_result;
-    const char *cip_addr = "";
-    if (j_ip_addr == NULL) {
-	printf("ip addr null\n");
-	/* j_ip_addr = (*env)->NewStringUTF(env, cip_addr); */
-	cip_addr = NULL;  /* (*env)->GetStringUTFChars(env, j_ip_addr, NULL); */
-    } else {
-	cip_addr = (*env)->GetStringUTFChars(env, j_ip_addr, NULL);
-	if (cip_addr == NULL) {
-	    THROW_JNI_EXCEPTION("GetStringUTFChars");
-	}
-    }
-    printf("ip addr: [%s]\n", cip_addr);
-
     /* op_result = OCInit(cip_addr, (uint16_t)port, mode); */
     op_result = OCInit1(mode, OC_FLAG_SECURE, OC_FLAG_SECURE);
     if (op_result != OC_STACK_OK) {
 	printf("OCStack init error\n");
 	THROW_STACK_EXCEPTION(op_result, "Initialization failure");
     }
-    (*env)->ReleaseStringUTFChars(env, j_ip_addr, cip_addr);
+    /* (*env)->ReleaseStringUTFChars(env, j_ip_addr, cip_addr); */
 
     /* return op_result; */
 }
 
 /*
  * Class:     org_iochibity_OCF
- * Method:    OCInit1
+ * Method:    OCInit
  * Signature: (III)I
  */
-JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCInit1
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init__III
   (JNIEnv * env, jclass clazz, jint mode, jint server_flags, jint client_flags)
 {
     OC_UNUSED(env);

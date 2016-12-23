@@ -1,11 +1,17 @@
-/* ocf_ServicesManager.c */
+/**
+ * @file ocf_ServiceManager.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief implementations of `registerX` routines
+ */
 
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "org_iochibity_ServicesManager.h"
-#include "ocf_init.h"
+#include "org_iochibity_ServiceManager.h"
+#include "ocf_Init.h"
 #include "ocf_exceptions.h"
 #include "jni_utils.h"
 
@@ -22,11 +28,11 @@
 /* **************************************************************** */
 
 /*
- * Class:     org_iochibity_ServicesManager
+ * Class:     org_iochibity_ServiceManager
  * Method:    resourceCount
  * Signature: (B)I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_ServicesManager_resourceCount
+JNIEXPORT jint JNICALL Java_org_iochibity_ServiceManager_resourceCount
 (JNIEnv * env, jclass klass)
 {
     OC_UNUSED(env);
@@ -40,11 +46,11 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ServicesManager_resourceCount
 }
 
 /*
- * Class:     org_iochibity_ServicesManager
+ * Class:     org_iochibity_ServiceManager
  * Method:    registerPlatformProvider
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerPlatformProvider
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerPlatformProvider
   (JNIEnv * env, jclass klass,
    jstring j_platform_id,
    jstring j_mfg_name,
@@ -227,11 +233,11 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerPlatformProvid
 }
 
 /*
- * Class:     org_iochibity_ServicesManager
+ * Class:     org_iochibity_ServiceManager
  * Method:    registerDeviceProvider
  * Signature: (Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDeviceProvider
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDeviceProvider
   (JNIEnv * env, jclass klass,
    jstring j_device_name,
    jobjectArray j_types,
@@ -298,11 +304,11 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDeviceProvider
 }
 
 /*
- * Class:     org_iochibity_ServicesManager
+ * Class:     org_iochibity_ServiceManager
  * Method:    RegisterDefaultServiceRoutine
  * Signature: (Ljava/lang/Object;Ljava/lang/Object;)I
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDefaultServiceRoutine
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDefaultServiceRoutine
 (JNIEnv * env, jclass klass, jobject j_resource_service_provider, jobject j_callback_param)
 {
     OC_UNUSED(env);
@@ -312,11 +318,11 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServicesManager_registerDefaultService
 }
 
 /*
- * Class:     org_iochibity_ServicesManager
+ * Class:     org_iochibity_ServiceManager
  * Method:    registerServiceProvider
  * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IResourceServiceProvider;B)Lorg/iochibity/ResourceLocal;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProvider__Ljava_lang_String_2_3Ljava_lang_String_2_3Ljava_lang_String_2Lorg_iochibity_IServiceProvider_2B
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvider__Ljava_lang_String_2_3Ljava_lang_String_2_3Ljava_lang_String_2Lorg_iochibity_IServiceProvider_2B
 (JNIEnv * env, jclass klass,
  jstring j_uri,
  jobjectArray j_tnames,
@@ -326,7 +332,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
    jbyte   j_policies)
 {
     OC_UNUSED(klass);
-    printf("Java_org_iochibity_ServicesManager_registerServiceProvider ENTRY\n");
+    printf("Java_org_iochibity_ServiceManager_registerServiceProvider ENTRY\n");
 
     jobject j_resource_type_name = (*env)->GetObjectArrayElement(env, j_tnames, 0);
     const char *c_resource_type_name = "";
@@ -387,7 +393,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 				  c_resource_type_name,  /* const char *resourceTypeName, */
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
-				  service_request_in,    /* cb impl in ocf_MessengerServer */
+				  c_ServiceProvider_observe_stimulus, /* cb impl in ocf_ServiceProvider */
 				  /* x_callback_param, */
 				  x_ServiceProvider,
 				  (uint8_t) j_policies);  /* uint8_t resourceProperties */
@@ -407,21 +413,21 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
     /*     jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J"); */
     /*     if (fid_handle != NULL) { */
 	    (*env)->SetLongField(env, j_ServiceProvider,
-				 FID_ASP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
+				 FID_SP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
 	/* } */
         /* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); */
         /* if (urifield != NULL) { */
             jstring jString = (*env)->NewStringUTF(env, ((OCResource*)c_resource_handle)->uri);
             if (jString != NULL) {
                 (*env)->SetObjectField(env, j_ServiceProvider,
-				       FID_ASP_URI_PATH, jString);
+				       FID_SP_URI_PATH, jString);
             }
 	/* } */
 
         /* jfieldID fid_policies = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "policies", "I"); */
         /* if (fid_policies != NULL) { */
 	    (*env)->SetIntField(env, j_ServiceProvider,
-				FID_ASP_POLICIES,
+				FID_SP_POLICIES,
 				(jint)((OCResource*)c_resource_handle)->resourceProperties);
 	/* } else { */
 	/*     THROW_JNI_EXCEPTION("SetIntField failed for fid_policies\n"); */
@@ -451,22 +457,22 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
     /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_if_name, c_resource_if_name); */
     (*env)->ReleaseStringUTFChars(env, j_uri, c_uri);
 
-    printf("org_iochibity_ServicesManager/registerServiceProvider EXIT\n");
+    printf("org_iochibity_ServiceManager/registerServiceProvider EXIT\n");
     return j_ServiceProvider;
 }
 
 /*
- * Class:     org_iochibity_ServicesManager
+ * Class:     org_iochibity_ServiceManager
  * Method:    registerServiceProvider
- * Signature: (Lorg/iochibity/AServiceProvider;)Lorg/iochibity/AServiceProvider;
+ * Signature: (Lorg/iochibity/ServiceProvider;)Lorg/iochibity/ServiceProvider;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProvider__Lorg_iochibity_AServiceProvider_2
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvider__Lorg_iochibity_ServiceProvider_2
 (JNIEnv * env, jclass klass, jobject j_ServiceProvider)
 {
     OC_UNUSED(klass);
-    printf("Java_org_iochibity_ServicesManager_registerServiceProvider__Lorg_iochibity_AServiceProvider_2, ENTRY\n");
+    printf("Java_org_iochibity_ServiceManager_registerServiceProvider__Lorg_iochibity_ServiceProvider_2, ENTRY\n");
 
-    jobject j_Types = (*env)->GetObjectField(env, j_ServiceProvider, FID_ASP_TYPES);
+    jobject j_Types = (*env)->GetObjectField(env, j_ServiceProvider, FID_SP_TYPES);
     const char *c_resource_type_name = "";
     jobject j_resource_type_name = (*env)->CallObjectMethod(env, j_Types, MID_LL_GET, 0);
     if (j_resource_type_name == NULL) {
@@ -479,7 +485,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 	    return NULL;
 	}
     }
-    jobject j_Interfaces = (*env)->GetObjectField(env, j_ServiceProvider, FID_ASP_INTERFACES);
+    jobject j_Interfaces = (*env)->GetObjectField(env, j_ServiceProvider, FID_SP_INTERFACES);
     jobject j_resource_if_name = (*env)->CallObjectMethod(env, j_Interfaces, MID_LL_GET, 0);
     const char *c_resource_if_name = "";
     if (j_resource_if_name == NULL) {
@@ -492,7 +498,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 	    return NULL;
 	}
     }
-    jobject j_Uri = (*env)->GetObjectField(env, j_ServiceProvider, FID_ASP_URI_PATH);
+    jobject j_Uri = (*env)->GetObjectField(env, j_ServiceProvider, FID_SP_URI_PATH);
     const char *c_uri = "";
     if (j_Uri == NULL) {
 	j_Uri = (*env)->NewStringUTF(env, c_uri);
@@ -504,7 +510,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 	}
     }
 
-    int c_policies = (*env)->GetIntField(env, j_ServiceProvider, FID_ASP_POLICIES);
+    int c_policies = (*env)->GetIntField(env, j_ServiceProvider, FID_SP_POLICIES);
 
     /* prep callback */
     /* (*env)->GetJavaVM(env, &g_jvm); */
@@ -528,7 +534,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
 				  c_resource_type_name,  /* const char *resourceTypeName, */
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
-				  service_request_in,    /* cb impl in ocf_MessengerServer */
+				  c_ServiceProvider_observe_stimulus, /* cb impl in ocf_ServiceProvider */
 				  x_ServiceProvider,
 				  (uint8_t) c_policies);  /* uint8_t resourceProperties */
 
@@ -547,21 +553,21 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
     /*     jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J"); */
     /*     if (fid_handle != NULL) { */
 	    (*env)->SetLongField(env, j_ServiceProvider,
-				 FID_ASP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
+				 FID_SP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
 	/* } */
         /* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); */
         /* if (urifield != NULL) { */
             jstring jString = (*env)->NewStringUTF(env, ((OCResource*)c_resource_handle)->uri);
             if (jString != NULL) {
                 (*env)->SetObjectField(env, j_ServiceProvider,
-				       FID_ASP_URI_PATH, jString);
+				       FID_SP_URI_PATH, jString);
             }
 	/* } */
 
         /* jfieldID fid_policies = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "policies", "I"); */
         /* if (fid_policies != NULL) { */
 	    (*env)->SetIntField(env, j_ServiceProvider,
-				FID_ASP_POLICIES,
+				FID_SP_POLICIES,
 				(jint)((OCResource*)c_resource_handle)->resourceProperties);
 	/* } else { */
 	/*     THROW_JNI_EXCEPTION("SetIntField failed for fid_policies\n"); */
@@ -591,7 +597,23 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServicesManager_registerServiceProv
     /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_if_name, c_resource_if_name); */
     (*env)->ReleaseStringUTFChars(env, j_Uri, c_uri);
 
-    printf("org_iochibity_ServicesManager/registerServiceProvider EXIT\n");
+    printf("org_iochibity_ServiceManager/registerServiceProvider EXIT\n");
     return j_ServiceProvider;
 }
+
+/*
+ * Class:     org_iochibity_ServiceManager
+ * Method:    registerCoServiceProvider
+ * Signature: (Lorg/iochibity/CoServiceProvider;)Lorg/iochibity/CoServiceProvider;
+ */
+/* JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerCoServiceProvider */
+/* (JNIEnv * env, jclass klass, jobject j_CoServiceProvider) */
+/* { */
+/*     OC_UNUSED(env); */
+/*     OC_UNUSED(klass); */
+/*     OC_UNUSED(j_CoServiceProvider); */
+/*     printf("Java_org_iochibity_ServiceManager_registerCoServiceProvider ENTRY\n"); */
+/*     return NULL; */
+/* } */
+
 

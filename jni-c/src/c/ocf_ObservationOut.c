@@ -1,10 +1,16 @@
-/* ocf_MsgResonseOut.c */
+/**
+ * @file ocf_ObservationOut.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief unused
+ */
 
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "org_iochibity_MsgResponseOut.h"
+#include "org_iochibity_ObservationOut.h"
 #include "jni_utils.h"
 #include "ocf_exceptions.h"
 

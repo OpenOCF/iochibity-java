@@ -56,22 +56,22 @@ extern jmethodID MID_LL_CTOR;
 extern jmethodID MID_LL_ADD;
 extern jmethodID MID_LL_GET;
 
-extern jclass    K_PAYLOAD;
-extern jfieldID  FID_PAYLOAD_HANDLE;
-extern jfieldID  FID_PAYLOAD_TYPE;
-extern jmethodID MID_PAYLOAD_CTOR;
-extern jfieldID  FID_PAYLOAD_URI_PATH;
-extern jmethodID MID_PAYLOAD_GET_URI_PATH;
-extern jfieldID  FID_PAYLOAD_RTYPES;
-extern jmethodID MID_PAYLOAD_GET_RTYPES;
-extern jfieldID  FID_PAYLOAD_IFS;
-extern jmethodID MID_PAYLOAD_GET_IFS;
-extern jfieldID  FID_PAYLOAD_PROPERTIES;
-extern jmethodID MID_PAYLOAD_GET_PROPERTIES;
-extern jfieldID  FID_PAYLOAD_CHILDREN;
-extern jmethodID MID_PAYLOAD_GET_CHILDREN;
+extern jclass    K_OBSERVATION;
+extern jfieldID  FID_OBSERVATION_HANDLE;
+extern jfieldID  FID_OBSERVATION_TYPE;
+extern jmethodID MID_OBSERVATION_CTOR;
+extern jfieldID  FID_OBSERVATION_URI_PATH;
+extern jmethodID MID_OBSERVATION_GET_URI_PATH;
+extern jfieldID  FID_OBSERVATION_RTYPES;
+extern jmethodID MID_OBSERVATION_GET_RTYPES;
+extern jfieldID  FID_OBSERVATION_IFS;
+extern jmethodID MID_OBSERVATION_GET_IFS;
+extern jfieldID  FID_OBSERVATION_PROPERTIES;
+extern jmethodID MID_OBSERVATION_GET_PROPERTIES;
+extern jfieldID  FID_OBSERVATION_CHILDREN;
+extern jmethodID MID_OBSERVATION_GET_CHILDREN;
 
-extern jclass    K_PAYLOAD_LIST;
+extern jclass    K_OBSERVATION_LIST;
 extern jmethodID MID_PLL_CTOR;
 extern jmethodID MID_PLL_ADD;
 
@@ -109,8 +109,10 @@ extern jmethodID MID_ENTRY_GETVALUE;
 
 extern jclass    K_DEVICE_ADDRESS;
 extern jmethodID MID_DA_CTOR;
-extern jfieldID  FID_DA_ADAPTER;
-extern jfieldID  FID_DA_FLAGS;
+extern jfieldID  FID_DA_NETWORK_PROTOCOL;
+extern jfieldID  FID_DA_NETWORK_POLICIES;
+extern jfieldID  FID_DA_NETWORK_SCOPE;
+extern jfieldID  FID_DA_TRANSPORT_SECURITY;
 extern jfieldID  FID_DA_PORT;
 extern jfieldID  FID_DA_ADDRESS;
 extern jfieldID  FID_DA_IFINDEX;
@@ -118,26 +120,26 @@ extern jfieldID  FID_DA_ROUTE_DATA;
 
 extern jclass    K_ISERVICE_PROVIDER;
 /* extern jmethodID MID_ISP_CTOR; */
-extern jmethodID MID_ISP_SERVICE_REQUEST_IN;
+extern jmethodID MID_ISP_OBSERVE_STIMULUS;
 
-extern jclass    K_ASERVICE_PROVIDER;
+extern jclass    K_SERVICE_PROVIDER;
 /* extern jmethodID MID_ISP_CTOR; */
-extern jfieldID FID_ASP_HANDLE;
-extern jfieldID FID_ASP_ID;
-extern jfieldID FID_ASP_URI_PATH;
-extern jfieldID FID_ASP_TYPES;
-extern jfieldID FID_ASP_INTERFACES;
-extern jfieldID FID_ASP_PROPERTIES;
-extern jfieldID FID_ASP_CHILDREN;
-extern jfieldID FID_ASP_ACTION_SET;
-extern jfieldID FID_ASP_POLICIES;
+extern jfieldID FID_SP_HANDLE;
+extern jfieldID FID_SP_ID;
+extern jfieldID FID_SP_URI_PATH;
+extern jfieldID FID_SP_TYPES;
+extern jfieldID FID_SP_INTERFACES;
+extern jfieldID FID_SP_PROPERTIES;
+extern jfieldID FID_SP_CHILDREN;
+extern jfieldID FID_SP_ACTION_SET;
+extern jfieldID FID_SP_POLICIES;
 
 extern jclass    K_RESOURCE_LOCAL;
 
 extern jclass   K_MESSAGE;
 extern jfieldID  FID_MSG_LOCAL_HANDLE;
-extern jfieldID  FID_MSG_PAYLOAD_HANDLE;
-extern jmethodID MID_MSG_GET_PAYLOAD_TYPE;
+extern jfieldID  FID_MSG_OBSERVATION_HANDLE;
+/* extern jmethodID MID_MSG_GET_OBSERVATION_TYPE; */
 extern jfieldID  FID_MSG_METHOD;
 extern jmethodID MID_MSG_GET_METHOD;
 extern jfieldID  FID_MSG_OPTIONS;
@@ -152,21 +154,20 @@ extern jfieldID  FID_MFSP_RESOURCE_HANDLE;
 
 extern jclass    K_MSG_REQUEST_IN;
 
-extern jclass   K_MSG_REQUEST_OUT;
-extern jfieldID FID_RQO_SERVICE_REQUESTOR;
-extern jfieldID FID_RQO_URI;
-extern jfieldID FID_RQO_DEST;
-
-extern jclass    K_IRESOURCE_SERVICE_REQUESTOR;
-extern jmethodID MID_IRSR_SERVICE_RESPONSE_IN;
+extern jclass    K_MSG_REQUEST_OUT;
+extern jmethodID MID_RQO_CTOR;
+extern jfieldID  FID_RQO_LOCAL_HANDLE;
+extern jfieldID  FID_RQO_CO_SERVICE_PROVIDER;
+extern jfieldID  FID_RQO_METHOD;
+extern jfieldID  FID_RQO_URI_PATH;
+extern jfieldID  FID_RQO_DEST;
 
 extern jclass    K_MSG_REQUEST_IN;
 extern jmethodID MID_RQI_CTOR;
-extern jfieldID  FID_RQI_SERVICE_REQUESTOR;
-extern jfieldID  FID_RQI_IS_WATCH;
-/* extern jfieldID  FID_RQI_LOCAL_HANDLE; */
-/* extern jfieldID  FID_RQI_REMOTE_RQST_HANDLE; */
-/* extern jfieldID  FID_RQI_RESOURCE_HANDLE; */
+extern jfieldID  FID_RQI_LOCAL_HANDLE;
+extern jfieldID  FID_RQI_CO_SERVICE_PROVIDER;
+extern jfieldID  FID_RQI_WATCH_ACTION;
+extern jfieldID  FID_RQI_WATCH_ID;
 extern jfieldID  FID_RQI_METHOD;
 extern jmethodID MID_RQI_GET_METHOD;
 extern jfieldID  FID_RQI_QUERY;
@@ -174,20 +175,33 @@ extern jmethodID MID_RQI_GET_QUERY;
 extern jfieldID  FID_RQI_MSG_ID;
 extern jmethodID MID_RQI_GET_MSG_ID;
 
-extern jclass    K_MSG_RESPONSE_IN;
-extern jmethodID MID_MsgRspIn_CTOR;
-extern jfieldID  FID_MsgRspIn_PAYLOAD_HANDLE;
-extern jfieldID  FID_MsgRspIn_REMOTE_DEVADDR;
-extern jmethodID MID_MsgRspIn_GET_REMOTE_DEVADDR;
-extern jfieldID  FID_MsgRspIn_CONN_TYPE;
-extern jfieldID  FID_MsgRspIn_REMOTE_SID;
-extern jfieldID  FID_MsgRspIn_RESULT;
-extern jfieldID  FID_MsgRspIn_SERIAL;
-extern jfieldID  FID_MsgRspIn_URI;
-extern jfieldID  FID_MsgRspIn_PAYLOAD;
-extern jmethodID MID_MsgRspIn_GET_OPTIONS;
-extern jmethodID MID_MsgRspIn_GET_PAYLOAD;
+extern jclass    K_OBSERVATION_IN;
+extern jmethodID MID_OBIN_CTOR;
+extern jfieldID  FID_OBIN_OBSERVATION_HANDLE;
+extern jfieldID  FID_OBIN_REMOTE_DEVADDR;
+extern jmethodID MID_OBIN_GET_REMOTE_DEVADDR;
+extern jfieldID  FID_OBIN_CONN_TYPE;
+extern jfieldID  FID_OBIN_REMOTE_SID;
+extern jfieldID  FID_OBIN_RESULT;
+extern jfieldID  FID_OBIN_SERIAL;
+extern jfieldID  FID_OBIN_URI;
+extern jfieldID  FID_OBIN_PAYLOAD;
+extern jmethodID MID_OBIN_GET_OPTIONS;
+extern jmethodID MID_OBIN_GET_OBSERVATION;
 
+extern jclass    K_MSG_RESPONSE_OUT;
+extern jmethodID MID_MsgRspOut_CTOR;
+extern jfieldID  FID_MsgRspOut_RQST_IN;
+
+extern jclass    K_I_CO_SERVICE_PROVIDER;
+extern jmethodID MID_ICOSP_OBSERVE_BEHAVIOR;
+
+extern jclass    K_A_CO_SERVICE_PROVIDER;
+extern jfieldID  FID_COSP_HANDLE;
+extern jfieldID  FID_COSP_METHOD;
+extern jfieldID  FID_COSP_URI_PATH;
+extern jfieldID  FID_COSP_DESTINATION;
+extern jmethodID MID_COSP_EXHIBIT_STIMULUS;
 
 extern FILE* server_fopen(const char *path, const char *mode);
 
@@ -219,6 +233,6 @@ extern OCRepPayloadValue* props_to_OCRepPayloadValue(JNIEnv* env, jobject j_prop
 extern OCRepPayload* pfrs_to_OCRepPayload(JNIEnv* env, jobject j_pfrs);
 
 
-extern OCEntityHandlerResult service_request_in(OCEntityHandlerFlag flag,
-						OCEntityHandlerRequest * crequest_in, /* MsgRequestIn */
+extern OCEntityHandlerResult c_ServiceProvider_observe_stimulus(OCEntityHandlerFlag flag,
+						OCEntityHandlerRequest * crequest_in, /* StimulusIn */
 						void* callbackParam);

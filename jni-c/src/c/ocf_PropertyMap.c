@@ -1,3 +1,11 @@
+/**
+ * @file ocf_PropertyMap.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief Implementation of property management functions
+ */
+
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>

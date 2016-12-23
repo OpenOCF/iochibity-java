@@ -1,3 +1,10 @@
+/**
+ * @file ocf_Exceptions.h
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief Functions and macros for throwing exceptions from JNI
+ */
 #ifndef ocf_exceptions_h
 #define ocf_exceptions_h
 

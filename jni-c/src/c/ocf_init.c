@@ -1,3 +1,11 @@
+/**
+ * @file ocf_Init.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief JNI_OnLoad and JNI_OnUnload
+ */
+
 #include <ctype.h>
 #include <pthread.h>
 #include <string.h>
@@ -6,7 +14,7 @@
 #include <unistd.h>
 
 #include "org_iochibity_OCF.h"
-#include "ocf_init.h"
+#include "ocf_Init.h"
 #include "ocf_exceptions.h"
 #include "jni_utils.h"
 
@@ -21,165 +29,183 @@ JavaVM* g_JVM;
 extern const char* g_config_fname;
 
 
-jclass    K_INTEGER              = NULL; /* 32-bit ints */
-jmethodID MID_INT_CTOR           = NULL;
-jmethodID MID_INT_INTVALUE       = NULL; /* Integer.intValue() returns int */
-jclass K_LONG                    = NULL; /* 64-bit ints */
-jmethodID MID_LONG_CTOR          = NULL;
-jmethodID MID_LONG_LONGVALUE     = NULL; /* Long.longValue() returns long */
+jclass    K_INTEGER                       = NULL; /* 32-bit ints */
+jmethodID MID_INT_CTOR                    = NULL;
+jmethodID MID_INT_INTVALUE                = NULL; /* Integer.intValue() returns int */
+jclass K_LONG                             = NULL; /* 64-bit ints */
+jmethodID MID_LONG_CTOR                   = NULL;
+jmethodID MID_LONG_LONGVALUE              = NULL; /* Long.longValue() returns long */
 /* jclass K_BIGINTEGER		/\* arbitrary bits *\/ */
-jclass K_BOOLEAN                 = NULL;
-jmethodID MID_BOOL_CTOR          = NULL;
-jmethodID MID_BOOL_BOOLVALUE     = NULL; /* Boolean.booleanValue() returns boolean */
-jclass K_DOUBLE                  = NULL;
-jmethodID MID_DBL_CTOR           = NULL; /* Double.doubleValue() returns double */
-jmethodID MID_DBL_DBLVALUE       = NULL; /* Double.doubleValue() returns double */
-jclass K_SHORT                   = NULL;
-jmethodID MID_SHORT_CTOR         = NULL;
-jmethodID MID_SHORT_SHORTVALUE   = NULL;
-jclass K_STRING                  = NULL;
-jmethodID MID_STR_CTOR           = NULL;
-jclass K_LIST                    = NULL; /* OCByteString => List<Byte> */
-jclass K_BYTE                    = NULL;
-jmethodID MID_BYTE_CTOR          = NULL;
-jclass K_OBJECT                  = NULL;
+jclass K_BOOLEAN                          = NULL;
+jmethodID MID_BOOL_CTOR                   = NULL;
+jmethodID MID_BOOL_BOOLVALUE              = NULL; /* Boolean.booleanValue() returns boolean */
+jclass K_DOUBLE                           = NULL;
+jmethodID MID_DBL_CTOR                    = NULL; /* Double.doubleValue() returns double */
+jmethodID MID_DBL_DBLVALUE                = NULL; /* Double.doubleValue() returns double */
+jclass K_SHORT                            = NULL;
+jmethodID MID_SHORT_CTOR                  = NULL;
+jmethodID MID_SHORT_SHORTVALUE            = NULL;
+jclass K_STRING                           = NULL;
+jmethodID MID_STR_CTOR                    = NULL;
+jclass K_LIST                             = NULL; /* OCByteString => List<Byte> */
+jclass K_BYTE                             = NULL;
+jmethodID MID_BYTE_CTOR                   = NULL;
+jclass K_OBJECT                           = NULL;
 /* jclass K_ARRAY; - List */
 
-jclass    K_LINKED_LIST          = NULL;
-jmethodID MID_LL_CTOR            = NULL;
-jmethodID MID_LL_ADD             = NULL;
-jmethodID MID_LL_GET             = NULL;
+jclass    K_LINKED_LIST                   = NULL;
+jmethodID MID_LL_CTOR                     = NULL;
+jmethodID MID_LL_ADD                      = NULL;
+jmethodID MID_LL_GET                      = NULL;
 
-jclass    K_PAYLOAD                       = NULL;
-jfieldID  FID_PAYLOAD_HANDLE              = NULL;
-jfieldID  FID_PAYLOAD_TYPE                = NULL;
-jmethodID MID_PAYLOAD_CTOR                = NULL;
-jfieldID  FID_PAYLOAD_URI_PATH            = NULL;
-jmethodID MID_PAYLOAD_GET_URI_PATH        = NULL;
-jfieldID  FID_PAYLOAD_RTYPES              = NULL;
-jmethodID MID_PAYLOAD_GET_RTYPES          = NULL;
-jfieldID  FID_PAYLOAD_IFS                 = NULL;
-jmethodID MID_PAYLOAD_GET_IFS             = NULL;
-jfieldID  FID_PAYLOAD_PROPERTIES          = NULL;
-jmethodID MID_PAYLOAD_GET_PROPERTIES      = NULL;
-jfieldID  FID_PAYLOAD_CHILDREN            = NULL;
-jmethodID MID_PAYLOAD_GET_CHILDREN        = NULL;
+/* Messages */
+jclass    K_OBSERVATION_IN                = NULL;
+jmethodID MID_OBIN_CTOR               = NULL;
+jfieldID  FID_OBIN_OBSERVATION_HANDLE = NULL;
+jfieldID  FID_OBIN_REMOTE_DEVADDR     = NULL;
+jmethodID MID_OBIN_GET_REMOTE_DEVADDR = NULL;
+jfieldID  FID_OBIN_CONN_TYPE          = NULL;
+jfieldID  FID_OBIN_REMOTE_SID         = NULL;
+jfieldID  FID_OBIN_RESULT             = NULL;
+jfieldID  FID_OBIN_SERIAL             = NULL;
+jfieldID  FID_OBIN_URI                = NULL;
+jmethodID MID_OBIN_GET_OBSERVATION    = NULL;
+jfieldID  FID_OBIN_OPTIONS            = NULL;
+jfieldID  FID_OBIN_PTR_OPTIONS        = NULL;
+jmethodID MID_OBIN_GET_OPTIONS        = NULL;
 
-jclass    K_PAYLOAD_LIST         = NULL;
-jmethodID MID_PLL_CTOR           = NULL;
-jmethodID MID_PLL_ADD            = NULL;
+jclass    K_MSG_RESPONSE_OUT              = NULL;
+jmethodID MID_MsgRspOut_CTOR              = NULL;
+jfieldID  FID_MsgRspOut_RQST_IN         = NULL;
 
-jclass   K_PFRS                  = NULL; /* class for PayloadForResourceState */
-jfieldID FID_PFRS_URI            = NULL;
-jfieldID FID_PFRS_RTYPES         = NULL;
-jfieldID FID_PFRS_INTERFACES     = NULL;
-jfieldID FID_PFRS_PROPERTIES     = NULL;
+/* Payloads */
+jclass    K_OBSERVATION                   = NULL;
+jfieldID  FID_OBSERVATION_HANDLE          = NULL;
+jfieldID  FID_OBSERVATION_TYPE            = NULL;
+jmethodID MID_OBSERVATION_CTOR            = NULL;
+jfieldID  FID_OBSERVATION_URI_PATH        = NULL;
+jmethodID MID_OBSERVATION_GET_URI_PATH    = NULL;
+jfieldID  FID_OBSERVATION_RTYPES          = NULL;
+jmethodID MID_OBSERVATION_GET_RTYPES      = NULL;
+jfieldID  FID_OBSERVATION_IFS             = NULL;
+jmethodID MID_OBSERVATION_GET_IFS         = NULL;
+jfieldID  FID_OBSERVATION_PROPERTIES      = NULL;
+jmethodID MID_OBSERVATION_GET_PROPERTIES  = NULL;
+jfieldID  FID_OBSERVATION_CHILDREN        = NULL;
+jmethodID MID_OBSERVATION_GET_CHILDREN    = NULL;
 
-jclass    K_PFP                  = NULL; /* class for PayloadForPlatform */
-jfieldID  FID_PFP_URI            = NULL;
-jfieldID  FID_PFP_RTYPES         = NULL;
-jfieldID  FID_PFP_INTERFACES     = NULL;
-jfieldID  FID_PFP_PROPERTIES     = NULL;
-jmethodID MID_PFP_CTOR           = NULL;
+jclass    K_OBSERVATION_LIST              = NULL;
+jmethodID MID_PLL_CTOR                    = NULL;
+jmethodID MID_PLL_ADD                     = NULL;
 
-jclass   K_PMAP                  = NULL; /* class for PropertyMap */
-jmethodID MID_PMAP_CTOR          = NULL;
-jmethodID MID_PMAP_SIZE          = NULL;
-jmethodID MID_PMAP_ENTRYSET      = NULL;
-jmethodID MID_PMAP_GET           = NULL;
-jmethodID MID_PMAP_PUT           = NULL;
+jclass   K_PFRS                           = NULL; /* class for PayloadForResourceState */
+jfieldID FID_PFRS_URI                     = NULL;
+jfieldID FID_PFRS_RTYPES                  = NULL;
+jfieldID FID_PFRS_INTERFACES              = NULL;
+jfieldID FID_PFRS_PROPERTIES              = NULL;
 
-jclass   K_SET                   = NULL; /* interface java.util.Set */
-jmethodID MID_SET_ITERATOR       = NULL;
+jclass    K_PFP                           = NULL; /* class for PayloadForPlatform */
+jfieldID  FID_PFP_URI                     = NULL;
+jfieldID  FID_PFP_RTYPES                  = NULL;
+jfieldID  FID_PFP_INTERFACES              = NULL;
+jfieldID  FID_PFP_PROPERTIES              = NULL;
+jmethodID MID_PFP_CTOR                    = NULL;
 
-jclass   K_ITER                  = NULL; /* interface java.util.Iterator */
-jmethodID MID_ITER_HASNEXT       = NULL;
-jmethodID MID_ITER_NEXT          = NULL;
-jmethodID MID_ITER_REMOVE        = NULL;
+jclass   K_PMAP                           = NULL; /* class for PropertyMap */
+jmethodID MID_PMAP_CTOR                   = NULL;
+jmethodID MID_PMAP_SIZE                   = NULL;
+jmethodID MID_PMAP_ENTRYSET               = NULL;
+jmethodID MID_PMAP_GET                    = NULL;
+jmethodID MID_PMAP_PUT                    = NULL;
 
-jclass   K_MAPENTRY                  = NULL; /* interface java.util.Map.Entry */
-jmethodID MID_ENTRY_GETKEY           = NULL;
-jmethodID MID_ENTRY_GETVALUE         = NULL;
+jclass   K_SET                            = NULL; /* interface java.util.Set */
+jmethodID MID_SET_ITERATOR                = NULL;
 
-jclass    K_DEVICE_ADDRESS           = NULL;
-jmethodID MID_DA_CTOR                = NULL;
-jfieldID  FID_DA_ADAPTER             = NULL;
-jfieldID  FID_DA_FLAGS               = NULL;
-jfieldID  FID_DA_PORT                = NULL;
-jfieldID  FID_DA_ADDRESS             = NULL;
-jfieldID  FID_DA_IFINDEX             = NULL;
-jfieldID  FID_DA_ROUTE_DATA          = NULL;
+jclass   K_ITER                           = NULL; /* interface java.util.Iterator */
+jmethodID MID_ITER_HASNEXT                = NULL;
+jmethodID MID_ITER_NEXT                   = NULL;
+jmethodID MID_ITER_REMOVE                 = NULL;
 
-jclass    K_ISERVICE_PROVIDER        = NULL;
-/* jmethodID MID_ISP_CTOR            = NULL; */
-jmethodID MID_ISP_SERVICE_REQUEST_IN = NULL;
+jclass   K_MAPENTRY                       = NULL; /* interface java.util.Map.Entry */
+jmethodID MID_ENTRY_GETKEY                = NULL;
+jmethodID MID_ENTRY_GETVALUE              = NULL;
 
-jclass    K_ASERVICE_PROVIDER        = NULL;
+jclass    K_DEVICE_ADDRESS                = NULL;
+jmethodID MID_DA_CTOR                     = NULL;
+jfieldID  FID_DA_NETWORK_PROTOCOL         = NULL;
+jfieldID  FID_DA_NETWORK_POLICIES         = NULL;
+jfieldID  FID_DA_NETWORK_SCOPE            = NULL;
+jfieldID  FID_DA_TRANSPORT_SECURITY       = NULL;
+jfieldID  FID_DA_PORT                     = NULL;
+jfieldID  FID_DA_ADDRESS                  = NULL;
+jfieldID  FID_DA_IFINDEX                  = NULL;
+jfieldID  FID_DA_ROUTE_DATA               = NULL;
+
+jclass    K_ISERVICE_PROVIDER             = NULL;
+/* jmethodID MID_ISP_CTOR                 = NULL; */
+jmethodID MID_ISP_OBSERVE_STIMULUS      = NULL;
+
+jclass    K_SERVICE_PROVIDER             = NULL;
 /* extern jmethodID MID_ISP_CTOR; */
-jfieldID FID_ASP_HANDLE              = NULL;
-jfieldID FID_ASP_ID                  = NULL;
-jfieldID FID_ASP_URI_PATH            = NULL;
-jfieldID FID_ASP_TYPES               = NULL;
-jfieldID FID_ASP_INTERFACES          = NULL;
-jfieldID FID_ASP_PROPERTIES          = NULL;
-jfieldID FID_ASP_CHILDREN            = NULL;
-jfieldID FID_ASP_ACTION_SET          = NULL;
-jfieldID FID_ASP_POLICIES            = NULL;
+jfieldID FID_SP_HANDLE                   = NULL;
+jfieldID FID_SP_ID                       = NULL;
+jfieldID FID_SP_URI_PATH                 = NULL;
+jfieldID FID_SP_TYPES                    = NULL;
+jfieldID FID_SP_INTERFACES               = NULL;
+jfieldID FID_SP_PROPERTIES               = NULL;
+jfieldID FID_SP_CHILDREN                 = NULL;
+jfieldID FID_SP_ACTION_SET               = NULL;
+jfieldID FID_SP_POLICIES                 = NULL;
 
-jclass    K_RESOURCE_LOCAL           = NULL;
+jclass    K_RESOURCE_LOCAL                = NULL;
 
-jclass    K_MESSAGE                  = NULL;
-jfieldID  FID_MSG_LOCAL_HANDLE       = NULL;
-jfieldID  FID_MSG_PAYLOAD_HANDLE     = NULL;
-jmethodID MID_MSG_GET_PAYLOAD_TYPE   = NULL;
-jfieldID  FID_MSG_METHOD             = NULL;
-jmethodID MID_MSG_GET_METHOD         = NULL;
-jfieldID  FID_MSG_OPTIONS            = NULL;
-jmethodID MID_MSG_GET_OPTIONS        = NULL;
-/* jfieldID  FID_MSG_PTR_OPTIONS        = NULL; */
-jfieldID  FID_MSG_REMOTE_DEVADDR     = NULL;
-jmethodID MID_MSG_GET_REMOTE_DEVADDR = NULL;
+jclass    K_MESSAGE                       = NULL;
+jfieldID  FID_MSG_LOCAL_HANDLE            = NULL;
+jfieldID  FID_MSG_OBSERVATION_HANDLE      = NULL;
+/* jmethodID MID_MSG_GET_OBSERVATION_TYPE = NULL; */
+jfieldID  FID_MSG_METHOD                  = NULL;
+jmethodID MID_MSG_GET_METHOD              = NULL;
+jfieldID  FID_MSG_OPTIONS                 = NULL;
+jmethodID MID_MSG_GET_OPTIONS             = NULL;
+/* jfieldID  FID_MSG_PTR_OPTIONS          = NULL; */
+jfieldID  FID_MSG_REMOTE_DEVADDR          = NULL;
+jmethodID MID_MSG_GET_REMOTE_DEVADDR      = NULL;
 
-jclass   K_MSG_FOR_SERVICE_PROVIDER = NULL;
-jfieldID FID_MFSP_REMOTE_RQST_HANDLE   = NULL;
-jfieldID FID_MFSP_RESOURCE_HANDLE   = NULL;
+jclass   K_MSG_FOR_SERVICE_PROVIDER       = NULL;
+jfieldID FID_MFSP_REMOTE_RQST_HANDLE      = NULL;
+jfieldID FID_MFSP_RESOURCE_HANDLE         = NULL;
 
-jclass   K_MSG_REQUEST_OUT          = NULL;
-jfieldID FID_RQO_SERVICE_REQUESTOR  = NULL;
-jfieldID FID_RQO_URI                = NULL;
-jfieldID FID_RQO_DEST               = NULL;
+jclass    K_MSG_REQUEST_OUT               = NULL;
+jmethodID MID_RQO_CTOR                    = NULL;
+jfieldID  FID_RQO_LOCAL_HANDLE            = NULL;
+jfieldID  FID_RQO_CO_SERVICE_PROVIDER     = NULL;
+jfieldID  FID_RQO_METHOD                  = NULL;
+jfieldID  FID_RQO_URI_PATH                = NULL;
+jfieldID  FID_RQO_DEST                    = NULL;
 
-jclass    K_MSG_REQUEST_IN          = NULL;
-jmethodID MID_RQI_CTOR              = NULL;
-jfieldID  FID_RQI_SERVICE_REQUESTOR = NULL;
-jfieldID  FID_RQI_IS_WATCH          = NULL;
-/* jfieldID  FID_RQI_LOCAL_HANDLE      = NULL; */
-/* jfieldID  FID_RQI_REMOTE_RQST_HANDLE= NULL; */
-/* jfieldID  FID_RQI_RESOURCE_HANDLE   = NULL; */
-jfieldID  FID_RQI_METHOD            = NULL;
-jmethodID MID_RQI_GET_METHOD        = NULL;
-jfieldID  FID_RQI_QUERY             = NULL;
-jmethodID MID_RQI_GET_QUERY         = NULL;
-jfieldID  FID_RQI_MSG_ID            = NULL;
-jmethodID MID_RQI_GET_MSG_ID        = NULL;
+jclass    K_MSG_REQUEST_IN                = NULL;
+jmethodID MID_RQI_CTOR                    = NULL;
+jfieldID  FID_RQI_LOCAL_HANDLE            = NULL;
+jfieldID  FID_RQI_CO_SERVICE_PROVIDER     = NULL;
+jfieldID  FID_RQI_WATCH_ACTION            = NULL;
+jfieldID  FID_RQI_WATCH_ID                = NULL;
+jfieldID  FID_RQI_METHOD                  = NULL;
+jmethodID MID_RQI_GET_METHOD              = NULL;
+jfieldID  FID_RQI_QUERY                   = NULL;
+jmethodID MID_RQI_GET_QUERY               = NULL;
+jfieldID  FID_RQI_MSG_ID                  = NULL;
+jmethodID MID_RQI_GET_MSG_ID              = NULL;
 
-jclass    K_MSG_RESPONSE_IN             = NULL;
-jmethodID MID_MsgRspIn_CTOR             = NULL;
-jfieldID  FID_MsgRspIn_PAYLOAD_HANDLE   = NULL;
-jfieldID  FID_MsgRspIn_REMOTE_DEVADDR   = NULL;
-jmethodID MID_MsgRspIn_GET_REMOTE_DEVADDR= NULL;
-jfieldID  FID_MsgRspIn_CONN_TYPE        = NULL;
-jfieldID  FID_MsgRspIn_REMOTE_SID       = NULL;
-jfieldID  FID_MsgRspIn_RESULT           = NULL;
-jfieldID  FID_MsgRspIn_SERIAL           = NULL;
-jfieldID  FID_MsgRspIn_URI              = NULL;
-jmethodID MID_MsgRspIn_GET_PAYLOAD      = NULL;
-jfieldID  FID_MsgRspIn_OPTIONS          = NULL;
-jfieldID  FID_MsgRspIn_PTR_OPTIONS      = NULL;
-jmethodID MID_MsgRspIn_GET_OPTIONS      = NULL;
+jclass    K_I_CO_SERVICE_PROVIDER       = NULL;
+jmethodID MID_ICOSP_OBSERVE_BEHAVIOR    = NULL;
 
-jclass    K_IRESOURCE_SERVICE_REQUESTOR = NULL;
-jmethodID MID_IRSR_SERVICE_RESPONSE_IN  = NULL;
+jclass    K_A_CO_SERVICE_PROVIDER       = NULL;
+jfieldID  FID_COSP_HANDLE              = NULL;
+jfieldID  FID_COSP_METHOD              = NULL;
+jfieldID  FID_COSP_URI_PATH            = NULL;
+jfieldID  FID_COSP_DESTINATION         = NULL;
+jmethodID MID_COSP_EXHIBIT_STIMULUS    = NULL;
+
 
 /*
  *
@@ -448,90 +474,90 @@ int init_ServiceProviders(JNIEnv* env)
     K_ISERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    if (MID_ISP_SERVICE_REQUEST_IN == NULL) {
-	MID_ISP_SERVICE_REQUEST_IN = (*env)->GetMethodID(env,
+    if (MID_ISP_OBSERVE_STIMULUS == NULL) {
+	MID_ISP_OBSERVE_STIMULUS = (*env)->GetMethodID(env,
 							 K_ISERVICE_PROVIDER,
-							 "serviceRequestIn",
-							 "(Lorg/iochibity/MsgRequestIn;)I");
-	if (MID_ISP_SERVICE_REQUEST_IN == NULL) {
-	    printf("ERROR: GetMethodID failed for 'serviceRequestIn' of IServiceProvider\n");
+							 "observeStimulus",
+							 "(Lorg/iochibity/StimulusIn;)I");
+	if (MID_ISP_OBSERVE_STIMULUS == NULL) {
+	    printf("ERROR: GetMethodID failed for 'observeStimulus' of IServiceProvider\n");
 	    return -1;
 	}
     }
 
-    /* then, the abstract class AServiceProvider */
-    klass = (*env)->FindClass(env, "org/iochibity/AServiceProvider");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/AServiceProvider\n", 0);
-    K_ASERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
+    /* then, the abstract class ServiceProvider */
+    klass = (*env)->FindClass(env, "org/iochibity/ServiceProvider");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ServiceProvider\n", 0);
+    K_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    if (FID_ASP_HANDLE == NULL) {
-	FID_ASP_HANDLE = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER, "_handle", "J");
-	if (FID_ASP_HANDLE == NULL) {
-	    printf("ERROR: GetFieldID failed for '_handle' of AServiceProvider\n");
+    if (FID_SP_HANDLE == NULL) {
+	FID_SP_HANDLE = (*env)->GetFieldID(env, K_SERVICE_PROVIDER, "_handle", "J");
+	if (FID_SP_HANDLE == NULL) {
+	    printf("ERROR: GetFieldID failed for '_handle' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_ID == NULL) {
-	FID_ASP_ID = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+    if (FID_SP_ID == NULL) {
+	FID_SP_ID = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 					"_id", "Lorg/iochibity/InstanceId;");
-	if (FID_ASP_ID == NULL) {
-	    printf("ERROR: GetFieldID failed for '_id' of AServiceProvider\n");
+	if (FID_SP_ID == NULL) {
+	    printf("ERROR: GetFieldID failed for '_id' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_URI_PATH == NULL) {
-	FID_ASP_URI_PATH = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+    if (FID_SP_URI_PATH == NULL) {
+	FID_SP_URI_PATH = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 					      "_uriPath", "Ljava/lang/String;");
-	if (FID_ASP_URI_PATH == NULL) {
-	    printf("ERROR: GetFieldID failed for 'x' of AServiceProvider\n");
+	if (FID_SP_URI_PATH == NULL) {
+	    printf("ERROR: GetFieldID failed for 'x' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_TYPES == NULL) {
-	FID_ASP_TYPES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+    if (FID_SP_TYPES == NULL) {
+	FID_SP_TYPES = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 					   "_types", "Ljava/util/List;");
-	if (FID_ASP_TYPES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_types' of AServiceProvider\n");
+	if (FID_SP_TYPES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_types' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_INTERFACES == NULL) {
-	FID_ASP_INTERFACES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+    if (FID_SP_INTERFACES == NULL) {
+	FID_SP_INTERFACES = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 						"_interfaces", "Ljava/util/List;");
-	if (FID_ASP_INTERFACES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_interfaces' of AServiceProvider\n");
+	if (FID_SP_INTERFACES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_interfaces' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_PROPERTIES == NULL) {
-	FID_ASP_PROPERTIES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+    if (FID_SP_PROPERTIES == NULL) {
+	FID_SP_PROPERTIES = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 						"_properties", "Lorg/iochibity/PropertyMap;");
-	if (FID_ASP_PROPERTIES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_properties' of AServiceProvider\n");
+	if (FID_SP_PROPERTIES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_properties' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_CHILDREN == NULL) {
-	FID_ASP_CHILDREN = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+    if (FID_SP_CHILDREN == NULL) {
+	FID_SP_CHILDREN = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 					      "_children", "Ljava/util/List;");
-	if (FID_ASP_CHILDREN == NULL) {
-	    printf("ERROR: GetFieldID failed for '_children' of AServiceProvider\n");
+	if (FID_SP_CHILDREN == NULL) {
+	    printf("ERROR: GetFieldID failed for '_children' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_ACTION_SET == NULL) {
-	FID_ASP_ACTION_SET = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER,
+    if (FID_SP_ACTION_SET == NULL) {
+	FID_SP_ACTION_SET = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 						"_actionSet", "Ljava/util/List;");
-	if (FID_ASP_ACTION_SET == NULL) {
-	    printf("ERROR: GetFieldID failed for '_actionSet' of AServiceProvider\n");
+	if (FID_SP_ACTION_SET == NULL) {
+	    printf("ERROR: GetFieldID failed for '_actionSet' of ServiceProvider\n");
 	    return -1;
 	}
     }
-    if (FID_ASP_POLICIES == NULL) {
-	FID_ASP_POLICIES = (*env)->GetFieldID(env, K_ASERVICE_PROVIDER, "_policies", "I");
-	if (FID_ASP_POLICIES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_policies' of AServiceProvider\n");
+    if (FID_SP_POLICIES == NULL) {
+	FID_SP_POLICIES = (*env)->GetFieldID(env, K_SERVICE_PROVIDER, "_policies", "I");
+	if (FID_SP_POLICIES == NULL) {
+	    printf("ERROR: GetFieldID failed for '_policies' of ServiceProvider\n");
 	    return -1;
 	}
     }
@@ -547,17 +573,17 @@ int init_Messages(JNIEnv* env)
     K_MESSAGE = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    if (MID_MSG_GET_PAYLOAD_TYPE == NULL) {
-	MID_MSG_GET_PAYLOAD_TYPE = (*env)->GetMethodID(env, K_MESSAGE, "getPayloadType", "()I");
-	if (MID_MSG_GET_PAYLOAD_TYPE == NULL) {
-	    printf("ERROR:  GetMethodID failed for 'getPayloadType' for Message");
-	    return -1;
-	}
-    }
-    if (FID_MSG_PAYLOAD_HANDLE == NULL) {
-	FID_MSG_PAYLOAD_HANDLE = (*env)->GetFieldID(env, K_MESSAGE, "_payloadHandle", "J");
-	if (FID_MSG_PAYLOAD_HANDLE == NULL) {
-	    printf("ERROR: GetFieldID failed for '_payloadHandle' of Message\n");
+    /* if (MID_MSG_GET_OBSERVATION_TYPE == NULL) { */
+    /* 	MID_MSG_GET_OBSERVATION_TYPE = (*env)->GetMethodID(env, K_MESSAGE, "getObservationType", "()I"); */
+    /* 	if (MID_MSG_GET_OBSERVATION_TYPE == NULL) { */
+    /* 	    printf("ERROR:  GetMethodID failed for 'getObservationType' for Message"); */
+    /* 	    return -1; */
+    /* 	} */
+    /* } */
+    if (FID_MSG_OBSERVATION_HANDLE == NULL) {
+	FID_MSG_OBSERVATION_HANDLE = (*env)->GetFieldID(env, K_MESSAGE, "_observationHandle", "J");
+	if (FID_MSG_OBSERVATION_HANDLE == NULL) {
+	    printf("ERROR: GetFieldID failed for '_observationHandle' of Message\n");
 	    return -1;
 	}
     }
@@ -629,62 +655,115 @@ int init_Messages(JNIEnv* env)
     return 0;
 }
 
-int init_MsgRequestIn(JNIEnv* env)
+int init_StimulusOut(JNIEnv* env)
 {
     jclass klass;
-    klass = (*env)->FindClass(env, "org/iochibity/MsgRequestIn");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/MsgRequestIn\n", 0);
+    klass = (*env)->FindClass(env, "org/iochibity/StimulusOut");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/StimulusOut\n", 0);
+    K_MSG_REQUEST_OUT = (jclass)(*env)->NewGlobalRef(env, klass);
+    (*env)->DeleteLocalRef(env, klass);
+
+    if (MID_RQO_CTOR == NULL) {
+	MID_RQO_CTOR = (*env)->GetMethodID(env, K_MSG_REQUEST_OUT,
+					   "<init>", "(Lorg/iochibity/ICoServiceProvider;)V");
+	if (MID_RQO_CTOR == NULL) {
+	    printf("ERROR:  GetMethodID failed for ctor for StimulusOut\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_RQO_LOCAL_HANDLE == NULL) {
+	FID_RQO_LOCAL_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT, "_localHandle", "J");
+	if (FID_RQO_LOCAL_HANDLE == NULL) {
+	    printf("ERROR: GetFieldID failed for '_localHandle' of StimulusOut\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_RQO_CO_SERVICE_PROVIDER == NULL) {
+	FID_RQO_CO_SERVICE_PROVIDER = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
+						       "coServiceProvider",
+						       "Lorg/iochibity/ICoServiceProvider;");
+	if (FID_RQO_CO_SERVICE_PROVIDER == NULL) {
+	    printf("ERROR: GetFieldID failed for 'coServiceProvider' of StimulusOut\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_RQO_METHOD == NULL) {
+	FID_RQO_METHOD = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT, "_method", "I");
+	if (FID_RQO_METHOD == NULL) {
+	    printf("ERROR: GetFieldID failed for '_method' of StimulusOut\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_RQO_URI_PATH == NULL) {
+	FID_RQO_URI_PATH = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
+					      "_uriPath",
+					      "Ljava/lang/String;");
+	if (FID_RQO_URI_PATH == NULL) {
+	    printf("ERROR: GetFieldID failed for '_uriPath' of StimulusOut\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_RQO_DEST == NULL) {
+	FID_RQO_DEST = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
+					   "_remoteDeviceAddress",
+					   "Lorg/iochibity/DeviceAddress;");
+	if (FID_RQO_DEST == NULL) {
+	    printf("ERROR: GetFieldID failed for 'dest' of StimulusOut\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    return 0;
+}
+
+int init_StimulusIn(JNIEnv* env)
+{
+    jclass klass;
+    klass = (*env)->FindClass(env, "org/iochibity/StimulusIn");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/StimulusIn\n", 0);
     K_MSG_REQUEST_IN = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
     if (MID_RQI_CTOR == NULL) {
 	MID_RQI_CTOR = (*env)->GetMethodID(env, K_MSG_REQUEST_IN, "<init>", "()V");
 	if (MID_RQI_CTOR == NULL) {
-	    printf("ERROR:  GetMethodID failed for ctor for MsgRequestIn");
+	    printf("ERROR:  GetMethodID failed for ctor for StimulusIn");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
-    /* if (FID_RQI_IS_WATCH == NULL) { */
-    /* 	FID_RQI_IS_WATCH = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "isWatch", "Z"); */
-    /* 	if (FID_RQI_IS_WATCH == NULL) { */
-    /* 	    printf("ERROR: GetFieldID failed for 'isWatch' of MsgRequestIn\n"); */
-    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
-    /* 	} */
-    /* } */
-    /* if (FID_RQI_LOCAL_HANDLE == NULL) { */
-    /* 	FID_RQI_LOCAL_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "localHandle", "J"); */
-    /* 	if (FID_RQI_LOCAL_HANDLE == NULL) { */
-    /* 	    printf("ERROR:  GetFieldID failed for localHandle for MsgRequestIn\n"); */
-    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
-    /* 	} */
-    /* } */
-    /* if (FID_RQI_REMOTE_RQST_HANDLE == NULL) { */
-    /* 	FID_RQI_REMOTE_RQST_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_remoteRequestHandle", "J"); */
-    /* 	if (FID_RQI_REMOTE_RQST_HANDLE == NULL) { */
-    /* 	    printf("ERROR:  GetFieldID failed for '_remoteRequestHandle' of MsgRequestIn\n"); */
-    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
-    /* 	} */
-    /* } */
-    /* if (FID_RQI_RESOURCE_HANDLE == NULL) { */
-    /* 	FID_RQI_RESOURCE_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_resourceHandle", "J"); */
-    /* 	if (FID_RQI_RESOURCE_HANDLE == NULL) { */
-    /* 	printf("ERROR:  GetFieldID failed for '_resourceHandle' of MsgRequestIn\n"); */
-    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
-    /* 	} */
-    /* } */
+    if (FID_RQI_LOCAL_HANDLE == NULL) {
+    	FID_RQI_LOCAL_HANDLE = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_localHandle", "J");
+    	if (FID_RQI_LOCAL_HANDLE == NULL) {
+    	    printf("ERROR: GetFieldID failed for '_localHandle' of StimulusIn\n");
+    	    return OC_EH_INTERNAL_SERVER_ERROR;
+    	}
+    }
+    if (FID_RQI_WATCH_ACTION == NULL) {
+    	FID_RQI_WATCH_ACTION = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "watchAction", "I");
+    	if (FID_RQI_WATCH_ACTION == NULL) {
+    	    printf("ERROR: GetFieldID failed for 'watchAction' of StimulusIn\n");
+    	    return OC_EH_INTERNAL_SERVER_ERROR;
+    	}
+    }
+    if (FID_RQI_WATCH_ID == NULL) {
+    	FID_RQI_WATCH_ID = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "watchId", "I");
+    	if (FID_RQI_WATCH_ID == NULL) {
+    	    printf("ERROR: GetFieldID failed for 'watchId' of StimulusIn\n");
+    	    return OC_EH_INTERNAL_SERVER_ERROR;
+    	}
+    }
 
     /* method */
     if (FID_RQI_METHOD == NULL) {
 	FID_RQI_METHOD = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_method", "I");
 	if (FID_RQI_METHOD == NULL) {
-	    printf("ERROR:  GetFieldID failed for '_method' of MsgRequestIn\n");
+	    printf("ERROR:  GetFieldID failed for '_method' of StimulusIn\n");
     	return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
     /* if (MID_RQI_GET_METHOD == NULL) { */
     /* 	MID_RQI_GET_METHOD = (*env)->GetMethodID(env, K_MSG_REQUEST_IN, "getMethod", "I"); */
     /* 	if (MID_RQI_GET_METHOD == NULL) { */
-    /* 	    printf("ERROR:  GetMethodID failed for 'getMethod' for MsgRequestIn\n"); */
+    /* 	    printf("ERROR:  GetMethodID failed for 'getMethod' for StimulusIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
@@ -693,7 +772,7 @@ int init_MsgRequestIn(JNIEnv* env)
     if (FID_RQI_QUERY == NULL) {
 	FID_RQI_QUERY = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_query", "Ljava/lang/String;");
 	if (FID_RQI_QUERY == NULL) {
-	    printf("ERROR:  GetFieldID failed for '_query' of MsgRequestIn\n");
+	    printf("ERROR:  GetFieldID failed for '_query' of StimulusIn\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
@@ -701,7 +780,7 @@ int init_MsgRequestIn(JNIEnv* env)
 	MID_RQI_GET_QUERY = (*env)->GetMethodID(env, K_MSG_REQUEST_IN,
 						"getQueryString", "()Ljava/lang/String;");
 	if (MID_RQI_GET_QUERY == NULL) {
-	    printf("ERROR:  GetMethodID failed for 'getQueryString' for MsgRequestIn\n");
+	    printf("ERROR:  GetMethodID failed for 'getQueryString' for StimulusIn\n");
 	    return -1;
 	}
     }
@@ -714,7 +793,7 @@ int init_MsgRequestIn(JNIEnv* env)
     if (FID_RQI_MSG_ID == NULL) {
 	FID_RQI_MSG_ID = (*env)->GetFieldID(env, K_MSG_REQUEST_IN, "_messageId", "I");
 	if (FID_RQI_MSG_ID == NULL) {
-	    printf("ERROR:  GetFieldID failed for '_messageId' of MsgRequestIn\n");
+	    printf("ERROR:  GetFieldID failed for '_messageId' of StimulusIn\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
@@ -723,7 +802,7 @@ int init_MsgRequestIn(JNIEnv* env)
     /* 							 "getRemoteDeviceAddress", */
     /* 							 "()Lorg/iochibity/DeviceAddress;"); */
     /* 	if (MID_RQI_GET_MSG_ID == NULL) { */
-    /* 	    printf("ERROR:  GetMethodID failed for getRemoteDeviceAddress for MsgRequestIn\n"); */
+    /* 	    printf("ERROR:  GetMethodID failed for getRemoteDeviceAddress for StimulusIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
@@ -731,227 +810,251 @@ int init_MsgRequestIn(JNIEnv* env)
     return 0;
 }
 
-int init_MsgResponseIn(JNIEnv* env)
+int init_ObservationOut(JNIEnv* env)
 {
     jclass klass;
-    klass = (*env)->FindClass(env, "org/iochibity/MsgResponseIn");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/MsgResponseIn\n", -1);
-    K_MSG_RESPONSE_IN = (jclass)(*env)->NewGlobalRef(env, klass);
+    klass = (*env)->FindClass(env, "org/iochibity/ObservationOut");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ObservationOut\n", -1);
+    K_MSG_RESPONSE_OUT = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    if (MID_MsgRspIn_CTOR == NULL) {
-	MID_MsgRspIn_CTOR = (*env)->GetMethodID(env, K_MSG_RESPONSE_IN, "<init>", "()V");
-	if (MID_MsgRspIn_CTOR == NULL) {
-	    printf("ERROR:  GetMethodID failed for ctor for MsgResponseIn");
+    if (MID_MsgRspOut_CTOR == NULL) {
+	MID_MsgRspOut_CTOR = (*env)->GetMethodID(env, K_MSG_RESPONSE_OUT, "<init>", "()V");
+	if (MID_MsgRspOut_CTOR == NULL) {
+	    printf("ERROR:  GetMethodID failed for ctor for ObservationOut");
 	    return -1;
 	}
     }
-    if (FID_MsgRspIn_PAYLOAD_HANDLE == NULL) {
-    	FID_MsgRspIn_PAYLOAD_HANDLE = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN,
-							 "_payloadHandle", "J");
-    	if (FID_MsgRspIn_PAYLOAD_HANDLE == NULL) {
-    	    printf("ERROR: GetFieldID failed for '_payloadHandle' of MsgResponseIn\n");
+    FID_MsgRspOut_RQST_IN = (*env)->GetFieldID(env, K_MSG_RESPONSE_OUT,
+					       "_requestIn", "Lorg/iochibity/StimulusIn;");
+    if (FID_MsgRspOut_RQST_IN == NULL) {
+	THROW_JNI_EXCEPTION("GetFieldID failed for '_requestIn' on ObservationOut\n");
+	return -1;
+    }
+    return 0;
+}
+
+int init_ObservationIn(JNIEnv* env)
+{
+    jclass klass;
+    klass = (*env)->FindClass(env, "org/iochibity/ObservationIn");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ObservationIn\n", -1);
+    K_OBSERVATION_IN = (jclass)(*env)->NewGlobalRef(env, klass);
+    (*env)->DeleteLocalRef(env, klass);
+
+    if (MID_OBIN_CTOR == NULL) {
+	MID_OBIN_CTOR = (*env)->GetMethodID(env, K_OBSERVATION_IN, "<init>", "()V");
+	if (MID_OBIN_CTOR == NULL) {
+	    printf("ERROR:  GetMethodID failed for ctor for ObservationIn");
+	    return -1;
+	}
+    }
+    if (FID_OBIN_OBSERVATION_HANDLE == NULL) {
+    	FID_OBIN_OBSERVATION_HANDLE = (*env)->GetFieldID(env, K_OBSERVATION_IN,
+    							 "_observationHandle", "J");
+    	if (FID_OBIN_OBSERVATION_HANDLE == NULL) {
+    	    printf("ERROR: GetFieldID failed for '_observationHandle' of ObservationIn\n");
     	    return -1;
     	}
     }
-    if (FID_MsgRspIn_REMOTE_DEVADDR == NULL) {
-	FID_MsgRspIn_REMOTE_DEVADDR = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN,
+    if (FID_OBIN_REMOTE_DEVADDR == NULL) {
+	FID_OBIN_REMOTE_DEVADDR = (*env)->GetFieldID(env, K_OBSERVATION_IN,
 							 "_remoteDeviceAddress",
 							 "Lorg/iochibity/DeviceAddress;");
-	if (FID_MsgRspIn_REMOTE_DEVADDR == NULL) {
-	    printf("ERROR: GetFieldID failed for '_remoteDeviceAddress' of MsgResponseIn\n");
+	if (FID_OBIN_REMOTE_DEVADDR == NULL) {
+	    printf("ERROR: GetFieldID failed for '_remoteDeviceAddress' of ObservationIn\n");
 	    return -1;
 	}
     }
-    if (MID_MsgRspIn_GET_REMOTE_DEVADDR == NULL) {
-	MID_MsgRspIn_GET_REMOTE_DEVADDR = (*env)->GetMethodID(env, K_MSG_RESPONSE_IN,
-							      "getRemoteDeviceAddress",
-							      "()Lorg/iochibity/DeviceAddress;");
-	if (MID_MsgRspIn_GET_REMOTE_DEVADDR == NULL) {
-	    printf("ERROR:  GetMethodID failed for getRemoteDeviceAddress for MsgResponseIn\n");
+    /* if (MID_OBIN_GET_REMOTE_DEVADDR == NULL) { */
+    /* 	MID_OBIN_GET_REMOTE_DEVADDR = (*env)->GetMethodID(env, K_OBSERVATION_IN, */
+    /* 							      "getRemoteDeviceAddress", */
+    /* 							      "()Lorg/iochibity/DeviceAddress;"); */
+    /* 	if (MID_OBIN_GET_REMOTE_DEVADDR == NULL) { */
+    /* 	    printf("ERROR:  GetMethodID failed for getRemoteDeviceAddress for ObservationIn\n"); */
+    /* 	    return -1; */
+    /* 	} */
+    /* } */
+    if (FID_OBIN_CONN_TYPE == NULL) {
+	FID_OBIN_CONN_TYPE = (*env)->GetFieldID(env, K_OBSERVATION_IN, "connType", "I");
+	if (FID_OBIN_CONN_TYPE == NULL) {
+	    printf("ERROR: GetFieldID failed for 'connType' of ObservationIn\n");
 	    return -1;
 	}
     }
-    if (FID_MsgRspIn_CONN_TYPE == NULL) {
-	FID_MsgRspIn_CONN_TYPE = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "connType", "I");
-	if (FID_MsgRspIn_CONN_TYPE == NULL) {
-	    printf("ERROR: GetFieldID failed for 'connType' of MsgResponseIn\n");
-	    return -1;
-	}
-    }
-    if (FID_MsgRspIn_REMOTE_SID == NULL) {
-	FID_MsgRspIn_REMOTE_SID = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN,
+    if (FID_OBIN_REMOTE_SID == NULL) {
+	FID_OBIN_REMOTE_SID = (*env)->GetFieldID(env, K_OBSERVATION_IN,
 						  "secID", "Ljava/lang/String;");
-	if (FID_MsgRspIn_REMOTE_SID == NULL) {
-	    printf("ERROR: GetFieldID failed for 'secID' of MsgResponseIn\n");
+	if (FID_OBIN_REMOTE_SID == NULL) {
+	    printf("ERROR: GetFieldID failed for 'secID' of ObservationIn\n");
 	    return -1;
 	}
     }
-    if (FID_MsgRspIn_RESULT == NULL) {
-	FID_MsgRspIn_RESULT = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "result", "I");
-	if (FID_MsgRspIn_RESULT == NULL) {
-	    printf("ERROR: GetFieldID failed for 'result' of MsgResponseIn\n");
+    if (FID_OBIN_RESULT == NULL) {
+	FID_OBIN_RESULT = (*env)->GetFieldID(env, K_OBSERVATION_IN, "result", "I");
+	if (FID_OBIN_RESULT == NULL) {
+	    printf("ERROR: GetFieldID failed for 'result' of ObservationIn\n");
 	    return -1;
 	}
     }
-    if (FID_MsgRspIn_SERIAL == NULL) {
-	FID_MsgRspIn_SERIAL = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "serial", "I");
-	if (FID_MsgRspIn_RESULT == NULL) {
-	    printf("ERROR: GetFieldID failed for 'serial' of MsgResponseIn\n");
+    if (FID_OBIN_SERIAL == NULL) {
+	FID_OBIN_SERIAL = (*env)->GetFieldID(env, K_OBSERVATION_IN, "serial", "I");
+	if (FID_OBIN_RESULT == NULL) {
+	    printf("ERROR: GetFieldID failed for 'serial' of ObservationIn\n");
 	    return -1;
 	}
     }
-    if (FID_MsgRspIn_URI == NULL) {
-	FID_MsgRspIn_URI = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "uri", "Ljava/lang/String;");
-	if (FID_MsgRspIn_URI == NULL) {
-	    printf("ERROR: GetFieldID failed for 'uri' of MsgResponseIn\n");
+    if (FID_OBIN_URI == NULL) {
+	FID_OBIN_URI = (*env)->GetFieldID(env, K_OBSERVATION_IN, "_uriPath", "Ljava/lang/String;");
+	if (FID_OBIN_URI == NULL) {
+	    printf("ERROR: GetFieldID failed for 'uri' of ObservationIn\n");
 	    return -1;
 	}
     }
-    /* if (MID_MsgRspIn_GET_PAYLOAD == NULL) { */
-    /* 	MID_MsgRspIn_GET_PAYLOAD = (*env)->GetMethodID(env, K_MSG_RESPONSE_IN, */
-    /* 						    "getPDUPayload", */
-    /* 						    "()Lorg/iochibity/PayloadList;"); */
-    /* 	if (MID_MsgRspIn_GET_PAYLOAD == NULL) { */
-    /* 	    printf("ERROR: GetFieldID failed for 'getPDUPayload' of MsgResponseIn\n"); */
+    /* if (MID_OBIN_GET_OBSERVATION == NULL) { */
+    /* 	MID_OBIN_GET_OBSERVATION = (*env)->GetMethodID(env, K_OBSERVATION_IN, */
+    /* 						    "getPDUObservation", */
+    /* 						    "()Lorg/iochibity/ObservationList;"); */
+    /* 	if (MID_OBIN_GET_OBSERVATION == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for 'getPDUObservation' of ObservationIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
-    /* if (FID_MsgRspIn_PTR_OPTIONS == NULL) { */
-    /* 	FID_MsgRspIn_PTR_OPTIONS = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "ptr_Options", "J"); */
-    /* 	if (FID_MsgRspIn_PTR_OPTIONS == NULL) { */
-    /* 	    printf("ERROR: GetFieldID failed for 'ptr_Options' of MsgResponseIn\n"); */
+    /* if (FID_OBIN_PTR_OPTIONS == NULL) { */
+    /* 	FID_OBIN_PTR_OPTIONS = (*env)->GetFieldID(env, K_OBSERVATION_IN, "ptr_Options", "J"); */
+    /* 	if (FID_OBIN_PTR_OPTIONS == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for 'ptr_Options' of ObservationIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
-    /* if (FID_MsgRspIn_OPTION_COUNT == NULL) { */
-    /* 	FID_MsgRspIn_OPTION_COUNT = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "optionCount", "I"); */
-    /* 	if (FID_MsgRspIn_OPTION_COUNT == NULL) { */
-    /* 	    printf("ERROR: GetFieldID failed for 'optionCount' of MsgResponseIn\n"); */
+    /* if (FID_OBIN_OPTION_COUNT == NULL) { */
+    /* 	FID_OBIN_OPTION_COUNT = (*env)->GetFieldID(env, K_OBSERVATION_IN, "optionCount", "I"); */
+    /* 	if (FID_OBIN_OPTION_COUNT == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for 'optionCount' of ObservationIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
-    /* if (MID_MsgRspIn_GET_OPTIONS == NULL) { */
-    /* 	MID_MsgRspIn_GET_OPTIONS = (*env)->GetMethodID(env, K_MSG_RESPONSE_IN, */
+    /* if (MID_OBIN_GET_OPTIONS == NULL) { */
+    /* 	MID_OBIN_GET_OPTIONS = (*env)->GetMethodID(env, K_OBSERVATION_IN, */
     /* 						    "getOptions", "()Ljava/util/List;"); */
-    /* 	if (MID_MsgRspIn_GET_OPTIONS == NULL) { */
-    /* 	    printf("ERROR: GetFieldID failed for 'getOptions' of MsgResponseIn\n"); */
+    /* 	if (MID_OBIN_GET_OPTIONS == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for 'getOptions' of ObservationIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
     return 0;
 }
 
-int init_payload(JNIEnv* env)
+int init_observation(JNIEnv* env)
 {
     jclass klass;
-    klass = (*env)->FindClass(env, "org/iochibity/Payload");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/Payload\n", 0);
-    K_PAYLOAD = (jclass)(*env)->NewGlobalRef(env, klass);
+    klass = (*env)->FindClass(env, "org/iochibity/Observation");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/Observation\n", 0);
+    K_OBSERVATION = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    FID_PAYLOAD_HANDLE = (*env)->GetFieldID(env, K_PAYLOAD, "_handle", "J");
-    if (FID_PAYLOAD_HANDLE == NULL) {
-	printf("ERROR: GetFieldID failed for '_handle' of Payload\n");
+    FID_OBSERVATION_HANDLE = (*env)->GetFieldID(env, K_OBSERVATION, "_handle", "J");
+    if (FID_OBSERVATION_HANDLE == NULL) {
+	printf("ERROR: GetFieldID failed for '_handle' of Observation\n");
 	return -1;
     }
-    FID_PAYLOAD_TYPE = (*env)->GetFieldID(env, K_PAYLOAD, "type", "I");
-    if (FID_PAYLOAD_TYPE == NULL) {
-	printf("ERROR: GetFieldID failed for 'type' on Payload\n");
+    FID_OBSERVATION_TYPE = (*env)->GetFieldID(env, K_OBSERVATION, "_type", "I");
+    if (FID_OBSERVATION_TYPE == NULL) {
+	printf("ERROR: GetFieldID failed for 'type' on Observation\n");
 	return -1;
     }
-    if (MID_PAYLOAD_CTOR == NULL) {
-	MID_PAYLOAD_CTOR = (*env)->GetMethodID(env, K_PAYLOAD, "<init>", "()V");
-	if (MID_PAYLOAD_CTOR == NULL) {
-	    printf("ERROR: GetMethodID failed for ctor of Payload\n");
+    if (MID_OBSERVATION_CTOR == NULL) {
+	MID_OBSERVATION_CTOR = (*env)->GetMethodID(env, K_OBSERVATION, "<init>", "(Lorg/iochibity/StimulusIn;)V");
+	if (MID_OBSERVATION_CTOR == NULL) {
+	    printf("ERROR: GetMethodID failed for ctor of Observation\n");
 	    return -1;
 	}
     }
-    if (FID_PAYLOAD_URI_PATH == NULL) {
-	FID_PAYLOAD_URI_PATH = (*env)->GetFieldID(env, K_PAYLOAD, "_uriPath", "Ljava/lang/String;");
-	if (FID_PAYLOAD_URI_PATH == NULL) {
-	printf("ERROR: GetFieldID failed for '_uriPath' on Payload\n");
+    if (FID_OBSERVATION_URI_PATH == NULL) {
+	FID_OBSERVATION_URI_PATH = (*env)->GetFieldID(env, K_OBSERVATION, "_uriPath", "Ljava/lang/String;");
+	if (FID_OBSERVATION_URI_PATH == NULL) {
+	printf("ERROR: GetFieldID failed for '_uriPath' on Observation\n");
 	return -1;
 	}
     }
-    if (MID_PAYLOAD_GET_URI_PATH == NULL) {
-	MID_PAYLOAD_GET_URI_PATH = (*env)->GetMethodID(env, K_PAYLOAD,
+    if (MID_OBSERVATION_GET_URI_PATH == NULL) {
+	MID_OBSERVATION_GET_URI_PATH = (*env)->GetMethodID(env, K_OBSERVATION,
 						       "getUriPath",
 						       "()Ljava/lang/String;");
-	if (MID_PAYLOAD_GET_URI_PATH == NULL) {
-	    printf("ERROR: GetMethodID failed for MID_PAYLOAD_GET_URI_PATH of Payload\n");
+	if (MID_OBSERVATION_GET_URI_PATH == NULL) {
+	    printf("ERROR: GetMethodID failed for MID_OBSERVATION_GET_URI_PATH of Observation\n");
 	    return -1;
 	}
     }
 
-    if (FID_PAYLOAD_RTYPES == NULL) {
-	FID_PAYLOAD_RTYPES = (*env)->GetFieldID(env, K_PAYLOAD,
+    if (FID_OBSERVATION_RTYPES == NULL) {
+	FID_OBSERVATION_RTYPES = (*env)->GetFieldID(env, K_OBSERVATION,
 						"_rtypes", "Ljava/util/List;");
-	if (FID_PAYLOAD_RTYPES == NULL) {
-	printf("ERROR: GetFieldID failed for '_rtypes' on Payload\n");
+	if (FID_OBSERVATION_RTYPES == NULL) {
+	printf("ERROR: GetFieldID failed for '_rtypes' on Observation\n");
 	return -1;
 	}
     }
-    if (MID_PAYLOAD_GET_RTYPES == NULL) {
-	MID_PAYLOAD_GET_RTYPES = (*env)->GetMethodID(env, K_PAYLOAD,
+    if (MID_OBSERVATION_GET_RTYPES == NULL) {
+	MID_OBSERVATION_GET_RTYPES = (*env)->GetMethodID(env, K_OBSERVATION,
 						     "getResourceTypes",
 						       "()Ljava/util/List;");
-	if (MID_PAYLOAD_GET_RTYPES == NULL) {
-	    printf("ERROR: GetMethodID failed for MID_PAYLOAD_GET_RTYPES of Payload\n");
+	if (MID_OBSERVATION_GET_RTYPES == NULL) {
+	    printf("ERROR: GetMethodID failed for MID_OBSERVATION_GET_RTYPES of Observation\n");
 	    return -1;
 	}
     }
 
-    if (FID_PAYLOAD_IFS == NULL) {
-	FID_PAYLOAD_IFS = (*env)->GetFieldID(env, K_PAYLOAD,
+    if (FID_OBSERVATION_IFS == NULL) {
+	FID_OBSERVATION_IFS = (*env)->GetFieldID(env, K_OBSERVATION,
 						"_interfaces", "Ljava/util/List;");
-	if (FID_PAYLOAD_IFS == NULL) {
-	printf("ERROR: GetFieldID failed for '_interfaces' on Payload\n");
+	if (FID_OBSERVATION_IFS == NULL) {
+	printf("ERROR: GetFieldID failed for '_interfaces' on Observation\n");
 	return -1;
 	}
     }
-    if (MID_PAYLOAD_GET_IFS == NULL) {
-	MID_PAYLOAD_GET_IFS = (*env)->GetMethodID(env, K_PAYLOAD,
+    if (MID_OBSERVATION_GET_IFS == NULL) {
+	MID_OBSERVATION_GET_IFS = (*env)->GetMethodID(env, K_OBSERVATION,
 						  "getInterfaces",
 						  "()Ljava/util/List;");
-	if (MID_PAYLOAD_GET_IFS == NULL) {
-	    printf("ERROR: GetMethodID failed for MID_PAYLOAD_GET_IFS of Payload\n");
+	if (MID_OBSERVATION_GET_IFS == NULL) {
+	    printf("ERROR: GetMethodID failed for MID_OBSERVATION_GET_IFS of Observation\n");
 	    return -1;
 	}
     }
 
-    if (FID_PAYLOAD_PROPERTIES == NULL) {
-	FID_PAYLOAD_PROPERTIES = (*env)->GetFieldID(env, K_PAYLOAD,
+    if (FID_OBSERVATION_PROPERTIES == NULL) {
+	FID_OBSERVATION_PROPERTIES = (*env)->GetFieldID(env, K_OBSERVATION,
 						    "_properties", "Lorg/iochibity/PropertyMap;");
-	if (FID_PAYLOAD_PROPERTIES == NULL) {
-	printf("ERROR: GetFieldID failed for '_properties' on Payload\n");
+	if (FID_OBSERVATION_PROPERTIES == NULL) {
+	printf("ERROR: GetFieldID failed for '_properties' on Observation\n");
 	return -1;
 	}
     }
-    if (MID_PAYLOAD_GET_PROPERTIES == NULL) {
-	MID_PAYLOAD_GET_PROPERTIES = (*env)->GetMethodID(env, K_PAYLOAD,
+    if (MID_OBSERVATION_GET_PROPERTIES == NULL) {
+	MID_OBSERVATION_GET_PROPERTIES = (*env)->GetMethodID(env, K_OBSERVATION,
 						       "getProperties",
 						       "()Lorg/iochibity/PropertyMap;");
-	if (MID_PAYLOAD_GET_PROPERTIES == NULL) {
-	    printf("ERROR: GetMethodID failed for MID_PAYLOAD_GET_PROPERTIES of Payload\n");
+	if (MID_OBSERVATION_GET_PROPERTIES == NULL) {
+	    printf("ERROR: GetMethodID failed for MID_OBSERVATION_GET_PROPERTIES of Observation\n");
 	    return -1;
 	}
     }
 
-    if (FID_PAYLOAD_CHILDREN == NULL) {
-	FID_PAYLOAD_CHILDREN = (*env)->GetFieldID(env, K_PAYLOAD,
+    if (FID_OBSERVATION_CHILDREN == NULL) {
+	FID_OBSERVATION_CHILDREN = (*env)->GetFieldID(env, K_OBSERVATION,
 						  "_children", "Ljava/util/List;");
-	if (FID_PAYLOAD_CHILDREN == NULL) {
-	printf("ERROR: GetFieldID failed for '_children' on Payload\n");
+	if (FID_OBSERVATION_CHILDREN == NULL) {
+	printf("ERROR: GetFieldID failed for '_children' on Observation\n");
 	return -1;
 	}
     }
-    if (MID_PAYLOAD_GET_CHILDREN == NULL) {
-	MID_PAYLOAD_GET_CHILDREN = (*env)->GetMethodID(env, K_PAYLOAD,
+    if (MID_OBSERVATION_GET_CHILDREN == NULL) {
+	MID_OBSERVATION_GET_CHILDREN = (*env)->GetMethodID(env, K_OBSERVATION,
 						       "getChildren",
 						       "()Ljava/util/List;");
-	if (MID_PAYLOAD_GET_CHILDREN == NULL) {
-	    printf("ERROR: GetMethodID failed for MID_PAYLOAD_GET_CHILDREN of Payload\n");
+	if (MID_OBSERVATION_GET_CHILDREN == NULL) {
+	    printf("ERROR: GetMethodID failed for MID_OBSERVATION_GET_CHILDREN of Observation\n");
 	    return -1;
 	}
     }
@@ -1054,7 +1157,7 @@ void init_pfrs(JNIEnv* env)
  */
 int init_pmap(JNIEnv* env)
 {
-    printf("init_pmap ENTRY\n");
+    /* printf("init_pmap ENTRY\n"); */
     /* iteration over property map in java: */
     /* Iterator it = mp.entrySet().iterator(); */
     /* while (it.hasNext()) { */
@@ -1127,7 +1230,80 @@ int init_pmap(JNIEnv* env)
 	    return -1;
 	}
     }
-    printf("init_pmap EXIT\n");
+    /* printf("init_pmap EXIT\n"); */
+    return 0;
+}
+
+int init_ICoServiceProvider(JNIEnv* env)
+{
+    jclass klass;
+    klass = (*env)->FindClass(env, "org/iochibity/ICoServiceProvider");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ICoServiceProvider\n", 0);
+    K_I_CO_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
+    (*env)->DeleteLocalRef(env, klass);
+
+    jmethodID MID_ICOSP_OBSERVE_BEHAVIOR  = NULL;
+    if (MID_ICOSP_OBSERVE_BEHAVIOR == NULL) {
+	MID_ICOSP_OBSERVE_BEHAVIOR = (*env)->GetMethodID(env,
+							 K_I_CO_SERVICE_PROVIDER,
+							 "observeBehavior",
+							 "(Lorg/iochibity/ObservationIn;)I");
+	if (MID_ICOSP_OBSERVE_BEHAVIOR == NULL) {
+	    printf("ERROR: GetMethodID failed for 'observeBehavior' of ICoServiceProvider\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    return 0;
+}
+
+int init_CoServiceProvider(JNIEnv* env)
+{
+    jclass klass;
+    klass = (*env)->FindClass(env, "org/iochibity/CoServiceProvider");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/CoServiceProvider\n", 0);
+    K_A_CO_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
+    (*env)->DeleteLocalRef(env, klass);
+
+    if (FID_COSP_HANDLE == NULL) {
+	FID_COSP_HANDLE = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER, "_handle", "J");
+	if (FID_COSP_HANDLE == NULL) {
+	    printf("ERROR: GetFieldID failed for '_handle' of CoServiceProvider");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_COSP_URI_PATH == NULL) {
+	FID_COSP_URI_PATH = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER,
+						"_uriPath", "Ljava/lang/String;");
+	if (FID_COSP_URI_PATH == NULL) {
+	    printf("ERROR: GetFieldID failed for '_uriPath' of CoServiceProvider");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_COSP_METHOD == NULL) {
+	FID_COSP_METHOD = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER, "_method", "I");
+	if (FID_COSP_METHOD == NULL) {
+	    printf("ERROR: GetFieldID failed for '_method' of CoServiceProvider");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    if (FID_COSP_DESTINATION == NULL) {
+	FID_COSP_DESTINATION = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER,
+						   "_destination", "Lorg/iochibity/DeviceAddress;");
+	if (FID_COSP_DESTINATION == NULL) {
+	    printf("ERROR: GetFieldID failed for '_destination' of CoServiceProvider");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+    jmethodID MID_COSP_EXHIBIT_STIMULUS  = NULL;
+    if (MID_COSP_EXHIBIT_STIMULUS == NULL) {
+	MID_COSP_EXHIBIT_STIMULUS = (*env)->GetMethodID(env, K_I_CO_SERVICE_PROVIDER,
+							 "exhibitStimulus", "()V");
+	if (MID_COSP_EXHIBIT_STIMULUS == NULL) {
+	    printf("ERROR: GetMethodID failed for 'exhibitStimulus' of CoServiceProvider\n");
+	    return OC_EH_INTERNAL_SERVER_ERROR;
+	}
+    }
+
     return 0;
 }
 
@@ -1294,7 +1470,7 @@ OCRepPayloadValue* props_to_OCRepPayloadValue(JNIEnv* env, jobject j_propmap)
 OCRepPayload* pfrs_to_OCRepPayload(JNIEnv* env, jobject j_pfrs)
 {
     OCRepPayload* c_payload = (OCRepPayload*)(intptr_t)
-	(*env)->GetLongField(env, j_pfrs, FID_PAYLOAD_HANDLE);
+	(*env)->GetLongField(env, j_pfrs, FID_OBSERVATION_HANDLE);
     /* int j_payload_type = (*env)->GetIntField(env, j_pfrs, FID_PAYLOAD_TYPE); */
 
     if (c_payload->base.type !=  PAYLOAD_TYPE_REPRESENTATION) {
@@ -1361,18 +1537,18 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 
     jclass klass = NULL;
 
-    klass = (*env)->FindClass(env, "org/iochibity/PayloadList");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/PayloadList\n", 0);
-    K_PAYLOAD_LIST = (jclass)(*env)->NewGlobalRef(env, klass);
+    klass = (*env)->FindClass(env, "org/iochibity/ObservationList");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ObservationList\n", 0);
+    K_OBSERVATION_LIST = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
-    MID_PLL_CTOR = (*env)->GetMethodID(env, K_PAYLOAD_LIST, "<init>", "()V");
+    MID_PLL_CTOR = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "<init>", "()V");
     if (MID_PLL_CTOR == 0) {
-	printf("ERROR: GetMethodID failed for ctor of PayloadList.\n");
+	printf("ERROR: GetMethodID failed for ctor of ObservationList.\n");
 	return -1;
     }
-    MID_PLL_ADD = (*env)->GetMethodID(env, K_PAYLOAD_LIST, "add", "(Ljava/lang/Object;)Z");
+    MID_PLL_ADD = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "add", "(Ljava/lang/Object;)Z");
     if (MID_PLL_ADD == NULL) {
-	printf("ERROR: GetMethodID failed for add method of PayloadList\n");
+	printf("ERROR: GetMethodID failed for add method of ObservationList\n");
     }
 
     /* DeviceAddress = OCDevAddr */
@@ -1382,20 +1558,34 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 	K_DEVICE_ADDRESS = (jclass)(*env)->NewGlobalRef(env, klass);
 	(*env)->DeleteLocalRef(env, klass);
     }
-    MID_DA_CTOR = (*env)->GetMethodID(env, K_PAYLOAD_LIST, "<init>", "()V");
+    MID_DA_CTOR = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "<init>", "()V");
     if (MID_DA_CTOR == 0) {
 	printf("ERROR: GetMethodID failed for ctor of DeviceAddress.\n");
 	return -1;
     }
-    FID_DA_ADAPTER = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "adapter", "I");
-    if (FID_DA_ADAPTER == NULL) {
-	printf("ERROR:  GetFieldID failed for adapter for DeviceAddress\n");
+
+    // networkProtocol -> OCDevAddr.adapter
+    FID_DA_NETWORK_PROTOCOL = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkProtocol", "I");
+    if (FID_DA_NETWORK_PROTOCOL == NULL) {
+	printf("ERROR:  GetFieldID failed for networkProtocol for DeviceAddress\n");
 	fflush(NULL);
     	return OC_EH_INTERNAL_SERVER_ERROR;
     }
-    FID_DA_FLAGS= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "flags", "I");
-    if (FID_DA_FLAGS == NULL) {
-	printf("ERROR:  GetFieldID failed for 'flags' of DeviceAddress\n");
+    FID_DA_NETWORK_POLICIES= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkPolicies", "B");
+    if (FID_DA_NETWORK_POLICIES == NULL) {
+	printf("ERROR:  GetFieldID failed for 'networkPolicy' of DeviceAddress\n");
+	fflush(NULL);
+    	return OC_EH_INTERNAL_SERVER_ERROR;
+    }
+    FID_DA_NETWORK_SCOPE= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkScope", "B");
+    if (FID_DA_NETWORK_SCOPE == NULL) {
+	printf("ERROR:  GetFieldID failed for 'networkPolicy' of DeviceAddress\n");
+	fflush(NULL);
+    	return OC_EH_INTERNAL_SERVER_ERROR;
+    }
+    FID_DA_TRANSPORT_SECURITY= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "transportSecurity", "Z");
+    if (FID_DA_TRANSPORT_SECURITY == NULL) {
+	printf("ERROR:  GetFieldID failed for 'transportSecurity' of DeviceAddress\n");
 	fflush(NULL);
     	return OC_EH_INTERNAL_SERVER_ERROR;
     }
@@ -1425,78 +1615,33 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     	    printf("ERROR: GetFieldID failed routeData of DeviceAddress\n");
     }
 
-    klass = (*env)->FindClass(env, "org/iochibity/ResourceLocal");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ResourceLocal\n", 0);
-    K_RESOURCE_LOCAL = (jclass)(*env)->NewGlobalRef(env, klass);
-    (*env)->DeleteLocalRef(env, klass);
-
-    klass = (*env)->FindClass(env, "org/iochibity/MsgRequestOut");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/MsgRequestOut\n", 0);
-    K_MSG_REQUEST_OUT = (jclass)(*env)->NewGlobalRef(env, klass);
-    (*env)->DeleteLocalRef(env, klass);
-
-    if (FID_RQO_SERVICE_REQUESTOR == NULL) {
-	FID_RQO_SERVICE_REQUESTOR = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
-						       "serviceRequestor",
-						       "Lorg/iochibity/IServiceRequestor;");
-	if (FID_RQO_SERVICE_REQUESTOR == NULL) {
-	    printf("ERROR: GetFieldID failed for 'serviceRequestor' of MsgRequestOut\n");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
-    if (FID_RQO_DEST == NULL) {
-	FID_RQO_DEST = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
-					   "dest",
-					   "Lorg/iochibity/DeviceAddress;");
-	if (FID_RQO_DEST == NULL) {
-	    printf("ERROR: GetFieldID failed for 'dest' of MsgRequestOut\n");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
-    if (FID_RQO_URI == NULL) {
-	FID_RQO_URI = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
-					 "uri",
-					 "Ljava/lang/String;");
-	if (FID_RQO_URI == NULL) {
-	    printf("ERROR: GetFieldID failed for 'dest' of MsgRequestOut\n");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
+    /* klass = (*env)->FindClass(env, "org/iochibity/ResourceLocal"); */
+    /* JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ResourceLocal\n", 0); */
+    /* K_RESOURCE_LOCAL = (jclass)(*env)->NewGlobalRef(env, klass); */
+    /* (*env)->DeleteLocalRef(env, klass); */
 
     if (init_Messages(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
 
     init_ServiceProviders(env);
 
-    init_MsgRequestIn(env);
+    init_StimulusOut(env);
 
-    init_MsgResponseIn(env);
+    init_StimulusIn(env);
+
+    init_ObservationIn(env);
 
     init_java(env);
 
-    if (init_payload(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
+    if (init_observation(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
 
     init_pfp(env);
 
-    init_pfrs(env);
+    /* init_pfrs(env); */
 
     init_pmap(env);		/* prep mid's etc. for iterating over pmap */
 
-    klass = (*env)->FindClass(env, "org/iochibity/IServiceRequestor");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/IServiceRequestor\n", 0);
-    K_IRESOURCE_SERVICE_REQUESTOR = (jclass)(*env)->NewGlobalRef(env, klass);
-    (*env)->DeleteLocalRef(env, klass);
-
-    jmethodID MID_IRSR_SERVICE_RESPONSE_IN  = NULL;
-    if (MID_IRSR_SERVICE_RESPONSE_IN == NULL) {
-	MID_IRSR_SERVICE_RESPONSE_IN = (*env)->GetMethodID(env,
-							   K_IRESOURCE_SERVICE_REQUESTOR,
-							   "serviceResponseIn",
-							   "(Lorg/iochibity/MsgResponseIn;)I");
-	if (MID_IRSR_SERVICE_RESPONSE_IN == NULL) {
-	    printf("ERROR: GetMethodID failed for 'serviceResponseIn' of IServiceRequestor\n");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
+    init_ICoServiceProvider(env);
+    init_CoServiceProvider(env);
 
     return JNI_VERSION_1_6;
 }
@@ -1524,5 +1669,5 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved)
 	(*env)->ExceptionDescribe(env);
     }
 
-    (*env)->DeleteGlobalRef(env, K_PAYLOAD);
+    (*env)->DeleteGlobalRef(env, K_OBSERVATION);
 }

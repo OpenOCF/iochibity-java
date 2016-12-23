@@ -1,8 +1,16 @@
+/**
+ * @file ocf_Exceptions.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief routines to throw exceptions from JNI
+ */
+
 /* #include <ctype.h> */
 /* #include <string.h> */
 /* #include <stdlib.h> */
 
-#include "ocf_exceptions.h"
+#include "ocf_Exceptions.h"
 
 /* see https://monochrome.sutic.nu/2013/09/01/nice-jni-exceptions.html */
 

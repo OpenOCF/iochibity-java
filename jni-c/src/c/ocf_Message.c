@@ -1,3 +1,12 @@
+/**
+ * @file ocf_Message.c
+ * @author Gregg Reynolds
+ * @date December 2016
+ *
+ * @brief Routines to convert OCPayload structs to `Observation` objects.
+ */
+
+
 #include <ctype.h>
 #include <pthread.h>
 #include <string.h>
@@ -6,7 +15,7 @@
 #include <unistd.h>
 
 #include "org_iochibity_Message.h"
-#include "ocf_init.h"
+#include "ocf_Init.h"
 #include "ocf_exceptions.h"
 #include "jni_utils.h"
 
@@ -20,21 +29,21 @@
 
 #ifdef IOCHIBITY    /* 1.1.1: */
 /*
- * OCPlatformPayload_to_Payload
+ * OCPlatformPayload_to_Observation
  * compensate for OCPlatformInfo wierdness
  */
-jobject OCPlatformPayload_to_Payload(JNIEnv* env, OCPlatformPayload* c_payload)
+jobject OCPlatformPayload_to_Observation(JNIEnv* env, OCPlatformPayload* c_payload)
 {
-    /* printf("OCPlatformPayload_to_Payload ENTRY\n"); */
-    jobject j_Payload = (*env)->NewObject(env, K_PAYLOAD, MID_PAYLOAD_CTOR);
-    if (j_Payload == NULL) {
-	THROW_JNI_EXCEPTION("NewObject failed for PayloadForPlatform\n");
+    /* printf("OCPlatformPayload_to_Observation ENTRY\n"); */
+    jobject j_Observation = (*env)->NewObject(env, K_OBSERVATION, MID_OBSERVATION_CTOR);
+    if (j_Observation == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for ObservationForPlatform\n");
 	return NULL;
     }
 
     /* _uri */
     jstring j_uri = (*env)->NewStringUTF(env, c_payload->uri);
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_URI_PATH, j_uri);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_URI_PATH, j_uri);
 
     /* _rtypes */
     jobject j_rtypes  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
@@ -52,7 +61,7 @@ jobject OCPlatformPayload_to_Payload(JNIEnv* env, OCPlatformPayload* c_payload)
 	}
 	c_rtypes = c_rtypes->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_RTYPES, j_rtypes);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_RTYPES, j_rtypes);
 
     /* _interfaces */
     jobject j_ifaces  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
@@ -71,7 +80,7 @@ jobject OCPlatformPayload_to_Payload(JNIEnv* env, OCPlatformPayload* c_payload)
 	}
 	c_ifaces = c_ifaces->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_IFS, j_ifaces);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_IFS, j_ifaces);
 
     /* OCPlatformInfo - convert to PropertyMap */
     jobject j_pmap  = (*env)->NewObject(env, K_PMAP, MID_PMAP_CTOR);
@@ -123,22 +132,22 @@ jobject OCPlatformPayload_to_Payload(JNIEnv* env, OCPlatformPayload* c_payload)
     j_s = (*env)->NewStringUTF(env,  c_payload->info.systemTime);
     (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_n, j_s);
 
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_PROPERTIES, j_pmap);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_PROPERTIES, j_pmap);
 
-    /* printf("OCPlatformPayload_to_Payload EXIT\n"); */
-    return j_Payload;
+    /* printf("OCPlatformPayload_to_Observation EXIT\n"); */
+    return j_Observation;
 }
 
 /*
- * OCDevicePayload_to_Payload
+ * OCDevicePayload_to_Observation
  * compensate for OCDeviceInfo wierdness
  */
-jobject OCDevicePayload_to_Payload(JNIEnv* env, OCDevicePayload* c_payload)
+jobject OCDevicePayload_to_Observation(JNIEnv* env, OCDevicePayload* c_payload)
 {
-    /* printf("OCDevicePayload_to_Payload ENTRY\n"); */
-    jobject j_Payload = (*env)->NewObject(env, K_PAYLOAD, MID_PAYLOAD_CTOR);
-    if (j_Payload == NULL) {
-	THROW_JNI_EXCEPTION("NewObject failed for PayloadForDevice\n");
+    /* printf("OCDevicePayload_to_Observation ENTRY\n"); */
+    jobject j_Observation = (*env)->NewObject(env, K_OBSERVATION, MID_OBSERVATION_CTOR);
+    if (j_Observation == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for ObservationForDevice\n");
 	return NULL;
     }
 
@@ -158,7 +167,7 @@ jobject OCDevicePayload_to_Payload(JNIEnv* env, OCDevicePayload* c_payload)
 	}
 	c_rtypes = c_rtypes->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_RTYPES, j_rtypes);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_RTYPES, j_rtypes);
 
     /* _interfaces */
     jobject j_ifaces  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
@@ -177,7 +186,7 @@ jobject OCDevicePayload_to_Payload(JNIEnv* env, OCDevicePayload* c_payload)
 	}
 	c_ifaces = c_ifaces->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_IFS, j_ifaces);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_IFS, j_ifaces);
 
     /* OCDeviceInfo - convert to PropertyMap */
     jobject j_pmap  = (*env)->NewObject(env, K_PMAP, MID_PMAP_CTOR);
@@ -216,23 +225,23 @@ jobject OCDevicePayload_to_Payload(JNIEnv* env, OCDevicePayload* c_payload)
     }
     (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_n, j_dmvs);
 
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_PROPERTIES, j_pmap);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_PROPERTIES, j_pmap);
 
-    /* printf("OCDevicePayload_to_Payload EXIT\n"); */
-    return j_Payload;
+    /* printf("OCDevicePayload_to_Observation EXIT\n"); */
+    return j_Observation;
 }
 
 #endif	/* IOCHIBITY defined */
 
 /*
- * OCResourcePayload_to_Payload
+ * OCResourcePayload_to_Observation
  */
-jobject OCResourcePayload_to_Payload(JNIEnv* env, OCResourcePayload* c_payload)
+jobject OCResourcePayload_to_Observation(JNIEnv* env, OCResourcePayload* c_payload)
 {
-    /* printf("OCResourcePayload_to_Payload ENTRY\n"); */
-    jobject j_Payload = (*env)->NewObject(env, K_PAYLOAD, MID_PAYLOAD_CTOR);
-    if (j_Payload == NULL) {
-	THROW_JNI_EXCEPTION("NewObject failed for PayloadForDevice\n");
+    /* printf("OCResourcePayload_to_Observation ENTRY\n"); */
+    jobject j_Observation = (*env)->NewObject(env, K_OBSERVATION, MID_OBSERVATION_CTOR);
+    if (j_Observation == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for resource Observation\n");
 	return NULL;
     }
 
@@ -252,7 +261,7 @@ jobject OCResourcePayload_to_Payload(JNIEnv* env, OCResourcePayload* c_payload)
 	}
 	c_rtypes = c_rtypes->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_RTYPES, j_rtypes);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_RTYPES, j_rtypes);
 
     /* _interfaces */
     jobject j_ifaces  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
@@ -271,11 +280,11 @@ jobject OCResourcePayload_to_Payload(JNIEnv* env, OCResourcePayload* c_payload)
 	}
 	c_ifaces = c_ifaces->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_IFS, j_ifaces);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_IFS, j_ifaces);
 
     /* _uri */
     jstring j_uri = (*env)->NewStringUTF(env, c_payload->uri);
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_URI_PATH, j_uri);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_URI_PATH, j_uri);
 
     /* properties */
     jobject j_pmap  = (*env)->NewObject(env, K_PMAP, MID_PMAP_CTOR);
@@ -295,20 +304,20 @@ jobject OCResourcePayload_to_Payload(JNIEnv* env, OCResourcePayload* c_payload)
     j_obj =  (*env)->NewObject(env, K_INTEGER, MID_INT_CTOR, (int)c_payload->port);
     (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_n, j_obj);
 
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_PROPERTIES, j_pmap);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_PROPERTIES, j_pmap);
 
-    return j_Payload;
+    return j_Observation;
 }
 
 /*
- * OCDevicePayload_to_Payload
+ * OCDevicePayload_to_Observation
  */
-jobject OCDiscoveryPayload_to_Payload(JNIEnv* env, OCDiscoveryPayload* c_payload)
+jobject OCDiscoveryPayload_to_Observation(JNIEnv* env, OCDiscoveryPayload* c_payload)
 {
-    /* printf("OCDiscoveryPayload_to_Payload ENTRY\n"); */
-    jobject j_Payload = (*env)->NewObject(env, K_PAYLOAD, MID_PAYLOAD_CTOR);
-    if (j_Payload == NULL) {
-	THROW_JNI_EXCEPTION("NewObject failed for PayloadForDevice\n");
+    /* printf("OCDiscoveryPayload_to_Observation ENTRY\n"); */
+    jobject j_Observation = (*env)->NewObject(env, K_OBSERVATION, MID_OBSERVATION_CTOR);
+    if (j_Observation == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for ObservationForDevice\n");
 	return NULL;
     }
 
@@ -328,7 +337,7 @@ jobject OCDiscoveryPayload_to_Payload(JNIEnv* env, OCDiscoveryPayload* c_payload
 	}
 	c_rtypes = c_rtypes->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_RTYPES, j_rtypes);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_RTYPES, j_rtypes);
 
     /* _interfaces */
     jobject j_ifaces  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
@@ -347,11 +356,11 @@ jobject OCDiscoveryPayload_to_Payload(JNIEnv* env, OCDiscoveryPayload* c_payload
 	}
 	c_ifaces = c_ifaces->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_IFS, j_ifaces);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_IFS, j_ifaces);
 
     /* _uri */
     jstring j_uri = (*env)->NewStringUTF(env, c_payload->uri);
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_URI_PATH, j_uri);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_URI_PATH, j_uri);
 
     /* convert remaining flds to PropertyMap */
     jobject j_pmap  = (*env)->NewObject(env, K_PMAP, MID_PMAP_CTOR);
@@ -372,7 +381,7 @@ jobject OCDiscoveryPayload_to_Payload(JNIEnv* env, OCDiscoveryPayload* c_payload
     j_s = (*env)->NewStringUTF(env,  c_payload->name);
     (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_n, j_s);
 
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_PROPERTIES, j_pmap);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_PROPERTIES, j_pmap);
 
     /* now the resource list */
     jobject j_resource_list  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
@@ -383,7 +392,7 @@ jobject OCDiscoveryPayload_to_Payload(JNIEnv* env, OCDiscoveryPayload* c_payload
     OCResourcePayload* c_resource_list = c_payload->resources;
     jobject j_resource;
     while(c_resource_list) {
-	j_resource = OCResourcePayload_to_Payload(env, c_resource_list);
+	j_resource = OCResourcePayload_to_Observation(env, c_resource_list);
 	jboolean jb = (*env)->CallBooleanMethod(env, j_resource_list, MID_LL_ADD, j_resource);
 	if (!jb) {
 	    printf("CallBooleanMethod failed on MID_LL_ADD for resource_list of Devices\n");
@@ -391,21 +400,21 @@ jobject OCDiscoveryPayload_to_Payload(JNIEnv* env, OCDiscoveryPayload* c_payload
 	c_resource_list = c_resource_list->next;
     }
 
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_CHILDREN, j_resource_list);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_CHILDREN, j_resource_list);
 
-    /* printf("OCDiscoveryPayload_to_Payload EXIT\n"); */
-    return j_Payload;
+    /* printf("OCDiscoveryPayload_to_Observation EXIT\n"); */
+    return j_Observation;
 }
 
 /*
- * OCRepPayload_to_Payload
+ * OCRepPayload_to_Observation
  */
-jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
+jobject OCRepPayload_to_Observation(JNIEnv* env, OCRepPayload* c_payload)
 {
-    printf("OCRepPayload_to_Payload ENTRY\n");
-    jobject j_Payload = (*env)->NewObject(env, K_PAYLOAD, MID_PAYLOAD_CTOR);
-    if (j_Payload == NULL) {
-	THROW_JNI_EXCEPTION("NewObject failed for PayloadForDevice\n");
+    printf("OCRepPayload_to_Observation ENTRY\n");
+    jobject j_Observation = (*env)->NewObject(env, K_OBSERVATION, MID_OBSERVATION_CTOR);
+    if (j_Observation == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for rep Observation\n");
 	return NULL;
     }
 
@@ -425,7 +434,7 @@ jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
 	}
 	c_rtypes = c_rtypes->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_RTYPES, j_rtypes);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_RTYPES, j_rtypes);
     /* _interfaces */
     jobject j_ifaces  = (*env)->NewObject(env, K_LINKED_LIST, MID_LL_CTOR);
     if (j_ifaces == NULL) {
@@ -443,11 +452,11 @@ jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
 	}
 	c_ifaces = c_ifaces->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_IFS, j_ifaces);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_IFS, j_ifaces);
 
     /* _uri */
     jstring j_uri = (*env)->NewStringUTF(env, c_payload->uri);
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_URI_PATH, j_uri);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_URI_PATH, j_uri);
 
     /* properties */
     jobject j_pmap  = (*env)->NewObject(env, K_PMAP, MID_PMAP_CTOR);
@@ -492,28 +501,28 @@ jobject OCRepPayload_to_Payload(JNIEnv* env, OCRepPayload* c_payload)
 	}
 	vmap = vmap->next;
     }
-    (*env)->SetObjectField(env, j_Payload, FID_PAYLOAD_PROPERTIES, j_pmap);
+    (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_PROPERTIES, j_pmap);
 
-    printf("OCRepPayload_to_Payload EXIT\n");
-    return j_Payload;
+    printf("OCRepPayload_to_Observation EXIT\n");
+    return j_Observation;
 }
 
 /* EXTERNAL */
 
 /*
  * Class:     org_iochibity_Message
- * Method:    getPayloadList
- * Signature: ()Lorg/iochibity/PayloadList;
+ * Method:    getObservations
+ * Signature: ()Lorg/iochibity/ObservationList;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
+JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getObservations
 (JNIEnv * env, jobject this)
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    printf("Java_org_iochibity_Message_getPayloadList ENTRY\n");
+    /* printf("Java_org_iochibity_Message_getObservations ENTRY\n"); */
 
     OCPayload* c_payload = (OCPayload*)(intptr_t)
-	(*env)->GetLongField(env, this, FID_MSG_PAYLOAD_HANDLE);
+	(*env)->GetLongField(env, this, FID_MSG_OBSERVATION_HANDLE);
     if (c_payload == NULL) {
 	// ok - maybe no payload
 	/* THROW_JNI_EXCEPTION("GetLongField failed for FID_MSG_PAYLOAD_HANDLE on Message"); */
@@ -521,21 +530,21 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
     }
 
     /* create a new PayloadList */
-    jobject pll  = (*env)->NewObject(env, K_PAYLOAD_LIST, MID_PLL_CTOR);
-    if (pll == NULL) {
-	THROW_JNI_EXCEPTION("NewObject failed for PayloadList\n");
+    jobject j_OBSLL  = (*env)->NewObject(env, K_OBSERVATION_LIST, MID_PLL_CTOR);
+    if (j_OBSLL == NULL) {
+	THROW_JNI_EXCEPTION("NewObject failed for ObservationList\n");
 	return NULL;
     }
 
-    /* create new Payload object and adding to list */
-    jobject j_payload = NULL;
+    /* create new Observation object and adding to list */
+    jobject j_observation = NULL;
     jboolean j_b;
     while (c_payload != NULL) {
 	switch (c_payload->type) {
 	case PAYLOAD_TYPE_DISCOVERY:
-	    j_payload = OCDiscoveryPayload_to_Payload(env, (OCDiscoveryPayload*) c_payload);
-	    /* add payload to payload list */
-	    j_b = (*env)->CallBooleanMethod(env, pll, MID_PLL_ADD, j_payload);
+	    j_observation = OCDiscoveryPayload_to_Observation(env, (OCDiscoveryPayload*) c_payload);
+	    /* add observation to observation list */
+	    j_b = (*env)->CallBooleanMethod(env, j_OBSLL, MID_PLL_ADD, j_observation);
 	    if (!j_b) {
 		THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_add\n");
 	    }
@@ -543,13 +552,13 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 	    break;
 	case PAYLOAD_TYPE_DEVICE:
 #ifdef IOCHIBITY    /* 1.1.1: */
-	    j_payload = OCDevicePayload_to_Payload(env, (OCDevicePayload*) c_payload);
+	    j_observation = OCDevicePayload_to_Observation(env, (OCDevicePayload*) c_payload);
 #else
 	    // OCDevicePayload has been removed.
 	    printf("XXXXXXXXXXXXXXXX: received PAYLOAD_TYPE_DEVICE\n");
 #endif
-	    /* add payload to payload list */
-	    j_b = (*env)->CallBooleanMethod(env, pll, MID_PLL_ADD, j_payload);
+	    /* add observation to observation list */
+	    j_b = (*env)->CallBooleanMethod(env, j_OBSLL, MID_PLL_ADD, j_observation);
 	    if (!j_b) {
 		THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_add\n");
 	    }
@@ -557,22 +566,22 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 	    break;
 	case PAYLOAD_TYPE_PLATFORM:
 #ifdef IOCHIBITY    /* 1.1.1: */
-	    j_payload = OCPlatformPayload_to_Payload(env, (OCPlatformPayload*) c_payload);
+	    j_observation = OCPlatformPayload_to_Observation(env, (OCPlatformPayload*) c_payload);
 #else
 	    // OCPlatformPayload has been removed.
 	    printf("XXXXXXXXXXXXXXXX: received PAYLOAD_TYPE_PLATFORM\n");
 #endif
-	    /* add payload to payload list */
-	    j_b = (*env)->CallBooleanMethod(env, pll, MID_PLL_ADD, j_payload);
+	    /* add observation to observation list */
+	    j_b = (*env)->CallBooleanMethod(env, j_OBSLL, MID_PLL_ADD, j_observation);
 	    if (!j_b) {
 		THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_add\n");
 	    }
 	    c_payload = NULL;
 	    break;
 	case PAYLOAD_TYPE_REPRESENTATION:
-	    j_payload = OCRepPayload_to_Payload(env, (OCRepPayload*) c_payload);
-	    /* add payload to payload list */
-	    j_b = (*env)->CallBooleanMethod(env, pll, MID_PLL_ADD, j_payload);
+	    j_observation = OCRepPayload_to_Observation(env, (OCRepPayload*) c_payload);
+	    /* add observation to observation list */
+	    j_b = (*env)->CallBooleanMethod(env, j_OBSLL, MID_PLL_ADD, j_observation);
 	    if (!j_b) {
 		THROW_JNI_EXCEPTION("CallBooleanMethod failed for mid_add\n");
 	    }
@@ -587,31 +596,31 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
 	    break;
 	}
     }
-    printf("Java_org_iochibity_Message_getPayloadList EXIT\n");
-    return pll;
+    /* printf("Java_org_iochibity_Message_getObservations EXIT\n"); */
+    return j_OBSLL;
 }
 
-/*
- * Class:     org_iochibity_Message
- * Method:    getPayloadType
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_Message_getPayloadType
-(JNIEnv * env, jobject this)
-{
-    OC_UNUSED(env);
-    OC_UNUSED(this);
-    /* printf("Java_org_iochibity_Message_getPayloadType ENTRY\n"); */
-    /* 1. get payloadHandle from this */
-    OCPayload* j_payload = (OCPayload*)(intptr_t)
-	(*env)->GetLongField(env, this, FID_MsgRspIn_PAYLOAD_HANDLE);
-    if (j_payload == NULL) {
-	// ok, maybe no payload?
-	/* THROW_JNI_EXCEPTION("GetLongField failed for FID_MSG_PAYLOAD_HANDLE on Message"); */
-	return -1;
-    } else
-	return j_payload->type;
-}
+/* /\* */
+/*  * Class:     org_iochibity_Message */
+/*  * Method:    getObservationType */
+/*  * Signature: ()I */
+/*  *\/ */
+/* JNIEXPORT jint JNICALL Java_org_iochibity_Message_getObservationType */
+/* (JNIEnv * env, jobject this) */
+/* { */
+/*     OC_UNUSED(env); */
+/*     OC_UNUSED(this); */
+/*     /\* printf("Java_org_iochibity_Message_getObservationType ENTRY\n"); *\/ */
+/*     /\* 1. get payloadHandle from this *\/ */
+/*     OCPayload* j_payload = (OCPayload*)(intptr_t) */
+/* 	(*env)->GetLongField(env, this, FID_OBIN_PAYLOAD_HANDLE); */
+/*     if (j_payload == NULL) { */
+/* 	// ok, maybe no payload? */
+/* 	/\* THROW_JNI_EXCEPTION("GetLongField failed for FID_MSG_PAYLOAD_HANDLE on Message"); *\/ */
+/* 	return -1; */
+/*     } else */
+/* 	return j_payload->type; */
+/* } */
 
 /*
  * Class:     org_iochibity_Message
@@ -623,26 +632,29 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getOptions
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    printf("Java_org_iochibity_Message_getOptions\n");
+    printf("%s: Java_org_iochibity_Message_getOptions\n", __FILE__);
+
+    /* FIXME: implement */
+
     /* if (FID_DRSPI_PTR_OPTIONS == NULL) { */
-    /* 	FID_DRSPI_PTR_OPTIONS = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "ptr_Options", "J"); */
+    /* 	FID_DRSPI_PTR_OPTIONS = (*env)->GetFieldID(env, K_OBSERVATION_IN, "ptr_Options", "J"); */
     /* 	if (FID_DRSPI_PTR_OPTIONS == NULL) { */
-    /* 	    THROW_JNI_EXCEPTION("GetFieldID failed for 'ptr_Options' of MsgResponseIn\n"); */
+    /* 	    THROW_JNI_EXCEPTION("GetFieldID failed for 'ptr_Options' of ObservationIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
     /* if (FID_DRSPI_OPTION_COUNT == NULL) { */
-    /* 	FID_DRSPI_OPTION_COUNT = (*env)->GetFieldID(env, K_MSG_RESPONSE_IN, "optionCount", "I"); */
+    /* 	FID_DRSPI_OPTION_COUNT = (*env)->GetFieldID(env, K_OBSERVATION_IN, "optionCount", "I"); */
     /* 	if (FID_DRSPI_OPTION_COUNT == NULL) { */
-    /* 	    THROW_JNI_EXCEPTION("GetFieldID failed for 'optionCount' of MsgResponseIn\n"); */
+    /* 	    THROW_JNI_EXCEPTION("GetFieldID failed for 'optionCount' of ObservationIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
     /* if (MID_DRSPI_GET_OPTIONS == NULL) { */
-    /* 	MID_DRSPI_GET_OPTIONS = (*env)->GetMethodID(env, K_MSG_RESPONSE_IN, */
+    /* 	MID_DRSPI_GET_OPTIONS = (*env)->GetMethodID(env, K_OBSERVATION_IN, */
     /* 						    "getOptions", "()Ljava/util/List;"); */
     /* 	if (MID_DRSPI_GET_OPTIONS == NULL) { */
-    /* 	    THROW_JNI_EXCEPTION("GetFieldID failed for 'getOptions' of MsgResponseIn\n"); */
+    /* 	    THROW_JNI_EXCEPTION("GetFieldID failed for 'getOptions' of ObservationIn\n"); */
     /* 	    return -1; */
     /* 	} */
     /* } */
