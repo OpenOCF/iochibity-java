@@ -1,5 +1,5 @@
 /**
- * @file ocf_ServiceManager.c
+ * @file org_iochibity_ServiceManager.c
  * @author Gregg Reynolds
  * @date December 2016
  *
@@ -11,8 +11,8 @@
 #include <stdlib.h>
 
 #include "org_iochibity_ServiceManager.h"
-#include "ocf_Init.h"
-#include "ocf_exceptions.h"
+#include "org_iochibity_Init.h"
+#include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
 
 #include "ocpayload.h"

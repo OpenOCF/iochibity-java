@@ -1,5 +1,5 @@
 /**
- * @file ocf_Exceptions.c
+ * @file org_iochibity_Exceptions.c
  * @author Gregg Reynolds
  * @date December 2016
  *
@@ -10,7 +10,7 @@
 /* #include <string.h> */
 /* #include <stdlib.h> */
 
-#include "ocf_Exceptions.h"
+#include "org_iochibity_Exceptions.h"
 
 /* see https://monochrome.sutic.nu/2013/09/01/nice-jni-exceptions.html */
 

@@ -1,5 +1,5 @@
 /**
- * @file ocf_PropertyMap.c
+ * @file org_iochibity_PropertyMap.c
  * @author Gregg Reynolds
  * @date December 2016
  *
@@ -12,7 +12,7 @@
 
 #include "org_iochibity_PropertyMap.h"
 #include "jni_utils.h"
-#include "ocf_exceptions.h"
+#include "org_iochibity_Exceptions.h"
 
 #include "octypes.h"
 #include "ocpayload.h"

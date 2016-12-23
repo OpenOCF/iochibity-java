@@ -1,5 +1,5 @@
 /**
- * @file ocf_ObservationIn.c
+ * @file org_iochibity_Observation.c
  * @author Gregg Reynolds
  * @date December 2016
  *
@@ -12,8 +12,8 @@
 
 #include "org_iochibity_ObservationIn.h"
 #include "jni_utils.h"
-#include "ocf_Init.h"
-#include "ocf_exceptions.h"
+#include "org_iochibity_Init.h"
+#include "org_iochibity_Exceptions.h"
 
 #include "octypes.h"
 #include "oic_malloc.h"

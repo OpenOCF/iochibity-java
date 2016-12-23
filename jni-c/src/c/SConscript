@@ -133,16 +133,16 @@ if target_os == 'darwin':
     local_env['SHLIBSUFFIX'] = '.jnilib'
 
 jni_clib_src = ['jni_utils.c',
-                'ocf_CoServiceProvider.c',
-	        'ocf_Message.c',
-	        'ocf_ObservationIn.c',
-	        'ocf_ObservationOut.c',
-	        'ocf_ServiceManager.c',
-		'ocf_ServiceProvider.c',
-	        'ocf_Exceptions.c',
-		'ocf_Init.c',
-	        'ocf_ocf.c',
-	        'ocf_PropertyMap.c']
+                'org_iochibity_CoServiceProvider.c',
+	        'org_iochibity_Message.c',
+	        'org_iochibity_ObservationIn.c',
+	        'org_iochibity_ObservationOut.c',
+	        'org_iochibity_ServiceManager.c',
+		'org_iochibity_ServiceProvider.c',
+	        'org_iochibity_Exceptions.c',
+		'org_iochibity_Init.c',
+	        'org_iochibity_ocf.c',
+	        'org_iochibity_PropertyMap.c']
 
 #	        'ocf_resource_local.c']
 

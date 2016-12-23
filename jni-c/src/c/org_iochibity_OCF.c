@@ -1,5 +1,5 @@
 /**
- * @file ocf_ocf.c
+ * @file org_iochibity_OCF.c
  * @author Gregg Reynolds
  * @date December 2016
  *
@@ -14,8 +14,8 @@
 #include <unistd.h>
 
 #include "org_iochibity_OCF.h"
-#include "ocf_init.h"
-#include "ocf_exceptions.h"
+#include "org_iochibity_Init.h"
+#include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
 
 #include "octypes.h"

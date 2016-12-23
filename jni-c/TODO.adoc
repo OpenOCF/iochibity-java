@@ -14,5 +14,6 @@
 
 == renaming
 
+ACoServiceProvider -> CoServiceProvider
 
-
+ACOSP -> COSP
