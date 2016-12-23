@@ -4,6 +4,9 @@ GTAGS
 
 .scon*
 
+*.cbor
+*.dat
+
 target/
 
 jni-c/doc/html
