@@ -5,7 +5,7 @@ import org.iochibity.constants.ConnectivityType;
 import java.util.List;
 
 // created by client
-public class MsgRequestOut extends MsgForServiceRequestor
+public class StimulusOut extends MsgForCoServiceProvider
 {
     // data necessary to support OCDoResource
     // OCStackResult OCDoResource(OCDoHandle *handle,
@@ -19,47 +19,57 @@ public class MsgRequestOut extends MsgForServiceRequestor
     //                             OCHeaderOption *options,
     //                             uint8_t numOptions)
 
-    public String        uri;
-    // method supplied as arg to sendRequest, not as data
-    // int           method;
-    public DeviceAddress dest;
-    Payload       payload;
+    public String        _uriPath;
 
+    // FIXME: _method is in Message
+    // public int           method;
+
+    // FIXME: _remoteDeviceAddress is in Message
+    // public DeviceAddress dest;
+    public DeviceAddress getDestination() { return _remoteDeviceAddress; }
+
+    Observation       observation;
+
+    // FIXME: handle the OCTransportX/CT_x enums appropriately
     int protocol; // ConnectivityType.DEFAULT, etc.
 
     // QoS supplied as arg to sendRequest, not as data
     int qualityOfService; // OCF.QOS_LOW, MED, HI, NA
 
     // OCCallbackData fields:
-    IServiceRequestor serviceRequestor; // OCClientResponseHandler
+
+    ICoServiceProvider coServiceProvider; // OCClientResponseHandler
+
     long context;	       // void*
+
     long contextDeleter;       // typedef void (* OCClientContextDeleter)(void *context);
 
+    // FIXME: _options is in Message
     List<HeaderOption> options;
 
     // Discovery requests: OCF.discoverPlatform, OCF.discoverDevice, OCF.discoverResources?
 
-    public MsgRequestOut(IServiceRequestor requestor) {
-	serviceRequestor = requestor;
+    public StimulusOut(ICoServiceProvider client) {
+	coServiceProvider = client;
     }
 
-    public MsgRequestOut(String theUri, IServiceRequestor requestor) {
-	uri              = theUri;
-	// method           = theMethod;
-	dest             = null;
-	payload          = null;
-	protocol         = ConnectivityType.DEFAULT;
-	// qos              = OCF.QOS_LOW;
-	serviceRequestor = requestor;
-	context          = 0;
-	contextDeleter   = 0;
-    }
+    // public StimulusOut(String theUri, ICoServiceProvider requestor) {
+    // 	uri              = theUri;
+    // 	// method           = theMethod;
+    // 	dest             = null;
+    // 	payload          = null;
+    // 	protocol         = ConnectivityType.DEFAULT;
+    // 	// qos              = OCF.QOS_LOW;
+    // 	serviceRequestor = requestor;
+    // 	context          = 0;
+    // 	contextDeleter   = 0;
+    // }
 }
 
 // examples:
-// MsgRequestOut requestOut = new MsgRequestOut(Resource.URI_PLATFORM,
+// StimulusOut requestOut = new StimulusOut(Resource.URI_PLATFORM,
 // 					     platformRequestor);
 
-// MsgRequestOut requestOut = new MsgRequestOut(Resource.URI_RESOURCES,
+// StimulusOut requestOut = new StimulusOut(Resource.URI_RESOURCES,
 // 					     devAddress, // forces unicast
 // 					     platformRequestor);

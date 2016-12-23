@@ -9,18 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     org_iochibity_Message
- * Method:    getPayloadList
- * Signature: ()Lorg/iochibity/PayloadList;
+ * Method:    getObservations
+ * Signature: ()Lorg/iochibity/ObservationList;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getPayloadList
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_Message
- * Method:    getPayloadType
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_Message_getPayloadType
+JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getObservations
   (JNIEnv *, jobject);
 
 /*

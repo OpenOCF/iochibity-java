@@ -3,13 +3,11 @@ package org.iochibity;
 import java.util.List;
 import java.util.LinkedList;
 
-public abstract class AServiceProvider {
-
+public abstract class ServiceProvider
+    implements IServiceProvider
+{
     private long                   _handle; // OCResource*
     public  long                   getHandle() { return _handle; }
-
-    // C API: OCEntityHandler => OCEntityHandlerResult */
-    abstract public int            serviceRequestIn(MsgRequestIn request);
 
     // OCResource fields
     private InstanceId             _id;
@@ -43,4 +41,10 @@ public abstract class AServiceProvider {
     private int                    _policies = 0;
     public  int                    getPolicies() { return _policies; }
     public  void                   setPolicies(int newPolicies) { _policies = newPolicies; }
+
+    // black boxing
+    native public void             react(StimulusIn stimulusIn);           // called by user
+    native public void             exhibitBehavior();                      // called by user
+    // observeStimulus: implemented by user, called by stack
+    abstract public int            observeStimulus(StimulusIn stimulusIn);
 }

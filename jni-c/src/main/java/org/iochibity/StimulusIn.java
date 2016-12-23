@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class MsgRequestIn extends MsgForServiceProvider // OCEntityHandlerRequest
+public class StimulusIn extends MsgForServiceProvider // OCEntityHandlerRequest
 {
     // For internal (JNI) use only:
     private IServiceProvider serviceProvider; // JNI only
@@ -29,9 +29,9 @@ public class MsgRequestIn extends MsgForServiceProvider // OCEntityHandlerReques
     // Information associated with observation - valid only when OCEntityHandler flag includes
     // * ::OC_OBSERVE_FLAG.
     // (i.e. the flag passed to the resource provider service routine)
-    // NOTE: on the client side this is encoded as a header option
-    //     on server side, the header option is converted to the OCEntityHandler flag
-    //     and the OCObservationInfo struct is filled out
+    // NOTE: - on the client side this is encoded as a header option
+    //       - on server side, the header option is converted to the OCEntityHandler flag
+    //         and the OCObservationInfo struct is filled out
     // NOTE: this is only for used register/deregister of watchers (observers)
     // OCObservationInfo obsInfo;
     // typedef struct
@@ -48,8 +48,8 @@ public class MsgRequestIn extends MsgForServiceProvider // OCEntityHandlerReques
     //     Method.UNWATCH = GET, plus OC_OBSERVE_FLAG, + DEREGISTER
     // and we ignore MQTT for now
 
-    // public int watchAction;  // REGISTER, DEREGISTER, NO_OPTION, MQ_SUBSCRIBER, MQ_UNSUBSCRIBER
-    // public int watchId;
+    public int watchAction;  // REGISTER, DEREGISTER, NO_OPTION, MQ_SUBSCRIBER, MQ_UNSUBSCRIBER
+    public int watchId;
     // // OCEntityHandlerFlag: OC_REQUEST_FLAG || OC_OBSERVE_FLAG
     // public boolean isWatch = false; //  false => isRequest
 

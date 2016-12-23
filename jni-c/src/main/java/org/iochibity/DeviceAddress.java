@@ -4,13 +4,14 @@ public class DeviceAddress	// OCDevAddr
 {
     // typedef struct
     // {
-    // adapter type.
-    // OCTransportAdapter      adapter;
-    public int adapter;
 
-    // transport modifiers.
-    // OCTransportFlags        flags;
-    public int flags;
+    public int networkProtocol;	       // OCTransportAdapter adapter;
+
+    public byte     networkPolicies;   // OCTransportFlags flags >> 4
+
+    public byte     networkScope;      // flags && 0x000F
+
+    public boolean  transportSecurity; // flags && 0x0010 : OC_FLAG_SECURE = (1 << 4)
 
     // for IP.
     // uint16_t                port;

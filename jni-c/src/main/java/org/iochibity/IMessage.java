@@ -18,17 +18,17 @@ public interface IMessage
     public DeviceAddress getRemoteDeviceAddress();
 
     // the payload from the request PDU.
-    // long payloadHandle = 0;
-    public long getPayloadHandle();
+    public long getObservationHandle();
 
-    public PayloadList<Payload> getPayloadList();
+    public ObservationList<Observation> getObservations();
 
-    public int getPayloadType();
+    // this does not belong in Message:
+    // public int getObservationType();
 
     // Number of vendor specific header options sent or recd.
-    // MsgRequestIn:   uint8_t numRcvdVendorSpecificHeaderOptions;
+    // StimulusIn:   uint8_t numRcvdVendorSpecificHeaderOptions;
     //              OCHeaderOption * rcvdVendorSpecificHeaderOptions;
-    // MsgResponseOut: uint8_t numSendVendorSpecificHeaderOptions;
+    // ObservationOut: uint8_t numSendVendorSpecificHeaderOptions;
     //              OCHeaderOption sendVendorSpecificHeaderOptions[MAX_HEADER_OPTIONS];
     // public  int  optionCount;
     // private long ptr_Options;	// OCHeaderOption*

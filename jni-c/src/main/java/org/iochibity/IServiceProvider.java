@@ -2,12 +2,10 @@ package org.iochibity;
 
 import java.util.List;
 
+// All methods EXCEPT observeStimulus implemented by ServiceProvider abstract class
 public interface IServiceProvider {
 
     public long                   getHandle(); // OCResource*
-
-    // C API: OCEntityHandler => OCEntityHandlerResult */
-    public int                    serviceRequestIn(MsgRequestIn request);
 
     // OCResource fields
     public InstanceId             getInstanceId();
@@ -31,4 +29,10 @@ public interface IServiceProvider {
 
     public List<ActionSet>        getActionSet();
     public int                    getPolicies(); // ???
+
+    // black boxing
+    public void                   react(StimulusIn stimulusIn);        // called by user
+    public void                   exhibitBehavior();                   // called by user
+    // observeStimulus: implemented by user, called by stack
+    public int                    observeStimulus(StimulusIn stimulusIn);
 }

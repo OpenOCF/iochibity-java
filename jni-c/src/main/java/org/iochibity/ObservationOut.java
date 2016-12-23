@@ -1,17 +1,20 @@
 package org.iochibity;
 
-public class MsgResponseOut extends MsgForServiceProvider //  OCEntityHandlerResponse
+import java.util.List;
+
+public class ObservationOut extends MsgForServiceProvider //  OCEntityHandlerResponse
 {
     private long _handle;	// OCEntityHandlerResponse*
 
-    public  MsgRequestIn _requestIn;
-    private PayloadList<Payload> _payloadList;
+    public  StimulusIn _requestIn;
+    private List<Observation> _observations;
 
-    // private native long createResponseOut(MsgRequestIn r, PayloadList<Payload> pll);
-    public MsgResponseOut(MsgRequestIn r, PayloadList<Payload> pll)
+    // private native long createResponseOut(StimulusIn r, ObservationList<Observation> pll);
+    public ObservationOut(StimulusIn r, List<Observation> observations)
     {
+	System.out.println("ObservationOut CTOR 2");
 	_requestIn = r;
-	_payloadList = pll;
+	_observations = observations;
     }
 
     // OCEntityHandlerResponse response = { .requestHandle = NULL };

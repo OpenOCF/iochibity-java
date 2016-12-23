@@ -11,7 +11,7 @@ public class Resource
     public static final int NOMETHOD      = 0;
     public static final int NONE          = 0;
     public static final int DISCOVERABLE  = (1 << 0);
-    public static final int OBSERVABLE    = (1 << 1);
+    public static final int WATCHABLE     = (1 << 1);
     public static final int ACTIVE        = (1 << 2);
     public static final int SLOW          = (1 << 3);
     public static final int SECURE        = (1 << 4);

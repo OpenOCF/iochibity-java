@@ -1,6 +1,6 @@
 package org.iochibity;
 
-public class MsgNotificationIn extends MsgForServiceRequestor
+public class MsgNotificationIn extends MsgForCoServiceProvider
 {
     int dummy;
 }

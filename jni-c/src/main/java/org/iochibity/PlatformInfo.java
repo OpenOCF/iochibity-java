@@ -42,8 +42,8 @@ public class PlatformInfo {
 
     /**
      * construct PlatformInfo with mandatory fields which cannot be null
-     * manufacturerName cannot be > 16 chars
-     * manufacturerUrl cannot be > 32 chars
+     * manufacturerName cannot be &gt; 16 chars
+     * manufacturerUrl cannot be &gt; 32 chars
      */
     public PlatformInfo(String platformId, String manufacturerName,
                           String manufacturerUrl) {

@@ -3,7 +3,7 @@ package org.iochibity;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-// base for docs on server - MsgRequestIn, MsgResponseOut
+// base for docs on server - StimulusIn, ObservationOut
 public class MsgForServiceProvider extends Message
 {
     // Request remote handle - request handle at ORIGIN (i.e. client)? */
@@ -14,7 +14,7 @@ public class MsgForServiceProvider extends Message
     private long                    _resourceHandle; // OCResource*
     // public  long                    getResourceHandle() { return _resourceHandle; }
 
-    // since this MsgRequestIn gets passed to ServiceProvider, we do
+    // since this StimulusIn gets passed to ServiceProvider, we do
     // not be able to get it
     // public  native IServiceProvider getServiceProvider();   // getResource();
 

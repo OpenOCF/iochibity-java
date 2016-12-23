@@ -17,15 +17,19 @@ public class OCF
 
     // ****************************************************************
     public static native void /*OCStackResult*/
-	Init(String /*const char* */ ip_addr,
-	     int /*uint16_t*/ port,
-	     int /*OCMode*/ mode,
+	Init(int /*OCMode*/ mode,
 	     String securityConfigFileName);
 
+    // public static native void /*OCStackResult*/
+    // 	Init(String /*const char* */ ip_addr,
+    // 	     int /*uint16_t*/ port,
+    // 	     int /*OCMode*/ mode,
+    // 	     String securityConfigFileName);
+
     public static native void /*OCStackResult*/
-	OCInit1(int /*OCMode*/ mode,
-		int /*OCTransportFlags*/ server_flags,
-		int /*OCTransportFlags*/ client_flags);
+	Init(int /*OCMode*/ mode,
+	     int /*OCTransportFlags*/ server_flags,
+	     int /*OCTransportFlags*/ client_flags);
 
     private native int /*OCStackResult*/
     // OCRegisterPersistentStorageHandler(Object /*OCPersistentStorage* */ persistent_storage_handler);
@@ -42,11 +46,11 @@ public class OCF
 
     public static native void /*OCStackResult*/ stop();
 
-    // setPlatformInfo =>  ServicesManager.registerPlatform
+    // setPlatformInfo =>  ServiceManager.registerPlatform
 
-    // setDeviceInfo =>  ServicesManager.registerDevice
+    // setDeviceInfo =>  ServiceManager.registerDevice
 
-    // OCDoResource =>  ServicesManager.sendResource
+    // OCDoResource =>  ServiceManager.sendResource
 
     public native void OCCancel(Object /*OCDoHandle*/ handle,
 				int /*OCQualityOfService*/ qos,

@@ -26,17 +26,17 @@ extern "C" {
 /*
  * Class:     org_iochibity_OCF
  * Method:    Init
- * Signature: (Ljava/lang/String;IILjava/lang/String;)V
+ * Signature: (ILjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init
-  (JNIEnv *, jclass, jstring, jint, jint, jstring);
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init__ILjava_lang_String_2
+  (JNIEnv *, jclass, jint, jstring);
 
 /*
  * Class:     org_iochibity_OCF
- * Method:    OCInit1
+ * Method:    Init
  * Signature: (III)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_OCF_OCInit1
+JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init__III
   (JNIEnv *, jclass, jint, jint, jint);
 
 /*

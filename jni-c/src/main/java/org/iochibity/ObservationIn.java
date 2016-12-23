@@ -2,21 +2,18 @@ package org.iochibity;
 
 import java.util.List;
 
-public class MsgResponseIn extends MsgForServiceRequestor //  OCClientResponse
+public class ObservationIn
+    extends MsgForCoServiceProvider // OCClientResponse
 {
-    // public long ptr_OCClientResponse; // ptr to c struct
-
-    // public native void logPayload();
-
-    // a ResponseIn doc is passed to the ResourceServiceRequestor.serviceResponse
+    // an ObservationIn is passed to the CoServiceProvider's observeBehavior routine
 
 // typedef struct OCClientResponse
 // {
 //     /** Address of remote server.*/
 //     OCDevAddr devAddr;
-    public DeviceAddress _remoteDeviceAddress;
-    // Message protocol:
-    public DeviceAddress getRemoteDeviceAddress() { return _remoteDeviceAddress; }
+    // see Message: _remoteDeviceAddress;
+    // // Message protocol:
+    // public DeviceAddress getRemoteDeviceAddress() { return _remoteDeviceAddress; }
 
 //     /** backward compatibility (points to devAddr).*/
 //     OCDevAddr *addr;
@@ -40,8 +37,7 @@ public class MsgResponseIn extends MsgForServiceRequestor //  OCClientResponse
     public int serial;
 
 //     /** resourceURI.*/
-//     const char * resourceUri;
-    public String uri;
+//     const char * resourceUri; - in Messsage
 
 // /** the payload for the response PDU.*/
 // OCPayload *payload;

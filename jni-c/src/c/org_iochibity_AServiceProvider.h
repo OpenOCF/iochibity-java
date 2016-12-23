@@ -7,6 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     org_iochibity_AServiceProvider
+ * Method:    react
+ * Signature: (Lorg/iochibity/StimulusIn;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_AServiceProvider_react
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_iochibity_AServiceProvider
+ * Method:    exhibitBehavior
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_AServiceProvider_exhibitBehavior
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
