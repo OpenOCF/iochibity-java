@@ -6,6 +6,10 @@ GTAGS
 
 target/
 
+jni-c/doc/html
+jni-c/doc/latex
+jni-c/doc/javadoc
+
 *.class
 
 # Mobile Tools for Java (J2ME)
