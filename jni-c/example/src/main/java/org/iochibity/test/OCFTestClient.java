@@ -11,25 +11,27 @@ package org.iochibity.test;
 
 // iochibity jni-c stuff
 import org.iochibity.OCF;
+import org.iochibity.CoServiceProvider;
 import org.iochibity.DeviceAddress;
 import org.iochibity.Message;
-import org.iochibity.Messenger;
-import org.iochibity.MsgRequestOut;
-import org.iochibity.MsgResponseIn;
-import org.iochibity.MsgResponseOut;
+import org.iochibity.StimulusOut;
+import org.iochibity.ObservationIn;
+import org.iochibity.ObservationOut;
 import org.iochibity.HeaderOption;
-import org.iochibity.IPayload;
-import org.iochibity.Payload;
-import org.iochibity.PayloadList;
+import org.iochibity.IObservation;
+import org.iochibity.Observation;
+import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
-import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
-import org.iochibity.Resource;
-import org.iochibity.ResourceLocal;
-import org.iochibity.ServicesManager;
-import org.iochibity.IServiceRequestor;
+// import org.iochibity.Resource;
+// import org.iochibity.ResourceLocal;
+import org.iochibity.ServiceManager;
+import org.iochibity.ICoServiceProvider;
+
+import org.iochibity.test.client.DiscoveryCoSP;
+import org.iochibity.test.client.GenericCoSP;
+
 import org.iochibity.constants.Method;
-import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
@@ -48,6 +50,9 @@ import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
 
+import java.util.stream.Collectors;
+
+
 public class OCFTestClient
 {
     static{
@@ -60,124 +65,74 @@ public class OCFTestClient
 
     static CountDownLatch gLatch;
 
-    public static class PlatformRequestor implements IServiceRequestor
-    {
-	private int cbdata = 99;
+    // public static class DeviceCoSP implements ICoServiceProvider
+    // {
+    // 	private int cbdata = 123;
 
-	public int serviceResponseIn(MsgResponseIn responseIn)
-	{
-	    System.out.println("JAVA: PlatformRequestor.serviceResponse ENTRY");
-	    System.out.println("JAVA: cbdata: " + cbdata);
-	    Logger.logMsgResponseIn(responseIn);
+    // 	public int observeBehavior(ObservationIn responseIn)
+    // 	{
+    // 	    System.out.println("LOG: DeviceCoSP.serviceResponse ENTRY");
+    // 	    System.out.println("LOG: cbdata: " + cbdata);
+    // 	    Logger.logObservationIn(responseIn);
 
-	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
-	    // update screen ...
-	    System.out.flush();
-	    return 0;
-	}
+    // 	    // save incoming resource info - ServiceManager.registerRemoteResource(...)?
+    // 	    // update screen ...
+    // 	    System.out.flush();
+    // 	    return 0;
+    // 	}
 
-    }
+    // }
 
-    public static class DeviceRequestor implements IServiceRequestor
-    {
-	private int cbdata = 123;
+    // public static DeviceAddress gRemoteResourceAddress;
+    // public static DeviceAddress gLEDAddress;
+    // public static DeviceAddress gWhatsitAddress;
 
-	public int serviceResponseIn(MsgResponseIn responseIn)
-	{
-	    System.out.println("LOG: DeviceRequestor.serviceResponse ENTRY");
-	    System.out.println("LOG: cbdata: " + cbdata);
-	    Logger.logMsgResponseIn(responseIn);
+    // public static class DiscoverResourcesCoSP implements ICoServiceProvider
+    // {
+    // 	private int cbdata = 123;
 
-	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
-	    // update screen ...
-	    System.out.flush();
-	    return 0;
-	}
+    // 	public int observeBehavior(ObservationIn responseIn)
+    // 	{
+    // 	    System.out.println("LOG: DiscoverResourcesCoSP.serviceResponse ENTRY");
+    // 	    System.out.println("LOG: cbdata: " + cbdata);
 
-    }
+    // 	// }
+    // 	    Logger.logObservationIn(responseIn);
 
-    public static DeviceAddress gRemoteResourceAddress;
-    public static DeviceAddress gLEDAddress;
-    public static DeviceAddress gWhatsitAddress;
+    // 	    // save incoming resource info - ServiceManager.registerRemoteResource(...)?
+    // 	    // update screen ...
+    // 	    return 0;
+    // 	}
+    // }
 
-    public static class DiscoverResourcesRequestor implements IServiceRequestor
-    {
-	private int cbdata = 123;
+    // public static class WhatsitCoSP implements ICoServiceProvider
+    // {
+    // 	private int cbdata = 123;
 
-	public int serviceResponseIn(MsgResponseIn responseIn)
-	{
-	    System.out.println("LOG: DiscoverResourcesRequestor.serviceResponse ENTRY");
-	    System.out.println("LOG: cbdata: " + cbdata);
+    // 	public int observeBehavior(ObservationIn responseIn)
+    // 	{
+    // 	    System.out.println("LOG: DiscoverResourcesCoServiceProvider.serviceResponse ENTRY");
+    // 	    System.out.println("LOG: cbdata: " + cbdata);
+    // 	    Logger.logObservationIn(responseIn);
 
-	    if (responseIn.result == OCStackResult.OK) {
-		if (responseIn.getPayloadType() == Payload.DISCOVERY) {
-		    PayloadList<Payload> pll = responseIn.getPayloadList();
-		    for (Payload payload : (PayloadList<Payload>) pll) {
-			List<IPayload> kids = payload.getChildren();
-			if (kids != null) {
-			    for (IPayload kid : kids) {
-				System.out.println("LOG KID URIPATH: " + kid.getUriPath());
-				if (kid.getUriPath().equals("/a/temperature")) {
-				    System.out.println("LOG: found temperature resource");
-				    gRemoteResourceAddress = responseIn.getRemoteDeviceAddress();
-				    gRemoteResourceAddress.port
-					= ((Integer)kid.getProperties().get("port"))
-					.intValue();
-				    Logger.logDeviceAddress(gRemoteResourceAddress);
-				}
-				if (kid.getUriPath().equals("/a/led")) {
-				    System.out.println("LOG: found LED resource");
-				    gLEDAddress = responseIn.getRemoteDeviceAddress();
-				    gLEDAddress.port
-					= ((Integer)kid.getProperties().get("port"))
-					.intValue();
-				    Logger.logDeviceAddress(gLEDAddress);
-				}
-				if (kid.getUriPath().equals("/a/whatsit")) {
-				    System.out.println("LOG: found whatsit resource");
-				    gWhatsitAddress = responseIn.getRemoteDeviceAddress();
-				    gWhatsitAddress.port
-					= ((Integer)kid.getProperties().get("port"))
-					.intValue();
-				    Logger.logDeviceAddress(gWhatsitAddress);
-				}
-			    }
-			}
-		    }
-		}
-	    }
-	    Logger.logMsgResponseIn(responseIn);
+    // 	    // save incoming resource info - ServiceManager.registerRemoteResource(...)?
+    // 	    // update screen ...
+    // 	    return 0;
+    // 	}
 
-	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
-	    // update screen ...
-	    return 0;
-	}
-    }
+    // }
 
-    public static class WhatsitRequestor implements IServiceRequestor
-    {
-	private int cbdata = 123;
-
-	public int serviceResponseIn(MsgResponseIn responseIn)
-	{
-	    System.out.println("LOG: DiscoverResourcesRequestor.serviceResponse ENTRY");
-	    System.out.println("LOG: cbdata: " + cbdata);
-	    Logger.logMsgResponseIn(responseIn);
-
-	    // save incoming resource info - ServicesManager.registerRemoteResource(...)?
-	    // update screen ...
-	    return 0;
-	}
-
-    }
+    static DiscoveryCoSP discoveryCoSP;
 
     public static synchronized void promptUser()
     {
-	Scanner sc = new Scanner(System.in);
+	Scanner scanner = new Scanner(System.in);
 	String action = null;
-
 	Pattern top  = Pattern.compile("[0-9x]");
 	Pattern pdrx = Pattern.compile("[dprx]");
+
+    	String uri = null;
+	StimulusOut msgRequestOut;
 
 	boolean again = true;
 	while(again) {
@@ -185,90 +140,130 @@ public class OCFTestClient
 	    System.out.println("\t1) Discover resources");
 	    System.out.println("\t2) List discovered resources");
 	    System.out.println("\t3) GET");
-	    System.out.println("\t3) WATCH");
-	    System.out.println("\t4) PUT");
-	    System.out.println("\t5) POST");
-	    System.out.println("\t8) DELETE");
+	    System.out.println("\t4) WATCH");
+	    System.out.println("\t5) PUT");
+	    System.out.println("\t6) POST");
+	    System.out.println("\t7) DELETE");
 	    System.out.println("\tx) Exit\n");
-	    while (!sc.hasNext(top)) { System.out.println("Invalid input, try again"); sc.next(); }
-	    action = sc.next(top);
+	    while (!scanner.hasNext(top)) {
+		System.out.println("Invalid input, try again");
+		scanner.next();
+	    }
+	    action = scanner.next(top);
 	    switch(action) {
+	    case "0":		// initialize CoSPs
+		// WhatsitCoSP whatsitCoSP = new WhatsitCoSP();
+		// whatsitCoSP.dest = gWhatsitAddress;
+		// whatsitCoSP.uri  = "/a/whatsit";
+		// ServiceManager.registerCoServiceProvider(whatsitCoSP);
+		break;
 	    case "1":			// Discover resources
 		System.out.println("Discover:");
 		System.out.println("\tp) Platforms (GET oic/p) ");
 		System.out.println("\td) Devices   (GET oic/d)");
 		System.out.println("\tr) Resources (GET oic/res");
 		System.out.println("\tx) Cancel");
-		while (!sc.hasNext(pdrx)) {  System.out.println("Invalid input, try again"); sc.next(); }
-		action = sc.next(pdrx);
+		while (!scanner.hasNext(pdrx)) {
+		    System.out.println("Invalid input, try again");
+		    scanner.next();
+		}
+		action = scanner.next(pdrx);
+
 		switch(action) {
 		case "p":
 		    System.out.println("requested DISCOVER PLATFORMS");
-		    try {
-			MsgRequestOut requestOut
-			    = new MsgRequestOut(new PlatformRequestor());
-			// = new MsgRequestOut((IServiceRequestor)(new PlatformRequestor()));
-			byte[] bs = Messenger.discoverPlatforms(requestOut);
-			Thread.sleep(1000);
-		    } catch (Exception e) {
-			System.out.println("ERROR: discovering platforms");
-		    }
+		    uri = "/oic/p";
 		    break;
 		case "d":
 		    System.out.println("requested DISCOVER DEVICES");
-		    try {
-			MsgRequestOut requestOut
-			    = new MsgRequestOut(new DeviceRequestor());
-			byte[] bs = Messenger.discoverDevices(requestOut);
-			Thread.sleep(1000);
-		    } catch (Exception e) {
-			System.out.println("ERROR: discoverDevices");
-		    }
+		    uri = "/oic/d";
 		    break;
 		case "r":
 		    System.out.println("requested DISCOVER RESOURCES");
-		    try {
-			MsgRequestOut requestOut
-			    = new MsgRequestOut(new DiscoverResourcesRequestor());
-			byte[] bs = Messenger.discoverResources(requestOut);
-			Thread.sleep(1000);
-		    } catch (Exception e) {
-			System.out.println("ERROR: discoverResources");
-		    }
+		    uri = "/oic/res";
 		    break;
 		case "x":
 		    System.out.println("CANCELLED");
 		    break;
 		}
+
+		discoveryCoSP.setUriPath(uri);
+		discoveryCoSP.setDestination(null); // multicast
+		try {
+		    discoveryCoSP.exhibitStimulus();
+		    Thread.sleep(1000);
+		} catch (Exception e) {
+		    System.out.println("ERROR: discovering platforms");
+		    e.printStackTrace();
+		    msgError(TAG, e.toString());
+		}
 		break;
 	    case "2":
-
+		System.out.println("Discovered resources:");
+		for (CoServiceProvider cosp : ServiceManager.coServiceProviders) {
+		    System.out.println("\t" + cosp.getUriPath());
+		}
+		System.out.println();
 		break;
 	    case "3":
-		System.out.println("requested GET");
+		System.out.println("GET: Select a resource.");
+		CoServiceProvider cosp = null;
+		for(int i = 0; i < ServiceManager.coServiceProviders.size(); i++) {
+		    cosp = ServiceManager.coServiceProviders.get(i);
+		    DeviceAddress da = cosp.getDestination();
+		    String s;
+		    if (da != null) {
+			s = i + " : " + cosp.getDestination().address
+			    + " " + cosp.getDestination().port
+			    + " " + cosp.getUriPath();
+		    } else {
+			s = i + " : " + cosp.getUriPath();
+		    }
+		    System.out.println("\t" + s);
+		}
+		System.out.println();
+
+		while (!scanner.hasNextInt()) {
+		    System.out.println("Invalid input: " + scanner.next() + "; try again");
+		}
+		int i = scanner.nextInt();
+
+		cosp = ServiceManager.coServiceProviders.get(i);
+		cosp.setMethod(Method.GET);
+		// msgRequestOut = cosp.getStimulusOut();
 		try {
-		    MsgRequestOut requestOut
-			= new MsgRequestOut(new WhatsitRequestor());
-		    requestOut.dest = gWhatsitAddress;
-		    requestOut.uri  = "/a/whatsit";
-		    byte[] bs = Messenger.sendRequest(Method.GET, requestOut);
+		    cosp.exhibitStimulus();
 		    Thread.sleep(1000);
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    msgError(TAG, e.toString());
 		}
 		break;
-	    // case 4:
-
-	    // 	break;
+	    case "4":
+		System.out.println("requested WATCH");
+		// try {
+		//     StimulusOut requestOut
+		//     	= new StimulusOut(new WhatsitSR());
+		//     requestOut.dest = gWhatsitAddress;
+		//     requestOut.uri  = "/a/whatsit";
+		//     byte[] bs = Messenger.exhibitStimulus(Method.WATCH, requestOut);
+		//     Thread.sleep(1000);
+		// } catch (Exception e) {
+		//     e.printStackTrace();
+		//     msgError(TAG, e.toString());
+		// }
+		break;
 	    case "5":
+		System.out.println("requested PUT - NOT YET IMPLEMENTED");
+		break;
+	    case "6":
 		System.out.println("requested POST");
 		try {
-		    MsgRequestOut requestOut
-			= new MsgRequestOut(new WhatsitRequestor());
-		    requestOut.dest = gWhatsitAddress;
-		    requestOut.uri  = "/a/led";
-		    byte[] bs = Messenger.sendRequest(Method.POST, requestOut);
+		    // StimulusOut requestOut
+		    // 	= new StimulusOut(new WhatsitSR());
+		    // requestOut.dest = gWhatsitAddress;
+		    // requestOut.uri  = "/a/whatsit";
+		    // byte[] bs = Messenger.exhibitStimulus(Method.POST, requestOut);
 		    Thread.sleep(1000);
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -304,8 +299,8 @@ public class OCFTestClient
 		}
 	    });
 
-	OCF.Init(null, 0, OCF.CLIENT_SERVER, "src/main/resources/ocftestclient_config.cbor");
-	// ServicesManager.registerPlatform("Fartmaster",
+	OCF.Init(OCF.CLIENT, "src/main/resources/ocftestclient_config.cbor");
+	// ServiceManager.registerPlatform("Fartmaster",
 	// 				 "Acme Novelties",
 	// 				 "http://acme.example.org",
 	// 				 "modelnbr", "mfgdate", "platversion",
@@ -313,10 +308,13 @@ public class OCFTestClient
 	// 				 "http://acme.example.org/support",
 	// 				 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
 
-	// ServicesManager.registerDevice("Fartmaster2020 Client",
+	// ServiceManager.registerDevice("Fartmaster2020 Client",
 	// 			       new String[] {"type1", "type2"},
 	// 			       "version-0.1",
 	// 			       new String[] {"dmversion-0.1"});
+
+	discoveryCoSP = new DiscoveryCoSP();
+	ServiceManager.registerCoServiceProvider(discoveryCoSP);
 
 	OCF.run();
 

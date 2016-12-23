@@ -1,25 +1,26 @@
-package org.iochibity.test;
+package org.iochibity.test.server;
 
 import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.Messenger;
-import org.iochibity.MsgRequestIn;
-import org.iochibity.MsgResponseOut;
-import org.iochibity.Payload;
-import org.iochibity.PayloadList;
+import org.iochibity.StimulusIn;
+import org.iochibity.ObservationOut;
+import org.iochibity.Observation;
+import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
-import org.iochibity.PayloadForResourceState;
+// import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyString;
 import org.iochibity.Resource;
-import org.iochibity.ResourceLocal;
-import org.iochibity.AServiceProvider;
+// import org.iochibity.ResourceLocal;
+import org.iochibity.ServiceProvider;
 import org.iochibity.IServiceProvider;
 import org.iochibity.constants.Method;
-import org.iochibity.constants.OCMode;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
+
+import org.iochibity.test.Logger;
+
 import org.iochibity.exceptions.OCFNotImplementedException;
 
 import mraa.Dir;
@@ -40,8 +41,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class LedSP
-    extends    AServiceProvider
-    implements IServiceProvider
+    extends    ServiceProvider
 {
 
     int foo = 99;
@@ -49,7 +49,7 @@ public class LedSP
     final static int DEFAULT_IOPIN = 8;
     Gpio gpio;
 
-    LedSP() {
+    public LedSP() {
 	setUriPath("/a/led");
 	addType("core.led");
 	addInterface("oc.mi.led");
@@ -63,14 +63,14 @@ public class LedSP
         }
     }
 
-    public int serviceRequestIn(MsgRequestIn requestIn)
+    public int observeStimulus(StimulusIn requestIn)
     {
 	System.out.println("LedSP.service routine ENTRY");
 	Logger.logRequestIn(requestIn);
 
 	System.out.println("LedSP: requestIn callback param foo = " + foo);
 
-	PayloadList<Payload> payloadOut = null;
+	ObservationList<Observation> observationOut = null;
 
 	// typedef enum
 	// {
@@ -81,14 +81,14 @@ public class LedSP
 
 	switch (requestIn.getMethod()) {
 	case Method.GET:
-	    payloadOut = serviceGetRequest(requestIn);
+	    observationOut = serviceGetRequest(requestIn);
 	    break;
 	case Method.PUT:
 	    System.out.println("LedSP: method: PUT");
 	    break;
 	case Method.POST:
 	    System.out.println("LedSP: method: POST");
-	    payloadOut = servicePostRequest(requestIn);
+	    observationOut = servicePostRequest(requestIn);
 	    break;
 	case Method.DELETE:
 	    System.out.println("LedSP: method: DELETE");
@@ -109,8 +109,8 @@ public class LedSP
 	    break;
 	}
 
-	MsgResponseOut responseOut = new MsgResponseOut(requestIn, payloadOut);
-	// MsgResponseOut responseOut = new MsgResponseOut();
+	ObservationOut responseOut = new ObservationOut(requestIn, observationOut);
+	// ObservationOut responseOut = new ObservationOut();
 
 	// if we create a new URI (e.g. on a POST request) then:
 	responseOut.setResourceUri("a/foo/bar");
@@ -131,9 +131,9 @@ public class LedSP
 
 	/* finally, send ResponeOut */
 	try {
-	    Messenger.sendResponse(responseOut);
+	    this.exhibitBehavior();
 	} catch (Exception e) {
-	    System.out.println("[E] LedSP" + " | " + "sendResponse exception");
+	    System.out.println("[E] LedSP" + " | " + "exhibitBehavior exception");
 	    e.printStackTrace();
 	}
 	// 	    // Send the response
@@ -150,48 +150,48 @@ public class LedSP
 	return ServiceResult.OK;
     }
 
-    private PayloadList<Payload> serviceGetRequest(MsgRequestIn request)
+    private ObservationList<Observation> serviceGetRequest(StimulusIn request)
     {
 	System.out.println("LedSP.serviceGetRequest ENTRY");
 
-	// ResourceLocal r = request.getResource();
-	System.out.println("LedSP: resource uri: " + this.getUriPath());
+	// // ResourceLocal r = request.getResource();
+	// System.out.println("LedSP: resource uri: " + this.getUriPath());
 
-	PayloadForResourceState pfrs = new PayloadForResourceState(request);
+	// PayloadForResourceState pfrs = new PayloadForResourceState(request);
 
-	System.out.println("LedSP: payload uri: " + pfrs.getUri());
-	// pfrs.setUri("/a/foo");
-	// System.out.println("LedSP: payload new uri: " + pfrs.getUri());
+	// System.out.println("LedSP: observation uri: " + pfrs.getUri());
+	// // pfrs.setUri("/a/foo");
+	// // System.out.println("LedSP: observation new uri: " + pfrs.getUri());
 
-	pfrs.addResourceType("foo.t.a");
-	// pfrs.addResourceType("foo.t.b");
-	// List<String> llts = pfrs.getResourceTypes();
-	// for (String s : (List<String>)llts) {
-	//     System.out.println("LedSP: payload r type: " + s);
-	// }
-	List<String> llifs = pfrs.getInterfaces();
-	llifs.add("foo.if.a");
-	// for (String s : (List<String>)llifs) {
-	//     System.out.println("LedSP: payload r interface: " + s);
-	// }
+	// pfrs.addResourceType("foo.t.a");
+	// // pfrs.addResourceType("foo.t.b");
+	// // List<String> llts = pfrs.getResourceTypes();
+	// // for (String s : (List<String>)llts) {
+	// //     System.out.println("LedSP: observation r type: " + s);
+	// // }
+	// List<String> llifs = pfrs.getInterfaces();
+	// llifs.add("foo.if.a");
+	// // for (String s : (List<String>)llifs) {
+	// //     System.out.println("LedSP: observation r interface: " + s);
+	// // }
 
-	PropertyMap<String, Object> pmps = pfrs.getProperties();
-	pmps.put("LED int", 1);
-	pmps.put("LED d", 1.1);
-	pmps.put("LED str", "Hello world");
-	pmps.put("LED bool", true);
-	// for(Map.Entry<String, Object> entry : pmps.entrySet()) {
-	//     System.out.println("LedSP: payload r prop: " + entry.getKey() + " = " + entry.getValue());
-	// }
+	// PropertyMap<String, Object> pmps = pfrs.getProperties();
+	// pmps.put("LED int", 1);
+	// pmps.put("LED d", 1.1);
+	// pmps.put("LED str", "Hello world");
+	// pmps.put("LED bool", true);
+	// // for(Map.Entry<String, Object> entry : pmps.entrySet()) {
+	// //     System.out.println("LedSP: observation r prop: " + entry.getKey() + " = " + entry.getValue());
+	// // }
 
-	PayloadList<Payload> pll = new PayloadList<Payload>();
+	// ObservationList<Observation> pll = new ObservationList<Observation>();
 
-	pll.add(pfrs);
+	// // pll.add(pfrs);
 
-	return pll; //payload;
+	return null;
     }
 
-    private PayloadList<Payload> servicePostRequest(MsgRequestIn request)
+    private ObservationList<Observation> servicePostRequest(StimulusIn request)
     {
 	System.out.println("LedSP.servicePostRequest ENTRY");
 
@@ -205,9 +205,9 @@ public class LedSP
 	     gpio.write(1);
 	 }
 
-	PayloadList<Payload> pll = new PayloadList<Payload>();
+	ObservationList<Observation> pll = new ObservationList<Observation>();
 
-	return pll; //payload;
+	return pll; //observation;
     }
 
 }
