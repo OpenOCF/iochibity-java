@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['java_5forg_5fiochibity_5fcoserviceprovider_5fexhibitstimulus',['Java_org_iochibity_CoServiceProvider_exhibitStimulus',['../ocf___co_service_provider_8c.html#ac1feb9ab9d78fc7ad97a65216310d44f',1,'ocf_CoServiceProvider.c']]],
+  ['java_5forg_5fiochibity_5fmessage_5fgetobservations',['Java_org_iochibity_Message_getObservations',['../ocf___message_8c.html#aa0b6d0beeeb67741ab6e7bb962f60d73',1,'ocf_Message.c']]],
+  ['java_5forg_5fiochibity_5fmessage_5fgetoptions',['Java_org_iochibity_Message_getOptions',['../ocf___message_8c.html#ac73de0094b02aa50d2eb5142e25360aa',1,'ocf_Message.c']]],
+  ['java_5forg_5fiochibity_5fobservationin_5flogpayload',['Java_org_iochibity_ObservationIn_logPayload',['../ocf___observation_in_8c.html#ad0c007c8b6a1e27e50740a17f5e9410e',1,'ocf_ObservationIn.c']]],
+  ['java_5forg_5fiochibity_5focf_5finit_5f_5fiii',['Java_org_iochibity_OCF_Init__III',['../ocf__ocf_8c.html#aa3d35f762dd51b7fe9c9d596c5d643f5',1,'ocf_ocf.c']]],
+  ['java_5forg_5fiochibity_5focf_5finit_5f_5filjava_5flang_5fstring_5f2',['Java_org_iochibity_OCF_Init__ILjava_lang_String_2',['../ocf__ocf_8c.html#aef84f468fa85c6c8df6ca40ef6f6786a',1,'ocf_ocf.c']]],
+  ['java_5forg_5fiochibity_5focf_5frun',['Java_org_iochibity_OCF_run',['../ocf__ocf_8c.html#a91cdb64ba5d0a7c84109921ee61f6a42',1,'ocf_ocf.c']]],
+  ['java_5forg_5fiochibity_5focf_5fstop',['Java_org_iochibity_OCF_stop',['../ocf__ocf_8c.html#a705170028f68ab6dba814715bf8c17a5',1,'ocf_ocf.c']]],
+  ['java_5forg_5fiochibity_5fpayloadproperties_5fgetprop',['Java_org_iochibity_PayloadProperties_getProp',['../ocf___property_map_8c.html#a813353fa5146938ec9b04f49aa1ba69f',1,'ocf_PropertyMap.c']]],
+  ['java_5forg_5fiochibity_5fpayloadproperties_5fsetprop',['Java_org_iochibity_PayloadProperties_setProp',['../ocf___property_map_8c.html#a25c661ffba79756309f11388effa44aa',1,'ocf_PropertyMap.c']]],
+  ['java_5forg_5fiochibity_5fresponseout_5fcreateresponseout',['Java_org_iochibity_ResponseOut_createResponseOut',['../ocf___observation_out_8c.html#a367b25b3f398297008d471923edae268',1,'ocf_ObservationOut.c']]],
+  ['java_5forg_5fiochibity_5fservicemanager_5fregisterdefaultserviceroutine',['Java_org_iochibity_ServiceManager_registerDefaultServiceRoutine',['../ocf___service_manager_8c.html#ab2fe57f122dd995304ead2a41eebc7c7',1,'ocf_ServiceManager.c']]],
+  ['java_5forg_5fiochibity_5fservicemanager_5fregisterdeviceprovider',['Java_org_iochibity_ServiceManager_registerDeviceProvider',['../ocf___service_manager_8c.html#a0f3864c7522888a4714315f56316890a',1,'ocf_ServiceManager.c']]],
+  ['java_5forg_5fiochibity_5fservicemanager_5fregisterplatformprovider',['Java_org_iochibity_ServiceManager_registerPlatformProvider',['../ocf___service_manager_8c.html#a944cdb163930635db008e2ef494a0db9',1,'ocf_ServiceManager.c']]],
+  ['java_5forg_5fiochibity_5fservicemanager_5fregisterserviceprovider_5f_5fljava_5flang_5fstring_5f2_5f3ljava_5flang_5fstring_5f2_5f3ljava_5flang_5fstring_5f2lorg_5fiochibity_5fiserviceprovider_5f2b',['Java_org_iochibity_ServiceManager_registerServiceProvider__Ljava_lang_String_2_3Ljava_lang_String_2_3Ljava_lang_String_2Lorg_iochibity_IServiceProvider_2B',['../ocf___service_manager_8c.html#a1d4ac914beef405c0a81a2fe04e32242',1,'ocf_ServiceManager.c']]],
+  ['java_5forg_5fiochibity_5fservicemanager_5fregisterserviceprovider_5f_5florg_5fiochibity_5fserviceprovider_5f2',['Java_org_iochibity_ServiceManager_registerServiceProvider__Lorg_iochibity_ServiceProvider_2',['../ocf___service_manager_8c.html#a58fb4e254676baf4849e49d94e337f31',1,'ocf_ServiceManager.c']]],
+  ['java_5forg_5fiochibity_5fservicemanager_5fresourcecount',['Java_org_iochibity_ServiceManager_resourceCount',['../ocf___service_manager_8c.html#a6339e6a4d778a198841a4e1b73f2f7b0',1,'ocf_ServiceManager.c']]],
+  ['java_5forg_5fiochibity_5fserviceprovider_5fexhibitbehavior',['Java_org_iochibity_ServiceProvider_exhibitBehavior',['../ocf___service_provider_8c.html#a4596493fca77594f516776768fde6d92',1,'ocf_ServiceProvider.c']]],
+  ['jni_5fonload',['JNI_OnLoad',['../ocf___init_8c.html#aac0498b58a4bbbf42588d30433b4f8ea',1,'ocf_Init.c']]],
+  ['jni_5fonunload',['JNI_OnUnload',['../ocf___init_8c.html#a76bec78623b178fd9e8c142c457d1ac8',1,'ocf_Init.c']]]
+];
