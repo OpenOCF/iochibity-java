@@ -27,7 +27,7 @@ package org.iochibity;
  * This class describes the platform properties. All non-Null properties will be
  * included in a platform discovery request.
  */
-public class PlatformInfo {
+public class InfoPlatform {
     private String mPlatformId;
     private String mManufacturerName;
     private String mManufacturerUrl;
@@ -41,18 +41,18 @@ public class PlatformInfo {
     private String mSystemTime;
 
     /**
-     * construct PlatformInfo with mandatory fields which cannot be null
+     * construct InfoPlatform with mandatory fields which cannot be null
      * manufacturerName cannot be &gt; 16 chars
      * manufacturerUrl cannot be &gt; 32 chars
      */
-    public PlatformInfo(String platformId, String manufacturerName,
+    public InfoPlatform(String platformId, String manufacturerName,
                           String manufacturerUrl) {
         this.mPlatformId = platformId;
         this.mManufacturerName = manufacturerName;
         this.mManufacturerUrl = manufacturerUrl;
     }
 
-    public PlatformInfo(String platformId,
+    public InfoPlatform(String platformId,
                           String manufacturerName,
                           String manufacturerUrl,
                           String modelNumber,
