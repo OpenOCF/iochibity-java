@@ -30,15 +30,22 @@
  * @brief Convert incoming `OCEntityHandlerRequest` to `StimulusIn`
  * object.  Called by `c_ServiceProvider_observe_stimulus`.
  *
+ * @param [in] env JNIEnv Pointer
+ *
+ * @param [in] c_EHRequest Incoming request message originating at client (CoServiceProvider)
+ *
+ * @param [in] c_watch_flag Indicates whether this is a `WATCH` request or an ordinary `REQUEST` request
+ *
+ * @return [out] j_StimulusIn Java StimulusIn object corresponding to `c_EHRequest` input data
  */
 /* FIXME: this is called indirectly from the runtime stack, not java -
    deal with exceptions */
 /* THROW_JNI_EXCEPTION won't work since we're not called from Java */
-jobject OCEntityHandlerRequest_to_StimulusIn(JNIEnv* env,
-					     OCEntityHandlerRequest* c_EHRequest,
+ jobject c_org_iochibity_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn(JNIEnv* env,
+									     OCEntityHandlerRequest* c_EHRequest,
 					     OCEntityHandlerFlag c_watch_flag)
 {
-    printf("%s: OCEntityHandlerRequest_to_StimulusIn ENTRY\n", __FILE__);
+    printf("%s: %s ENTRY\n", __FILE__, __func__);
 
     jobject j_StimulusIn = (*env)->NewObject(env, K_MSG_REQUEST_IN, MID_RQI_CTOR); // request_in_ctor);
 
@@ -106,20 +113,38 @@ jobject OCEntityHandlerRequest_to_StimulusIn(JNIEnv* env,
 
     (*env)->SetLongField(env, j_StimulusIn, FID_MSG_OBSERVATION_HANDLE, (intptr_t)c_EHRequest->payload);
 
-    printf("OCEntityHandlerRequest_to_StimulusIn EXIT\n");
+    printf("%s: %s EXIT\n", __FILE__, __func__);
     return j_StimulusIn;
 }
 
 /**
- * @brief `OCEntityHandler` callback
+ * @brief `observe_stimulus` is a wrapper on `OCEntityHandler` callback.
+ *
+ * This routine is called by the stack on receipt of an incoming
+ * request message originating at client. Calls
+ * `c_org_iochibity_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn`
+ * to convert incoming request to Java object, then passes result to
+ * user-defined `observeStimulus` method of `ServiceProvider` object.
+ *
+ * @param watch_flag Indicates whether request is for WATCH (in
+ * OIC-speak, OBSERVE) or not. Only two options, `OC_REQUEST_FLAG` (1)
+ * or `OC_OBSERVER_FLAG` (2).  In C API, "OCEntityHandlerFlag flag".
+ *
+ * @param c_OCEntityHandlerRequest Incoming request message.  In C
+ * API, `OCEntityHandlerRequest*`.
+ *
+ * @param j_IServiceProvider the ServiceProvider object.  In C API, `void* callbackParam`
+ *
+ * @result <OCEntityHandlerRequest> Indicates result of applying
+ * user-defined handler method to incoming request.
  *
  * @see Java_org_iochibity_ServiceProvider_exhibitBehavior
  */
 /* typedef OCEntityHandlerResult (*OCEntityHandler) */
 /* (OCEntityHandlerFlag flag, OCEntityHandlerRequest * entityHandlerRequest, void* callbackParam); */
-OCEntityHandlerResult c_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
-					 OCEntityHandlerRequest * c_OCEntityHandlerRequest, /* StimulusIn */
-					 void* j_IServiceProvider)
+OCEntityHandlerResult c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
+								       OCEntityHandlerRequest * c_OCEntityHandlerRequest,
+								       void* j_IServiceProvider)
 {
     printf("\n%s | %s ENTRY on thread %d\n",
 	   __FILE__, __func__, (int)pthread_self());
@@ -159,7 +184,9 @@ OCEntityHandlerResult c_ServiceProvider_observe_stimulus(OCEntityHandlerFlag wat
     }
 
     jobject j_StimulusIn = NULL;
-    j_StimulusIn = OCEntityHandlerRequest_to_StimulusIn(env, c_OCEntityHandlerRequest, watch_flag);
+    j_StimulusIn
+	= c_org_iochibity_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn(env,
+									       c_OCEntityHandlerRequest, watch_flag);
     fflush(NULL);
     if (j_StimulusIn == NULL) {
         printf("ERROR:  OCEntityHandlerRequest_to_StimulusIn failed\n");
@@ -199,14 +226,16 @@ OCEntityHandlerResult c_ServiceProvider_observe_stimulus(OCEntityHandlerFlag wat
  * this.exhibitBehavior();
  * ...
  * @endcode
+  *
+ * @see c_org_iochibity_CoServiceProvider_observe_behavior
  *
  * @see Java_org_iochibity_CoServiceProvider_exhibitStimulus
- * @see c_ServiceProvider_observe_stimulus
+ *
+ * @see c_org_iochibity_ServiceProvider_observe_stimulus
+ *
  */
 JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_exhibitBehavior
 (JNIEnv * env, jobject this_SP)
-/* JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_exhibitBehavior */
-/* (JNIEnv * env, jclass klass, jobject j_ObservationOut) */
 {
     printf("%s | %s: ENTRY on thread %d\n", __FILE__, __func__, (int)pthread_self());
 

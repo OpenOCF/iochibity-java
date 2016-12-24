@@ -7,10 +7,10 @@ public class ObservationOut extends MsgForServiceProvider //  OCEntityHandlerRes
     private long _handle;	// OCEntityHandlerResponse*
 
     public  StimulusIn _requestIn;
-    private List<Observation> _observations;
+    private List<ObservationRecord> _observations;
 
     // private native long createResponseOut(StimulusIn r, ObservationList<Observation> pll);
-    public ObservationOut(StimulusIn r, List<Observation> observations)
+    public ObservationOut(StimulusIn r, List<ObservationRecord> observations)
     {
 	System.out.println("ObservationOut CTOR 2");
 	_requestIn = r;

@@ -28,7 +28,7 @@ public class StimulusOut extends MsgForCoServiceProvider
     // public DeviceAddress dest;
     public DeviceAddress getDestination() { return _remoteDeviceAddress; }
 
-    Observation       observation;
+    ObservationRecord       observationRecord;
 
     // FIXME: handle the OCTransportX/CT_x enums appropriately
     int protocol; // ConnectivityType.DEFAULT, etc.

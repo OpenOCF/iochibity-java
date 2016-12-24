@@ -2,6 +2,11 @@ package org.iochibity;
 
 import java.util.List;
 
+// Observation corresponsds to OCPayload.
+// An OCPayload struct conveys an observation on the ServiceProvider
+// qua black box.  So that's what we call it.
+
+
 // Payload types in C API:
 // OCRepPayload - resource representation including properties
 // OCResourcePayload    - resource meta, excluding properties
@@ -15,7 +20,8 @@ import java.util.List;
 // OCResourceCollectionPayload - tags plus links
 // OCTagsPayload  - substruct used in OCResourceCollectionPayload
 // OCLinksPayload - substruct used in OCResourceCollectionPayload
-public class Payload implements IPayload
+
+public class ObservationRecord implements IObservationRecord
 {
     // OCPayloadType enum
     public static final int INVALID        = 0;
@@ -28,11 +34,19 @@ public class Payload implements IPayload
     public static final int RD             = 7;
     public static final int NOTIFICATION   = 8;
 
+    private StimulusIn _stimulusIn;
+    ObservationRecord(StimulusIn msg)
+    {
+	_stimulusIn = msg;
+    }
+
+
     private long _handle;      // OCPayload*
     public  long getHandle() { return _handle; }
 
     // FIXME: make type private with getter
-    public int type = 0;	// OCPayloadType
+    private int _type;	// OCPayloadType
+    public  int getType() { return _type; }
 
     // ****************************************************************
     // uriPath included in: OCRepPayload, OCResourcePayload,
@@ -41,8 +55,8 @@ public class Payload implements IPayload
     // OCRDDiscoveryPayload, OCRDPayload, OCDevicePayload,
     // OCSecurityPayload, OCPresencePayload
     private String _uriPath;
-    public String getUriPath() { return _uriPath; }
-    public void   setUriPath(String theUri) { _uriPath = theUri; }
+    public  String getUriPath() { return _uriPath; }
+    public  void   setUriPath(String theUri) { _uriPath = theUri; }
 
     // ****************************************************************
     // rtypes included in: OCRepPayload, OCResourcePayload,
@@ -54,8 +68,8 @@ public class Payload implements IPayload
     // OCPresencePayload
     private List<String> _rtypes = null;  // new LinkedList<String>();
     public  List<String> getResourceTypes() { return _rtypes; }
-    // do we need setTypes if we have addType:
-    public native void setResourceTypes(List<String> rts);
+    public  void setResourceTypes(List<String> rts) { _rtypes = rts; }
+    // do we need setTypes if we have addType?
     public void addResourceType(String rt) { _rtypes.add(rt); }
     // to add/rem a type: get the list, add/remove, then setTypes
 
@@ -69,8 +83,8 @@ public class Payload implements IPayload
     // OCPresencePayload
     private List<String> _interfaces = null;
     public  List<String> getInterfaces() { return _interfaces; }
-    public native void setInterfaces(List<String> ifs);
-    public void addInterface(String iface) { _interfaces.add(iface); }
+    public  void setInterfaces(List<String> ifs) { _interfaces = ifs; }
+    public  void addInterface(String iface) { _interfaces.add(iface); }
 
     // ****************************************************************
     // properties included in: OCRepPayload
@@ -82,11 +96,18 @@ public class Payload implements IPayload
     // public void putProperty(String name, Object value) { _properties.put(name, value); }
 
     // ****************************************************************
+
     // policies (DISCOVERABLE, OBSERVABLE, etc.)
+
+    // CAVEAT: these are resource "policy properties", not network
+    // policies; they are encoded in OCResourceProperty.  they come
+    // from
+    // OCEntityHandlerRequest.OCResourceHandle->resourceProperties and
+    // OCEntityHandlerResponse.OCResourceHandle->resourceProperties
     private long _policies;
     public  long getPolicies() { return _policies; }
 
     // ****************************************************************
-    private List<IPayload> _children;
-    public  List<IPayload> getChildren() { return _children; }
+    private List<IObservationRecord> _children;
+    public  List<IObservationRecord> getChildren() { return _children; }
 }

@@ -98,18 +98,18 @@ jclass    K_OBSERVATION_LIST              = NULL;
 jmethodID MID_PLL_CTOR                    = NULL;
 jmethodID MID_PLL_ADD                     = NULL;
 
-jclass   K_PFRS                           = NULL; /* class for PayloadForResourceState */
-jfieldID FID_PFRS_URI                     = NULL;
-jfieldID FID_PFRS_RTYPES                  = NULL;
-jfieldID FID_PFRS_INTERFACES              = NULL;
-jfieldID FID_PFRS_PROPERTIES              = NULL;
+/* jclass   K_PFRS                           = NULL; /\* class for PayloadForResourceState *\/ */
+/* jfieldID FID_PFRS_URI                     = NULL; */
+/* jfieldID FID_PFRS_RTYPES                  = NULL; */
+/* jfieldID FID_PFRS_INTERFACES              = NULL; */
+/* jfieldID FID_PFRS_PROPERTIES              = NULL; */
 
-jclass    K_PFP                           = NULL; /* class for PayloadForPlatform */
-jfieldID  FID_PFP_URI                     = NULL;
-jfieldID  FID_PFP_RTYPES                  = NULL;
-jfieldID  FID_PFP_INTERFACES              = NULL;
-jfieldID  FID_PFP_PROPERTIES              = NULL;
-jmethodID MID_PFP_CTOR                    = NULL;
+/* jclass    K_PFP                           = NULL; /\* class for PayloadForPlatform *\/ */
+/* jfieldID  FID_PFP_URI                     = NULL; */
+/* jfieldID  FID_PFP_RTYPES                  = NULL; */
+/* jfieldID  FID_PFP_INTERFACES              = NULL; */
+/* jfieldID  FID_PFP_PROPERTIES              = NULL; */
+/* jmethodID MID_PFP_CTOR                    = NULL; */
 
 jclass   K_PMAP                           = NULL; /* class for PropertyMap */
 jmethodID MID_PMAP_CTOR                   = NULL;
@@ -581,9 +581,9 @@ int init_Messages(JNIEnv* env)
     /* 	} */
     /* } */
     if (FID_MSG_OBSERVATION_HANDLE == NULL) {
-	FID_MSG_OBSERVATION_HANDLE = (*env)->GetFieldID(env, K_MESSAGE, "_observationHandle", "J");
+	FID_MSG_OBSERVATION_HANDLE = (*env)->GetFieldID(env, K_MESSAGE, "_observationRecordHandle", "J");
 	if (FID_MSG_OBSERVATION_HANDLE == NULL) {
-	    printf("ERROR: GetFieldID failed for '_observationHandle' of Message\n");
+	    printf("ERROR: GetFieldID failed for '_observationRecordHandle' of Message\n");
 	    return -1;
 	}
     }
@@ -851,9 +851,9 @@ int init_ObservationIn(JNIEnv* env)
     }
     if (FID_OBIN_OBSERVATION_HANDLE == NULL) {
     	FID_OBIN_OBSERVATION_HANDLE = (*env)->GetFieldID(env, K_OBSERVATION_IN,
-    							 "_observationHandle", "J");
+    							 "_observationRecordHandle", "J");
     	if (FID_OBIN_OBSERVATION_HANDLE == NULL) {
-    	    printf("ERROR: GetFieldID failed for '_observationHandle' of ObservationIn\n");
+    	    printf("ERROR: GetFieldID failed for '_observationRecordHandle' of ObservationIn\n");
     	    return -1;
     	}
     }
@@ -948,8 +948,8 @@ int init_ObservationIn(JNIEnv* env)
 int init_observation(JNIEnv* env)
 {
     jclass klass;
-    klass = (*env)->FindClass(env, "org/iochibity/Observation");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/Observation\n", 0);
+    klass = (*env)->FindClass(env, "org/iochibity/ObservationRecord");
+    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ObservationRecord\n", 0);
     K_OBSERVATION = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
@@ -1065,92 +1065,92 @@ int init_observation(JNIEnv* env)
 /*
  * initialize PayloadForPlatform
  */
-int init_pfp(JNIEnv* env)
-{
-    if (K_PFP == NULL) {
-	K_PFP = (*env)->FindClass(env, "org/iochibity/PayloadForPlatform");
-	if (K_PFP == NULL) {
-	    printf("ERROR: FindClass failed for org/iochibity/PayloadForPlatform\n");
-	    return -1;
-	}
-    }
-    MID_PFP_CTOR = (*env)->GetMethodID(env, K_PFP, "<init>", "()V");
-    if (MID_PFP_CTOR == 0) {
-	printf("ERROR: GetMethodID failed for ctor of PayloadForPlatform.\n");
-	return -1;
-    }
-    if (FID_PFP_URI == NULL) {
-	FID_PFP_URI = (*env)->GetFieldID(env, K_PFP, "_uri", "Ljava/lang/String;");
-	if (FID_PFP_URI == NULL) {
-	    printf("ERROR: GetFieldID failed for '_uri' of PFP");
-	    return -1;
-	}
-    }
-    if (FID_PFP_RTYPES == NULL) {
-	FID_PFP_RTYPES = (*env)->GetFieldID(env, K_PFP, "_rtypes", "Ljava/util/List;");
-	if (FID_PFP_RTYPES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_uri' of PFP");
-	    return -1;
-	}
-    }
-    if (FID_PFP_INTERFACES == NULL) {
-	FID_PFP_INTERFACES = (*env)->GetFieldID(env, K_PFP, "_interfaces", "Ljava/util/List;");
-	if (FID_PFP_INTERFACES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_interfaces' of PFP");
-	    return -1;
-	}
-    }
-    if (FID_PFP_PROPERTIES == NULL) {
-	FID_PFP_PROPERTIES = (*env)->GetFieldID(env, K_PFP, "_properties", "Lorg/iochibity/PropertyMap;");
-	if (FID_PFP_PROPERTIES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_properties' of PFP");
-	    return -1;
-	}
-    }
-    return 0;
-}
+/* int init_pfp(JNIEnv* env) */
+/* { */
+/*     if (K_PFP == NULL) { */
+/* 	K_PFP = (*env)->FindClass(env, "org/iochibity/PayloadForPlatform"); */
+/* 	if (K_PFP == NULL) { */
+/* 	    printf("ERROR: FindClass failed for org/iochibity/PayloadForPlatform\n"); */
+/* 	    return -1; */
+/* 	} */
+/*     } */
+/*     MID_PFP_CTOR = (*env)->GetMethodID(env, K_PFP, "<init>", "()V"); */
+/*     if (MID_PFP_CTOR == 0) { */
+/* 	printf("ERROR: GetMethodID failed for ctor of PayloadForPlatform.\n"); */
+/* 	return -1; */
+/*     } */
+/*     if (FID_PFP_URI == NULL) { */
+/* 	FID_PFP_URI = (*env)->GetFieldID(env, K_PFP, "_uri", "Ljava/lang/String;"); */
+/* 	if (FID_PFP_URI == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_uri' of PFP"); */
+/* 	    return -1; */
+/* 	} */
+/*     } */
+/*     if (FID_PFP_RTYPES == NULL) { */
+/* 	FID_PFP_RTYPES = (*env)->GetFieldID(env, K_PFP, "_rtypes", "Ljava/util/List;"); */
+/* 	if (FID_PFP_RTYPES == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_uri' of PFP"); */
+/* 	    return -1; */
+/* 	} */
+/*     } */
+/*     if (FID_PFP_INTERFACES == NULL) { */
+/* 	FID_PFP_INTERFACES = (*env)->GetFieldID(env, K_PFP, "_interfaces", "Ljava/util/List;"); */
+/* 	if (FID_PFP_INTERFACES == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_interfaces' of PFP"); */
+/* 	    return -1; */
+/* 	} */
+/*     } */
+/*     if (FID_PFP_PROPERTIES == NULL) { */
+/* 	FID_PFP_PROPERTIES = (*env)->GetFieldID(env, K_PFP, "_properties", "Lorg/iochibity/PropertyMap;"); */
+/* 	if (FID_PFP_PROPERTIES == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_properties' of PFP"); */
+/* 	    return -1; */
+/* 	} */
+/*     } */
+/*     return 0; */
+/* } */
 
 /*
  *
  */
-void init_pfrs(JNIEnv* env)
-{
-    if (K_PFRS == NULL) {
-	K_PFRS = (*env)->FindClass(env, "org/iochibity/PayloadForResourceState");
-	if (K_PFRS == NULL) {
-	    printf("ERROR: FindClass failed for org/iochibity/PayloadForResourceState\n");
-	    return;
-	}
-    }
-    if (FID_PFRS_URI == NULL) {
-	FID_PFRS_URI = (*env)->GetFieldID(env, K_PFRS, "_uri", "Ljava/lang/String;");
-	if (FID_PFRS_URI == NULL) {
-	    printf("ERROR: GetFieldID failed for '_uri' of PFRS");
-	    return;
-	}
-    }
-    if (FID_PFRS_RTYPES == NULL) {
-	FID_PFRS_RTYPES = (*env)->GetFieldID(env, K_PFRS, "_rtypes", "Ljava/util/List;");
-	if (FID_PFRS_RTYPES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_uri' of PFRS");
-	    return;
-	}
-    }
-    if (FID_PFRS_INTERFACES == NULL) {
-	FID_PFRS_INTERFACES = (*env)->GetFieldID(env, K_PFRS, "_interfaces", "Ljava/util/List;");
-	if (FID_PFRS_INTERFACES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_interfaces' of PFRS");
-	    return;
-	}
-    }
-    if (FID_PFRS_PROPERTIES == NULL) {
-	FID_PFRS_PROPERTIES = (*env)->GetFieldID(env, K_PFRS, "_properties", "Lorg/iochibity/PropertyMap;");
-	if (FID_PFRS_PROPERTIES == NULL) {
-	    printf("ERROR: GetFieldID failed for '_properties' of PFRS");
-	    return;
-	}
-    }
-}
+/* void init_pfrs(JNIEnv* env) */
+/* { */
+/*     if (K_PFRS == NULL) { */
+/* 	K_PFRS = (*env)->FindClass(env, "org/iochibity/PayloadForResourceState"); */
+/* 	if (K_PFRS == NULL) { */
+/* 	    printf("ERROR: FindClass failed for org/iochibity/PayloadForResourceState\n"); */
+/* 	    return; */
+/* 	} */
+/*     } */
+/*     if (FID_PFRS_URI == NULL) { */
+/* 	FID_PFRS_URI = (*env)->GetFieldID(env, K_PFRS, "_uri", "Ljava/lang/String;"); */
+/* 	if (FID_PFRS_URI == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_uri' of PFRS"); */
+/* 	    return; */
+/* 	} */
+/*     } */
+/*     if (FID_PFRS_RTYPES == NULL) { */
+/* 	FID_PFRS_RTYPES = (*env)->GetFieldID(env, K_PFRS, "_rtypes", "Ljava/util/List;"); */
+/* 	if (FID_PFRS_RTYPES == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_uri' of PFRS"); */
+/* 	    return; */
+/* 	} */
+/*     } */
+/*     if (FID_PFRS_INTERFACES == NULL) { */
+/* 	FID_PFRS_INTERFACES = (*env)->GetFieldID(env, K_PFRS, "_interfaces", "Ljava/util/List;"); */
+/* 	if (FID_PFRS_INTERFACES == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_interfaces' of PFRS"); */
+/* 	    return; */
+/* 	} */
+/*     } */
+/*     if (FID_PFRS_PROPERTIES == NULL) { */
+/* 	FID_PFRS_PROPERTIES = (*env)->GetFieldID(env, K_PFRS, "_properties", "Lorg/iochibity/PropertyMap;"); */
+/* 	if (FID_PFRS_PROPERTIES == NULL) { */
+/* 	    printf("ERROR: GetFieldID failed for '_properties' of PFRS"); */
+/* 	    return; */
+/* 	} */
+/*     } */
+/* } */
 
 /*
  *
@@ -1312,201 +1312,201 @@ int init_CoServiceProvider(JNIEnv* env)
  * Routine:   props_to_OCRepPayloadValue
  * Signature: (Lorg/iochibity/PropertyMap;)J
  */
-OCRepPayloadValue* props_to_OCRepPayloadValue(JNIEnv* env, jobject j_propmap)
-{
-    printf("props_to_OCRepPayloadValue ENTRY\n");
-    OCRepPayloadValue* plv_head = NULL;
+/* OCRepPayloadValue* props_to_OCRepPayloadValue(JNIEnv* env, jobject j_propmap) */
+/* { */
+/*     printf("props_to_OCRepPayloadValue ENTRY\n"); */
+/*     OCRepPayloadValue* plv_head = NULL; */
 
-    /* test */
-    /* plv_head = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); */
-    /* if (!plv_head) { */
-    /* 	printf("ERROR: IOCCalloc failed for head OCRepPayloadValue"); */
-    /* 	return NULL; */
-    /* } */
-    /* plv_head->name = "HeadPropNode"; */
-    /* if (!plv_head->name) */
-    /*     { */
-    /*         OICFree(plv_head); */
-    /* 	    printf("ERROR: Name assign failed for OCRepPayloadValue"); */
-    /*         return NULL; */
-    /*     } */
+/*     /\* test *\/ */
+/*     /\* plv_head = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); *\/ */
+/*     /\* if (!plv_head) { *\/ */
+/*     /\* 	printf("ERROR: IOCCalloc failed for head OCRepPayloadValue"); *\/ */
+/*     /\* 	return NULL; *\/ */
+/*     /\* } *\/ */
+/*     /\* plv_head->name = "HeadPropNode"; *\/ */
+/*     /\* if (!plv_head->name) *\/ */
+/*     /\*     { *\/ */
+/*     /\*         OICFree(plv_head); *\/ */
+/*     /\* 	    printf("ERROR: Name assign failed for OCRepPayloadValue"); *\/ */
+/*     /\*         return NULL; *\/ */
+/*     /\*     } *\/ */
 
-    /* plv_head->type = OCREP_PROP_INT; */
-    /* plv_head->i    = 72; */
+/*     /\* plv_head->type = OCREP_PROP_INT; *\/ */
+/*     /\* plv_head->i    = 72; *\/ */
 
-    /* OCRepPayloadValue* plv2 = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); */
-    /* if (!plv2) { */
-    /* 	printf("ERROR: IOCCalloc failed for plv2 OCRepPayloadValue"); */
-    /* 	return NULL; */
-    /* } */
-    /* plv2->name = "Node2"; */
-    /* if (!plv2->name) */
-    /*     { */
-    /*         OICFree(plv2); */
-    /* 	    printf("ERROR: Name assign failed for OCRepPayloadValue"); */
-    /*         return NULL; */
-    /*     } */
-    /* plv2->type = OCREP_PROP_INT; */
-    /* plv2->i    = 73; */
-    /* plv_head->next = plv2; */
+/*     /\* OCRepPayloadValue* plv2 = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); *\/ */
+/*     /\* if (!plv2) { *\/ */
+/*     /\* 	printf("ERROR: IOCCalloc failed for plv2 OCRepPayloadValue"); *\/ */
+/*     /\* 	return NULL; *\/ */
+/*     /\* } *\/ */
+/*     /\* plv2->name = "Node2"; *\/ */
+/*     /\* if (!plv2->name) *\/ */
+/*     /\*     { *\/ */
+/*     /\*         OICFree(plv2); *\/ */
+/*     /\* 	    printf("ERROR: Name assign failed for OCRepPayloadValue"); *\/ */
+/*     /\*         return NULL; *\/ */
+/*     /\*     } *\/ */
+/*     /\* plv2->type = OCREP_PROP_INT; *\/ */
+/*     /\* plv2->i    = 73; *\/ */
+/*     /\* plv_head->next = plv2; *\/ */
 
-    /* iterate over j_propmap */
-    /* Set eset = j_propmap.entrySet() */
-    /* Iterator it = eset.iterator(); */
-    /* while (it.hasNext()) { */
-    /*     Map.Entry pair = (Map.Entry)it.next(); */
-    /*     System.out.println(pair.getKey() + " = " + pair.getValue()); */
-    /*     it.remove(); // avoids a ConcurrentModificationException */
+/*     /\* iterate over j_propmap *\/ */
+/*     /\* Set eset = j_propmap.entrySet() *\/ */
+/*     /\* Iterator it = eset.iterator(); *\/ */
+/*     /\* while (it.hasNext()) { *\/ */
+/*     /\*     Map.Entry pair = (Map.Entry)it.next(); *\/ */
+/*     /\*     System.out.println(pair.getKey() + " = " + pair.getValue()); *\/ */
+/*     /\*     it.remove(); // avoids a ConcurrentModificationException *\/ */
 
-    jobject j_set = (*env)->CallObjectMethod(env, j_propmap, MID_PMAP_ENTRYSET);
-    if (j_set == NULL) {
-	THROW_JNI_EXCEPTION("CallObjectMethod failed for MID_PMAP_ENTRYSET on j_propmap\n");
-	return NULL;
-    }
-    jobject j_iter = (*env)->CallObjectMethod(env, j_set, MID_SET_ITERATOR);
-    if (j_iter == NULL) {
-	printf("ERROR: CallObjectMethod failed for MID_SET_ITERATOR on j_set\n");
-	return NULL;
-    }
+/*     jobject j_set = (*env)->CallObjectMethod(env, j_propmap, MID_PMAP_ENTRYSET); */
+/*     if (j_set == NULL) { */
+/* 	THROW_JNI_EXCEPTION("CallObjectMethod failed for MID_PMAP_ENTRYSET on j_propmap\n"); */
+/* 	return NULL; */
+/*     } */
+/*     jobject j_iter = (*env)->CallObjectMethod(env, j_set, MID_SET_ITERATOR); */
+/*     if (j_iter == NULL) { */
+/* 	printf("ERROR: CallObjectMethod failed for MID_SET_ITERATOR on j_set\n"); */
+/* 	return NULL; */
+/*     } */
 
-    jobject j_entry;
-    jobject j_key;
-    jobject j_val;
-    OCRepPayloadValue** plv = &plv_head;
-    bool has_next = (bool)(*env)->CallObjectMethod(env, j_iter, MID_ITER_HASNEXT);
-    printf("ITERATING %d\n", has_next);
-    while ( has_next ) {
-	char*   c_key;
-	j_entry = (*env)->CallObjectMethod(env, j_iter, MID_ITER_NEXT);
-	if (j_entry == NULL) {
-	    printf("GOT NULL ENTRY, head: %s\n", plv_head->name);
-	    /* printf("CallObjectMethod failed for MID_ITER_NEXT on j_iter\n"); */
-	    /* return plv_head; */
-	    break;
-	}
-	j_key = (*env)->CallObjectMethod(env, j_entry, MID_ENTRY_GETKEY);
-	if (j_key == NULL) {
-	    printf("CallObjectMethod failed for MID_ENTRY_GETKEY on j_entry\n");
-	    return NULL;
-	}
-	c_key =  (char*) (*env)->GetStringUTFChars(env, j_key, NULL);
+/*     jobject j_entry; */
+/*     jobject j_key; */
+/*     jobject j_val; */
+/*     OCRepPayloadValue** plv = &plv_head; */
+/*     bool has_next = (bool)(*env)->CallObjectMethod(env, j_iter, MID_ITER_HASNEXT); */
+/*     printf("ITERATING %d\n", has_next); */
+/*     while ( has_next ) { */
+/* 	char*   c_key; */
+/* 	j_entry = (*env)->CallObjectMethod(env, j_iter, MID_ITER_NEXT); */
+/* 	if (j_entry == NULL) { */
+/* 	    printf("GOT NULL ENTRY, head: %s\n", plv_head->name); */
+/* 	    /\* printf("CallObjectMethod failed for MID_ITER_NEXT on j_iter\n"); *\/ */
+/* 	    /\* return plv_head; *\/ */
+/* 	    break; */
+/* 	} */
+/* 	j_key = (*env)->CallObjectMethod(env, j_entry, MID_ENTRY_GETKEY); */
+/* 	if (j_key == NULL) { */
+/* 	    printf("CallObjectMethod failed for MID_ENTRY_GETKEY on j_entry\n"); */
+/* 	    return NULL; */
+/* 	} */
+/* 	c_key =  (char*) (*env)->GetStringUTFChars(env, j_key, NULL); */
 
-	j_val = (*env)->CallObjectMethod(env, j_entry, MID_ENTRY_GETVALUE);
-	if (j_val == NULL) {
-	    THROW_JNI_EXCEPTION("CallObjectMethod failed for MID_ENTRY_GETVAL on j_entry\n");
-	    return NULL;
-	}
+/* 	j_val = (*env)->CallObjectMethod(env, j_entry, MID_ENTRY_GETVALUE); */
+/* 	if (j_val == NULL) { */
+/* 	    THROW_JNI_EXCEPTION("CallObjectMethod failed for MID_ENTRY_GETVAL on j_entry\n"); */
+/* 	    return NULL; */
+/* 	} */
 
-	if ( (*env)->IsInstanceOf(env, j_val, K_INTEGER) ) {
-	    int c_val = (int)(*env)->CallIntMethod(env, j_val, MID_INT_INTVALUE);
-	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue));
-	    if (!*plv) {
-	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue");
-	    	return NULL;
-	    }
-	    (*plv)->name = OICStrdup(c_key);
-	    (*plv)->type = OCREP_PROP_INT;
-	    (*plv)->i = (int64_t)c_val;
-	    printf("GOT ENTRY: %s = %lld (INT)\n", (*plv)->name, (int64_t)(*plv)->i);
-	    /* (*plv)->next = *plv; */
-	    (*plv)->next = NULL;
-	    plv = &((*plv)->next);
-	} else if ( (*env)->IsInstanceOf(env, j_val, K_DOUBLE) ) {
-	    double c_val = (double)(*env)->CallDoubleMethod(env, j_val, MID_DBL_DBLVALUE);
-	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue));
-	    if (!*plv) {
-	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue");
-	    	return NULL;
-	    }
-	    (*plv)->name = OICStrdup(c_key);
-	    (*plv)->type = OCREP_PROP_DOUBLE;
-	    (*plv)->d = (double)c_val;
-	    printf("GOT ENTRY: %s = %f (DOUBLE)\n", (*plv)->name, (double)(*plv)->d);
-	    (*plv)->next = NULL;
-	    plv = &((*plv)->next);
-	} else if ( (*env)->IsInstanceOf(env, j_val, K_BOOLEAN) ) {
-	    bool c_val = (bool)(*env)->CallBooleanMethod(env, j_val, MID_BOOL_BOOLVALUE);
-	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue));
-	    if (!*plv) {
-	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue");
-	    	return NULL;
-	    }
-	    (*plv)->name = OICStrdup(c_key);
-	    (*plv)->type = OCREP_PROP_BOOL;
-	    (*plv)->b = (bool)c_val;
-	    printf("GOT ENTRY: %s = %d (BOOL)\n", (*plv)->name, (bool)(*plv)->b);
-	    (*plv)->next = NULL;
-	    plv = &((*plv)->next);
-	} else if ( (*env)->IsInstanceOf(env, j_val, K_STRING) ) {
-	    char* c_val = (char*) (*env)->GetStringUTFChars(env, j_val, NULL);
-	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue));
-	    if (!*plv) {
-	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue");
-	    	return NULL;
-	    }
-	    (*plv)->name = OICStrdup(c_key);
-	    (*plv)->type = OCREP_PROP_STRING;
-	    (*plv)->str = (char*)OICStrdup(c_val);
-	    (*env)->ReleaseStringUTFChars(env, j_val, c_val);
-	    printf("GOT ENTRY: %s = %s (STRING)\n", (*plv)->name, (char*)(*plv)->str);
-	    (*plv)->next = NULL;
-	    plv = &((*plv)->next);
-	} else {
-	    printf("GOT ENTRY: %s of type ?\n", c_key);
-	}
-	/* (*env)->CallObjectMethod(env, j_iter, MID_ITER_REMOVE); */
-	has_next = (bool)(*env)->CallObjectMethod(env, j_iter, MID_ITER_HASNEXT);
-    }
+/* 	if ( (*env)->IsInstanceOf(env, j_val, K_INTEGER) ) { */
+/* 	    int c_val = (int)(*env)->CallIntMethod(env, j_val, MID_INT_INTVALUE); */
+/* 	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); */
+/* 	    if (!*plv) { */
+/* 	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue"); */
+/* 	    	return NULL; */
+/* 	    } */
+/* 	    (*plv)->name = OICStrdup(c_key); */
+/* 	    (*plv)->type = OCREP_PROP_INT; */
+/* 	    (*plv)->i = (int64_t)c_val; */
+/* 	    printf("GOT ENTRY: %s = %lld (INT)\n", (*plv)->name, (int64_t)(*plv)->i); */
+/* 	    /\* (*plv)->next = *plv; *\/ */
+/* 	    (*plv)->next = NULL; */
+/* 	    plv = &((*plv)->next); */
+/* 	} else if ( (*env)->IsInstanceOf(env, j_val, K_DOUBLE) ) { */
+/* 	    double c_val = (double)(*env)->CallDoubleMethod(env, j_val, MID_DBL_DBLVALUE); */
+/* 	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); */
+/* 	    if (!*plv) { */
+/* 	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue"); */
+/* 	    	return NULL; */
+/* 	    } */
+/* 	    (*plv)->name = OICStrdup(c_key); */
+/* 	    (*plv)->type = OCREP_PROP_DOUBLE; */
+/* 	    (*plv)->d = (double)c_val; */
+/* 	    printf("GOT ENTRY: %s = %f (DOUBLE)\n", (*plv)->name, (double)(*plv)->d); */
+/* 	    (*plv)->next = NULL; */
+/* 	    plv = &((*plv)->next); */
+/* 	} else if ( (*env)->IsInstanceOf(env, j_val, K_BOOLEAN) ) { */
+/* 	    bool c_val = (bool)(*env)->CallBooleanMethod(env, j_val, MID_BOOL_BOOLVALUE); */
+/* 	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); */
+/* 	    if (!*plv) { */
+/* 	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue"); */
+/* 	    	return NULL; */
+/* 	    } */
+/* 	    (*plv)->name = OICStrdup(c_key); */
+/* 	    (*plv)->type = OCREP_PROP_BOOL; */
+/* 	    (*plv)->b = (bool)c_val; */
+/* 	    printf("GOT ENTRY: %s = %d (BOOL)\n", (*plv)->name, (bool)(*plv)->b); */
+/* 	    (*plv)->next = NULL; */
+/* 	    plv = &((*plv)->next); */
+/* 	} else if ( (*env)->IsInstanceOf(env, j_val, K_STRING) ) { */
+/* 	    char* c_val = (char*) (*env)->GetStringUTFChars(env, j_val, NULL); */
+/* 	    *plv = (OCRepPayloadValue*)OICCalloc(1, sizeof(OCRepPayloadValue)); */
+/* 	    if (!*plv) { */
+/* 	    	THROW_JNI_EXCEPTION("IOCCalloc failed for *plv OCRepPayloadValue"); */
+/* 	    	return NULL; */
+/* 	    } */
+/* 	    (*plv)->name = OICStrdup(c_key); */
+/* 	    (*plv)->type = OCREP_PROP_STRING; */
+/* 	    (*plv)->str = (char*)OICStrdup(c_val); */
+/* 	    (*env)->ReleaseStringUTFChars(env, j_val, c_val); */
+/* 	    printf("GOT ENTRY: %s = %s (STRING)\n", (*plv)->name, (char*)(*plv)->str); */
+/* 	    (*plv)->next = NULL; */
+/* 	    plv = &((*plv)->next); */
+/* 	} else { */
+/* 	    printf("GOT ENTRY: %s of type ?\n", c_key); */
+/* 	} */
+/* 	/\* (*env)->CallObjectMethod(env, j_iter, MID_ITER_REMOVE); *\/ */
+/* 	has_next = (bool)(*env)->CallObjectMethod(env, j_iter, MID_ITER_HASNEXT); */
+/*     } */
 
-    printf("props_to_OCRepPayloadValue EXIT returning %ld\n", (long)plv_head);
-    return plv_head;
-}
+/*     printf("props_to_OCRepPayloadValue EXIT returning %ld\n", (long)plv_head); */
+/*     return plv_head; */
+/* } */
 
 // FIXME: this doesn't belong here
 /*
  * Routine:   pfrs_to_OCRepPayloadValue
  * Signature: (Lorg/iochibity/PayloadForResourceState;)J
  */
-OCRepPayload* pfrs_to_OCRepPayload(JNIEnv* env, jobject j_pfrs)
-{
-    OCRepPayload* c_payload = (OCRepPayload*)(intptr_t)
-	(*env)->GetLongField(env, j_pfrs, FID_OBSERVATION_HANDLE);
-    /* int j_payload_type = (*env)->GetIntField(env, j_pfrs, FID_PAYLOAD_TYPE); */
+/* OCRepPayload* pfrs_to_OCRepPayload(JNIEnv* env, jobject j_pfrs) */
+/* { */
+/*     OCRepPayload* c_payload = (OCRepPayload*)(intptr_t) */
+/* 	(*env)->GetLongField(env, j_pfrs, FID_OBSERVATION_HANDLE); */
+/*     /\* int j_payload_type = (*env)->GetIntField(env, j_pfrs, FID_PAYLOAD_TYPE); *\/ */
 
-    if (c_payload->base.type !=  PAYLOAD_TYPE_REPRESENTATION) {
-	printf("ERROR: mismatch between java and c\n");
-    }
+/*     if (c_payload->base.type !=  PAYLOAD_TYPE_REPRESENTATION) { */
+/* 	printf("ERROR: mismatch between java and c\n"); */
+/*     } */
 
-    /* populate the struct: uri, types, interfaces, properties */
+/*     /\* populate the struct: uri, types, interfaces, properties *\/ */
 
-    jstring j_uri  = (*env)->GetObjectField(env, j_pfrs, FID_PFRS_URI);
-    if (j_uri == NULL) {
-	THROW_JNI_EXCEPTION("GetObjectField failed for FID_PFRS_URI on j_pfrs\n");
-	return NULL;
-    }
-    c_payload->uri = (char*) (*env)->GetStringUTFChars(env, j_uri, NULL);
-    if (c_payload->uri == NULL) {
-	THROW_JNI_EXCEPTION("GetStringUTFChars failed for j_uri\n");
-	return NULL;
-    }
+/*     jstring j_uri  = (*env)->GetObjectField(env, j_pfrs, FID_PFRS_URI); */
+/*     if (j_uri == NULL) { */
+/* 	THROW_JNI_EXCEPTION("GetObjectField failed for FID_PFRS_URI on j_pfrs\n"); */
+/* 	return NULL; */
+/*     } */
+/*     c_payload->uri = (char*) (*env)->GetStringUTFChars(env, j_uri, NULL); */
+/*     if (c_payload->uri == NULL) { */
+/* 	THROW_JNI_EXCEPTION("GetStringUTFChars failed for j_uri\n"); */
+/* 	return NULL; */
+/*     } */
 
-    /* properties ('values'): OCRepPayloadValue* values; */
-    jobject j_properties  = (*env)->GetObjectField(env, j_pfrs, FID_PFRS_PROPERTIES);
-    if (j_properties == NULL) {
-	THROW_JNI_EXCEPTION("GetObjectField failed for FID_PFRS_PROPERTIES on j_pfrs\n");
-	return NULL;
-    }
-    int sz = 0;
-    sz = (*env)->CallIntMethod(env, j_properties, MID_PMAP_SIZE);
-    printf("PropertyMap SIZE: %d\n", sz);
+/*     /\* properties ('values'): OCRepPayloadValue* values; *\/ */
+/*     jobject j_properties  = (*env)->GetObjectField(env, j_pfrs, FID_PFRS_PROPERTIES); */
+/*     if (j_properties == NULL) { */
+/* 	THROW_JNI_EXCEPTION("GetObjectField failed for FID_PFRS_PROPERTIES on j_pfrs\n"); */
+/* 	return NULL; */
+/*     } */
+/*     int sz = 0; */
+/*     sz = (*env)->CallIntMethod(env, j_properties, MID_PMAP_SIZE); */
+/*     printf("PropertyMap SIZE: %d\n", sz); */
 
-    if (sz > 0) {
-	OCRepPayloadValue* properties = props_to_OCRepPayloadValue(env, j_properties);
-	c_payload->values = properties;
-    }
+/*     if (sz > 0) { */
+/* 	OCRepPayloadValue* properties = props_to_OCRepPayloadValue(env, j_properties); */
+/* 	c_payload->values = properties; */
+/*     } */
 
-    return c_payload;
-}
+/*     return c_payload; */
+/* } */
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 {
@@ -1634,7 +1634,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 
     if (init_observation(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
 
-    init_pfp(env);
+    /* init_pfp(env); */
 
     /* init_pfrs(env); */
 

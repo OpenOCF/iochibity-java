@@ -133,8 +133,7 @@ jobject OCClientResponse_to_ObservationIn(JNIEnv* env, OCClientResponse* c_OCCli
  * @see observe_stimulus
  * @see Java_org_iochibity_ServiceProvider_exhibitBehavior
  */
-
-OCStackApplicationResult c_CoServiceProvider_observe_behavior(void* c_CoSP,
+OCStackApplicationResult c_org_iochibity_CoServiceProvider_observe_behavior(void* c_CoSP,
 					  OCDoHandle c_TransactionHandle,
 					  OCClientResponse* c_OCClientResponse)
 {
@@ -309,7 +308,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibitStimulus
     OCStackResult ret;
     OCCallbackData cbData;
 
-    cbData.cb = c_CoServiceProvider_observe_behavior;
+    cbData.cb = c_org_iochibity_CoServiceProvider_observe_behavior;
     cbData.context = (void*)(long)g_CoSP;
     cbData.cd = NULL;
 

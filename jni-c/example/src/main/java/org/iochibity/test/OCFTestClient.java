@@ -18,13 +18,10 @@ import org.iochibity.StimulusOut;
 import org.iochibity.ObservationIn;
 import org.iochibity.ObservationOut;
 import org.iochibity.HeaderOption;
-import org.iochibity.IObservation;
-import org.iochibity.Observation;
+import org.iochibity.ObservationRecord;
 import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
 import org.iochibity.PropertyString;
-// import org.iochibity.Resource;
-// import org.iochibity.ResourceLocal;
 import org.iochibity.ServiceManager;
 import org.iochibity.ICoServiceProvider;
 
@@ -207,8 +204,11 @@ public class OCFTestClient
 		break;
 	    case "3":
 		System.out.println("GET: Select a resource.");
+
+		// UI tedium:
 		CoServiceProvider cosp = null;
-		for(int i = 0; i < ServiceManager.coServiceProviders.size(); i++) {
+		int sz = ServiceManager.coServiceProviders.size();
+		for(int i = 0; i < sz; i++) {
 		    cosp = ServiceManager.coServiceProviders.get(i);
 		    DeviceAddress da = cosp.getDestination();
 		    String s;
@@ -223,17 +223,25 @@ public class OCFTestClient
 		}
 		System.out.println();
 
-		while (!scanner.hasNextInt()) {
-		    System.out.println("Invalid input: " + scanner.next() + "; try again");
+		int i = 0;
+		while(true) {
+		    while (!scanner.hasNextInt()) {
+			System.out.println("Invalid input: " + scanner.next() + "; try again");
+		    }
+		    i = scanner.nextInt();
+		    if ( (i < sz) && i >= 0) {
+			break;
+		    } else {
+			System.out.println("Invalid input: " + i + "; try again");
+		    }
 		}
-		int i = scanner.nextInt();
+		// Yay! UI done.
 
 		cosp = ServiceManager.coServiceProviders.get(i);
 		cosp.setMethod(Method.GET);
-		// msgRequestOut = cosp.getStimulusOut();
 		try {
 		    cosp.exhibitStimulus();
-		    Thread.sleep(1000);
+		    Thread.sleep(500); // just to let the user prompt work
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    msgError(TAG, e.toString());

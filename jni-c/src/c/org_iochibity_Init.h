@@ -75,18 +75,18 @@ extern jclass    K_OBSERVATION_LIST;
 extern jmethodID MID_PLL_CTOR;
 extern jmethodID MID_PLL_ADD;
 
-extern jclass   K_PFRS; 			/* class for PayloadForResourceState */
-extern jfieldID FID_PFRS_URI;
-extern jfieldID FID_PFRS_RTYPES;
-extern jfieldID FID_PFRS_INTERFACES;
-extern jfieldID FID_PFRS_PROPERTIES;
+/* extern jclass   K_PFRS; 			/\* class for PayloadForResourceState *\/ */
+/* extern jfieldID FID_PFRS_URI; */
+/* extern jfieldID FID_PFRS_RTYPES; */
+/* extern jfieldID FID_PFRS_INTERFACES; */
+/* extern jfieldID FID_PFRS_PROPERTIES; */
 
-extern jclass    K_PFP;   			/* class for PayloadForPlatform */
-extern jfieldID  FID_PFP_URI;
-extern jfieldID  FID_PFP_RTYPES;
-extern jfieldID  FID_PFP_INTERFACES;
-extern jfieldID  FID_PFP_PROPERTIES;
-extern jmethodID MID_PFP_CTOR;
+/* extern jclass    K_PFP;   			/\* class for PayloadForPlatform *\/ */
+/* extern jfieldID  FID_PFP_URI; */
+/* extern jfieldID  FID_PFP_RTYPES; */
+/* extern jfieldID  FID_PFP_INTERFACES; */
+/* extern jfieldID  FID_PFP_PROPERTIES; */
+/* extern jmethodID MID_PFP_CTOR; */
 
 extern jclass   K_PMAP; 			/* class for PropertyMap */
 extern jmethodID MID_PMAP_CTOR;
@@ -233,6 +233,6 @@ extern OCRepPayloadValue* props_to_OCRepPayloadValue(JNIEnv* env, jobject j_prop
 extern OCRepPayload* pfrs_to_OCRepPayload(JNIEnv* env, jobject j_pfrs);
 
 
-extern OCEntityHandlerResult c_ServiceProvider_observe_stimulus(OCEntityHandlerFlag flag,
-						OCEntityHandlerRequest * crequest_in, /* StimulusIn */
-						void* callbackParam);
+extern OCEntityHandlerResult c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag flag,
+					      OCEntityHandlerRequest * c_EntityHandlerRequest,
+					      void* j_IServiceProvider);

@@ -61,9 +61,9 @@ public abstract class CoServiceProvider
     // public  void                   setPolicies(int newPolicies) { _policies = newPolicies; }
 
     // OCPayload wrapper
-    private Observation            _observation;
-    public  Observation            getObservation() { return _observation; }
-    public  void                   setObservation(Observation o) { _observation = o; }
+    private ObservationRecord            _observationRecord;
+    public  ObservationRecord            getObservationRecord() { return _observationRecord; }
+    public  void                   setObservationRecord(ObservationRecord o) { _observationRecord = o; }
 
     private int                    _qualityOfService;
     public  int                    getQualityOfService() { return _qualityOfService; }

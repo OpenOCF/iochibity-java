@@ -4,14 +4,10 @@ import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
 import org.iochibity.StimulusIn;
-import org.iochibity.ObservationOut;
-import org.iochibity.Observation;
-// import org.iochibity.PayloadForResourceState;
 import org.iochibity.ObservationList;
+import org.iochibity.ObservationOut;
+import org.iochibity.ObservationRecord;
 import org.iochibity.PropertyMap;
-import org.iochibity.PropertyString;
-import org.iochibity.Resource;
-// import org.iochibity.ResourceLocal;
 import org.iochibity.ServiceManager;
 import org.iochibity.ServiceProvider;
 import org.iochibity.IServiceProvider;
@@ -45,7 +41,7 @@ public class TemperatureSP
 	setUriPath("/a/temperature");
 	addType("core.temp");
 	addInterface("oc.mi.temp");
-	setPolicies(Resource.DISCOVERABLE | Resource.SECURE);
+	// setPolicies(Resource.DISCOVERABLE | Resource.SECURE);
     }
 
     public int observeStimulus(StimulusIn requestIn)
@@ -53,7 +49,7 @@ public class TemperatureSP
 	System.out.println("TEST TemperatureSP.service routine ENTRY");
 	Logger.logRequestIn(requestIn);
 
-	ObservationList<Observation> observationOut = null;
+	ObservationList<ObservationRecord> observationRecordOut = null;
 
 	// typedef enum
 	// {
@@ -64,7 +60,7 @@ public class TemperatureSP
 
 	switch (requestIn.getMethod()) {
 	case Method.GET:
-	    observationOut = serviceGetRequest(requestIn);
+	    observationRecordOut = serviceGetRequest(requestIn);
 	    break;
 	case Method.PUT:
 	    System.out.println("TEST method: PUT");
@@ -77,7 +73,7 @@ public class TemperatureSP
 	    break;
 	case Method.WATCH:
 	    System.out.println("TEST method: WATCH");
-	    observationOut = serviceGetRequest(requestIn);
+	    observationRecordOut = serviceGetRequest(requestIn);
 	    break;
 	case Method.WATCH_ALL:
 	    System.out.println("TEST method: WATCH_ALL");
@@ -101,7 +97,7 @@ public class TemperatureSP
 	    break;
 	}
 
-	ObservationOut responseOut = new ObservationOut(requestIn, observationOut);
+	ObservationOut responseOut = new ObservationOut(requestIn, observationRecordOut);
 
 	try {
 	    this.exhibitBehavior();
@@ -113,7 +109,7 @@ public class TemperatureSP
 	return ServiceResult.OK;
     }
 
-    private ObservationList<Observation> serviceGetRequest(StimulusIn requestIn)
+    private ObservationList<ObservationRecord> serviceGetRequest(StimulusIn requestIn)
     {
 	System.out.println("TEST serviceGetRequest ENTRY");
 

@@ -7,15 +7,11 @@ import org.iochibity.HeaderOption;
 import org.iochibity.StimulusIn;
 import org.iochibity.ObservationIn;
 import org.iochibity.ObservationOut;
-import org.iochibity.IObservation;
-import org.iochibity.Observation;
+import org.iochibity.IObservationRecord;
+import org.iochibity.ObservationRecord;
 import org.iochibity.ObservationList;
-import org.iochibity.PayloadForPlatform;
-// import org.iochibity.PayloadForResourceState;
 import org.iochibity.PropertyMap;
 import org.iochibity.PropertyString;
-// import org.iochibity.Resource;
-// import org.iochibity.ResourceLocal;
 import org.iochibity.IServiceProvider;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
@@ -58,14 +54,14 @@ public class Logger
 	errcodeMap.put(402, "CA_BAD_OPT");
 
 	observationTypes = new HashMap<Integer, String>();
-	observationTypes.put(Observation.PLATFORM, "PLATFORM");
-	observationTypes.put(Observation.DEVICE, "DEVICE");
-	observationTypes.put(Observation.REPRESENTATION, "REPRESENTATION");
-	observationTypes.put(Observation.DISCOVERY, "DISCOVERY");
-	observationTypes.put(Observation.SECURITY, "SECURITY");
-	observationTypes.put(Observation.PRESENCE, "PRESENCE");
-	observationTypes.put(Observation.RD, "RD");
-	observationTypes.put(Observation.NOTIFICATION, "NOTIFICATION");
+	observationTypes.put(ObservationRecord.PLATFORM, "PLATFORM");
+	observationTypes.put(ObservationRecord.DEVICE, "DEVICE");
+	observationTypes.put(ObservationRecord.REPRESENTATION, "REPRESENTATION");
+	observationTypes.put(ObservationRecord.DISCOVERY, "DISCOVERY");
+	observationTypes.put(ObservationRecord.SECURITY, "SECURITY");
+	observationTypes.put(ObservationRecord.PRESENCE, "PRESENCE");
+	observationTypes.put(ObservationRecord.RD, "RD");
+	observationTypes.put(ObservationRecord.NOTIFICATION, "NOTIFICATION");
 
 	netProtocols = new HashMap<Integer, String>();
 	netProtocols.put(0, "OC_DEFAULT_ADAPTER");
@@ -207,30 +203,30 @@ public class Logger
     // 	System.out.println("RESOURCE: logResource EXIT");
     // }
 
-    static public void logObservation(Observation observation)
+    static public void logObservation(ObservationRecord observationRecord)
     {
 	// System.out.println("OBSERVATION: logObservation ENTRY");
 
-	System.out.println("\tOBSERVED uri: " + observation.getUriPath());
+	System.out.println("\tOBSERVED uri: " + observationRecord.getUriPath());
 
-	System.out.println("\tOBSERVED type: " + observation.getType());
+	System.out.println("\tOBSERVED type: " + observationRecord.getType());
 
 	// log rtypes
-	List<String> rtypes = observation.getResourceTypes();
+	List<String> rtypes = observationRecord.getResourceTypes();
 	System.out.println("\tOBSERVED RESOURCE TYPES count: " + rtypes.size());
 	for (String t : (List<String>)rtypes) {
 	    System.out.println("\tOBSERVED rtype: " + t);
 	}
 
 	// log interfaces
-	List<String> ifaces = observation.getInterfaces();
+	List<String> ifaces = observationRecord.getInterfaces();
 	System.out.println("\tOBSERVED INTERFACES count: " + ifaces.size());
 	for (String iface : ifaces) {
 	    System.out.println("\tOBSERVED interface: " + iface);
 	}
 
 	// log properties (PlatformInfo, DeviceInfo, or "values" for resources)
-	PropertyMap<String, Object> pmap = observation.getProperties();
+	PropertyMap<String, Object> pmap = observationRecord.getProperties();
 	System.out.println("\tOBSERVED PROPERTIES count: " + pmap.size());
 	for (Map.Entry<String, Object> entry : pmap.entrySet())
 	    {
@@ -239,12 +235,12 @@ public class Logger
 				   + " = "
 				   + entry.getValue());
 	    }
-	List<IObservation> kids = observation.getChildren();
+	List<IObservationRecord> kids = observationRecord.getChildren();
 	if (kids != null) {
 	    System.out.println("\tOBSERVED CHILDREN count: " + kids.size());
-	    for (IObservation p : kids) {
+	    for (IObservationRecord p : kids) {
 		System.out.println("================ CHILD");
-		logObservation((Observation)p);
+		logObservation((ObservationRecord)p);
 	    }
 	}
     }
@@ -311,14 +307,14 @@ public class Logger
 	    // 		       + ": "
 	    // 		       + observationTypes.get(observationIn.getObservationType()));
 
-	    ObservationList<Observation> observations = observationIn.getObservations();
-	    if (observations != null) {
-		System.out.println("LOG OBSERVATION count: " + observations.size());
-		for (Observation observation : (ObservationList<Observation>) observations) {
-		    List<IObservation> kids = observation.getChildren();
+	    ObservationList<ObservationRecord> observationRecords = observationIn.getObservationRecords();
+	    if (observationRecords != null) {
+		System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
+		for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
+		    List<IObservationRecord> kids = observationRecord.getChildren();
 		    if (kids != null) {
 			System.out.println("LOG CHILD OBSERVATIONS count: "
-					   + observation.getChildren().size());
+					   + observationRecord.getChildren().size());
 		    }
 		    // logObservation(observation);
 		}

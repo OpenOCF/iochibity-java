@@ -1,17 +1,10 @@
 var searchData=
 [
-  ['init_5fcoserviceprovider',['init_CoServiceProvider',['../ocf___init_8c.html#aab512faff5475364600160e0a1bad657',1,'ocf_Init.c']]],
-  ['init_5ficoserviceprovider',['init_ICoServiceProvider',['../ocf___init_8c.html#ab7311c16daa3c059f72d54a05568fef8',1,'ocf_Init.c']]],
-  ['init_5fjava',['init_java',['../ocf___init_8c.html#a6fc2f4569e771663da06b178cac1936a',1,'ocf_Init.c']]],
-  ['init_5fmessages',['init_Messages',['../ocf___init_8c.html#aa83d479d7afd0edda37d8f2932adf947',1,'ocf_Init.c']]],
-  ['init_5fobservation',['init_observation',['../ocf___init_8c.html#a20c4c02f02c5e630b67f8e5fe135b721',1,'ocf_Init.c']]],
-  ['init_5fobservationin',['init_ObservationIn',['../ocf___init_8c.html#ae31825e095777bd56774362ee3b6f219',1,'ocf_Init.c']]],
-  ['init_5fobservationout',['init_ObservationOut',['../ocf___init_8c.html#a3cf5b118bca80456e8a82763f96501d2',1,'ocf_Init.c']]],
-  ['init_5fpfp',['init_pfp',['../ocf___init_8c.html#a551ac75791a57d9ebbea195f0e5ca771',1,'ocf_Init.c']]],
-  ['init_5fpfrs',['init_pfrs',['../ocf___init_8c.html#a8b24f827ae65ebce03525d0a9290bd04',1,'ocf_Init.c']]],
-  ['init_5fpmap',['init_pmap',['../ocf___init_8c.html#a1b23b6c106c9ce64f2d45e64cef5c89d',1,'ocf_Init.c']]],
-  ['init_5fserviceproviders',['init_ServiceProviders',['../ocf___init_8c.html#aa49eb4b04349589f0fad6a3d57dd5111',1,'ocf_Init.c']]],
-  ['init_5fstimulusin',['init_StimulusIn',['../ocf___init_8c.html#a513864557c4d556a473dd4beb9d2df23',1,'ocf_Init.c']]],
-  ['init_5fstimulusout',['init_StimulusOut',['../ocf___init_8c.html#a9941f6ed212576c2c6506291d8a895d0',1,'ocf_Init.c']]],
-  ['int2integer',['int2Integer',['../jni__utils_8c.html#adb3ee7f710627d9ea6dd9e9440f01b00',1,'int2Integer(JNIEnv *env, int i):&#160;jni_utils.c'],['../jni__utils_8h.html#adb3ee7f710627d9ea6dd9e9440f01b00',1,'int2Integer(JNIEnv *env, int i):&#160;jni_utils.c']]]
+  ['g_5fconfig_5ffname',['g_config_fname',['../org__iochibity___init_8c.html#a909d2ea8b232b941ec72f7204ea4060d',1,'g_config_fname():&#160;org_iochibity_OCF.c'],['../org__iochibity___o_c_f_8c.html#a909d2ea8b232b941ec72f7204ea4060d',1,'g_config_fname():&#160;org_iochibity_OCF.c']]],
+  ['g_5fcosp',['g_CoSP',['../org__iochibity___co_service_provider_8c.html#a5d9b29efc98bd43e45b3cf5c14bfa98c',1,'org_iochibity_CoServiceProvider.c']]],
+  ['g_5fjvm',['g_JVM',['../org__iochibity___init_8c.html#a0cce6319a4bfd4026ec61603040986fa',1,'g_JVM():&#160;org_iochibity_Init.c'],['../org__iochibity___init_8h.html#a0cce6319a4bfd4026ec61603040986fa',1,'g_JVM():&#160;org_iochibity_Init.c']]],
+  ['g_5fquit_5fflag',['g_quit_flag',['../org__iochibity___o_c_f_8c.html#acbf531a177c42373f0129ed34b3fc54a',1,'org_iochibity_OCF.c']]],
+  ['getehcodestring',['getEHCodeString',['../org__iochibity___exceptions_8c.html#a1817e4e3041631707098bf253f206d1a',1,'org_iochibity_Exceptions.c']]],
+  ['gethandle',['getHandle',['../org__iochibity___property_map_8c.html#a7ba93c10c0cbb67b9200f10cb4031529',1,'org_iochibity_PropertyMap.c']]],
+  ['getstackcodestring',['getStackCodeString',['../org__iochibity___exceptions_8c.html#a3ac5c2282b149cd4d220756de6817750',1,'org_iochibity_Exceptions.c']]]
 ];

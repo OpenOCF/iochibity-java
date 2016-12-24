@@ -5,13 +5,9 @@ import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
 import org.iochibity.StimulusIn;
 import org.iochibity.ObservationOut;
-import org.iochibity.Observation;
+import org.iochibity.ObservationRecord;
 import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
-// import org.iochibity.PayloadForResourceState;
-import org.iochibity.PropertyString;
-import org.iochibity.Resource;
-// import org.iochibity.ResourceLocal;
 import org.iochibity.ServiceProvider;
 import org.iochibity.IServiceProvider;
 import org.iochibity.constants.Method;
@@ -53,7 +49,7 @@ public class LedSP
 	setUriPath("/a/led");
 	addType("core.led");
 	addInterface("oc.mi.led");
-	setPolicies(Resource.DISCOVERABLE | Resource.SECURE);
+	// setPolicies(Resource.DISCOVERABLE | Resource.SECURE);
 	// gpio = new Gpio(182);
 	gpio = new Gpio(IntelEdison.INTEL_EDISON_GP128.swigValue());
 	Result result = gpio.dir(Dir.DIR_OUT);
@@ -70,7 +66,7 @@ public class LedSP
 
 	System.out.println("LedSP: requestIn callback param foo = " + foo);
 
-	ObservationList<Observation> observationOut = null;
+	ObservationList<ObservationRecord> observationOut = null;
 
 	// typedef enum
 	// {
@@ -150,7 +146,7 @@ public class LedSP
 	return ServiceResult.OK;
     }
 
-    private ObservationList<Observation> serviceGetRequest(StimulusIn request)
+    private ObservationList<ObservationRecord> serviceGetRequest(StimulusIn request)
     {
 	System.out.println("LedSP.serviceGetRequest ENTRY");
 
@@ -191,7 +187,7 @@ public class LedSP
 	return null;
     }
 
-    private ObservationList<Observation> servicePostRequest(StimulusIn request)
+    private ObservationList<ObservationRecord> servicePostRequest(StimulusIn request)
     {
 	System.out.println("LedSP.servicePostRequest ENTRY");
 
@@ -205,9 +201,9 @@ public class LedSP
 	     gpio.write(1);
 	 }
 
-	ObservationList<Observation> pll = new ObservationList<Observation>();
+	ObservationList<ObservationRecord> pll = new ObservationList<ObservationRecord>();
 
-	return pll; //observation;
+	return pll; //observationRecord;
     }
 
 }

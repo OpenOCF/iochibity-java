@@ -19,7 +19,7 @@ public interface ICoServiceProvider {
     public DeviceAddress          getDestination();
     public void                   setDestination(DeviceAddress da);
 
-    public void                   setObservation(Observation observation);
+    public void                   setObservationRecord(ObservationRecord observationRecord);
 
     // OCTransportAdapter: OC_ADAPTER_IP, etc.
     public int                    getNetworkProtocol();
@@ -38,7 +38,7 @@ public interface ICoServiceProvider {
     public void                   setQualityOfService(int qos);
 
     // to add: fields from struct OCClientResponse? they will be
-    // updated on receipt of ObservationIn
+    // updated on receipt of ObservationRecordIn
 
     // what about struct ClientCB?
 

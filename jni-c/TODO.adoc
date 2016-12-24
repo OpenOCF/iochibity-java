@@ -17,3 +17,6 @@
 ACoServiceProvider -> CoServiceProvider
 
 ACOSP -> COSP
+
+
+Fix:  ObservationRecord.PLATFORM -> ??

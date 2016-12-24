@@ -393,7 +393,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvi
 				  c_resource_type_name,  /* const char *resourceTypeName, */
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
-				  c_ServiceProvider_observe_stimulus, /* cb impl in ocf_ServiceProvider */
+				  c_org_iochibity_ServiceProvider_observe_stimulus,
 				  /* x_callback_param, */
 				  x_ServiceProvider,
 				  (uint8_t) j_policies);  /* uint8_t resourceProperties */
@@ -534,7 +534,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvi
 				  c_resource_type_name,  /* const char *resourceTypeName, */
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
-				  c_ServiceProvider_observe_stimulus, /* cb impl in ocf_ServiceProvider */
+				  c_org_iochibity_ServiceProvider_observe_stimulus,
 				  x_ServiceProvider,
 				  (uint8_t) c_policies);  /* uint8_t resourceProperties */
 

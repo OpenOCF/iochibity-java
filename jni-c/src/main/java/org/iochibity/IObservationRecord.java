@@ -16,7 +16,7 @@ import java.util.List;
 // OCTagsPayload  - substruct used in OCResourceCollectionPayload
 // OCLinksPayload - substruct used in OCResourceCollectionPayload
 
-public interface IObservation
+public interface IObservationRecord
 {
     public long getHandle();	// ptr to c struct
 
@@ -69,5 +69,5 @@ public interface IObservation
     public long getPolicies();
 
     // ****************************************************************
-    public List<IObservation> getChildren();
+    public List<IObservationRecord> getChildren();
 }

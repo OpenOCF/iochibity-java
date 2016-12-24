@@ -5,16 +5,12 @@ import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
 import org.iochibity.StimulusIn;
-import org.iochibity.ObservationOut;
-import org.iochibity.Observation;
-// import org.iochibity.PayloadForResourceState;
 import org.iochibity.ObservationList;
+import org.iochibity.ObservationOut;
+import org.iochibity.ObservationRecord;
 import org.iochibity.PropertyMap;
-import org.iochibity.PropertyString;
-// import org.iochibity.ResourceLocal;
 import org.iochibity.ServiceManager;
 import org.iochibity.ServiceProvider;
-import org.iochibity.IServiceProvider;
 import org.iochibity.constants.Method;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
@@ -47,7 +43,7 @@ public class LightSP
 	System.out.println("LightSP.service routine ENTRY");
 	Logger.logRequestIn(request_in);
 
-	ObservationList<Observation> observationOut = null;
+	ObservationList<ObservationRecord> observationRecordOut = null;
 
 	// typedef enum
 	// {
@@ -58,7 +54,7 @@ public class LightSP
 
 	switch (request_in.getMethod()) {
 	case Method.GET:
-	    observationOut = serviceGetRequest(request_in);
+	    observationRecordOut = serviceGetRequest(request_in);
 	    break;
 	case Method.PUT:
 	    System.out.println("Light: method: PUT");
@@ -89,7 +85,7 @@ public class LightSP
 	    break;
 	}
 
-	ObservationOut responseOut = new ObservationOut(request_in, observationOut);
+	ObservationOut responseOut = new ObservationOut(request_in, observationRecordOut);
 	// ObservationOut responseOut = new ObservationOut();
 
 	// // Indicates that response is NOT in a persistent buffer
@@ -106,7 +102,7 @@ public class LightSP
 	return ServiceResult.OK;
     }
 
-    private ObservationList<Observation> serviceGetRequest(StimulusIn request)
+    private ObservationList<ObservationRecord> serviceGetRequest(StimulusIn request)
     {
 	System.out.println("Light: serviceGetRequest ENTRY");
 	// ResourceLocal r = request.getResource();

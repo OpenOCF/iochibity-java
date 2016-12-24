@@ -18,9 +18,9 @@ public interface IMessage
     public DeviceAddress getRemoteDeviceAddress();
 
     // the payload from the request PDU.
-    public long getObservationHandle();
+    public long getObservationRecordHandle();
 
-    public ObservationList<Observation> getObservations();
+    public ObservationList<ObservationRecord> getObservationRecords();
 
     // this does not belong in Message:
     // public int getObservationType();

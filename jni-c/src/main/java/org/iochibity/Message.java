@@ -24,12 +24,12 @@ public class Message implements IMessage
     // network stuff? OCClientResponse.connType, OCEntityHandlerRequest.OCDevAddr.adapter/.flags
 
     // the payload from the request PDU.
-    private long _observationHandle;
-    public  long getObservationHandle() { return _observationHandle; } // IMessage
+    private long _observationRecordHandle;
+    public  long getObservationRecordHandle() { return _observationRecordHandle; } // IMessage
 
     // public native PayloadList<Payload> getPayloadList(); // IMessage
 
-    public native ObservationList<Observation> getObservations(); // IMessage
+    public native ObservationList<ObservationRecord> getObservationRecords(); // IMessage
 
     // public native int getObservationType(); // IMessage
 
