@@ -1,34 +1,39 @@
 package org.iochibity;
 
+
+// FIXME: make this thread safe: getters only. No setters allowed.
+// Updates must go through (CoServiceProvider.
 public class DeviceAddress	// OCDevAddr
 {
-    // typedef struct
-    // {
 
-    public int networkProtocol;	       // OCTransportAdapter adapter;
+    private long handle; // ref to TLS var in underlying C struct?
 
-    public byte     networkPolicies;   // OCTransportFlags flags >> 4
+    native public int       networkProtocol();   // OCTransportAdapter adapter;
 
-    public byte     networkScope;      // flags && 0x000F
+    native public int       networkFlags(); // OCTransportFlags bitmap "flags"
 
-    public boolean  transportSecurity; // flags && 0x0010 : OC_FLAG_SECURE = (1 << 4)
+    //native public byte      networkPolicies(); // OCTransportFlags flags & 0x00FF
+    native public boolean   transportIsSecure(); // flags & 0x0008
+    native public boolean   isIPv4();	         // flags & 0x0010
+    native public boolean   isIPv6();            // flags & 0x0020
+    native public boolean   isMulticast();       // flags & 0x0040
 
-    // for IP.
-    // uint16_t                port;
-    public int port;
+    native public byte      networkScope();      // flags & 0x000F
+
+
+
+    // public int port;
+    native public int       port();		// uint16_t
 
     // address for all adapters.
-    // char                    addr[MAX_ADDR_STR_SIZE];
-    public String address;
+    native public String    ipAddress();          // char addr[MAX_ADDR_STR_SIZE];
 
-    // usually zero for default interface.
-    // uint32_t                ifindex;
-    public int ifindex;
+    native public int       ifindex();		// uint32_t, usually zero for default interface.
 
     // /* GAR: FIXME: this allows stack and app code to differ */
     // #if defined (ROUTING_GATEWAY) || defined (ROUTING_EP)
     //     char                    routeData[MAX_ADDR_STR_SIZE]; //destination GatewayID:ClientId
-    public String routeData;
+    native public String    routeData();
     // #endif
     // } OCDevAddr;
 }

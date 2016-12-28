@@ -1,18 +1,18 @@
 package org.iochibity.test;
 
 import org.iochibity.OCF;
-import org.iochibity.Message;
+import org.iochibity.CoServiceProvider;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.StimulusIn;
+import org.iochibity.Message;
 import org.iochibity.ObservationIn;
 import org.iochibity.ObservationOut;
 import org.iochibity.IObservationRecord;
 import org.iochibity.ObservationRecord;
 import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
-import org.iochibity.PropertyString;
 import org.iochibity.IServiceProvider;
+import org.iochibity.StimulusIn;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
@@ -35,6 +35,7 @@ public class Logger
     public static final HashMap observationTypes;
     public static final HashMap netProtocols;
     public static final HashMap netPolicy;
+    public static final HashMap netScope;
 
     static {
 	errcodeMap = new HashMap<Integer, String>();
@@ -74,53 +75,72 @@ public class Logger
 	netProtocols.put(5, "OC_ADAPTER_TCP"); // = (1 << 4),
 	netProtocols.put(6, "OC_ADAPTER_NFC"); // = (1 << 5)
 
-	netPolicy = new HashMap<Integer, String>();
+	netPolicy    = new HashMap<Integer, String>();
 	netPolicy.put( 0, "OC_DEFAULT_FLAGS"); // = 0,
 	netPolicy.put( 0x10, "OC_FLAG_SECURE"); // (1 << 4)
 	netPolicy.put( 0x20, "OC_IP_USE_V6");	// (1 << 5)
 	netPolicy.put( 0x40, "OC_IP_USE_V4");	// (1 << 6)
 	netPolicy.put( 0x80, "OC_MULTICAST");	// (1 << 7)
-	netPolicy.put( 0x1,      "OC_SCOPE_INTERFACE");
-	netPolicy.put( 0x2,      "OC_SCOPE_LINK");
-	netPolicy.put( 0x3,      "OC_SCOPE_REALM");
-	netPolicy.put( 0x4,      "OC_SCOPE_ADMIN");
-	netPolicy.put( 0x5,      "OC_SCOPE_SITE");
-	netPolicy.put( 0x8,      "OC_SCOPE_ORG");
-	netPolicy.put( 0xE,      "OC_SCOPE_GLOBAL");
+
+	netScope    = new HashMap<Integer, String>();
+	netScope.put( 0,      "OC_SCOPE_NONE");
+	netScope.put( 1,      "OC_SCOPE_INTERFACE");
+	netScope.put( 2,      "OC_SCOPE_LINK");
+	netScope.put( 3,      "OC_SCOPE_REALM");
+	netScope.put( 4,      "OC_SCOPE_ADMIN");
+	netScope.put( 5,      "OC_SCOPE_SITE");
+	netScope.put( 8,      "OC_SCOPE_ORG");
+	netScope.put( 0xE,      "OC_SCOPE_GLOBAL");
     }
 
-    static public void logDeviceAddress(DeviceAddress da)
+    static public void logCoAddress(CoServiceProvider cosp)
     {
 
-	try {
-	    System.out.println("LOG DeviceAddress\t address:\t" + da.address);
-	    System.out.println("LOG DeviceAddress\t port:\t\t" + da.port);
-	    System.out.println("LOG DeviceAddress\t network protocol:\t"
-			       + String.format("0x%04X", da.networkProtocol & 0xFFFFF)
-			       + " " + netProtocols.get(da.networkProtocol));
+	DeviceAddress da = cosp.coAddress();
 
-	    System.out.println("LOG DeviceAddress\t nework policies:\t\t"
-			       + String.format("0x%04X", da.networkPolicies));
+	if (da != null) {
+	    try {
+		System.out.println("LOGGER DeviceAddress\t IP address:\t\t" + da.ipAddress());
+		System.out.println("LOGGER DeviceAddress\t port:\t\t\t" + da.port());
+		System.out.println("LOGGER DeviceAddress\t network protocol:\t"
+				   + String.format("0x%04X", da.networkProtocol()
+						   & 0xFFFFF)
+				   + " " + netProtocols.get(da.networkProtocol()));
 
-	    System.out.println("LOG DeviceAddress\t nework scope:\t\t"
-			       + String.format("0x%04X", da.networkScope));
+		System.out.println("LOGGER DeviceAddress\t network flags:\t\t"
+				   + String.format("0x%04X", da.networkFlags()
+						   & 0xFFFFF));
 
-	    System.out.println("LOG DeviceAddress\t transport security:\t\t" + da.transportSecurity);
+		System.out.println("LOGGER DeviceAddress\t IPv4?\t\t\t" + da.isIPv4());
 
-	    // int scope = (da.networkPolicy >> 4) & 0x000F;
-	    // System.out.println("LOG DeviceAddress\t nework scope:\t\t"
-	    // 		       // + String.format("0x%02X", scope)
-	    // 		       + netPolicy.get(scope));
+		System.out.println("LOGGER DeviceAddress\t IPv6?\t\t\t" + da.isIPv6());
 
-	    // String sec = (0 == (da.networkPolicy & 0x0010))? "OFF" : "ON";
-	    // System.out.println("LOG DeviceAddress\t transport security:\t" + sec);
+		System.out.println("LOGGER DeviceAddress\t Multicast?\t\t" + da.isMulticast());
 
-	    System.out.println("LOG DeviceAddress\t ifindex:\t" + da.ifindex);
-	    // System.out.println("REQUEST IN: devaddr route data: " + da.routeData);
+		System.out.println("LOGGER DeviceAddress\t nework scope:\t\t"
+				   + String.format("0x%02X", da.networkScope())
+				   + " " + netScope.get(da.networkScope()));
+
+		System.out.println("LOGGER DeviceAddress\t transport security:\t"
+				   + da.transportIsSecure());
+
+		// int scope = (da.networkPolicy >> 4) & 0x000F;
+		// System.out.println("LOGGER DeviceAddress\t nework scope:\t\t"
+		// 		       // + String.format("0x%02X", scope)
+		// 		       + netPolicy.get(scope));
+
+		// String sec = (0 == (da.networkPolicy & 0x0010))? "OFF" : "ON";
+		// System.out.println("LOGGER DeviceAddress\t transport security:\t" + sec);
+
+		System.out.println("LOGGER DeviceAddress\t ifindex:\t\t" + da.ifindex());
+		// System.out.println("REQUEST IN: devaddr route data: " + da.routeData);
 
 
-	    // System.out.println("LOG DeviceAddress route data: " + da.routeData);
-	} catch (NullPointerException e) {
+		// System.out.println("LOGGER DeviceAddress route data: " + da.routeData);
+	    } catch (NullPointerException e) {
+		System.out.println("Device Address is NULL");
+	    }
+	} else {
 	    System.out.println("Device Address is NULL");
 	}
     }
@@ -135,6 +155,45 @@ public class Logger
     // 	if ( (resource.policies & ResourcePolicy.OBSERVABLE) > 0) {System.out.println("\tOBSERVABLE");}
     // 	if ( (resource.policies & ResourcePolicy.SECURE) > 0) {System.out.println("\tSECURE");}
     // }
+
+    static public void logNetworking(int protocol, int scope, int policies, boolean sec)
+    {
+	System.out.println("CoSP network protocol:  " + protocol);
+	System.out.println("CoSP network Scope:     " + scope);
+	System.out.println("CoSP network Policies:  " + policies);
+	System.out.println("CoSP transport secure?: " + sec);
+
+	// List<String> ts = cosp.getTypes();
+	// System.out.println("SP Types:");
+	// ts.forEach(typ -> System.out.println("\t" + typ));
+
+	// List<String> ifs = cosp.getInterfaces();
+	// System.out.println("SP Interfaces");
+	// ifs.forEach(iface -> System.out.println("\t" + iface));
+    }
+
+    static public void logCoSP(CoServiceProvider cosp)
+    {
+	// System.out.println("CoSP URI PATH: " + cosp.getUriPath());
+	// logDeviceAddress(cosp.coAddress());
+
+	// System.out.println("CoSP network protocol: "
+	// 		   + String.format("0x%04X",
+	// 				   cosp.networkProtocol() & 0xFFFFF));
+	// System.out.println("CoSP network Scope: "    + cosp.networkScope());
+	// System.out.println("CoSP network Policies: "
+	// 			       + String.format("0x%04X",
+	// 					       cosp.networkPolicies() & 0xFFFFF));
+	// System.out.println("CoSP transport secure?: " + cosp.transportIsSecure());
+
+	// List<String> ts = cosp.getTypes();
+	// System.out.println("SP Types:");
+	// ts.forEach(typ -> System.out.println("\t" + typ));
+
+	// List<String> ifs = cosp.getInterfaces();
+	// System.out.println("SP Interfaces");
+	// ifs.forEach(iface -> System.out.println("\t" + iface));
+    }
 
     static public void logSP(IServiceProvider theSP)
     {
@@ -278,47 +337,128 @@ public class Logger
 	// }
     }
 
-    static public void logObservationIn(ObservationIn observationIn)
+    static public void logRequestIn(CoServiceProvider cosp)
     {
-	System.out.println("LOG ObservationIn STACK RESULT:\t"
-			   + observationIn.result
-			   + ": "
-			   + errcodeMap.get(observationIn.result));
+	System.out.println("LOGGER logRequestIn ENTRY, thread "
+			   + Thread.currentThread().getId());
 
-	System.out.println("LOG ObservationIn uri path:\t" + observationIn.getUriPath());
-	System.out.println("LOG ObservationIn conn type:\t" + observationIn.connType);
-	System.out.println("LOG ObservationIn sec ID:\t" + observationIn.secID);
-	System.out.println("LOG ObservationIn stack result:\t" + observationIn.result);
-	System.out.println("LOG ObservationIn serial:\t" + observationIn.serial);
+	System.out.println("LOGGER: stack result: " + cosp.getCoResult());
 
-	System.out.println("LOG ObservationIn REMOTE DEVICE ADDRESS:");
-	logDeviceAddress(observationIn.getRemoteDeviceAddress());
+	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
+	System.out.println("LOGGER CoSP method:\t" + cosp.getMethod());
+	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
+	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
+	System.out.println("LOGGER CoSP serial:\t" + cosp.getObservationSerial());
 
-	List<HeaderOption> headerOptions = observationIn.getOptions();
-	if (headerOptions != null)
-	    System.out.println("LOG StimulusIn header options ct: " + headerOptions.size());
+	System.out.println("LOGGING CO-ADDRESS:");
+	logCoAddress(cosp);
+
+	// List<HeaderOption> headerOptions = cosp.getOptions();
+	// if (headerOptions != null)
+	//     System.out.println("LOG StimulusIn header options ct: " + headerOptions.size());
 
 	// FIXME:
-	if (observationIn.result == OCStackResult.OK) {
+	// if (cosp.result == OCStackResult.OK) {
 
-	    System.out.println("LOG ObservationIn OBSERVATIONS:");
-	    // System.out.println("LOG ObservationIn OBSERVATION type: "
-	    // 		       + observationIn.getObservationType()
-	    // 		       + ": "
-	    // 		       + observationTypes.get(observationIn.getObservationType()));
+	//     System.out.println("LOGGER CoSP OBSERVATIONS:");
+	//     // System.out.println("LOGGER CoSP OBSERVATION type: "
+	//     // 		       + cosp.getObservationType()
+	//     // 		       + ": "
+	//     // 		       + observationTypes.get(cosp.getObservationType()));
 
-	    ObservationList<ObservationRecord> observationRecords = observationIn.getObservationRecords();
-	    if (observationRecords != null) {
-		System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
-		for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
-		    List<IObservationRecord> kids = observationRecord.getChildren();
-		    if (kids != null) {
-			System.out.println("LOG CHILD OBSERVATIONS count: "
-					   + observationRecord.getChildren().size());
-		    }
-		    // logObservation(observation);
-		}
-	    }
-	}
+	//     ObservationList<ObservationRecord> observationRecords = cosp.getObservationRecords();
+	//     if (observationRecords != null) {
+	// 	System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
+	// 	for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
+	// 	    List<IObservationRecord> kids = observationRecord.getChildren();
+	// 	    if (kids != null) {
+	// 		System.out.println("LOG CHILD OBSERVATIONS count: "
+	// 				   + observationRecord.getChildren().size());
+	// 	    }
+	// 	    // logObservation(observation);
+	// 	}
+	//     }
+	// }
+    }
+
+    static public void logRequestOut(CoServiceProvider cosp)
+    {
+	System.out.println("LOGGER logRequestOut ENTRY, thread "
+			   + Thread.currentThread().getId());
+
+	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
+	System.out.println("LOGGER CoSP method:\t" + cosp.getMethod());
+	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
+
+	// List<HeaderOption> headerOptions = cosp.getOptions();
+	// if (headerOptions != null)
+	//     System.out.println("LOG StimulusIn header options ct: " + headerOptions.size());
+
+	// FIXME:
+	// if (cosp.result == OCStackResult.OK) {
+
+	//     System.out.println("LOGGER CoSP OBSERVATIONS:");
+	//     // System.out.println("LOGGER CoSP OBSERVATION type: "
+	//     // 		       + cosp.getObservationType()
+	//     // 		       + ": "
+	//     // 		       + observationTypes.get(cosp.getObservationType()));
+
+	//     ObservationList<ObservationRecord> observationRecords = cosp.getObservationRecords();
+	//     if (observationRecords != null) {
+	// 	System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
+	// 	for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
+	// 	    List<IObservationRecord> kids = observationRecord.getChildren();
+	// 	    if (kids != null) {
+	// 		System.out.println("LOG CHILD OBSERVATIONS count: "
+	// 				   + observationRecord.getChildren().size());
+	// 	    }
+	// 	    // logObservation(observation);
+	// 	}
+	//     }
+	// }
+    }
+
+    static public void logResponseIn(CoServiceProvider cosp)
+    {
+	System.out.println("LOGGER logResponseIn ENTRY, thread "
+			   + Thread.currentThread().getId());
+
+	System.out.println("LOGGER: stack result: " + cosp.getCoResult());
+
+	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
+	System.out.println("LOGGER CoSP method:\t" + cosp.getMethod());
+	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
+	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
+	System.out.println("LOGGER CoSP serial:\t" + cosp.getObservationSerial());
+
+	System.out.println("LOGGING CO-ADDRESS:");
+	logCoAddress(cosp);
+
+	// List<HeaderOption> headerOptions = cosp.getOptions();
+	// if (headerOptions != null)
+	//     System.out.println("LOG StimulusIn header options ct: " + headerOptions.size());
+
+	// FIXME:
+	// if (cosp.result == OCStackResult.OK) {
+
+	//     System.out.println("LOGGER CoSP OBSERVATIONS:");
+	//     // System.out.println("LOGGER CoSP OBSERVATION type: "
+	//     // 		       + cosp.getObservationType()
+	//     // 		       + ": "
+	//     // 		       + observationTypes.get(cosp.getObservationType()));
+
+	//     ObservationList<ObservationRecord> observationRecords = cosp.getObservationRecords();
+	//     if (observationRecords != null) {
+	// 	System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
+	// 	for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
+	// 	    List<IObservationRecord> kids = observationRecord.getChildren();
+	// 	    if (kids != null) {
+	// 		System.out.println("LOG CHILD OBSERVATIONS count: "
+	// 				   + observationRecord.getChildren().size());
+	// 	    }
+	// 	    // logObservation(observation);
+	// 	}
+	//     }
+	// }
     }
 }

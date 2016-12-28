@@ -4,10 +4,14 @@ GTAGS
 
 .scon*
 
+*.pyc
+
 *.cbor
 *.dat
 
 target/
+
+obsolete/
 
 jni-c/doc/html
 jni-c/doc/latex

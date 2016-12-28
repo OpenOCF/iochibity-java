@@ -12,6 +12,16 @@ See also
 * link:doc/Design.adoc[Design Considerations]
 * link:doc/Implementation.adoc[Implementation Notes]
 
+== prerequisites
+
+* Scons
+* Java 8
+* Maven
+* doxygen for C docs
+* ... etc. ...
+* Xcode (OS X)
+
+
 == building
 
 The build mechanism uses environment variables set using the `source`
@@ -44,6 +54,10 @@ Build the jni-c shared library:
 $ scons jni-c
 ## options:  VERBOSE=0 | 1, LOGGING= 0 | 1
 ----
+
+NOTE: if you get something like `jni-c/src/c/jni_utils.h:6:10: fatal
+error: 'jni.h' file not found`, it means you did not source the right
+files, or they were not correctly configured.
 
 This will put the shared lib in `${INSTALL_SYSROOT}/lib.  For example,
 `$HOME/iochibity/sysroot/darwin/x86_64/debug/lib/libocfjni_c.jnilib`

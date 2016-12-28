@@ -4,6 +4,9 @@ import org.iochibity.constants.ConnectivityType;
 
 import java.util.List;
 
+
+// OBSOLETE!  integrated into CoServiceProvider
+
 // created by client
 public class StimulusOut extends MsgForCoServiceProvider
 {

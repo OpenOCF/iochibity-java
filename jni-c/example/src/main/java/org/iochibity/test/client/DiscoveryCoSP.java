@@ -18,7 +18,7 @@ public class DiscoveryCoSP
     extends  CoServiceProvider
     // implements ICoServiceProvider
 {
-    private int cbdata = 99;
+    public int cbdata = 99;  // callback param data
 
     public DiscoveryCoSP() {
 	super();
@@ -30,63 +30,64 @@ public class DiscoveryCoSP
 	setUriPath(uri);
     }
 
-    public int observeBehavior(ObservationIn observationIn)
+    // public int observeBehavior(ObservationIn observationIn)
+    public void react()
     {
-	System.out.println("JAVA: DiscoveryCoSP.serviceResponse ENTRY");
-	System.out.println("JAVA: cbdata: " + cbdata);
-	Logger.logObservationIn(observationIn);
+	System.out.println("DiscoveryCoSP: DiscoveryCoSP.react ENTRY");
+	System.out.println("DiscoveryCoSP: cbdata: " + cbdata);
+
+	Logger.logResponseIn(this);
 
 	// first update _this_ with incoming data
-	this.setDestination(observationIn.getRemoteDeviceAddress());
+	// this.setDestination(observationIn.getRemoteDeviceAddress());
 	// etc. connType, etc.
 
 	// then iterate over Observation payloads
-	if (observationIn.result == OCStackResult.OK) {
-	    ObservationList<ObservationRecord> observationRecords = observationIn.getObservationRecords();
-	    for (ObservationRecord observationRecord
-		     : (ObservationList<ObservationRecord>) observationRecords) {
-		System.out.println("\tOBSERVED: " + observationRecord.getUriPath());
-		List<IObservationRecord> kids = observationRecord.getChildren();
-		if (kids != null) {
-		    for (IObservationRecord childObservationRecord : kids) {
-			System.out.println("\t->OBSERVED: " + childObservationRecord.getUriPath());
+	// if (observationIn.result == OCStackResult.OK) {
+	//     ObservationList<ObservationRecord> observationRecords = observationIn.getObservationRecords();
+	//     for (ObservationRecord observationRecord
+	// 	     : (ObservationList<ObservationRecord>) observationRecords) {
+	// 	System.out.println("\tOBSERVED: " + observationRecord.getUriPath());
+	// 	List<IObservationRecord> kids = observationRecord.getChildren();
+	// 	if (kids != null) {
+	// 	    for (IObservationRecord childObservationRecord : kids) {
+	// 		System.out.println("\t->OBSERVED: " + childObservationRecord.getUriPath());
 
-			GenericCoSP cosp = new GenericCoSP(observationIn, (ObservationRecord)childObservationRecord);
-			ServiceManager.registerCoServiceProvider(cosp);
+	// 		GenericCoSP cosp = new GenericCoSP(observationIn, (ObservationRecord)childObservationRecord);
+	// 		ServiceManager.registerCoServiceProvider(cosp);
 
-			if (childObservationRecord.getUriPath().equals("/a/temperature")) {
-			    System.out.println("LOG: found temperature resource");
-			    // gRemoteResourceAddress = observationIn.getRemoteDeviceAddress();
-			    // gRemoteResourceAddress.port
-			    // 	= ((Integer)childObservation.getProperties().get("port"))
-			    // 	.intValue();
-			    // Logger.logDeviceAddress(gRemoteResourceAddress);
-			}
+	// 		if (childObservationRecord.getUriPath().equals("/a/temperature")) {
+	// 		    System.out.println("LOG: found temperature resource");
+	// 		    // gRemoteResourceAddress = observationIn.getRemoteDeviceAddress();
+	// 		    // gRemoteResourceAddress.port
+	// 		    // 	= ((Integer)childObservation.getProperties().get("port"))
+	// 		    // 	.intValue();
+	// 		    // Logger.logDeviceAddress(gRemoteResourceAddress);
+	// 		}
 
-			if (childObservationRecord.getUriPath().equals("/a/led")) {
-			    System.out.println("LOG: found LED resource");
-			    // gLEDAddress = observationIn.getRemoteDeviceAddress();
-			    // gLEDAddress.port
-			    // 	= ((Integer)childObservationRecord.getProperties().get("port"))
-			    // 	.intValue();
-			    // Logger.logDeviceAddress(gLEDAddress);
-			}
+	// 		if (childObservationRecord.getUriPath().equals("/a/led")) {
+	// 		    System.out.println("LOG: found LED resource");
+	// 		    // gLEDAddress = observationIn.getRemoteDeviceAddress();
+	// 		    // gLEDAddress.port
+	// 		    // 	= ((Integer)childObservationRecord.getProperties().get("port"))
+	// 		    // 	.intValue();
+	// 		    // Logger.logDeviceAddress(gLEDAddress);
+	// 		}
 
-			if (childObservationRecord.getUriPath().equals("/a/whatsit")) {
-			    System.out.println("LOG: found whatsit resource");
-			    // gWhatsitAddress = observationIn.getRemoteDeviceAddress();
-			    // gWhatsitAddress.port
-			    // 	= ((Integer)childObservation.getProperties().get("port"))
-			    // 	.intValue();
-			    // Logger.logDeviceAddress(gWhatsitAddress);
-			}
-		    }
-		}
-	    }
-	}
+	// 		if (childObservationRecord.getUriPath().equals("/a/whatsit")) {
+	// 		    System.out.println("LOG: found whatsit resource");
+	// 		    // gWhatsitAddress = observationIn.getRemoteDeviceAddress();
+	// 		    // gWhatsitAddress.port
+	// 		    // 	= ((Integer)childObservation.getProperties().get("port"))
+	// 		    // 	.intValue();
+	// 		    // Logger.logDeviceAddress(gWhatsitAddress);
+	// 		}
+	// 	    }
+	// 	}
+	//     }
+	// }
 
-	return 0;
+	return;
     }
-
 }
 

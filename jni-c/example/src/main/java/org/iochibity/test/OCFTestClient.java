@@ -21,7 +21,6 @@ import org.iochibity.HeaderOption;
 import org.iochibity.ObservationRecord;
 import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
-import org.iochibity.PropertyString;
 import org.iochibity.ServiceManager;
 import org.iochibity.ICoServiceProvider;
 
@@ -185,9 +184,13 @@ public class OCFTestClient
 		}
 
 		discoveryCoSP.setUriPath(uri);
-		discoveryCoSP.setDestination(null); // multicast
+		discoveryCoSP.setMulticast();
+		System.out.println("BEFORE EXHIBIT");
+		// Logger.logRequestOut(discoveryCoSP);
+		// Logger.logCoAddress(discoveryCoSP);
 		try {
-		    discoveryCoSP.exhibitStimulus();
+		    // discoveryCoSP.exhibitStimulus();
+		    discoveryCoSP.exhibit();
 		    Thread.sleep(1000);
 		} catch (Exception e) {
 		    System.out.println("ERROR: discovering platforms");
@@ -198,7 +201,7 @@ public class OCFTestClient
 	    case "2":
 		System.out.println("Discovered resources:");
 		for (CoServiceProvider cosp : ServiceManager.coServiceProviders) {
-		    System.out.println("\t" + cosp.getUriPath());
+		    System.out.println("\t" + cosp.uriPath());
 		}
 		System.out.println();
 		break;
@@ -210,14 +213,14 @@ public class OCFTestClient
 		int sz = ServiceManager.coServiceProviders.size();
 		for(int i = 0; i < sz; i++) {
 		    cosp = ServiceManager.coServiceProviders.get(i);
-		    DeviceAddress da = cosp.getDestination();
+		    DeviceAddress da = cosp.coAddress();
 		    String s;
 		    if (da != null) {
-			s = i + " : " + cosp.getDestination().address
-			    + " " + cosp.getDestination().port
-			    + " " + cosp.getUriPath();
+			s = i + " : " + da.ipAddress()
+			+ " " + da.port()
+			    + " " + cosp.uriPath();
 		    } else {
-			s = i + " : " + cosp.getUriPath();
+			s = i + " : " + cosp.uriPath();
 		    }
 		    System.out.println("\t" + s);
 		}
@@ -239,8 +242,10 @@ public class OCFTestClient
 
 		cosp = ServiceManager.coServiceProviders.get(i);
 		cosp.setMethod(Method.GET);
+		Logger.logCoSP(cosp);
 		try {
-		    cosp.exhibitStimulus();
+		    cosp.exhibit();
+		    // cosp.exhibit();
 		    Thread.sleep(500); // just to let the user prompt work
 		} catch (Exception e) {
 		    e.printStackTrace();

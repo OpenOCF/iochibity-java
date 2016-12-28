@@ -100,7 +100,7 @@ public class TemperatureSP
 	ObservationOut responseOut = new ObservationOut(requestIn, observationRecordOut);
 
 	try {
-	    this.exhibitBehavior();
+	    this.exhibit();
 	} catch (Exception e) {
 	    System.out.println("SEND RESPONSE EXCEPTION");
 	}

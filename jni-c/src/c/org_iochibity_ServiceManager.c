@@ -540,21 +540,12 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvi
 
     if (op_result != OC_STACK_OK) THROW_STACK_EXCEPTION(op_result, "OCCreateResource failed");
 
-    /* we already have j_ServiceProvider, the ServiceProvider object;
-       now we just need to link it to the resource created by
-       OCCreateResource and populate it */
 
-    /* jmethodID mid_resource_ctor = (*env)->GetMethodID(env, K_RESOURCE_LOCAL, "<init>", "()V"); */
-    /* if (mid_resource_ctor == NULL) { */
-    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for ResourceLocal ctor\n"); */
-    /* 	return NULL; */
-    /* }    /\* insert handle to OCResource *\/ */
-    /* if (K_RESOURCE_LOCAL != NULL) { /\* cannot be null in this case *\/ */
-    /*     jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J"); */
-    /*     if (fid_handle != NULL) { */
-	    (*env)->SetLongField(env, j_ServiceProvider,
-				 FID_SP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
-	/* } */
+    (*env)->SetLongField(env, j_ServiceProvider,
+			 FID_SP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
+
+
+
         /* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); */
         /* if (urifield != NULL) { */
             jstring jString = (*env)->NewStringUTF(env, ((OCResource*)c_resource_handle)->uri);

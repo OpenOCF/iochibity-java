@@ -14,6 +14,9 @@
 #include <unistd.h>
 
 #include "org_iochibity_ServiceProvider.h"
+#include "org_iochibity_DeviceAddress.h"
+
+
 #include "org_iochibity_Init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
@@ -28,7 +31,8 @@
 
 /**
  * @brief Convert incoming `OCEntityHandlerRequest` to `StimulusIn`
- * object.  Called by `c_ServiceProvider_observe_stimulus`.
+ * object.  Internal implementation routine called by
+ * `c_ServiceProvider_observe_stimulus`.
  *
  * @param [in] env JNIEnv Pointer
  *
@@ -130,31 +134,34 @@
  * OIC-speak, OBSERVE) or not. Only two options, `OC_REQUEST_FLAG` (1)
  * or `OC_OBSERVER_FLAG` (2).  In C API, "OCEntityHandlerFlag flag".
  *
- * @param c_OCEntityHandlerRequest Incoming request message.  In C
- * API, `OCEntityHandlerRequest*`.
+ * @param c_OCEntityHandlerRequest Incoming "stimulus" (request
+ * message).  In C API, `OCEntityHandlerRequest*`.
  *
- * @param j_IServiceProvider the ServiceProvider object.  In C API, `void* callbackParam`
+ * @param j_IServiceProvider The ServiceProvider object whose
+ * `observeStimulus` method will handle the request; set by
+ * `ServiceManager.registerServiceProvider`.  In C API, `void*
+ * callbackParam`.
  *
  * @result <OCEntityHandlerRequest> Indicates result of applying
  * user-defined handler method to incoming request.
  *
- * @see Java_org_iochibity_ServiceProvider_exhibitBehavior
+ * @see Java_org_iochibity_ServiceManager_registerServiceProvider__Lorg_iochibity_ServiceProvider_2
+ * @see Java_org_iochibity_ServiceProvider_exhibit
  */
 /* typedef OCEntityHandlerResult (*OCEntityHandler) */
 /* (OCEntityHandlerFlag flag, OCEntityHandlerRequest * entityHandlerRequest, void* callbackParam); */
-OCEntityHandlerResult c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
-								       OCEntityHandlerRequest * c_OCEntityHandlerRequest,
-								       void* j_IServiceProvider)
+OCEntityHandlerResult
+c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
+						 OCEntityHandlerRequest* c_OCEntityHandlerRequest,
+						 void* j_IServiceProvider)
 {
     printf("\n%s | %s ENTRY on thread %d\n",
 	   __FILE__, __func__, (int)pthread_self());
 
-    /* printf("OCEntityHandlerFlag: %d (rqst: %d, obs: %d)\n", watch_flag, OC_REQUEST_FLAG, OC_OBSERVE_FLAG); */
-    /* printf("REQUEST URI: %s\n", ((OCResource*)(c_OCEntityHandlerRequest->resource))->uri); */
-
-    /* printf("request resource properties: 0x%X\n", */
-    /* 	   ((OCResource*)(c_OCEntityHandlerRequest->resource))->resourceProperties); */
-
+    /* FIXME: always called on separate thread?  multiple concurrent
+       invocations get separate threads, but serialized invocations
+       can reuse threads.
+    */
     /* 1. set up jvm, env */
     /* http://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls */
     /* http://adamish.com/blog/archives/327 */
@@ -177,6 +184,7 @@ OCEntityHandlerResult c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityH
 	(*env)->ExceptionDescribe(env);
     }
 
+    /* validate input args */
     if (j_IServiceProvider == NULL) {
 	/* FIXME: use proper logging */
 	printf("ERROR %s %d (%s): j_IServiceProvider is NULL\n", __FILE__, __LINE__,__func__);
@@ -196,7 +204,8 @@ OCEntityHandlerResult c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityH
     /* now invoke the callback on the Java side */
     int op_result = OC_EH_OK;
     op_result = (*env)->CallIntMethod(env, j_IServiceProvider,
-				      MID_ISP_OBSERVE_STIMULUS,
+				      /* MID_ISP_OBSERVE_STIMULUS, */
+				      MID_ICOSP_REACT,
 				      j_StimulusIn);
     if (op_result != OC_STACK_OK) {
         printf("ERROR:  CallIntMethod failed for ResourceServiceProvider.ObserveStimulus\n");
@@ -223,7 +232,7 @@ OCEntityHandlerResult c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityH
  * Example usage:
  * @code{.java}
  * ...
- * this.exhibitBehavior();
+ * this.exhibit();
  * ...
  * @endcode
   *
@@ -234,7 +243,7 @@ OCEntityHandlerResult c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityH
  * @see c_org_iochibity_ServiceProvider_observe_stimulus
  *
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_exhibitBehavior
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_exhibit
 (JNIEnv * env, jobject this_SP)
 {
     printf("%s | %s: ENTRY on thread %d\n", __FILE__, __func__, (int)pthread_self());

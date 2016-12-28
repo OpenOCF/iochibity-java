@@ -4,12 +4,22 @@
  * @date December 2016
  *
  * @brief JNI implementation of CoServiceProvider (client) Java API:
- * `Java_org_iochibity_CoServiceProvider_exhibitStimulus` and `c_CoServiceProvider_observe_behavior`
+ * `Java_org_iochibity_CoServiceProvider_exhibitStimulus` and `c_CoServiceProvider_react`
  */
 
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+
+/* http://www.informit.com/articles/article.aspx?p=2036582&seqNum=5
+OpenBSD:  strlcpy
+C11:      strncpy_s
+*/
+
+/* c11
+#include <thread.h>
+*/
+#include <pthread.h>
 
 #include "org_iochibity_CoServiceProvider.h"
 #include "jni_utils.h"
@@ -23,17 +33,60 @@
 #include "ocresourcehandler.h"
 #include "ocstack.h"
 
+/* externs */
+// FIXME: put these in init.c?
+_Thread_local response_in_t* gtls_response_in	= NULL;
+
+_Thread_local jobject gtls_CoSP			= NULL;
+
+/* _Thread_local OCDevAddr* gtls_defaultCoAddress		= NULL; */
+
 /* PRIVATE */
 
-/* FIXME: we need a list of these, one for every CoSP use */
-jobject g_CoSP = NULL;
+/* tls struct capturing params to OCDoResource */
+typedef struct RequestOut
+{
+  OCDoHandle           handle;	/* key; will be returned in response_in */
+  /* val: */
+  OCMethod             method;
+  const char         * requestUri;
+  const OCDevAddr    * destination;
+  OCPayload          * payload;
+  OCConnectivityType   connectivityType;
+  OCQualityOfService   qos;
+  OCCallbackData     * cbData;
+  OCHeaderOption     * options;
+  uint8_t              numOptions;
+
+  struct RequestOut  * next;
+} request_out_t;
+
+request_out_t* g_request_out = NULL;
+
+_Thread_local request_out_t* gtls_request_out = NULL;
+
+void request_out_ctor()
+{
+  gtls_request_out		= OICCalloc(sizeof (request_out_t), 1);
+
+  gtls_request_out->handle		= NULL;
+  gtls_request_out->method		= OC_REST_GET;
+  gtls_request_out->destination		= NULL; /* defaults to multicast */
+  gtls_request_out->connectivityType	= CT_DEFAULT; /* 0 */
+  gtls_request_out->qos			= OC_LOW_QOS;
+  gtls_request_out->cbData		= NULL;
+  gtls_request_out->options		= NULL;
+  gtls_request_out->numOptions		= 0;
+
+  gtls_request_out->next		= NULL;
+}
 
 /**
  * @brief Convert OCClientResponse to an `ObservationIn` object
  *
  * Allocate an `ObservationIn` java object, then use data from incoming
  * `OCClientResponse` to initialize it.  Return the initialize object.
- * Called internally by `c_CoServiceProvider_observe_behavior`.
+ * Called internally by `c_CoServiceProvider_react`.
  *
  * @param [in] env JNIEnv pointer
  * @param [in] c_OCClientResponse response data from server
@@ -109,15 +162,22 @@ jobject OCClientResponse_to_ObservationIn(JNIEnv* env, OCClientResponse* c_OCCli
 }
 
 /**
- * @brief Wrapper for `OCClientResponseHandler`; called by stack on
- * receipt of incoming `OCClientResponse` from server.
+ * @brief Implementation of `OCClientResponseHandler` function type;
+ * called by stack on receipt of incoming `OCClientResponse` from
+ * server.
  *
- * Convert the incoming response data to an `ObservationIn` object,
- * and then pass that to the `observeBehavior` method of the transaction's
- * `CoServiceProvider` object.  That object is conveyed by the c_CoSP
- * parameter (in the C API, void* context), which was passed (as the
- * "context" pointer of the OCCallbackData param of OCDoResource) by
- * the _exhibitStimulus_ routine of the CoServiceProvider.
+ * Converts the incoming response data to an `Observation` object,
+ * and then passes that to the `observeBehavior` method of the
+ * transaction's `CoServiceProvider` object for handling.
+ *
+ * The `CoServiceProvider` object is conveyed by the c_CoSP parameter
+ * (in the C API, void* context), which was passed (as the "context"
+ * pointer of the `OCCallbackData` param of `OCDoResource`) by the
+ * `exhibitStimulus` routine of the `CoServiceProvider`.
+ *
+ * IMPORTANT: this is an internal implementation routine, with no
+ * header prototoype.  It serves as an intermediary between the stack
+ * the the Java application's callback method.
  *
  *  @param [in] c_CoSP handle to `CoServiceProvider` (client) object
  *  containing callback method; `context` in C API
@@ -133,12 +193,29 @@ jobject OCClientResponse_to_ObservationIn(JNIEnv* env, OCClientResponse* c_OCCli
  * @see observe_stimulus
  * @see Java_org_iochibity_ServiceProvider_exhibitBehavior
  */
-OCStackApplicationResult c_org_iochibity_CoServiceProvider_observe_behavior(void* c_CoSP,
+OCStackApplicationResult c_org_iochibity_CoServiceProvider_react(void* c_CoSP,
 					  OCDoHandle c_TransactionHandle,
 					  OCClientResponse* c_OCClientResponse)
 {
-    OC_UNUSED(c_TransactionHandle);
-    printf("ocf_CoServiceProvider_c_CoServiceProvider_observe_behavior ENTRY\n");
+  printf("%s : %s ENTRY, %ld\n", __FILE__, __func__, (intptr_t)pthread_self());
+
+    /* To support multi-threading, we cache the incoming
+       OCClientResponse record in a TLS var: */
+    gtls_response_in = OICCalloc(sizeof (response_in_t), 1);
+    gtls_response_in->handle   = c_TransactionHandle;
+    gtls_response_in->response = c_OCClientResponse;
+
+    /* now look up the corresponding request_out record, using
+       c_TransactionHandle as key. */
+
+
+
+    /* printf("TLS: %ld\n", (intptr_t)gtls_response_in); */
+
+    /* printf("STACK RESULT: %d\n", c_OCClientResponse->result); */
+
+    /* printf("SP Address: %s\n", */
+    /* 	   ((OCClientResponse*)gtls_response_in->response)->devAddr.addr); */
 
     /* 1. set up jvm, env */
     /* http://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls */
@@ -166,17 +243,25 @@ OCStackApplicationResult c_org_iochibity_CoServiceProvider_observe_behavior(void
 
     /* if ctx param is null something went wrong */
     if (c_CoSP == NULL) {
-	/* FIXME: use proper logging */
-	printf("ERROR %s %d (%s): ctx param is NULL for c_CoServiceProvider_observe_behavior\n",
+
+	printf("ERROR %s %d (%s): ctx param is NULL for c_CoServiceProvider_react\n",
 	       __FILE__, __LINE__,__func__);
 	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    /* 2. construct ObservationIn from incoming OCClientResponse ... */
-    jobject j_ObservationIn = OCClientResponse_to_ObservationIn(env, c_OCClientResponse);
+    // FIXME: we do not need ObservationIn if we're caching an
+    // OCClientResponse* and using native methods to access details ...
 
-    /* ... and insert pointer to it.*/
-    (*env)->SetLongField(env, j_ObservationIn, FID_MSG_LOCAL_HANDLE, (intptr_t)c_OCClientResponse);
+    /* 2. construct ObservationIn from incoming OCClientResponse ... */
+    /* jobject j_ObservationIn = OCClientResponse_to_ObservationIn(env, c_OCClientResponse); */
+
+    /* /\* ... and insert pointer to it.*\/ */
+    /* (*env)->SetLongField(env, j_ObservationIn, */
+    /* 			 FID_MSG_LOCAL_HANDLE, (intptr_t)c_OCClientResponse); */
+
+
+    // To call the Java-side handler for incoming response data, we
+    // need to get a reference to it.
 
     /* 2. extract ref to observeBehavior routine from CoSP callback param */
     /* /\* we need to get the method from the object, not the class? */
@@ -186,23 +271,28 @@ OCStackApplicationResult c_org_iochibity_CoServiceProvider_observe_behavior(void
     	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    jmethodID mid_cosp_c_CoServiceProvider_observe_behavior = (*env)->GetMethodID(env, k_cosp,
-    								 "observeBehavior",
-    								 "(Lorg/iochibity/ObservationIn;)I");
-    if (mid_cosp_c_CoServiceProvider_observe_behavior == NULL) {
-    	THROW_JNI_EXCEPTION("GetMethodID failed for mid_cosp_c_CoServiceProvider_observe_behavior of CoServiceProvider\n");
+    jmethodID mid_cosp_react = (*env)->GetMethodID(env, k_cosp, "react", "()V");
+    if (mid_cosp_react == NULL) {
+    	THROW_JNI_EXCEPTION("GetMethodID failed for mid_cosp_react of CoServiceProvider\n");
     	return OC_STACK_DELETE_TRANSACTION;
     }
 
+    /* jmethodID mid_cosp_c_CoServiceProvider_react = (*env)->GetMethodID(env, k_cosp, */
+    /* 								 "observeBehavior", */
+    /* 								 "(Lorg/iochibity/ObservationIn;)I"); */
+    /* if (mid_cosp_c_CoServiceProvider_react == NULL) { */
+    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for mid_cosp_c_CoServiceProvider_react of CoServiceProvider\n"); */
+    /* 	return OC_STACK_DELETE_TRANSACTION; */
+    /* } */
+
     /* 5. call the observeBehavior method of the CoServiceProvider */
     int op_result = OC_EH_OK;
-    printf("BBBBBBBBBBBBBBBB\n");
     op_result = (*env)->CallIntMethod(env,
 				      (jobject)c_CoSP,
-				      mid_cosp_c_CoServiceProvider_observe_behavior,
-				      /* MID_ICOSP_C_SERVICEPROVIDER_OBSERVE_BEHAVIOR, */
-				      j_ObservationIn);
-    printf("CCCCCCCCCCCCCCCC\n");
+				      mid_cosp_react);
+				      /* mid_cosp_c_CoServiceProvider_react, */
+				      /* MID_ICOSP_C_SERVICEPROVIDER_REACT, */
+				      /* j_ObservationIn); */
 
     if (op_result != OC_STACK_OK) {
         printf("ERROR:  CallIntMethod failed for CoServiceProvider.ObserveStimulus\n");
@@ -214,22 +304,259 @@ OCStackApplicationResult c_org_iochibity_CoServiceProvider_observe_behavior(void
 
     (*g_JVM)->DetachCurrentThread(g_JVM);
 
-    printf("c_CoServiceProvider_observe_behavior EXIT\n");
+    printf("c_CoServiceProvider_react EXIT\n");
     /* the stack handles this automatically so we can return anything */
     return OC_STACK_KEEP_TRANSACTION;
 }
 
 /* EXTERNAL */
 
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    ctorCoSP
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_ctorCoSP
+(JNIEnv * env, jobject this)
+{
+  printf("%s : %s ENTRY, %ld\n", __FILE__, __func__, (intptr_t)pthread_self());
+  /* gtls_CoSP = this; */
+  request_out_ctor();
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    uriPath
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath
+(JNIEnv * env, jobject this)
+{
+  OC_UNUSED(env);
+  OC_UNUSED(this);
+  jstring j_uri = (*env)->NewStringUTF(env,
+				       RESPONSE_IN->resourceUri);
+  return  j_uri;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    setUriPath
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setUriPath
+(JNIEnv * env, jobject this, jstring j_uriPath)
+{
+  printf("Java_org_iochibity_CoServiceProvider_setUriPath ENTRY\n");
+  gtls_request_out->requestUri = (*env)->GetStringUTFChars(env, j_uriPath, 0);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    method
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method
+(JNIEnv * env, jobject this)
+{
+  return -1;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getCoSecurityId
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
+(JNIEnv * env, jobject this)
+{
+  printf("%s ENTRY\n", __func__);
+  size_t length; /* this will hold the length of string copied */
+  char buffer[MAX_IDENTITY_SIZE]; /* fast mem on stack */
+  length = strlcpy(buffer, RESPONSE_IN->identity.id, RESPONSE_IN->identity.id_length);
+  if (length < sizeof(buffer)) {
+    /* printf("CoSecurityID len %d, str: %s\n", */
+    /* 	   RESPONSE_IN->identity.id_length, buffer); */
+    jstring sid = (*env)->NewStringUTF(env, buffer);
+    // FIXME: free sid? no need since we're returning it to jvm
+    return sid;
+  } else {
+    /* printf("CoSecurityID: ERROR\n"); */
+    THROW_JNI_EXCEPTION("URI too long!");
+    return NULL;
+  }
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getCoResult
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getCoResult
+(JNIEnv * env, jobject this)
+{
+  /* printf("%s ENTRY\n", __func__); */
+  return gtls_response_in->response->result;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getObservationSerial
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getObservationSerial
+(JNIEnv * env, jobject this)
+{
+  return RESPONSE_IN->sequenceNumber;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    multicastProtocol
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_multicastProtocol
+(JNIEnv * env, jobject this)
+{
+  OC_UNUSED(env);
+  OC_UNUSED(this);
+  // return transport adapter from connType ()OCConnectivityType), not
+  // destination (OCDevAddr) BUT: what if destination is used for
+  // multicast (OC_MULTICAST flag)?  OCConnectivityType has no
+  // OC_MULTICAST flag - thats only available in OCTransportFlag in
+  // OCDevAddr!
+  return -1;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    setMulticast
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setMulticast
+(JNIEnv * env, jobject this)
+{
+  OC_UNUSED(env);
+  OC_UNUSED(this);
+  printf("%s : %s ENTRY\n", __FILE__, __func__);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    isMulticast
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_isMulticast
+(JNIEnv * env, jobject this)
+{
+  OC_UNUSED(env);
+  OC_UNUSED(this);
+  return  false;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    coAddress
+ * Signature: ()Lorg/iochibity/DeviceAddress;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
+(JNIEnv * env, jobject this)
+{
+  /* printf("%s ENTRY, thread %ld\n", __func__, (intptr_t)pthread_self()); */
+  /* IF java field non-null, use it; otherwise use OCClientResponse */
+
+  /* OCDevAddr coAddress = RESPONSE_IN)->devAddr; */
+  
+  /* WARNING: we cannot set a devaddr field in our CoSP object, due to
+     threading concerns but we can create on and return it on the call
+     stack, which is thread safe. */
+
+  /* The methods of the returned DeviceAddress object will pull info
+     from the TLS OCClientResponse var */ 
+
+  if (gtls_response_in) {
+    jobject j_CoAddress = NULL;
+    j_CoAddress =  (*env)->NewObject(env, K_DEVICE_ADDRESS, MID_DA_CTOR);
+    if (j_CoAddress == NULL) {
+      THROW_JNI_EXCEPTION("NewObject failed for K_DEVICE_ADDRESS");
+      return NULL;
+    } else {
+      return j_CoAddress;
+    }
+  } else {
+    return NULL;
+  }
+
+  /* all data access goes through methods to OCClientResponse */
+  /* so no data members in DeviceAddress */
+
+  /* (*env)->SetIntField(env, j_CoAddress, */
+  /* 		      FID_DA_NETWORK_PROTOCOL, */
+  /* 		      RESPONSE_IN->devAddr.adapter); */
+
+  /* (*env)->SetIntField(env, j_CoAddress, */
+  /* 		      FID_DA_NETWORK_FLAGS, */
+  /* 		      RESPONSE_IN->devAddr.flags); */
+
+  /* /\* flags bitmap, broken out: *\/ */
+  /* (*env)->SetByteField(env, j_CoAddress, */
+  /* 		       FID_DA_NETWORK_POLICIES, */
+  /* 		       RESPONSE_IN->devAddr.flags >> 4); */
+
+  /* (*env)->SetByteField(env, j_CoAddress, */
+  /* 		       FID_DA_NETWORK_SCOPE, */
+  /* 		       (jbyte) RESPONSE_IN */
+  /* 		       ->devAddr.flags & 0x000F); */
+
+  /* (*env)->SetBooleanField(env, j_CoAddress, */
+  /* 			  FID_DA_TRANSPORT_SECURITY, */
+  /* 			  (bool) RESPONSE_IN */
+  /* 			  ->devAddr.flags && 0x0010); */
+
+  /* jstring j_addr = (*env)->NewStringUTF(env, */
+  /* 					RESPONSE_IN */
+  /* 					->devAddr.addr); */
+  /* (*env)->SetObjectField(env, j_CoAddress, FID_DA_ADDRESS, j_addr); */
+
+  /* (*env)->SetIntField(env, j_CoAddress, */
+  /* 		      FID_DA_PORT, */
+  /* 		      RESPONSE_IN->devAddr.port); */
+}
+
+
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getNetworkProtocol
+ * Signature: ()I
+ */
+/**
+ * @brief Returns network protocol
+ */
+
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getNetworkProtocol
+(JNIEnv * env, jobject this)
+{
+  return -1;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    exhibit
+ * Signature: ()V
+ */
 /**
  * @brief Wrapper for `OCDoResource`; called by called by the user to
  * send a request to a server.
  *
  * It wraps `OCDoResource`.  The parameters to `OCDoResource` are
- * extracted from _this_CoSP_.
+ * reified in a hidden request_out_t struct.
  *
  * @param [in] env JNIEnv pointer
- * @param [in] this_CoSP _this_ handle, reference to a `CoServiceProvider` instance
+ *
+ * @param [in] this_CoSP reference to the calling `CoServiceProvider`
+ * instance
+ *
  * @return void
  *
  * @throws org.iochibity.exceptions.JNIRuntimeException Indicates a
@@ -237,102 +564,149 @@ OCStackApplicationResult c_org_iochibity_CoServiceProvider_observe_behavior(void
  *
  * @see observe_stimulus
  * @see Java_org_iochibity_ServiceProvider_exhibitBehavior
- * @see c_CoServiceProvider_observe_behavior
+ * @see c_CoServiceProvider_react
  */
-JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibitStimulus
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
+/* JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit */
 (JNIEnv * env, jobject this_CoSP)
 {
     OC_UNUSED(env);
-    printf("Java_org_iochibity_CoServiceProvider_exhibitStimulus ENTRY\n");
+    printf("Java_org_iochibity_CoServiceProvider_exhibit ENTRY\n");
 
-    /* DO NOT forget that incoming java objects are local, to make
-       them available in a callback from the c stack, we need to
-       globalize them! */
-    g_CoSP = (*env)->NewGlobalRef(env, this_CoSP);
+    /* We will pass this CoSP object as the callbackParam to
+       OCDoResource.  It will be passed back on a different thread, so
+       after we call OCDoResource, we will store our thread-local
+       request_out struct in the global map, so it can later be
+       retrieved for the matching response.  We already have our
+       thread-local request_out (created by ctor), so we can use it
+       directly to parameterize OCDoReource.
+    */
 
-    /* now extract the OCDoResource params */
+       /* gtls_CoSP = (*env)->NewGlobalRef(env, this_CoSP); */
 
-    /* method */
-    OCMethod c_method = (OCMethod)(*env)->GetIntField(env, g_CoSP, FID_COSP_METHOD);
-    if (c_method == 0) {
-	THROW_JNI_EXCEPTION("Method OC_REST_NOMETHOD (0) not allowed");
-    	return;
-    }
+    if (gtls_response_in == NULL) {
 
-    /* uri */
-    jobject j_uri         = (*env)->GetObjectField(env, g_CoSP, FID_COSP_URI_PATH);
-    if (j_uri == NULL) {
-	THROW_JNI_EXCEPTION("GetObjectField failed for FID_COSP_URI_PATH on j_StimulusOut\n");
-    	return;
-    }
-    char* c_uri = (char*)(*env)->GetStringUTFChars(env, j_uri, NULL);
-    if (c_uri == NULL) {
-	THROW_JNI_EXCEPTION("GetObjectField failed for FID_RQO_URI on j_StimulusOut\n");
-	return;
-    }
+      /* ADDRESSING */
+      /* MULTICAST: dev addr is null, connectivity type is used */
+      /* UNICAST:   dev addr is used, connectivity type is ignored? */
 
-    /* destination dev address */
-    OCDevAddr* c_destDevAddr = NULL;
-    jobject j_destDevAddr = NULL;
-    j_destDevAddr = (*env)->GetObjectField(env, g_CoSP, FID_COSP_DESTINATION);
-    if (j_destDevAddr == NULL || (*env)->IsSameObject(env, j_destDevAddr, NULL) ) {
-	printf("MULTICASTING - NULL dest address\n");
-	/* no devaddr with GET means DISCOVERY multicast */
-	if (c_method == OC_REST_GET) {
-	    c_method = OC_REST_DISCOVER;
-	}
+      /* FIXME: use case: we're using a predefined address */
+      printf("MULTICASTING\n");
+      /* if (gtls_request_out->method == OC_REST_GET) { */
+      /* 	gtls_request_out->method = OC_REST_DISCOVER; */
+      /* } */
+      OCStackResult ret;
+      OCCallbackData cbData;
+      cbData.cb = c_org_iochibity_CoServiceProvider_react;
+      cbData.context = (void*)(long)this_CoSP;
+      cbData.cd = NULL;
+      OCDoHandle c_handle = NULL;
+      ret = OCDoResource(&c_handle,	/* OCDoHandle = void* */
+			 gtls_request_out->method,      // (OCMethod)c_method,
+			 gtls_request_out->requestUri,  // c_uri,
+			 gtls_request_out->destination, // c_destDevAddr,
+			 gtls_request_out->payload,     // OCPayload* payload
+			 gtls_request_out->connectivityType,
+			 /* CT_ADAPTER_IP */
+			 /* CT_FLAG_SECURE,	 /\* OCConnectivityType conn_type *\/ */
+			 OC_LOW_QOS,
+			 &cbData,	/* OCCallbackData* cbData */
+			 NULL,	/* OCHeaderOptions* options */
+			 0);	/* uint8_t numOptions */
+      gtls_request_out->handle = c_handle;
+
+      /* now copy tls request_out to the global list, so that we can
+       * correlate with response_in in the react routine. we cannot
+       * just refer to the TLS data since it will have gone away
+       * if/when the thread died. */
+      /* why not just use the global list directly, no tls? because we
+	 don't have a key (handle) until we call OCDoResource. */
+      request_out_t* rqst	= OICCalloc(sizeof (request_out_t), 1);
+      rqst->handle		= gtls_request_out->handle;
+      rqst->method		= gtls_request_out->method;
+      size_t length; /* this will hold the length of string copied */
+      char buffer[MAX_URI_LENGTH]; /* fast mem on stack */
+      length			= strlcpy(buffer,
+					  gtls_request_out->requestUri,
+					  sizeof(buffer));
+      if (length < sizeof(buffer)) {
+	rqst->requestUri	= buffer;	/* it fit, use the stack buffer */
+      } else {
+	THROW_JNI_EXCEPTION("URI too long!");
+      }
+      // FIXME: verify the ptr stuff is heap-allocated
+      rqst->destination = gtls_request_out->destination;
+      rqst->payload = gtls_request_out->payload;
+      rqst->connectivityType = gtls_request_out->connectivityType;
+      rqst->qos = gtls_request_out->qos;
+      rqst->cbData = gtls_request_out->cbData;
+      rqst->options = gtls_request_out->options;
+      rqst->numOptions = gtls_request_out->numOptions;
+
     } else {
-	printf("UNICASTING\n");
-	c_destDevAddr = (OCDevAddr *)OICCalloc(sizeof (OCDevAddr), 1);
-	if (!c_destDevAddr) {
-	    THROW_JNI_EXCEPTION("ERROR: no stack memory for OCDevAddr alloc");
-	    return;
-	}
-	c_destDevAddr->adapter = (*env)->GetIntField(env, j_destDevAddr, FID_DA_NETWORK_PROTOCOL);
-	c_destDevAddr->flags = (*env)->GetIntField(env, j_destDevAddr, FID_DA_NETWORK_POLICIES);
-	printf("SEND TRANSPORT FLAGS: 0x%08X\n", c_destDevAddr->flags);
-	c_destDevAddr->flags |= OC_SECURE;
-	c_destDevAddr->port = (*env)->GetIntField(env, j_destDevAddr, FID_DA_PORT);
-	jstring j_addr = (*env)->GetObjectField(env, j_destDevAddr, FID_DA_ADDRESS);
-	if (j_addr == NULL) {
-	    printf("GetObjectField failed for MID_DA_ADDRESS on j_destDevAddr\n");
-	    return;
-	}
-	char* c_addr = (char*) (*env)->GetStringUTFChars(env, j_addr, NULL);
-	strncpy(c_destDevAddr->addr, c_addr, MAX_ADDR_STR_SIZE);
-	c_destDevAddr->ifindex = (*env)->GetIntField(env, j_destDevAddr, FID_DA_IFINDEX);
-	printf("Destination addr: %s\n", c_addr);
-	printf("Destination port: %d\n", c_destDevAddr->port);
+
+      /* we have an OCClientResponse - this CoSP is interacting with an SP */
+
+      /* But we're on an exhibit thread; we have a gtls_request_out,
+       * but the args we need for OCDoResource are on a react thread,
+       * in gtls_response_in
+       */
+
+      /* FIXME: pull method from the dual react thread */
+      /* TEMPORARY: pull from java object: */
+      OCMethod c_method = (OCMethod)(*env)->GetIntField(env,
+      							this_CoSP,
+      							FID_COSP_METHOD);
+      if (c_method == 0) {
+      	THROW_JNI_EXCEPTION("Method OC_REST_NOMETHOD (0) not allowed");
+      	return;
+      }
+      /* uri */
+      /* For thread safety, we must use the Uri from the response */
+      /* char* c_uri gtls_response_in->resourceUri, NULL); */
+
+      /* if (c_uri == NULL) { */
+      /* 	THROW_JNI_EXCEPTION("No resourceUri in gtls_response_in\n"); */
+      /* 	return; */
+      /* } */
+
+      /* ADDRESSING */
+      /* MULTICAST: dev addr is null, connectivity type is used */
+      /* UNICAST:   dev addr is used, connectivity type is ignored? */
+
+      OCDevAddr* c_destDevAddr = NULL;
+      /* jobject j_destDevAddr = NULL; */
+      /* j_destDevAddr = (*env)->GetObjectField(env, gtls_CoSP, FID_COSP_DESTINATION); */
+    
+      printf("UNICASTING\n");
+      /* we have an OCDevAddr from a response */
+      c_destDevAddr = &(gtls_response_in->response->devAddr);
+
+      OCStackResult ret;
+      OCCallbackData cbData;
+      cbData.cb = c_org_iochibity_CoServiceProvider_react;
+      cbData.context = (void*)(long)gtls_CoSP;
+      cbData.cd = NULL;
+      OCDoHandle c_handle = NULL;
+      /* ret = OCDoResource(&c_handle,	/\* OCDoHandle = void* *\/ */
+      /* 			 (OCMethod)c_method, */
+      /* 			 c_uri, */
+      /* 			 c_destDevAddr, */
+      /* 			 NULL,		 /\* OCPayload* payload *\/ */
+      /* 			 CT_DEFAULT, */
+      /* 			 /\* CT_ADAPTER_IP *\/ */
+      /* 			 /\* CT_FLAG_SECURE,	 /\\* OCConnectivityType conn_type *\\/ *\/ */
+      /* 			 OC_LOW_QOS, */
+      /* 			 &cbData,	/\* OCCallbackData* cbData *\/ */
+      /* 			 NULL,	/\* OCHeaderOptions* options *\/ */
+      /* 			 0);	/\* uint8_t numOptions *\/ */
+
+      /* now update the handle field */
+      /* FIXME: thread safety */
+      (*env)->SetLongField(env, gtls_CoSP, FID_COSP_HANDLE, (intptr_t)c_handle);
     }
 
-    OCStackResult ret;
-    OCCallbackData cbData;
-
-    cbData.cb = c_org_iochibity_CoServiceProvider_observe_behavior;
-    cbData.context = (void*)(long)g_CoSP;
-    cbData.cd = NULL;
-
-    OCDoHandle c_handle = NULL;
-
-    ret = OCDoResource(&c_handle,	/* OCDoHandle = void* */
-    		       (OCMethod)c_method,
-    		       c_uri,
-    		       NULL,  /* c_destDevAddr, */
-    		       NULL,		 /* OCPayload* payload */
-		       CT_DEFAULT,
-    		       /* CT_IP_USE_V4 */
-		       /* | CT_ADAPTER_IP */
-		       /* | CT_FLAG_SECURE,	 /\* OCConnectivityType conn_type *\/ */
-    		       OC_LOW_QOS,
-                       /* (qos == OC_HIGH_QOS) ? OC_HIGH_QOS : OC_LOW_QOS, /\* OCQualityOfService *\/ */
-                       &cbData,	/* OCCallbackData* cbData */
-    		       NULL,	/* OCHeaderOptions* options */
-    		       0);	/* uint8_t numOptions */
-
-    /* now update the handle field */
-    (*env)->SetLongField(env, g_CoSP, FID_COSP_HANDLE, (intptr_t)c_handle);
-
-    printf("Java_org_iochibity_CoServiceProvider_exhibitStimulus EXIT\n");
+    printf("Java_org_iochibity_CoServiceProvider_exhibit EXIT\n");
     return;
 }
 

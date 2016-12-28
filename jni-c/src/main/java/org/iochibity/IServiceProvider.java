@@ -7,6 +7,12 @@ public interface IServiceProvider {
 
     public long                   getHandle(); // OCResource*
 
+    // black boxing
+    public void             exhibit();  // Behavior(); // called by user
+    // observeStimulus: implemented by user, called by stack
+    // abstract public int            observeStimulus(StimulusIn stimulusIn);
+    public void             react(); // called by stack
+
     // OCResource fields
     public InstanceId             getInstanceId();
 
@@ -30,9 +36,8 @@ public interface IServiceProvider {
     public List<ActionSet>        getActionSet();
     public int                    getPolicies(); // ???
 
-    // black boxing
-    public void                   react(StimulusIn stimulusIn);        // called by user
-    public void                   exhibitBehavior();                   // called by user
-    // observeStimulus: implemented by user, called by stack
-    public int                    observeStimulus(StimulusIn stimulusIn);
+    // from incoming request:
+    public int              method();
+    
 }
+

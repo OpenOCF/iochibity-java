@@ -2,21 +2,25 @@
 
 #include "octypes.h"
 
-/* #include <ctype.h> */
-/* #include <pthread.h> */
-/* #include <string.h> */
-/* #include <stdlib.h> */
-/* #include <stdbool.h> */
-/* #include <unistd.h> */
+/* externs used in CoServiceProvider, DeviceAddress */
 
-/* #include "org_iochibity_OCF.h" */
-/* #include "ocf_exceptions.h" */
-/* #include "jni_utils.h" */
+typedef struct ResponseIn
+{
+  OCDoHandle        * handle;	/* key */
+  OCClientResponse  * response;	/* val */
+  struct ResponseIn * next;
+} response_in_t;
 
-/* #include "ocresource.h" */
-/* #include "ocstack.h" */
-/* #include "oic_malloc.h" */
-/* #include "oic_string.h" */
+extern response_in_t g_response_map;
+
+extern _Thread_local response_in_t* gtls_response_in; /**< thread local etc. */
+
+#define RESPONSE_IN ((OCClientResponse*)gtls_response_in->response)
+
+
+extern _Thread_local jobject g_CoSP;             /**< blah blah */
+
+/* extern _Thread_local OCDevAddr* gtls_defaultCoAddress; */
 
 #define JNI_ASSERT_NULL(arg, msg, ...)		\
     if (NULL == (arg)) \
@@ -110,6 +114,7 @@ extern jmethodID MID_ENTRY_GETVALUE;
 extern jclass    K_DEVICE_ADDRESS;
 extern jmethodID MID_DA_CTOR;
 extern jfieldID  FID_DA_NETWORK_PROTOCOL;
+extern jfieldID  FID_DA_NETWORK_FLAGS;
 extern jfieldID  FID_DA_NETWORK_POLICIES;
 extern jfieldID  FID_DA_NETWORK_SCOPE;
 extern jfieldID  FID_DA_TRANSPORT_SECURITY;
@@ -120,19 +125,7 @@ extern jfieldID  FID_DA_ROUTE_DATA;
 
 extern jclass    K_ISERVICE_PROVIDER;
 /* extern jmethodID MID_ISP_CTOR; */
-extern jmethodID MID_ISP_OBSERVE_STIMULUS;
-
-extern jclass    K_SERVICE_PROVIDER;
-/* extern jmethodID MID_ISP_CTOR; */
-extern jfieldID FID_SP_HANDLE;
-extern jfieldID FID_SP_ID;
-extern jfieldID FID_SP_URI_PATH;
-extern jfieldID FID_SP_TYPES;
-extern jfieldID FID_SP_INTERFACES;
-extern jfieldID FID_SP_PROPERTIES;
-extern jfieldID FID_SP_CHILDREN;
-extern jfieldID FID_SP_ACTION_SET;
-extern jfieldID FID_SP_POLICIES;
+/* extern jmethodID MID_ISP_OBSERVE_STIMULUS; */
 
 extern jclass    K_RESOURCE_LOCAL;
 
@@ -159,7 +152,7 @@ extern jmethodID MID_RQO_CTOR;
 extern jfieldID  FID_RQO_LOCAL_HANDLE;
 extern jfieldID  FID_RQO_CO_SERVICE_PROVIDER;
 extern jfieldID  FID_RQO_METHOD;
-extern jfieldID  FID_RQO_URI_PATH;
+/* extern jfieldID  FID_RQO_URI_PATH; */
 extern jfieldID  FID_RQO_DEST;
 
 extern jclass    K_MSG_REQUEST_IN;
@@ -193,15 +186,28 @@ extern jclass    K_MSG_RESPONSE_OUT;
 extern jmethodID MID_MsgRspOut_CTOR;
 extern jfieldID  FID_MsgRspOut_RQST_IN;
 
-extern jclass    K_I_CO_SERVICE_PROVIDER;
-extern jmethodID MID_ICOSP_OBSERVE_BEHAVIOR;
+extern jclass    K_SERVICE_PROVIDER;
+/* extern jmethodID MID_ISP_CTOR; */
+extern jfieldID FID_SP_HANDLE;
+extern jfieldID FID_SP_ID;
+extern jfieldID FID_SP_URI_PATH;
+extern jfieldID FID_SP_TYPES;
+extern jfieldID FID_SP_INTERFACES;
+extern jfieldID FID_SP_PROPERTIES;
+extern jfieldID FID_SP_CHILDREN;
+extern jfieldID FID_SP_ACTION_SET;
+extern jfieldID FID_SP_POLICIES;
 
-extern jclass    K_A_CO_SERVICE_PROVIDER;
+extern jclass    K_I_CO_SERVICE_PROVIDER;
+extern jmethodID MID_ICOSP_REACT;
+
+extern jclass    K_CO_SERVICE_PROVIDER;
 extern jfieldID  FID_COSP_HANDLE;
+/* extern jfieldID  FID_COSP_MSG_RESPONSE_IN; */
 extern jfieldID  FID_COSP_METHOD;
 extern jfieldID  FID_COSP_URI_PATH;
-extern jfieldID  FID_COSP_DESTINATION;
-extern jmethodID MID_COSP_EXHIBIT_STIMULUS;
+/* extern jfieldID  FID_COSP_DESTINATION; */
+extern jmethodID MID_COSP_EXHIBIT;
 
 extern FILE* server_fopen(const char *path, const char *mode);
 

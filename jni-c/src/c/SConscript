@@ -134,6 +134,7 @@ if target_os == 'darwin':
 
 jni_clib_src = ['jni_utils.c',
                 'org_iochibity_CoServiceProvider.c',
+	        'org_iochibity_DeviceAddress.c',
 	        'org_iochibity_Message.c',
 	        'org_iochibity_ServiceManager.c',
 		'org_iochibity_ServiceProvider.c',

@@ -5,7 +5,7 @@ public class ResourcePolicy
     public static final int NOMETHOD       = 0;
     // typedef enum
     // {
-    /** When none of the bits are set, the resource is non-discoverable &
+    /** When none of the bits are set, the resource is non-discoverable &amp;
      *  non-observable by the client.*/
     public static final int NONE = 0;
 

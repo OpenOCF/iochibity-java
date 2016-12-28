@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "jni_utils.h"
-#include "ocf_exceptions.h"
+#include "org_iochibity_Exceptions.h"
 
 /* print the class name */
 /* http://stackoverflow.com/questions/12719766/can-i-know-the-name-of-the-class-that-calls-a-jni-c-method */

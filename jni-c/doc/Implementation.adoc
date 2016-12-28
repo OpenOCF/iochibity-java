@@ -5,3 +5,29 @@ goal is to minimize such calls.
 
 There are two basic strategies, which roughly correspond to Ahead Of
 Time (AOT) and Just In Time (JIT) compilation.
+
+
+== C API OCDoResource processing
+
+A unicast address can be passed in two ways:
+
+* requestUri = a "full" url, including ip address
+* requestUri = a path, and destination contains ip address
+
+OCDoResource creates an internal OCDevAddr based on the requestUri and
+the conntype arg.  If the requestUri is a path (starts with '/') then
+it does not create a devAddr.  Otherwise, it creates a devAddr based
+on the requestUri.
+
+If the requestUri starts with '/', and a destination is not provided
+(NULL), and the method is OC_REST_DISCOVER, then OCDoResource will
+alloc a temp devAddr with OC_DEFAULT_ADAPTER.
+
+What if the requestUri starts with '/' and no destination is provided,
+and the method is GET?  Error: "no devAddr and no destination".  Which
+really means "you did not provide a destination devAddr, and I was
+unable to construct one based on the requestUri you passed."
+
+But in that case what should really happen is that the GET should be
+interpreted as a DISCOVER method, and a temp default devAddr
+constructed.

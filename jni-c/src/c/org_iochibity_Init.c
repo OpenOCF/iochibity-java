@@ -24,6 +24,7 @@
 #include "oic_malloc.h"
 #include "oic_string.h"
 
+
 JavaVM* g_JVM;
 
 extern const char* g_config_fname;
@@ -133,6 +134,7 @@ jmethodID MID_ENTRY_GETVALUE              = NULL;
 jclass    K_DEVICE_ADDRESS                = NULL;
 jmethodID MID_DA_CTOR                     = NULL;
 jfieldID  FID_DA_NETWORK_PROTOCOL         = NULL;
+jfieldID  FID_DA_NETWORK_FLAGS            = NULL;
 jfieldID  FID_DA_NETWORK_POLICIES         = NULL;
 jfieldID  FID_DA_NETWORK_SCOPE            = NULL;
 jfieldID  FID_DA_TRANSPORT_SECURITY       = NULL;
@@ -143,7 +145,7 @@ jfieldID  FID_DA_ROUTE_DATA               = NULL;
 
 jclass    K_ISERVICE_PROVIDER             = NULL;
 /* jmethodID MID_ISP_CTOR                 = NULL; */
-jmethodID MID_ISP_OBSERVE_STIMULUS      = NULL;
+/* jmethodID MID_ISP_OBSERVE_STIMULUS      = NULL; */
 
 jclass    K_SERVICE_PROVIDER             = NULL;
 /* extern jmethodID MID_ISP_CTOR; */
@@ -180,7 +182,7 @@ jmethodID MID_RQO_CTOR                    = NULL;
 jfieldID  FID_RQO_LOCAL_HANDLE            = NULL;
 jfieldID  FID_RQO_CO_SERVICE_PROVIDER     = NULL;
 jfieldID  FID_RQO_METHOD                  = NULL;
-jfieldID  FID_RQO_URI_PATH                = NULL;
+/* jfieldID  FID_RQO_URI_PATH                = NULL; */
 jfieldID  FID_RQO_DEST                    = NULL;
 
 jclass    K_MSG_REQUEST_IN                = NULL;
@@ -197,14 +199,15 @@ jfieldID  FID_RQI_MSG_ID                  = NULL;
 jmethodID MID_RQI_GET_MSG_ID              = NULL;
 
 jclass    K_I_CO_SERVICE_PROVIDER       = NULL;
-jmethodID MID_ICOSP_OBSERVE_BEHAVIOR    = NULL;
+jmethodID MID_ICOSP_REACT    = NULL;
 
-jclass    K_A_CO_SERVICE_PROVIDER       = NULL;
+jclass    K_CO_SERVICE_PROVIDER      = NULL;
 jfieldID  FID_COSP_HANDLE              = NULL;
+/* jfieldID  FID_COSP_MSG_RESPONSE_IN  = NULL; */
 jfieldID  FID_COSP_METHOD              = NULL;
-jfieldID  FID_COSP_URI_PATH            = NULL;
-jfieldID  FID_COSP_DESTINATION         = NULL;
-jmethodID MID_COSP_EXHIBIT_STIMULUS    = NULL;
+/* jfieldID  FID_COSP_URI_PATH            = NULL; */
+/* jfieldID  FID_COSP_DESTINATION         = NULL; */
+jmethodID MID_COSP_EXHIBIT    = NULL;
 
 
 /*
@@ -474,16 +477,16 @@ int init_ServiceProviders(JNIEnv* env)
     K_ISERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    if (MID_ISP_OBSERVE_STIMULUS == NULL) {
-	MID_ISP_OBSERVE_STIMULUS = (*env)->GetMethodID(env,
-							 K_ISERVICE_PROVIDER,
-							 "observeStimulus",
-							 "(Lorg/iochibity/StimulusIn;)I");
-	if (MID_ISP_OBSERVE_STIMULUS == NULL) {
-	    printf("ERROR: GetMethodID failed for 'observeStimulus' of IServiceProvider\n");
-	    return -1;
-	}
-    }
+    /* if (MID_ISP_OBSERVE_STIMULUS == NULL) { */
+    /* 	MID_ISP_OBSERVE_STIMULUS = (*env)->GetMethodID(env, */
+    /* 							 K_ISERVICE_PROVIDER, */
+    /* 							 "observeStimulus", */
+    /* 							 "(Lorg/iochibity/StimulusIn;)I"); */
+    /* 	if (MID_ISP_OBSERVE_STIMULUS == NULL) { */
+    /* 	    printf("ERROR: GetMethodID failed for 'observeStimulus' of IServiceProvider\n"); */
+    /* 	    return -1; */
+    /* 	} */
+    /* } */
 
     /* then, the abstract class ServiceProvider */
     klass = (*env)->FindClass(env, "org/iochibity/ServiceProvider");
@@ -694,15 +697,15 @@ int init_StimulusOut(JNIEnv* env)
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
-    if (FID_RQO_URI_PATH == NULL) {
-	FID_RQO_URI_PATH = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
-					      "_uriPath",
-					      "Ljava/lang/String;");
-	if (FID_RQO_URI_PATH == NULL) {
-	    printf("ERROR: GetFieldID failed for '_uriPath' of StimulusOut\n");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
+    /* if (FID_RQO_URI_PATH == NULL) { */
+    /* 	FID_RQO_URI_PATH = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT, */
+    /* 					      "_uriPath", */
+    /* 					      "Ljava/lang/String;"); */
+    /* 	if (FID_RQO_URI_PATH == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for '_uriPath' of StimulusOut\n"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
     if (FID_RQO_DEST == NULL) {
 	FID_RQO_DEST = (*env)->GetFieldID(env, K_MSG_REQUEST_OUT,
 					   "_remoteDeviceAddress",
@@ -904,13 +907,13 @@ int init_ObservationIn(JNIEnv* env)
 	    return -1;
 	}
     }
-    if (FID_OBIN_URI == NULL) {
-	FID_OBIN_URI = (*env)->GetFieldID(env, K_OBSERVATION_IN, "_uriPath", "Ljava/lang/String;");
-	if (FID_OBIN_URI == NULL) {
-	    printf("ERROR: GetFieldID failed for 'uri' of ObservationIn\n");
-	    return -1;
-	}
-    }
+    /* if (FID_OBIN_URI == NULL) { */
+    /* 	FID_OBIN_URI = (*env)->GetFieldID(env, K_OBSERVATION_IN, "_uriPath", "Ljava/lang/String;"); */
+    /* 	if (FID_OBIN_URI == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for 'uri' of ObservationIn\n"); */
+    /* 	    return -1; */
+    /* 	} */
+    /* } */
     /* if (MID_OBIN_GET_OBSERVATION == NULL) { */
     /* 	MID_OBIN_GET_OBSERVATION = (*env)->GetMethodID(env, K_OBSERVATION_IN, */
     /* 						    "getPDUObservation", */
@@ -1242,14 +1245,14 @@ int init_ICoServiceProvider(JNIEnv* env)
     K_I_CO_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    jmethodID MID_ICOSP_OBSERVE_BEHAVIOR  = NULL;
-    if (MID_ICOSP_OBSERVE_BEHAVIOR == NULL) {
-	MID_ICOSP_OBSERVE_BEHAVIOR = (*env)->GetMethodID(env,
+    jmethodID MID_ICOSP_REACT  = NULL;
+    if (MID_ICOSP_REACT == NULL) {
+	MID_ICOSP_REACT = (*env)->GetMethodID(env,
 							 K_I_CO_SERVICE_PROVIDER,
-							 "observeBehavior",
-							 "(Lorg/iochibity/ObservationIn;)I");
-	if (MID_ICOSP_OBSERVE_BEHAVIOR == NULL) {
-	    printf("ERROR: GetMethodID failed for 'observeBehavior' of ICoServiceProvider\n");
+							 "react",
+							 "()V");
+	if (MID_ICOSP_REACT == NULL) {
+	    printf("ERROR: GetMethodID failed for 'react' of ICoServiceProvider\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
@@ -1261,45 +1264,55 @@ int init_CoServiceProvider(JNIEnv* env)
     jclass klass;
     klass = (*env)->FindClass(env, "org/iochibity/CoServiceProvider");
     JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/CoServiceProvider\n", 0);
-    K_A_CO_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
+    K_CO_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
     if (FID_COSP_HANDLE == NULL) {
-	FID_COSP_HANDLE = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER, "_handle", "J");
+	FID_COSP_HANDLE = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, "_handle", "J");
 	if (FID_COSP_HANDLE == NULL) {
 	    printf("ERROR: GetFieldID failed for '_handle' of CoServiceProvider");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
-    if (FID_COSP_URI_PATH == NULL) {
-	FID_COSP_URI_PATH = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER,
-						"_uriPath", "Ljava/lang/String;");
-	if (FID_COSP_URI_PATH == NULL) {
-	    printf("ERROR: GetFieldID failed for '_uriPath' of CoServiceProvider");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
+    /* obs handle moved to thread-local in CoServiceProvider.c */
+    /* if (FID_COSP_MSG_RESPONSE_IN == NULL) { */
+    /* 	FID_COSP_MSG_RESPONSE_IN = (*env)->GetFieldID(env, */
+    /* 							 K_CO_SERVICE_PROVIDER, */
+    /* 							 "_observationHandle", "J"); */
+    /* 	if (FID_COSP_MSG_RESPONSE_IN == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for '_observationHandle' of CoServiceProvider"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
+    /* if (FID_COSP_URI_PATH == NULL) { */
+    /* 	FID_COSP_URI_PATH = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, */
+    /* 						"_uriPath", "Ljava/lang/String;"); */
+    /* 	if (FID_COSP_URI_PATH == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for '_uriPath' of CoServiceProvider"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
     if (FID_COSP_METHOD == NULL) {
-	FID_COSP_METHOD = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER, "_method", "I");
+	FID_COSP_METHOD = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, "_method", "I");
 	if (FID_COSP_METHOD == NULL) {
 	    printf("ERROR: GetFieldID failed for '_method' of CoServiceProvider");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
-    if (FID_COSP_DESTINATION == NULL) {
-	FID_COSP_DESTINATION = (*env)->GetFieldID(env, K_A_CO_SERVICE_PROVIDER,
-						   "_destination", "Lorg/iochibity/DeviceAddress;");
-	if (FID_COSP_DESTINATION == NULL) {
-	    printf("ERROR: GetFieldID failed for '_destination' of CoServiceProvider");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
-    jmethodID MID_COSP_EXHIBIT_STIMULUS  = NULL;
-    if (MID_COSP_EXHIBIT_STIMULUS == NULL) {
-	MID_COSP_EXHIBIT_STIMULUS = (*env)->GetMethodID(env, K_I_CO_SERVICE_PROVIDER,
-							 "exhibitStimulus", "()V");
-	if (MID_COSP_EXHIBIT_STIMULUS == NULL) {
-	    printf("ERROR: GetMethodID failed for 'exhibitStimulus' of CoServiceProvider\n");
+    /* if (FID_COSP_DESTINATION == NULL) { */
+    /* 	FID_COSP_DESTINATION = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, */
+    /* 						   "_destination", "Lorg/iochibity/DeviceAddress;"); */
+    /* 	if (FID_COSP_DESTINATION == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for '_destination' of CoServiceProvider"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
+    jmethodID MID_COSP_EXHIBIT  = NULL;
+    if (MID_COSP_EXHIBIT == NULL) {
+	MID_COSP_EXHIBIT = (*env)->GetMethodID(env, K_I_CO_SERVICE_PROVIDER,
+							 "exhibit", "()V");
+	if (MID_COSP_EXHIBIT == NULL) {
+	    printf("ERROR: GetMethodID failed for 'exhibit' of CoServiceProvider\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
@@ -1565,55 +1578,61 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     }
 
     // networkProtocol -> OCDevAddr.adapter
-    FID_DA_NETWORK_PROTOCOL = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkProtocol", "I");
-    if (FID_DA_NETWORK_PROTOCOL == NULL) {
-	printf("ERROR:  GetFieldID failed for networkProtocol for DeviceAddress\n");
-	fflush(NULL);
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-    }
-    FID_DA_NETWORK_POLICIES= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkPolicies", "B");
-    if (FID_DA_NETWORK_POLICIES == NULL) {
-	printf("ERROR:  GetFieldID failed for 'networkPolicy' of DeviceAddress\n");
-	fflush(NULL);
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-    }
-    FID_DA_NETWORK_SCOPE= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkScope", "B");
-    if (FID_DA_NETWORK_SCOPE == NULL) {
-	printf("ERROR:  GetFieldID failed for 'networkPolicy' of DeviceAddress\n");
-	fflush(NULL);
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-    }
-    FID_DA_TRANSPORT_SECURITY= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "transportSecurity", "Z");
-    if (FID_DA_TRANSPORT_SECURITY == NULL) {
-	printf("ERROR:  GetFieldID failed for 'transportSecurity' of DeviceAddress\n");
-	fflush(NULL);
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-    }
-    FID_DA_PORT = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "port", "I");
-    if (FID_DA_PORT == NULL) {
-	printf("ERROR:  GetFieldID failed for port for DeviceAddress\n");
-	fflush(NULL);
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-    }
-    FID_DA_ADDRESS = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "address", "Ljava/lang/String;");
-    if (FID_DA_ADDRESS == NULL) {
-	printf("ERROR:  GetFieldID failed for address of DeviceAddress\n");
-	fflush(NULL);
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-    }
-    FID_DA_IFINDEX = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "ifindex", "I");
-    if (FID_DA_IFINDEX == NULL) {
-	printf("ERROR:  GetFieldID failed for ifindex DeviceAddress\n");
-	fflush(NULL);
-    	return OC_EH_INTERNAL_SERVER_ERROR;
-    }
+    /* FID_DA_NETWORK_PROTOCOL = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkProtocol", "I"); */
+    /* if (FID_DA_NETWORK_PROTOCOL == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for networkProtocol for DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
+    /* FID_DA_NETWORK_FLAGS = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkFlags", "I"); */
+    /* if (FID_DA_NETWORK_FLAGS == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for networkFlags for DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
+    /* FID_DA_NETWORK_POLICIES= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkPolicies", "B"); */
+    /* if (FID_DA_NETWORK_POLICIES == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for 'networkPolicy' of DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
+    /* FID_DA_NETWORK_SCOPE= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "networkScope", "B"); */
+    /* if (FID_DA_NETWORK_SCOPE == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for 'networkPolicy' of DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
+    /* FID_DA_TRANSPORT_SECURITY= (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "transportSecurity", "Z"); */
+    /* if (FID_DA_TRANSPORT_SECURITY == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for 'transportSecurity' of DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
+    /* FID_DA_PORT = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "port", "I"); */
+    /* if (FID_DA_PORT == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for port for DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
+    /* FID_DA_ADDRESS = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "address", "Ljava/lang/String;"); */
+    /* if (FID_DA_ADDRESS == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for address of DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
+    /* FID_DA_IFINDEX = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "ifindex", "I"); */
+    /* if (FID_DA_IFINDEX == NULL) { */
+    /* 	printf("ERROR:  GetFieldID failed for ifindex DeviceAddress\n"); */
+    /* 	fflush(NULL); */
+    /* 	return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* } */
     /* FIXME */
     /* /\* OCDevAddr.routeData *\/ */
     /* if (crequest_in->devAddr.routeData) { */
-    FID_DA_ROUTE_DATA = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "routeData", "Ljava/lang/String;");
-    if (FID_DA_ROUTE_DATA == NULL) {
-    	    printf("ERROR: GetFieldID failed routeData of DeviceAddress\n");
-    }
+    /* FID_DA_ROUTE_DATA = (*env)->GetFieldID(env, K_DEVICE_ADDRESS, "routeData", "Ljava/lang/String;"); */
+    /* if (FID_DA_ROUTE_DATA == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed routeData of DeviceAddress\n"); */
+    /* } */
 
     /* klass = (*env)->FindClass(env, "org/iochibity/ResourceLocal"); */
     /* JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ResourceLocal\n", 0); */

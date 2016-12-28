@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     org_iochibity_Message
- * Method:    getObservations
+ * Method:    getObservationRecords
  * Signature: ()Lorg/iochibity/ObservationList;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getObservations
+JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getObservationRecords
   (JNIEnv *, jobject);
 
 /*

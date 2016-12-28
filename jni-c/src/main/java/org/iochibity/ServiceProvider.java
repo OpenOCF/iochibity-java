@@ -9,6 +9,13 @@ public abstract class ServiceProvider
     private long                   _handle; // OCResource*
     public  long                   getHandle() { return _handle; }
 
+    // black boxing
+    native public void             exhibit(); // called by user
+    // observeStimulus: implemented by user, called by stack
+    // abstract public int            observeStimulus(StimulusIn stimulusIn);
+    native public void             react(); // called by stack
+
+
     // OCResource fields
     private InstanceId             _id;
     public  InstanceId             getInstanceId() { return _id; }
@@ -42,9 +49,7 @@ public abstract class ServiceProvider
     public  int                    getPolicies() { return _policies; }
     public  void                   setPolicies(int newPolicies) { _policies = newPolicies; }
 
-    // black boxing
-    native public void             react(StimulusIn stimulusIn);           // called by user
-    native public void             exhibitBehavior();                      // called by user
-    // observeStimulus: implemented by user, called by stack
-    abstract public int            observeStimulus(StimulusIn stimulusIn);
+    // from incoming request:
+    native public int              method();
+
 }

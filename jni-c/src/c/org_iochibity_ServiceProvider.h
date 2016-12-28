@@ -9,18 +9,26 @@ extern "C" {
 #endif
 /*
  * Class:     org_iochibity_ServiceProvider
- * Method:    react
- * Signature: (Lorg/iochibity/StimulusIn;)V
+ * Method:    exhibit
+ * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_react
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_exhibit
+  (JNIEnv *, jobject);
 
 /*
  * Class:     org_iochibity_ServiceProvider
- * Method:    exhibitBehavior
+ * Method:    react
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_exhibitBehavior
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_react
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_ServiceProvider
+ * Method:    method
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_ServiceProvider_method
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

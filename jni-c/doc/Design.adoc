@@ -303,3 +303,65 @@ will be passed as the `ObservationIn` paramater of the client's
 `observeBehavior` callback.
 
 
+== CoServiceProvider
+
+=== Remote Device Address
+
+OCCreateResource takes no networkish params, but it does take a
+"resourceProperties" bitmap param, which includes flags like
+OC_ACTIVE, OC_DISCOVERABLE, etc. - resource policies, but not
+networkish.  So when you create/register a resource, the network is
+not yet implicated.  Note that, as a side effect of OCCreateResource,
+an OCResource is created; it too does not contain networkish info.
+
+OCDoResource takes two networkish params, one a DevAddr struct and the
+other a ConnectivityType bitmap.  Why?  Presumably to support both
+unicast and multicast with the same struct.  The ConnectivityType
+bitmap, as its name suggests, does not involve addressing info, only
+info related to protocol selection, IPv6 scope (if neeeded), etc.
+Since a multicast uses a configured network but does not target a
+specific address, the ConnectivityType seems to be intended for use
+with multicasting.  By contrast, the DevAddr struct includes all the
+information that is encoded in a ConnectivityType bitmap, plus an IP
+addresss and port.  So it willl be used for unicasts.
+
+The OCClientReponse struct, which is returned from the server in
+response to a Discover request, contains a ref to the server's DevAddr
+info, and this is what will be used to set the DevAddr param on a CRUD
+OCDoResource operation.
+
+Now, to unify all of this, we need to make a distinction between
+networkish data, and addressing data.  Stricting speaking, the latter
+is information that determines "where" the thing is, so to speak, and
+this is orthogonal to the issue of how one is supposed to get there
+from here.  That latter is encoded by the "networkish" data - the
+protocol to use, the (configuration) flags controlling
+(e.g. indicating IPv6 scope, etc.), and so forth.
+
+What we really have is two networkish kinds of info: one for multicast
+discovery, one for unicast CRUDN (and discovery).  [Ed: is multicast
+_only_ for discovery?  What does that even mean?  Why not multicast a
+GET for e.g. temperature sensors?]  So even though we could unify
+them, using the same transport adapter and flags for both, that might
+not make sense if we want to be able to use different values for
+discover and CRUDN operations.
+
+[Problem with "discovery": std discovery is a GET on URI paths /oic/p,
+/oic/d, or /oic/res, with no IP address/port.  But why should this not
+work for e.g. a GET on temperature devices?  E.g. Get
+/foo/temperature, with no IP address/port.  Why should that not return
+temperature readings from all of the /foo/temperature resources?
+
+So our Provider, instead of exposing the underlying DevAddr and
+ConnectivityType info, will expose all this stuff broken out, but only
+via getters:
+
+    IP address
+    IP port
+    URI Path
+
+    Network protocol
+    Network IP version (OC_IP_USE_V6, OC_IP_USE_V4)
+    Network scope (Interface, Link, etc.)
+    Network multicast flag (boolean)
+    Transport Security (boolean)

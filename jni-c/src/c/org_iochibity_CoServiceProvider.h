@@ -9,10 +9,138 @@ extern "C" {
 #endif
 /*
  * Class:     org_iochibity_CoServiceProvider
- * Method:    exhibitStimulus
+ * Method:    ctorCoSP
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibitStimulus
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_ctorCoSP
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    exhibit
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    uriPath
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    setUriPath
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setUriPath
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    method
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getCoSecurityId
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getCoResult
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getCoResult
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getObservationSerial
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getObservationSerial
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    multicastProtocol
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_multicastProtocol
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    setMulticast
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setMulticast
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    isMulticast
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_isMulticast
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    coAddress
+ * Signature: ()Lorg/iochibity/DeviceAddress;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    unicastProtocol
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_unicastProtocol
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkFlags
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkFlags
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkScope
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkScope
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkPolicies
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkPolicies
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsSecure
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsSecure
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

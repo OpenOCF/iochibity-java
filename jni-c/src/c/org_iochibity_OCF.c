@@ -73,8 +73,8 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init__ILjava_lang_String_2
     OC_UNUSED(klass);
     printf("%s | %s ENTRY\n", __FILE__, __func__);
 
-    /* coap_set_log_level(LOG_DEBUG); */
-    /* dtls_set_log_level(DTLS_LOG_DEBUG); */
+    coap_set_log_level(LOG_DEBUG);
+    dtls_set_log_level(DTLS_LOG_DEBUG);
 
     /* First configure security */
     if (j_config_fname == NULL) {

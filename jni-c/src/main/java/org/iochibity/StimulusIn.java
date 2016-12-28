@@ -1,5 +1,10 @@
 package org.iochibity;
 
+
+/**
+ * Wrapper on OCEntityHandlerRequest.
+ */
+
 public class StimulusIn extends MsgForServiceProvider // OCEntityHandlerRequest
 {
     // For internal (JNI) use only:

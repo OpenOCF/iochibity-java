@@ -127,9 +127,9 @@ public class LedSP
 
 	/* finally, send ResponeOut */
 	try {
-	    this.exhibitBehavior();
+	    this.exhibit();
 	} catch (Exception e) {
-	    System.out.println("[E] LedSP" + " | " + "exhibitBehavior exception");
+	    System.out.println("[E] LedSP" + " | " + "exhibit exception");
 	    e.printStackTrace();
 	}
 	// 	    // Send the response

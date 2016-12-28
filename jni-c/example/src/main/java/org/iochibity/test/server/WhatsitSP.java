@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class WhatsitSP
-    extends    ServiceProvider
+    extends  ServiceProvider
     // implements IServiceProvider
 {
 
@@ -42,22 +42,25 @@ public class WhatsitSP
 	addType("core.whatsit");
 	addInterface("oc.mi.whatsit");
 	setPolicies(Resource.DISCOVERABLE
-		    | Resource.WATCHABLE
+		    // | Resource.WATCHABLE
 		    | Resource.SECURE);
     }
 
-    // public int observeStimulus(StimulusIn requestIn)
-    public int observeStimulus(StimulusIn stimulusIn)
+    // public int observeStimulus(StimulusIn stimulusIn)
+    // public int observe(StimulusIn stimulusIn)
+    // public int observe()
+    public void react()
     {
 	System.out.println("WhatsitSP.observeStimulus routine ENTRY");
-	Logger.logRequestIn(stimulusIn);
+	// Logger.logRequestIn(stimulusIn);
 
 	System.out.println("WhatsitSP: stimulusIn callback param foo = " + foo);
 
-	switch (stimulusIn.getMethod()) {
+	// switch (stimulusIn.getMethod()) { // this.getMethod() native method
+	switch (method()) { // this.getMethod() native method
 	case Method.GET:
 	    // FIXME: try catch?
-	    this.observeGetStimulus(stimulusIn);
+	    // this.observeGetStimulus(stimulusIn);
 	    break;
 	case Method.PUT:
 	    System.out.println("WhatsitSP: method: PUT");
@@ -97,14 +100,15 @@ public class WhatsitSP
 
 	// send response
 	try {
-	    this.exhibitBehavior();
+	    this.exhibit();
+	    // this.exhibit();
 	} catch (Exception e) {
-	    System.out.println("[E] WhatisSP" + " | " + "exhibitBehavior exception");
+	    System.out.println("[E] WhatisSP" + " | " + "exhibit exception");
 	    e.printStackTrace();
 	}
 
 	System.out.println("WhatsitSP.observeStimulus EXIT");
-	return ServiceResult.OK;
+	return; // ServiceResult.OK;
     }
 
     // private ObservationList<Observation> serviceGetRequest(StimulusIn request)
@@ -115,16 +119,16 @@ public class WhatsitSP
 
 	// to react to a stimulus, the ServiceProvider sets its
 	// internal state (types, interfaces, properties, etc.).  Then
-	// the exhibitBehavior will use the state to generate and send
+	// the exhibit will use the state to generate and send
 	// an Observation.
 
 	// NOTE that messages and messaging are hidden.
 
 	// Mandatory: first react to the StimulusIn. This sets some of
 	// the internal state of the ServiceProvider
-	this.react(stimulusIn);
+	// this.react(stimulusIn);
 
-	// Now modify internal state.  The `exhibitBehavior` routine
+	// Now modify internal state.  The `exhibit` routine
 	// will use it to generate and send an observation message qua
 	// response.
 

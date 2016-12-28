@@ -511,15 +511,15 @@ jobject OCRepPayload_to_Observation(JNIEnv* env, OCRepPayload* c_payload)
 
 /*
  * Class:     org_iochibity_Message
- * Method:    getObservations
+ * Method:    getObservationRecords
  * Signature: ()Lorg/iochibity/ObservationList;
  */
-JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getObservations
+JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getObservationRecords
 (JNIEnv * env, jobject this)
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    /* printf("Java_org_iochibity_Message_getObservations ENTRY\n"); */
+    /* printf("Java_org_iochibity_Message_getObservationRecords ENTRY\n"); */
 
     OCPayload* c_payload = (OCPayload*)(intptr_t)
 	(*env)->GetLongField(env, this, FID_MSG_OBSERVATION_HANDLE);
@@ -596,7 +596,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_Message_getObservations
 	    break;
 	}
     }
-    /* printf("Java_org_iochibity_Message_getObservations EXIT\n"); */
+    /* printf("Java_org_iochibity_Message_getObservationRecords EXIT\n"); */
     return j_OBSLL;
 }
 

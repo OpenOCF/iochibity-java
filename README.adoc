@@ -19,3 +19,4 @@ from the sources and slightly modified to work as a stand-alone
 library that works with https://github.com/iotk/iochibity[Iochibity].
 
 WARNING: Deprecated, sort of.  I probably won't do further work on this.
+

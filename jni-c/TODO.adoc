@@ -14,9 +14,16 @@
 
 == renaming
 
-ACoServiceProvider -> CoServiceProvider
-
-ACOSP -> COSP
-
 
 Fix:  ObservationRecord.PLATFORM -> ??
+
+
+ObservationOut  =>  removed, implicit in exhibitBehavior
+
+ObservationIn =>  Behavior
+
+StimulusOut => removed, implicity in exhibitStimulus
+
+StimulusIn => Stimulus
+
+ObservationRecord => Observation?  Stimulii and Behaviors contain Observations?

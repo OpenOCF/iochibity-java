@@ -93,7 +93,7 @@ public class LightSP
 
 	/* finally, send ResponeOut */
 	try {
-	    this.exhibitBehavior();
+	    this.exhibit();
 	} catch (Exception e) {
 	    System.out.println("SEND RESPONSE EXCEPTION");
 	}

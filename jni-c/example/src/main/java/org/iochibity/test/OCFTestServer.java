@@ -5,7 +5,6 @@ import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
 import org.iochibity.StimulusIn;
 import org.iochibity.PropertyMap;
-import org.iochibity.PropertyString;
 import org.iochibity.ServiceProvider;
 import org.iochibity.IServiceProvider;
 import org.iochibity.ServiceManager;
@@ -84,13 +83,13 @@ public class OCFTestServer
 				       "version-0.1",
 				       new String[] {"dmversion-0.1"});
 
-	TemperatureSP tempSP = new TemperatureSP();
-	tempSP.addType("foo.t.bar");
-	tempSP.addInterface("foo.if.bar");
-	Logger.logSP(tempSP);
+	// TemperatureSP tempSP = new TemperatureSP();
+	// tempSP.addType("foo.t.bar");
+	// tempSP.addInterface("foo.if.bar");
+	// Logger.logSP(tempSP);
 
-	ServiceProvider tSP = null;
-	tSP = ServiceManager.registerServiceProvider(tempSP);
+	// ServiceProvider tSP = null;
+	// tSP = ServiceManager.registerServiceProvider(tempSP);
 
 	ServiceManager.registerServiceProvider(new WhatsitSP());
 
