@@ -56,8 +56,8 @@ public class WhatsitSP
 
 	System.out.println("WhatsitSP: stimulusIn callback param foo = " + foo);
 
-	// switch (stimulusIn.getMethod()) { // this.getMethod() native method
-	switch (method()) { // this.getMethod() native method
+	// switch (stimulusIn.method()) { // this.method() native method
+	switch (method()) { // this.method() native method
 	case Method.GET:
 	    // FIXME: try catch?
 	    // this.observeGetStimulus(stimulusIn);

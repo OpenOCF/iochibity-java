@@ -204,7 +204,7 @@ jmethodID MID_ICOSP_REACT    = NULL;
 jclass    K_CO_SERVICE_PROVIDER      = NULL;
 jfieldID  FID_COSP_HANDLE              = NULL;
 /* jfieldID  FID_COSP_MSG_RESPONSE_IN  = NULL; */
-jfieldID  FID_COSP_METHOD              = NULL;
+/* jfieldID  FID_COSP_METHOD              = NULL; */
 /* jfieldID  FID_COSP_URI_PATH            = NULL; */
 /* jfieldID  FID_COSP_DESTINATION         = NULL; */
 jmethodID MID_COSP_EXHIBIT    = NULL;
@@ -1292,13 +1292,13 @@ int init_CoServiceProvider(JNIEnv* env)
     /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
     /* 	} */
     /* } */
-    if (FID_COSP_METHOD == NULL) {
-	FID_COSP_METHOD = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, "_method", "I");
-	if (FID_COSP_METHOD == NULL) {
-	    printf("ERROR: GetFieldID failed for '_method' of CoServiceProvider");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
+    /* if (FID_COSP_METHOD == NULL) { */
+    /* 	FID_COSP_METHOD = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, "_method", "I"); */
+    /* 	if (FID_COSP_METHOD == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for '_method' of CoServiceProvider"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
     /* if (FID_COSP_DESTINATION == NULL) { */
     /* 	FID_COSP_DESTINATION = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, */
     /* 						   "_destination", "Lorg/iochibity/DeviceAddress;"); */

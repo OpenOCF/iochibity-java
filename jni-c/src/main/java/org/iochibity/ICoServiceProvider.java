@@ -6,58 +6,85 @@ public interface ICoServiceProvider {
 
     // black boxing
 
-    // implemented by user: reaction to observed behavior (stimulus or response)
-    public void                   react();
-    // public int                    observeBehavior(ObservationIn observationIn); // implemented by user
+    public void               react();   // implemented by user
 
-    // called by user:
-    public void                   exhibit(); // native routine, called by user
-    // public void                   exhibitStimulus(); // called by user
+    // the remaining methods are implemented (natively)by CoServiceProvider
+    public void               exhibit(); // called by user
 
-    public String                 uriPath(); // native
-    // public String                 getUriPath();
-    public void                   setUriPath(String theUri);
+    // OCDoResource params
+    public String             uriPath();
+    public ICoServiceProvider uriPath(String theUri);
 
-    // setters/getters for OCDoResource params
-    public int                    method(); // native
-    public int                    getMethod();
-    public void                   setMethod(int theMethod);
+    public int                method();
+    public ICoServiceProvider method(int m);
 
-    // MULTICAST
-    public int                    multicastProtocol(); // native
+    //////////////// NETWORKING params ////////////////
+    // Raw
+    public int                networkAdapter();
+    public int                networkFlags();
 
-    // UNICAST
-    public DeviceAddress          coAddress(); // native
-    // public DeviceAddress          getDestination();
-    // public void                   setDestination(DeviceAddress da); // native
+    // networkFlags, broken out
+    public boolean            transportIsSecure();
+    public ICoServiceProvider transportIsSecure(boolean torf);
 
-    public void                   setMulticast(); // native
+    // Transport Protocol flags: mutually exclusive; setting one resets all the others.
+    public boolean            transportIsUDP();
+    public ICoServiceProvider transportIsUDP(boolean torf);
 
-    // public void                   setObservationRecord(ObservationRecord observationRecord);
+    public boolean            transportIsTCP();
+    public ICoServiceProvider transportIsTCP(boolean torf);
 
-    // OCTransportAdapter: OC_ADAPTER_IP, etc.
-    public int                    unicastProtocol(); // native
+    public boolean            transportIsGATT();
+    public ICoServiceProvider transportIsGATT(boolean torf);
 
-    // public int                    getNetworkProtocol();
-    // public void                   setNetworkProtocol(int protocol);
+    public boolean            transportIsRFCOMM();
+    public ICoServiceProvider transportIsRFCOMM(boolean torf);
 
-    // public int                    networkScope(); // native
-    // public int                    getNetworkScope();
-    // public void                   setNetworkScope(int scope);
+    public boolean            transportIsNFC();
+    public ICoServiceProvider transportIsNFC(boolean torf);
 
-    // public int                    networkPolicies(); // native
-    // public int                    getNetworkPolicies();
-    // public void                   setNetworkPolicies(int policy);
+    // IP Protocol flags: only needed to select version of IP protocol
+    public boolean            networkIsIP(); // == transportIsUDP
+    public ICoServiceProvider networkIsIP(boolean torf);
 
-    // public boolean                transportIsSecure(); // native
-    // public boolean                isTransportSecure();
-    // public void                   setTransportSecurity(boolean secure);
+    public boolean            networkIsIPv4();
+    public ICoServiceProvider networkIsIPv4(boolean torf);
 
-    public int                    getQualityOfService();
-    public void                   setQualityOfService(int qos);
+    public boolean            networkIsIPv6();
+    public ICoServiceProvider networkIsIPv6(boolean torf);
+
+    // IPv6 only:
+    public boolean            scopeIsInterface();
+    public ICoServiceProvider scopeIsInterface(boolean torf);
+
+    public boolean            scopeIsLink();
+    public ICoServiceProvider scopeIsLink(boolean torf);
+
+    public boolean            scopeIsRealm();
+    public ICoServiceProvider scopeIsRealm(boolean torf);
+
+    public boolean            scopeIsAdmin();
+    public ICoServiceProvider scopeIsAdmin(boolean torf);
+
+    public boolean            scopeIsSite();
+    public ICoServiceProvider scopeIsSite(boolean torf);
+
+    public boolean            scopeIsOrg();
+    public ICoServiceProvider scopeIsOrg(boolean torf);
+
+    public boolean            scopeIsGlobal();
+    public ICoServiceProvider scopeIsGlobal(boolean torf);
+
+    // Routing
+    public boolean            routingIsMulticast();
+    public ICoServiceProvider routingIsMulticast(boolean torf);
+
+    public int                qualityOfService();
+    public ICoServiceProvider qualityOfService(int qos);
 
     // to add: fields from struct OCClientResponse? they will be
     // updated on receipt of ObservationRecordIn
+    public DeviceAddress              coAddress(); // native
 
     // what about struct ClientCB?
 }

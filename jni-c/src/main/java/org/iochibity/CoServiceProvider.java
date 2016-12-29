@@ -12,7 +12,6 @@ import java.util.LinkedList;
 public abstract class CoServiceProvider
     implements ICoServiceProvider
 {
-
     // ctor, initializes TLS vars
     native private void ctorCoSP();
     public CoServiceProvider() {
@@ -21,40 +20,100 @@ public abstract class CoServiceProvider
 
     // FIXME: rename to _transactionHandle? _stimulusHandle?
     private long                   _handle; // OCDoHandle from OCDoResource
-    // public  long                   getHandle() { return _handle; }
-
-    // public native StimulusOut      getStimulusOut();
-
-    // NB: this is thread_local in jni:
-    // private long                   _c_ptr_OCClientResource;
-    // public  long                   getObservationInHandle() { return _observationInHandle; }
 
     // THe heart of the matter: actions and reactions.
-    //
-    native   public void           exhibit(); // called by user
-    // native   public void           exhibitStimulus(); // called by user
-    // native   public void           exhibit(Stimulus stim); // called by user
+    @Override
+    abstract public void            react(); // must be implemented by user; called by stack
 
-    // observeBehavior: implemented by user, called by stack
-    @Override // ICoServiceProvider
-    abstract public void          react();
-    // abstract public int            observeBehavior(ObservationIn observationIn);
-    // abstract public int            react(Stimulus s);
-    // abstract public int            observe(Behavior beh);
+    // the remaining methods implement (natively) the ICoServiceProvider interface
+    native   public void            exhibit(); // called by user
 
     // OCDoResource params
-    native public String          uriPath();
-    native public void            setUriPath(String uriPath);
-    // private String                 _uriPath;
-    // public  String                 getUriPath() { return _uriPath; }
-    // public  void                   setUriPath(String uriPath) { _uriPath = uriPath; }
+    native public String            uriPath();
+    native public CoServiceProvider uriPath(String uriPath);
 
-    native public int              method();
-    private int                    _method;
-    public  int                    getMethod() { return _method; }
-    public  void                   setMethod(int method) { _method = method; }
+    native public int               method();
+    native public CoServiceProvider method(int method);
 
+    //////////////// NETWORKING params ////////////////
+    // Raw
+    native public int               networkAdapter(); // OCTransportAdapter
+    native public int               networkFlags();    // OCTransportFlags bitmap "flags"
+
+    // networkFlags, broken out
+    native public boolean           transportIsSecure(); // flags & 0x0008
+    native public CoServiceProvider transportIsSecure(boolean torf);
+
+    // Transport Protocol flags: mutually exclusive, setting one resets all the others.
+    // (comments: xx_ is for CT_ or OC_)
+    native public boolean           transportIsUDP();    // xx_ADAPTER_IP (misnamed)
+    native public CoServiceProvider transportIsUDP(boolean torf);
+
+    native public boolean           transportIsTCP();    // xx_ADAPTER_TCP
+    native public CoServiceProvider transportIsTCP(boolean torf);
+
+    native public boolean           transportIsGATT();   // xx_ADAPTER_GATT_BTLE
+    native public CoServiceProvider transportIsGATT(boolean torf);
+
+    native public boolean           transportIsRFCOMM(); // xx_ADAPTER_RFCOMM_BTEDR
+    native public CoServiceProvider transportIsRFCOMM(boolean torf);
+
+    native public boolean           transportIsNFC();    // xx_ADAPTER_NFC
+    native public CoServiceProvider transportIsNFC(boolean torf);
+
+    // IP flags: only needed to select version of IP protocol
+    native public boolean            networkIsIP(); // == transportIsUDP
+    native public ICoServiceProvider networkIsIP(boolean torf);
+
+    native public boolean           networkIsIPv4();     // xx_IP_USE_V4 (flags & 0x0010)
+    native public CoServiceProvider networkIsIPv4(boolean torf);
+
+    native public boolean           networkIsIPv6();     // xx_IP_USE_V6 (flags & 0x0010)
+    native public CoServiceProvider networkIsIPv6(boolean torf);
+
+    // IPv6 only:
+    native public boolean           scopeIsInterface();      // flags & 0x000F
+    native public CoServiceProvider scopeIsInterface(boolean torf);      // flags & 0x000F
+
+    native public boolean           scopeIsLink();           // flags & 0x000F
+    native public CoServiceProvider scopeIsLink(boolean torf);      // flags & 0x000F
+
+    native public boolean           scopeIsRealm();          // flags & 0x000F
+    native public CoServiceProvider scopeIsRealm(boolean torf);      // flags & 0x000F
+
+    native public boolean           scopeIsAdmin();
+    native public CoServiceProvider scopeIsAdmin(boolean torf);
+
+    native public boolean           scopeIsSite();
+    native public CoServiceProvider scopeIsSite(boolean torf);
+
+    native public boolean           scopeIsOrg();
+    native public CoServiceProvider scopeIsOrg(boolean torf);
+
+    native public boolean           scopeIsGlobal();
+    native public CoServiceProvider scopeIsGlobal(boolean torf);
+
+    // Routing
+    native public boolean           routingIsMulticast();
+    native public CoServiceProvider routingIsMulticast(boolean torf);
+
+    // Addressing
+    native public int               port();		// uint16_t
+
+    native public String            ipAddress();          // char addr[MAX_ADDR_STR_SIZE];
+
+    native public int               qualityOfService();
+    native public CoServiceProvider qualityOfService(int qos);
+
+    ////////////////////////////////////////////////////////////////
     // OCClientResponse data:
+    // OCPayload wrapper
+    private ObservationRecord      _observationRecord;
+    public  ObservationRecord      getObservationRecord() { return _observationRecord; }
+    public  void                   setObservationRecord(ObservationRecord o) { _observationRecord = o; }
+
+    native public DeviceAddress    coAddress();
+
     native public String           getCoSecurityId();
 
     native public int              getCoResult();
@@ -62,104 +121,6 @@ public abstract class CoServiceProvider
     // for observables, https://tools.ietf.org/html/rfc7641
     native public int              getObservationSerial();
 
-
-    // NOTE: OCDoResource needs a DevAddr and a ConnectivityType,
-    // giving redundant networking params.  Why? Maybe so
-    // ConnectivityType can be used when DevAddr is NULL (multicast)?
-
-    // // OCDevAddr
-    // native public DeviceAddress   coAddress(); // ??
-
-    // public  DeviceAddress          getCoAddress() {
-    // 	if (_destination == null) {
-    // 	    return coAddress();
-    // 	} else {
-    // 	    return _destination;
-    // 	}
-    // }
-
-    // OCDoResources takes an OCConnectivityType arg, in addition to
-    // the OCDevAddr arg which contains the same type of data as
-    // OCConnectivityType.
-
-    // Why is this? Maybe: if the OCDevAddr* arg is NULL, it's a multicast,
-    // and can use the OCConnectivityType params.  Otherwise, it's a
-    // unicast targeting the OCDevAddr, whose parameters should be
-    // used.
-
-    // If that's right, these should pull data from the device address
-    // if we have one, otherwise from connectivityType
-
-    // also OCClientResponse contains an OCConnectivityType member.
-
-    // MULTICAST
-    // returns protocol (adapter) for multicasts (from ConnectivityType)
-    native public int                    multicastProtocol(); // native
-
-    // UNICAST
-    // private DeviceAddress          _destination;
-    // public  DeviceAddress          getDestination() { return _destination; }
-    // native public  void               setDestination(DeviceAddress dest);
-
-
-    /**
-     * If we have a DevAddr (e.g. from a discovery response), null it
-     * out.  If we do not have a DevAddr, we don't have an IP address
-     * anyway.
-     */
-
-    native public void                   setMulticast();
-    native public boolean                isMulticast();
-    // {
-    // 	System.out.println("Setting dest: " + dest);
-    // 	_destination = dest;
-    // }
-    native public DeviceAddress          coAddress();
-
-    // returns protocol (adapter) for unicasts (from destination DevAddr)
-    native public int                    unicastProtocol();
-
-    // OCTransportAdapter: OC_ADAPTER_IP, etc.
-    // native public int           networkProtocol();
-    // private int                 _networkProtocol;
-    // public  int                 getNetworkProtocol() { return _networkProtocol; }
-    // native public  void            setNetworkProtocol(int np); // { _networkProtocol = np; }
-
-    native public int              networkFlags(); // OCTransportFlags bitmap "flags"
-
-    // flags, broken out for convenience:
-    // OCTransportFlags: OC_SCOPE_LINK etc.
-    native public int              networkScope();
-    // public int                     _networkScope;
-    // public int                     getNetworkScope() { return _networkScope; }
-    // public void                    setNetworkScope(int scope) { _networkScope = scope; }
-
-    // OCTransportFlags: OC_IP_USE_V6, OC_MULTICAST, etc.
-    native public  int             networkPolicies();
-    // private int                    _networkPolicies;
-    // public  int                    getNetworkPolicies() { return _networkPolicies; }
-    // public  void                   setNetworkPolicies(int np) { _networkPolicies = np; }
-
-    // OCTransportFlags: OC_FLAG_SECURE
-    native public boolean          transportIsSecure();
-    public boolean                 _transportSecurity;
-    // public boolean                 isTransportSecure() { return _transportSecurity; }
-    public void                    setTransportSecurity(boolean secure) { _transportSecurity = secure; }
-
-    // private int                    _policies = 0;
-    // public  int                    getPolicies() { return _policies; }
-    // public  void                   setPolicies(int newPolicies) { _policies = newPolicies; }
-
-    // OCPayload wrapper
-    private ObservationRecord            _observationRecord;
-    public  ObservationRecord            getObservationRecord() { return _observationRecord; }
-    public  void                   setObservationRecord(ObservationRecord o) { _observationRecord = o; }
-
-    private int                    _qualityOfService;
-    public  int                    getQualityOfService() { return _qualityOfService; }
-    public  void                   setQualityOfService(int qos) { _qualityOfService = qos; }
-
-    // OCClientResponse fields
     private List<String>           _types = new LinkedList<String>();
     public  List<String>           getTypes() { return _types; }
     public  boolean                addType(String theTypes) { return _types.add(theTypes); }
@@ -179,3 +140,4 @@ public abstract class CoServiceProvider
     public  List<ActionSet>        getActionSet() { return _actionSet; }
 
 }
+

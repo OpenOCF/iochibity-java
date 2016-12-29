@@ -22,10 +22,8 @@ public class DeviceAddress	// OCDevAddr
 
 
 
-    // public int port;
     native public int       port();		// uint16_t
 
-    // address for all adapters.
     native public String    ipAddress();          // char addr[MAX_ADDR_STR_SIZE];
 
     native public int       ifindex();		// uint32_t, usually zero for default interface.

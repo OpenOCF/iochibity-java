@@ -22,12 +22,12 @@ public class DiscoveryCoSP
 
     public DiscoveryCoSP() {
 	super();
-	setMethod(Method.GET);
+	method(Method.GET);
     }
     public DiscoveryCoSP(String uri) {
 	super();
-	setMethod(Method.GET);
-	setUriPath(uri);
+	method(Method.GET);
+	uriPath(uri);
     }
 
     // public int observeBehavior(ObservationIn observationIn)

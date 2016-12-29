@@ -204,7 +204,7 @@ extern jmethodID MID_ICOSP_REACT;
 extern jclass    K_CO_SERVICE_PROVIDER;
 extern jfieldID  FID_COSP_HANDLE;
 /* extern jfieldID  FID_COSP_MSG_RESPONSE_IN; */
-extern jfieldID  FID_COSP_METHOD;
+/* extern jfieldID  FID_COSP_METHOD; */
 extern jfieldID  FID_COSP_URI_PATH;
 /* extern jfieldID  FID_COSP_DESTINATION; */
 extern jmethodID MID_COSP_EXHIBIT;

@@ -27,7 +27,6 @@ import org.iochibity.ICoServiceProvider;
 import org.iochibity.test.client.DiscoveryCoSP;
 import org.iochibity.test.client.GenericCoSP;
 
-import org.iochibity.constants.Method;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
@@ -135,7 +134,7 @@ public class OCFTestClient
 	    System.out.println("Choose an action:");
 	    System.out.println("\t1) Discover resources");
 	    System.out.println("\t2) List discovered resources");
-	    System.out.println("\t3) GET");
+	    System.out.println("\t3) RETRIEVE");
 	    System.out.println("\t4) WATCH");
 	    System.out.println("\t5) PUT");
 	    System.out.println("\t6) POST");
@@ -155,9 +154,9 @@ public class OCFTestClient
 		break;
 	    case "1":			// Discover resources
 		System.out.println("Discover:");
-		System.out.println("\tp) Platforms (GET oic/p) ");
-		System.out.println("\td) Devices   (GET oic/d)");
-		System.out.println("\tr) Resources (GET oic/res");
+		System.out.println("\tp) Platforms (RETRIEVE oic/p) ");
+		System.out.println("\td) Devices   (RETRIEVE oic/d)");
+		System.out.println("\tr) Resources (RETRIEVE oic/res");
 		System.out.println("\tx) Cancel");
 		while (!scanner.hasNext(pdrx)) {
 		    System.out.println("Invalid input, try again");
@@ -183,17 +182,23 @@ public class OCFTestClient
 		    break;
 		}
 
-		discoveryCoSP.setUriPath(uri);
-		discoveryCoSP.setMulticast();
-		System.out.println("BEFORE EXHIBIT");
+		discoveryCoSP
+		    .method(OCF.RETRIEVE)
+		    .uriPath(uri)
+		    .transportIsUDP(true)
+		    // .networkIsIPv6(true)
+		    .routingIsMulticast(true);
+
+		Logger.logNetworking(discoveryCoSP);
+
+		// System.out.println("BEFORE EXHIBIT");
 		// Logger.logRequestOut(discoveryCoSP);
 		// Logger.logCoAddress(discoveryCoSP);
 		try {
-		    // discoveryCoSP.exhibitStimulus();
 		    discoveryCoSP.exhibit();
-		    Thread.sleep(1000);
+		    Thread.sleep(500);
 		} catch (Exception e) {
-		    System.out.println("ERROR: discovering platforms");
+		    System.out.println("ERROR: discovery");
 		    e.printStackTrace();
 		    msgError(TAG, e.toString());
 		}
@@ -206,7 +211,7 @@ public class OCFTestClient
 		System.out.println();
 		break;
 	    case "3":
-		System.out.println("GET: Select a resource.");
+		System.out.println("RETRIEVE: Select a resource.");
 
 		// UI tedium:
 		CoServiceProvider cosp = null;
@@ -241,7 +246,7 @@ public class OCFTestClient
 		// Yay! UI done.
 
 		cosp = ServiceManager.coServiceProviders.get(i);
-		cosp.setMethod(Method.GET);
+		cosp.method(OCF.RETRIEVE);
 		Logger.logCoSP(cosp);
 		try {
 		    cosp.exhibit();
@@ -259,7 +264,7 @@ public class OCFTestClient
 		//     	= new StimulusOut(new WhatsitSR());
 		//     requestOut.dest = gWhatsitAddress;
 		//     requestOut.uri  = "/a/whatsit";
-		//     byte[] bs = Messenger.exhibitStimulus(Method.WATCH, requestOut);
+		//     byte[] bs = Messenger.exhibitStimulus(OCF.WATCH, requestOut);
 		//     Thread.sleep(1000);
 		// } catch (Exception e) {
 		//     e.printStackTrace();
@@ -276,7 +281,7 @@ public class OCFTestClient
 		    // 	= new StimulusOut(new WhatsitSR());
 		    // requestOut.dest = gWhatsitAddress;
 		    // requestOut.uri  = "/a/whatsit";
-		    // byte[] bs = Messenger.exhibitStimulus(Method.POST, requestOut);
+		    // byte[] bs = Messenger.exhibitStimulus(OCF.POST, requestOut);
 		    Thread.sleep(1000);
 		} catch (Exception e) {
 		    e.printStackTrace();

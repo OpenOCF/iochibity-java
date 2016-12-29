@@ -19,12 +19,12 @@ public class GenericCoSP
 
     public GenericCoSP() {
 	super();
-	setMethod(Method.GET);
+	method(Method.GET);
     }
     public GenericCoSP(String uri) {
 	super();
-	setMethod(Method.GET);
-	setUriPath(uri);
+	method(Method.GET);
+	uriPath(uri);
     }
 
     // we need info from both response msg and observation payload to create a unicast request
@@ -41,7 +41,7 @@ public class GenericCoSP
 	// the incoming response rec is already stored in a TLS var,
 	// making the remote DevAddr available.
 	// setDestination(observationIn.getRemoteDeviceAddress());
-	setUriPath(observationRecord.getUriPath());
+	uriPath(observationRecord.getUriPath());
 
 	// method and qos to be set by user before sending
 

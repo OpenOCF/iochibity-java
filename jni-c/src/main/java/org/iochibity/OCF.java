@@ -3,6 +3,24 @@ package org.iochibity;
 
 public class OCF
 {
+    // Methods
+    public static final int NOMETHOD       = 0;
+    public static final int RETRIEVE       = (1 << 0); // GET
+    public static final int PUT            = (1 << 1);
+    public static final int POST           = (1 << 2);
+    public static final int DELETE         = (1 << 3);
+    public static final int WATCH        = (1 << 4); // OBSERVE
+    public static final int WATCH_ALL    = (1 << 5); // OBSERVE_ALL
+    public static final int CANCEL_WATCH = (1 << 6); // CANCEL_OBSERVE
+
+    // #ifdef WITH_PRESENCE
+    /** Subscribe for all presence notifications of a particular resource.*/
+    public static final int PRESENCE       = (1 << 7);
+    // #endif
+
+    /** Allows OCDoResource caller to do discovery.*/
+    public static final int DISCOVER       = (1 << 8);
+
     // OCMode
     public static final int CLIENT = 0;
     public static final int SERVER = 1;

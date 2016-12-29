@@ -156,21 +156,104 @@ public class Logger
     // 	if ( (resource.policies & ResourcePolicy.SECURE) > 0) {System.out.println("\tSECURE");}
     // }
 
-    static public void logNetworking(int protocol, int scope, int policies, boolean sec)
+    static public void logNetworking(CoServiceProvider cosp)
     {
-	System.out.println("CoSP network protocol:  " + protocol);
-	System.out.println("CoSP network Scope:     " + scope);
-	System.out.println("CoSP network Policies:  " + policies);
-	System.out.println("CoSP transport secure?: " + sec);
+	boolean torf;
+	torf = cosp.transportIsUDP();
+	System.out.println("PRE  transportIsUDP? " + cosp.transportIsUDP());
+	cosp.transportIsUDP(true);
+	System.out.println("POST transportIsUDP? (t) " + cosp.transportIsUDP());
+	cosp.transportIsUDP(false);
+	System.out.println("POST transportIsUDP? (f) " + cosp.transportIsUDP());
+	cosp.transportIsUDP(torf);
 
-	// List<String> ts = cosp.getTypes();
-	// System.out.println("SP Types:");
-	// ts.forEach(typ -> System.out.println("\t" + typ));
+	torf = cosp.transportIsTCP();
+	System.out.println("PRE transportIsTCP? " + cosp.transportIsTCP());
+	cosp.transportIsTCP(true);
+	System.out.println("POST transportIsTCP? (t) " + cosp.transportIsTCP());
+	cosp.transportIsTCP(false);
+	System.out.println("POST transportIsTCP? (f) " + cosp.transportIsTCP());
+	cosp.transportIsTCP(torf);
 
-	// List<String> ifs = cosp.getInterfaces();
-	// System.out.println("SP Interfaces");
-	// ifs.forEach(iface -> System.out.println("\t" + iface));
-    }
+	torf = cosp.transportIsGATT();
+	System.out.println("PRE transportIsGATT? " + cosp.transportIsGATT());
+	cosp.transportIsGATT(true);
+	System.out.println("POST transportIsGATT? (t) " + cosp.transportIsGATT());
+	cosp.transportIsGATT(false);
+	System.out.println("POST transportIsGATT? (f) " + cosp.transportIsGATT());
+	cosp.transportIsGATT(torf);
+
+	torf = cosp.transportIsRFCOMM();
+	System.out.println("PRE transportIsRFCOMM? " + cosp.transportIsRFCOMM());
+	cosp.transportIsRFCOMM(true);
+	System.out.println("POST transportIsRFCOMM? (t) " + cosp.transportIsRFCOMM());
+	cosp.transportIsRFCOMM(false);
+	System.out.println("POST transportIsRFCOMM? (f) " + cosp.transportIsRFCOMM());
+	cosp.transportIsRFCOMM(torf);
+
+	torf = cosp.transportIsNFC();
+	System.out.println("PRE transportIsNFC? " + cosp.transportIsNFC());
+	cosp.transportIsNFC(true);
+	System.out.println("POST transportIsNFC? (t) " + cosp.transportIsNFC());
+	cosp.transportIsNFC(false);
+	System.out.println("POST transportIsNFC? (f) " + cosp.transportIsNFC());
+	cosp.transportIsNFC(torf);
+
+	System.out.println("PRE networkIsIP? " + cosp.networkIsIP());
+	torf = cosp.transportIsUDP();
+	cosp.transportIsUDP(true); // implies IP
+	System.out.println("POST networkIsIP? (t) " + cosp.networkIsIP());
+	cosp.transportIsUDP(false);
+	System.out.println("POST networkIsIP? (f) " + cosp.networkIsIP());
+	cosp.transportIsUDP(torf);
+
+	torf = cosp.transportIsTCP();
+	cosp.transportIsTCP(true); // implies IP
+	System.out.println("POST networkIsIP? (t) " + cosp.networkIsIP());
+	cosp.transportIsTCP(false);
+	System.out.println("POST networkIsIP? (f) " + cosp.networkIsIP());
+	cosp.transportIsTCP(torf);
+
+	torf = cosp.networkIsIPv4();
+	System.out.println("PRE networkIsIPv4? " + cosp.networkIsIPv4());
+	cosp.networkIsIPv4(true);
+	System.out.println("POST networkIsIPv4? (t) " + cosp.networkIsIPv4());
+	cosp.networkIsIPv4(false);
+	System.out.println("POST networkIsIPv4? (f) " + cosp.networkIsIPv4());
+	cosp.networkIsIPv4(torf);
+
+	torf = cosp.networkIsIPv6();
+	System.out.println("PRE networkIsIPv6? " + cosp.networkIsIPv6());
+	cosp.networkIsIPv6(true);
+	System.out.println("POST networkIsIPv6? (t) " + cosp.networkIsIPv6());
+	cosp.networkIsIPv6(false);
+	System.out.println("POST networkIsIPv6? (f) " + cosp.networkIsIPv6());
+	cosp.networkIsIPv6(torf);
+
+	torf = cosp.scopeIsInterface();
+	System.out.println("PRE scopeIsInterface? " + cosp.scopeIsInterface());
+	cosp.scopeIsInterface(true);
+	System.out.println("POST scopeIsInterface? (t) " + cosp.scopeIsInterface());
+	cosp.scopeIsInterface(false);
+	System.out.println("POST scopeIsInterface? (f) " + cosp.scopeIsInterface());
+	cosp.scopeIsInterface(torf);
+
+	torf = cosp.scopeIsLink();
+	System.out.println("PRE scopeIsLink? " + cosp.scopeIsLink());
+	cosp.scopeIsLink(true);
+	System.out.println("POST scopeIsLink? (t) " + cosp.scopeIsLink());
+	cosp.scopeIsLink(false);
+	System.out.println("POST scopeIsLink? (f) " + cosp.scopeIsLink());
+	cosp.scopeIsLink(torf);
+
+	torf = cosp.transportIsSecure();
+	System.out.println("PRE transportIsSecure? " + cosp.transportIsSecure());
+	cosp.transportIsSecure(true);
+	System.out.println("POST transportIsSecure? (t) " + cosp.transportIsSecure());
+	cosp.transportIsSecure(false);
+	System.out.println("POST transportIsSecure? (f) " + cosp.transportIsSecure());
+	cosp.transportIsSecure(torf);
+   }
 
     static public void logCoSP(CoServiceProvider cosp)
     {
@@ -345,7 +428,7 @@ public class Logger
 	System.out.println("LOGGER: stack result: " + cosp.getCoResult());
 
 	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("LOGGER CoSP method:\t" + cosp.getMethod());
+	System.out.println("LOGGER CoSP method:\t" + cosp.method());
 	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
 	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
 	System.out.println("LOGGER CoSP serial:\t" + cosp.getObservationSerial());
@@ -387,7 +470,7 @@ public class Logger
 			   + Thread.currentThread().getId());
 
 	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("LOGGER CoSP method:\t" + cosp.getMethod());
+	System.out.println("LOGGER CoSP method:\t" + cosp.method());
 	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
 
 	// List<HeaderOption> headerOptions = cosp.getOptions();
@@ -426,7 +509,7 @@ public class Logger
 	System.out.println("LOGGER: stack result: " + cosp.getCoResult());
 
 	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("LOGGER CoSP method:\t" + cosp.getMethod());
+	System.out.println("LOGGER CoSP method:\t" + cosp.method());
 	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
 	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
 	System.out.println("LOGGER CoSP serial:\t" + cosp.getObservationSerial());

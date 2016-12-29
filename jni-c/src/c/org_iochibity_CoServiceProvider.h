@@ -28,15 +28,15 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
  * Method:    uriPath
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath__
   (JNIEnv *, jobject);
 
 /*
  * Class:     org_iochibity_CoServiceProvider
- * Method:    setUriPath
- * Signature: (Ljava/lang/String;)V
+ * Method:    uriPath
+ * Signature: (Ljava/lang/String;)Lorg/iochibity/CoServiceProvider;
  */
-JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setUriPath
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_uriPath__Ljava_lang_String_2
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -44,7 +44,343 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setUriPath
  * Method:    method
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    method
+ * Signature: (I)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_method__I
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkAdapter
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkAdapter
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkFlags
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkFlags
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsSecure
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsSecure__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsSecure
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsSecure__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsUDP
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsUDP__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsUDP
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsUDP__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsTCP
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsTCP__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsTCP
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsTCP__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsGATT
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsGATT__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsGATT
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsGATT__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsRFCOMM
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsRFCOMM__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsRFCOMM
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsRFCOMM__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsNFC
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsNFC__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsNFC
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsNFC__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIP
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIP__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIP
+ * Signature: (Z)Lorg/iochibity/ICoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIP__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv4
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv4__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv4
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv4__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv6
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv6__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv6
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv6__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsInterface
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsInterface__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsInterface
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsInterface__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsLink
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsLink__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsLink
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsLink__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsRealm
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsRealm__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsRealm
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsRealm__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsAdmin
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsAdmin__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsAdmin
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsAdmin__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsSite
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsSite__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsSite
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsSite__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsOrg
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsOrg__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsOrg
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsOrg__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsGlobal
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsGlobal__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsGlobal
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsGlobal__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    routingIsMulticast
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_routingIsMulticast__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    routingIsMulticast
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_routingIsMulticast__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    port
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_port
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    ipAddress
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_ipAddress
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    qualityOfService
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_qualityOfService__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    qualityOfService
+ * Signature: (I)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_qualityOfService__I
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    coAddress
+ * Signature: ()Lorg/iochibity/DeviceAddress;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
   (JNIEnv *, jobject);
 
 /*
@@ -69,78 +405,6 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getCoResult
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getObservationSerial
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    multicastProtocol
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_multicastProtocol
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    setMulticast
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setMulticast
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    isMulticast
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_isMulticast
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    coAddress
- * Signature: ()Lorg/iochibity/DeviceAddress;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    unicastProtocol
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_unicastProtocol
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    networkFlags
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkFlags
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    networkScope
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkScope
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    networkPolicies
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkPolicies
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    transportIsSecure
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsSecure
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

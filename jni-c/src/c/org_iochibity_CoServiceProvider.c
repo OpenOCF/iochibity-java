@@ -50,7 +50,7 @@ typedef struct RequestOut
   /* val: */
   OCMethod             method;
   const char         * requestUri;
-  const OCDevAddr    * destination;
+  OCDevAddr          * destination;
   OCPayload          * payload;
   OCConnectivityType   connectivityType;
   OCQualityOfService   qos;
@@ -70,13 +70,15 @@ void request_out_ctor()
   gtls_request_out		= OICCalloc(sizeof (request_out_t), 1);
 
   gtls_request_out->handle		= NULL;
-  gtls_request_out->method		= OC_REST_GET;
-  gtls_request_out->destination		= NULL; /* defaults to multicast */
+  gtls_request_out->method		= OC_REST_NOMETHOD;
+  /* never pass NULL for destination */
+  gtls_request_out->destination		= (OCDevAddr *)OICCalloc(sizeof (OCDevAddr), 1);
   gtls_request_out->connectivityType	= CT_DEFAULT; /* 0 */
   gtls_request_out->qos			= OC_LOW_QOS;
   gtls_request_out->cbData		= NULL;
   gtls_request_out->options		= NULL;
   gtls_request_out->numOptions		= 0;
+
 
   gtls_request_out->next		= NULL;
 }
@@ -319,9 +321,11 @@ OCStackApplicationResult c_org_iochibity_CoServiceProvider_react(void* c_CoSP,
 JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_ctorCoSP
 (JNIEnv * env, jobject this)
 {
-  printf("%s : %s ENTRY, %ld\n", __FILE__, __func__, (intptr_t)pthread_self());
-  /* gtls_CoSP = this; */
-  request_out_ctor();
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    printf("%s : %s ENTRY, %ld\n", __FILE__, __func__, (intptr_t)pthread_self());
+    /* gtls_CoSP = this; */
+    request_out_ctor();
 }
 
 /*
@@ -329,7 +333,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_ctorCoSP
  * Method:    uriPath
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath__
 (JNIEnv * env, jobject this)
 {
   OC_UNUSED(env);
@@ -341,14 +345,15 @@ JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath
 
 /*
  * Class:     org_iochibity_CoServiceProvider
- * Method:    setUriPath
- * Signature: (Ljava/lang/String;)V
+ * Method:    uriPath
+ * Signature: (Ljava/lang/String;)Lorg/iochibity/CoServiceProvider;
  */
-JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setUriPath
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_uriPath__Ljava_lang_String_2
 (JNIEnv * env, jobject this, jstring j_uriPath)
 {
   printf("Java_org_iochibity_CoServiceProvider_setUriPath ENTRY\n");
   gtls_request_out->requestUri = (*env)->GetStringUTFChars(env, j_uriPath, 0);
+  return this;
 }
 
 /*
@@ -356,10 +361,683 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setUriPath
  * Method:    method
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method__
 (JNIEnv * env, jobject this)
 {
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (gtls_request_out) {
+	return gtls_request_out->method;
+    } else {
+	/* FIXME: pull method for request_out associated with response_in */
+	return -1;
+    }
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    method
+ * Signature: (I)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_method__I
+(JNIEnv * env, jobject this, jint m)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    OC_UNUSED(m);
+    if (gtls_request_out) {
+	gtls_request_out->method = m;
+    } else {
+	/* response_in is read-only? */
+    }
+  return this;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkAdapter
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkAdapter
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
   return -1;
+}
+
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkFlags
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return gtls_request_out->connectivityType;
+}
+
+/* **************************************************************** */
+jboolean test_network_flag(int flag)
+{
+    return (bool)(gtls_request_out->connectivityType & flag);
+}
+
+void set_network_flag(int flag, jboolean torf)
+{
+    if (torf) {
+	gtls_request_out->connectivityType |= flag;
+    } else {
+	gtls_request_out->connectivityType &= ~flag;
+    }
+}
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsSecure
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsSecure__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return test_network_flag(CT_FLAG_SECURE);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsSecure
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsSecure__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    set_network_flag(CT_FLAG_SECURE, torf);
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsUDP
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsUDP__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return test_network_flag(CT_ADAPTER_IP);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsUDP
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsUDP__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    /* printf("%s: ENTRY, torf = %d\n", __func__, torf); */
+    set_network_flag(CT_ADAPTER_IP, torf);
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsTCP
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsTCP__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_TCP);
+}
+
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsTCP
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsTCP__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_ADAPTER_TCP;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_ADAPTER_TCP;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsGATT
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsGATT__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_GATT_BTLE);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsGATT
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsGATT__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_ADAPTER_GATT_BTLE;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_ADAPTER_GATT_BTLE;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsRFCOMM
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsRFCOMM__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_RFCOMM_BTEDR);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsRFCOMM
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsRFCOMM__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_ADAPTER_RFCOMM_BTEDR;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_ADAPTER_RFCOMM_BTEDR;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsNFC
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsNFC__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_NFC);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    transportIsNFC
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsNFC__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_ADAPTER_NFC;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_ADAPTER_NFC;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIP
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIP__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)((gtls_request_out->connectivityType & CT_ADAPTER_IP)
+		  ||
+		  (gtls_request_out->connectivityType & CT_ADAPTER_TCP));
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIP
+ * Signature: (Z)Lorg/iochibity/ICoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIP__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    OC_UNUSED(torf);
+    // FIXME: this is just a dummy, IP is implied by both
+    // xx_ADAPTER_IP (i.e. UDP) and xx_ADAPTER_TCP. The implementation
+    // does not currently allow selection of IP independently, only of
+    // IP version.
+    return this;
+}
+
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv4
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv4__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_IP_USE_V4);
+}
+
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv4
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv4__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_IP_USE_V4;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_IP_USE_V4;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv6
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv6__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_IP_USE_V6);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    networkIsIPv6
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv6__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_IP_USE_V6;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_IP_USE_V6;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsInterface
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsInterface__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_INTERFACE);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsInterface
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsInterface__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_SCOPE_INTERFACE;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_SCOPE_INTERFACE;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsLink
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsLink__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_LINK);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsLink
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsLink__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_SCOPE_LINK;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_SCOPE_LINK;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsRealm
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsRealm__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_REALM);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsRealm
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsRealm__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_SCOPE_REALM;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_SCOPE_REALM;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsAdmin
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsAdmin__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_ADMIN);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsAdmin
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsAdmin__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_SCOPE_ADMIN;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_SCOPE_ADMIN;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsSite
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsSite__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_SITE);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsSite
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsSite__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_SCOPE_SITE;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_SCOPE_SITE;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsOrg
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsOrg__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_ORG);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsOrg
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsOrg__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_SCOPE_ORG;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_SCOPE_ORG;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsGlobal
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsGlobal__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_GLOBAL);
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    scopeIsGlobal
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsGlobal__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (torf) {
+	gtls_request_out->connectivityType |= CT_SCOPE_GLOBAL;
+    } else {
+	gtls_request_out->connectivityType &= ~CT_SCOPE_GLOBAL;
+    }
+    return this;
+}
+
+/* **************************************************************** */
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    routingIsMulticast
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_routingIsMulticast__
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (gtls_request_out->destination) {
+	return gtls_request_out->destination->flags & OC_MULTICAST;
+    } else {
+	return false;
+    }
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    routingIsMulticast
+ * Signature: (Z)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_routingIsMulticast__Z
+(JNIEnv * env, jobject this, jboolean torf)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (gtls_request_out->destination) {
+	if (torf) {
+	    gtls_request_out->destination->flags
+		= gtls_request_out->destination->flags | OC_MULTICAST;
+	} else {
+	    gtls_request_out->destination->flags &= ~OC_MULTICAST;
+	}
+    } else {
+	/* create new dev addr? */
+    }
+    return this;
+}
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    port
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_port
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    ipAddress
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_ipAddress
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    qualityOfService
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_qualityOfService__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    qualityOfService
+ * Signature: (I)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_qualityOfService__I
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    coAddress
+ * Signature: ()Lorg/iochibity/DeviceAddress;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+  /* printf("%s ENTRY, thread %ld\n", __func__, (intptr_t)pthread_self()); */
+  /* WARNING: we cannot set a devaddr field in our CoSP object, due to
+     threading concerns but we can create on and return it on the call
+     stack, which is thread safe. */
+  /* The methods of the returned DeviceAddress object will pull info
+     from the TLS OCClientResponse var */
+  if (gtls_response_in) {
+    jobject j_CoAddress = NULL;
+    j_CoAddress =  (*env)->NewObject(env, K_DEVICE_ADDRESS, MID_DA_CTOR);
+    if (j_CoAddress == NULL) {
+      THROW_JNI_EXCEPTION("NewObject failed for K_DEVICE_ADDRESS");
+      return NULL;
+    } else {
+      return j_CoAddress;
+    }
+  } else {
+    return NULL;
+  }
 }
 
 /*
@@ -370,10 +1048,12 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method
 JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
 (JNIEnv * env, jobject this)
 {
+    OC_UNUSED(env);
+    OC_UNUSED(this);
   printf("%s ENTRY\n", __func__);
   size_t length; /* this will hold the length of string copied */
   char buffer[MAX_IDENTITY_SIZE]; /* fast mem on stack */
-  length = strlcpy(buffer, RESPONSE_IN->identity.id, RESPONSE_IN->identity.id_length);
+  length = strlcpy(buffer, (char*) RESPONSE_IN->identity.id, RESPONSE_IN->identity.id_length);
   if (length < sizeof(buffer)) {
     /* printf("CoSecurityID len %d, str: %s\n", */
     /* 	   RESPONSE_IN->identity.id_length, buffer); */
@@ -395,6 +1075,8 @@ JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
 JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getCoResult
 (JNIEnv * env, jobject this)
 {
+    OC_UNUSED(env);
+    OC_UNUSED(this);
   /* printf("%s ENTRY\n", __func__); */
   return gtls_response_in->response->result;
 }
@@ -407,137 +1089,13 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getCoResult
 JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getObservationSerial
 (JNIEnv * env, jobject this)
 {
-  return RESPONSE_IN->sequenceNumber;
-}
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    multicastProtocol
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_multicastProtocol
-(JNIEnv * env, jobject this)
-{
-  OC_UNUSED(env);
-  OC_UNUSED(this);
-  // return transport adapter from connType ()OCConnectivityType), not
-  // destination (OCDevAddr) BUT: what if destination is used for
-  // multicast (OC_MULTICAST flag)?  OCConnectivityType has no
-  // OC_MULTICAST flag - thats only available in OCTransportFlag in
-  // OCDevAddr!
-  return -1;
-}
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    setMulticast
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_setMulticast
-(JNIEnv * env, jobject this)
-{
-  OC_UNUSED(env);
-  OC_UNUSED(this);
-  printf("%s : %s ENTRY\n", __FILE__, __func__);
-}
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    isMulticast
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_isMulticast
-(JNIEnv * env, jobject this)
-{
-  OC_UNUSED(env);
-  OC_UNUSED(this);
-  return  false;
-}
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    coAddress
- * Signature: ()Lorg/iochibity/DeviceAddress;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
-(JNIEnv * env, jobject this)
-{
-  /* printf("%s ENTRY, thread %ld\n", __func__, (intptr_t)pthread_self()); */
-  /* IF java field non-null, use it; otherwise use OCClientResponse */
-
-  /* OCDevAddr coAddress = RESPONSE_IN)->devAddr; */
-  
-  /* WARNING: we cannot set a devaddr field in our CoSP object, due to
-     threading concerns but we can create on and return it on the call
-     stack, which is thread safe. */
-
-  /* The methods of the returned DeviceAddress object will pull info
-     from the TLS OCClientResponse var */ 
-
-  if (gtls_response_in) {
-    jobject j_CoAddress = NULL;
-    j_CoAddress =  (*env)->NewObject(env, K_DEVICE_ADDRESS, MID_DA_CTOR);
-    if (j_CoAddress == NULL) {
-      THROW_JNI_EXCEPTION("NewObject failed for K_DEVICE_ADDRESS");
-      return NULL;
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    if (gtls_response_in) {
+	return RESPONSE_IN->sequenceNumber;
     } else {
-      return j_CoAddress;
+	return -1;
     }
-  } else {
-    return NULL;
-  }
-
-  /* all data access goes through methods to OCClientResponse */
-  /* so no data members in DeviceAddress */
-
-  /* (*env)->SetIntField(env, j_CoAddress, */
-  /* 		      FID_DA_NETWORK_PROTOCOL, */
-  /* 		      RESPONSE_IN->devAddr.adapter); */
-
-  /* (*env)->SetIntField(env, j_CoAddress, */
-  /* 		      FID_DA_NETWORK_FLAGS, */
-  /* 		      RESPONSE_IN->devAddr.flags); */
-
-  /* /\* flags bitmap, broken out: *\/ */
-  /* (*env)->SetByteField(env, j_CoAddress, */
-  /* 		       FID_DA_NETWORK_POLICIES, */
-  /* 		       RESPONSE_IN->devAddr.flags >> 4); */
-
-  /* (*env)->SetByteField(env, j_CoAddress, */
-  /* 		       FID_DA_NETWORK_SCOPE, */
-  /* 		       (jbyte) RESPONSE_IN */
-  /* 		       ->devAddr.flags & 0x000F); */
-
-  /* (*env)->SetBooleanField(env, j_CoAddress, */
-  /* 			  FID_DA_TRANSPORT_SECURITY, */
-  /* 			  (bool) RESPONSE_IN */
-  /* 			  ->devAddr.flags && 0x0010); */
-
-  /* jstring j_addr = (*env)->NewStringUTF(env, */
-  /* 					RESPONSE_IN */
-  /* 					->devAddr.addr); */
-  /* (*env)->SetObjectField(env, j_CoAddress, FID_DA_ADDRESS, j_addr); */
-
-  /* (*env)->SetIntField(env, j_CoAddress, */
-  /* 		      FID_DA_PORT, */
-  /* 		      RESPONSE_IN->devAddr.port); */
-}
-
-
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    getNetworkProtocol
- * Signature: ()I
- */
-/**
- * @brief Returns network protocol
- */
-
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getNetworkProtocol
-(JNIEnv * env, jobject this)
-{
-  return -1;
 }
 
 /*
@@ -592,9 +1150,11 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 
       /* FIXME: use case: we're using a predefined address */
       printf("MULTICASTING\n");
+      if (gtls_request_out->destination->flags & OC_MULTICAST) {
       /* if (gtls_request_out->method == OC_REST_GET) { */
-      /* 	gtls_request_out->method = OC_REST_DISCOVER; */
-      /* } */
+	  gtls_request_out->method = OC_REST_DISCOVER;
+	  gtls_request_out->destination = NULL;
+      }
       OCStackResult ret;
       OCCallbackData cbData;
       cbData.cb = c_org_iochibity_CoServiceProvider_react;
@@ -654,13 +1214,13 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 
       /* FIXME: pull method from the dual react thread */
       /* TEMPORARY: pull from java object: */
-      OCMethod c_method = (OCMethod)(*env)->GetIntField(env,
-      							this_CoSP,
-      							FID_COSP_METHOD);
-      if (c_method == 0) {
-      	THROW_JNI_EXCEPTION("Method OC_REST_NOMETHOD (0) not allowed");
-      	return;
-      }
+      /* OCMethod c_method = (OCMethod)(*env)->GetIntField(env, */
+      /* 							this_CoSP, */
+      /* 							FID_COSP_METHOD); */
+      /* if (c_method == 0) { */
+      /* 	THROW_JNI_EXCEPTION("Method OC_REST_NOMETHOD (0) not allowed"); */
+      /* 	return; */
+      /* } */
       /* uri */
       /* For thread safety, we must use the Uri from the response */
       /* char* c_uri gtls_response_in->resourceUri, NULL); */
@@ -677,7 +1237,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
       OCDevAddr* c_destDevAddr = NULL;
       /* jobject j_destDevAddr = NULL; */
       /* j_destDevAddr = (*env)->GetObjectField(env, gtls_CoSP, FID_COSP_DESTINATION); */
-    
+
       printf("UNICASTING\n");
       /* we have an OCDevAddr from a response */
       c_destDevAddr = &(gtls_response_in->response->devAddr);
