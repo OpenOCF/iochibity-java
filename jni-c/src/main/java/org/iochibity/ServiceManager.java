@@ -37,10 +37,11 @@ public class ServiceManager
 	 Object /*void* */ callbackParam);
 
     // public static native int OCCreateResource(Object /*OCResourceHandle* */ handle,
-    public synchronized static native ServiceProvider
-	registerServiceProvider(ServiceProvider serviceProvider);
+    public synchronized static native
+	ServiceProvider	registerServiceProvider(ServiceProvider serviceProvider);
 
-    public synchronized static void registerCoServiceProvider(CoServiceProvider coServiceProvider)
+    public synchronized static
+	void registerCoServiceProvider(CoServiceProvider coServiceProvider)
     {
 	System.out.println("registerCoServiceProvider ENTRY");
 	coServiceProviders.add(coServiceProvider);
