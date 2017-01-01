@@ -30,13 +30,23 @@ public class DiscoveryCoSP
 	uriPath(uri);
     }
 
-    // public int observeBehavior(ObservationIn observationIn)
-    public void react()
+    /**
+       By the time `coreact` is called, the CoSPs matching the incoming
+       SPs will have been registered with the ServiceManager.  All
+       this CoSP needs to do is coreact.
+     */
+    public void coreact()
     {
-	System.out.println("DiscoveryCoSP: DiscoveryCoSP.react ENTRY");
+	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coreact ENTRY");
 	System.out.println("DiscoveryCoSP: cbdata: " + cbdata);
 
 	Logger.logResponseIn(this);
+
+	// List<CoServiceProvider> cosps = ServiceManager.registeredCoServiceProviders();
+
+
+	// ServiceManager.registerCoServiceProviders(this.observations());
+	// ServiceManager.registerCoServiceProviders(this.getSPObservations());
 
 	// first update _this_ with incoming data
 	// this.setDestination(observationIn.getRemoteDeviceAddress());

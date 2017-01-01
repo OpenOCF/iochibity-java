@@ -56,9 +56,9 @@ public class GenericCoSP
     }
 
     // public int observeBehavior(ObservationIn responseIn)
-    public void react()
+    public void coreact()
     {
-	System.out.println("JAVA: PlatformCoSP.serviceResponse ENTRY");
+	System.out.println("JAVA: GenericCoSP.coreact ENTRY");
 	System.out.println("JAVA: cbdata: " + cbdata);
 	// Logger.logObservationIn(responseIn);
 	// Logger.logObservationIn(this);

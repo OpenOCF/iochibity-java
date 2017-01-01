@@ -9,9 +9,9 @@ import org.iochibity.ServiceProvider;
 import org.iochibity.IServiceProvider;
 import org.iochibity.ServiceManager;
 
-import org.iochibity.test.server.LedSP;
-import org.iochibity.test.server.LightSP;
-import org.iochibity.test.server.TemperatureSP;
+// import org.iochibity.test.server.LedSP;
+// import org.iochibity.test.server.LightSP;
+// import org.iochibity.test.server.TemperatureSP;
 import org.iochibity.test.server.WhatsitSP;
 
 import org.iochibity.exceptions.OCFNotImplementedException;
@@ -70,18 +70,18 @@ public class OCFTestServer
 	// System.out.println(System.getProperty("java.library.path"));
 	OCF.Init(OCF.SERVER, "src/main/resources/ocftestserver_config.cbor");
 
-	ServiceManager.registerPlatformProvider("Fartmaster",
-					 "Acme Novelties",
-					 "http://acme.example.org",
-					 "modelnbr", "mfgdate", "platversion",
-					 "osversion", "hwversion", "firmwareversion",
-					 "http://acme.example.org/support",
-					 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+	ServiceManager.configurePlatformSP("Fartmaster",
+					   "Acme Novelties",
+					   "http://acme.example.org",
+					   "modelnbr", "mfgdate", "platversion",
+					   "osversion", "hwversion", "firmwareversion",
+					   "http://acme.example.org/support",
+					   new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
 
-	ServiceManager.registerDeviceProvider("Fartmaster2020 Server",
-				       new String[] {"type1", "type2"},
-				       "version-0.1",
-				       new String[] {"dmversion-0.1"});
+	ServiceManager.configureDeviceSP("Fartmaster2020 Server",
+					 new String[] {"type1", "type2"},
+					 "version-0.1",
+					 new String[] {"dmversion-0.1"});
 
 	// TemperatureSP tempSP = new TemperatureSP();
 	// tempSP.addType("foo.t.bar");

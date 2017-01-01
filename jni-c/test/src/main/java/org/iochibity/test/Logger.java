@@ -119,7 +119,7 @@ public class Logger
 
 		System.out.println("LOGGER DeviceAddress\t nework scope:\t\t"
 				   + String.format("0x%02X", da.networkScope())
-				   + " " + netScope.get(da.networkScope()));
+				   + " " + netScope.get((int)da.networkScope()));
 
 		System.out.println("LOGGER DeviceAddress\t transport security:\t"
 				   + da.transportIsSecure());
@@ -157,6 +157,22 @@ public class Logger
     // }
 
     static public void logNetworking(CoServiceProvider cosp)
+    {
+	System.out.println("LOGGER transportIsUDP?\t\t" + cosp.transportIsUDP());
+	System.out.println("LOGGER transportIsTCP?\t\t" + cosp.transportIsTCP());
+	System.out.println("LOGGER transportIsGATT?\t\t" + cosp.transportIsGATT());
+	System.out.println("LOGGER transportIsRFCOMM?\t" + cosp.transportIsRFCOMM());
+	System.out.println("LOGGER transportIsNFC?\t\t" + cosp.transportIsNFC());
+	System.out.println("LOGGER networkIsIP?\t\t" + cosp.networkIsIP());
+	System.out.println("LOGGER networkIsIPv4?\t\t" + cosp.networkIsIPv4());
+	System.out.println("LOGGER networkIsIPv6?\t\t" + cosp.networkIsIPv6());
+	System.out.println("LOGGER scopeIsInterface?\t" + cosp.scopeIsInterface());
+	System.out.println("LOGGER scopeIsLink?\t\t" + cosp.scopeIsLink());
+	System.out.println("LOGGER transportIsSecure?\t" + cosp.transportIsSecure());
+	System.out.println("LOGGER routingIsMulticast?\t" + cosp.routingIsMulticast());
+   }
+
+    static public void testNetworking(CoServiceProvider cosp)
     {
 	boolean torf;
 	torf = cosp.transportIsUDP();
@@ -253,7 +269,15 @@ public class Logger
 	cosp.transportIsSecure(false);
 	System.out.println("POST transportIsSecure? (f) " + cosp.transportIsSecure());
 	cosp.transportIsSecure(torf);
-   }
+
+	torf = cosp.routingIsMulticast();
+	System.out.println("PRE routingIsMulticast? " + cosp.routingIsMulticast());
+	cosp.routingIsMulticast(true);
+	System.out.println("POST routingIsMulticast? (t) " + cosp.routingIsMulticast());
+	cosp.routingIsMulticast(false);
+	System.out.println("POST routingIsMulticast? (f) " + cosp.routingIsMulticast());
+	cosp.routingIsMulticast(torf);
+    }
 
     static public void logCoSP(CoServiceProvider cosp)
     {
@@ -431,7 +455,7 @@ public class Logger
 	System.out.println("LOGGER CoSP method:\t" + cosp.method());
 	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
 	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
-	System.out.println("LOGGER CoSP serial:\t" + cosp.getObservationSerial());
+	System.out.println("LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
 
 	System.out.println("LOGGING CO-ADDRESS:");
 	logCoAddress(cosp);
@@ -506,13 +530,13 @@ public class Logger
 	System.out.println("LOGGER logResponseIn ENTRY, thread "
 			   + Thread.currentThread().getId());
 
-	System.out.println("LOGGER: stack result: " + cosp.getCoResult());
+	System.out.println("LOGGER stack result: " + cosp.getCoResult());
 
 	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
 	System.out.println("LOGGER CoSP method:\t" + cosp.method());
 	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
 	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
-	System.out.println("LOGGER CoSP serial:\t" + cosp.getObservationSerial());
+	System.out.println("LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
 
 	System.out.println("LOGGING CO-ADDRESS:");
 	logCoAddress(cosp);

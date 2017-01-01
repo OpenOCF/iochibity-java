@@ -46,21 +46,19 @@ public class WhatsitSP
 		    | Resource.SECURE);
     }
 
-    // public int observeStimulus(StimulusIn stimulusIn)
-    // public int observe(StimulusIn stimulusIn)
-    // public int observe()
+    @Override
     public void react()
     {
-	System.out.println("WhatsitSP.observeStimulus routine ENTRY");
+	System.out.println("WhatsitSP.react routine ENTRY");
 	// Logger.logRequestIn(stimulusIn);
 
 	System.out.println("WhatsitSP: stimulusIn callback param foo = " + foo);
 
-	// switch (stimulusIn.method()) { // this.method() native method
-	switch (method()) { // this.method() native method
+	switch (this.method()) {
 	case Method.GET:
+	    System.out.println("WhatsitSP: method: GET");
 	    // FIXME: try catch?
-	    // this.observeGetStimulus(stimulusIn);
+	    // this.reactToGetObservation(stimulusIn);
 	    break;
 	case Method.PUT:
 	    System.out.println("WhatsitSP: method: PUT");
@@ -107,13 +105,13 @@ public class WhatsitSP
 	    e.printStackTrace();
 	}
 
-	System.out.println("WhatsitSP.observeStimulus EXIT");
+	System.out.println("WhatsitSP.react EXIT");
 	return; // ServiceResult.OK;
     }
 
     // private ObservationList<Observation> serviceGetRequest(StimulusIn request)
     // private ObservationList<Observation> ObserveGetStimulus(StimulusIn stimulusIn)
-    private void observeGetStimulus(StimulusIn stimulusIn)
+    private void reactToGetObservation(StimulusIn stimulusIn)
     {
 	System.out.println("WhatsitSP.serviceGetRequest ENTRY");
 

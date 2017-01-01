@@ -11,6 +11,7 @@ package org.iochibity.test;
 
 // iochibity jni-c stuff
 import org.iochibity.OCF;
+import org.iochibity.CoServiceManager;
 import org.iochibity.CoServiceProvider;
 import org.iochibity.DeviceAddress;
 import org.iochibity.Message;
@@ -21,7 +22,6 @@ import org.iochibity.HeaderOption;
 import org.iochibity.ObservationRecord;
 import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
-import org.iochibity.ServiceManager;
 import org.iochibity.ICoServiceProvider;
 
 import org.iochibity.test.client.DiscoveryCoSP;
@@ -50,14 +50,6 @@ import java.util.stream.Collectors;
 
 public class OCFTestClient
 {
-    static{
-	try{
-	    System.loadLibrary("ocfjni_c");
-	}catch(Exception e){
-	    System.out.println(e.toString());
-	}
-    }
-
     static CountDownLatch gLatch;
 
     // public static class DeviceCoSP implements ICoServiceProvider
@@ -189,11 +181,10 @@ public class OCFTestClient
 		    // .networkIsIPv6(true)
 		    .routingIsMulticast(true);
 
-		Logger.logNetworking(discoveryCoSP);
-
 		// System.out.println("BEFORE EXHIBIT");
-		// Logger.logRequestOut(discoveryCoSP);
-		// Logger.logCoAddress(discoveryCoSP);
+		Logger.logNetworking(discoveryCoSP);
+		// Logger.logCoSP(discoveryCoSP);
+
 		try {
 		    discoveryCoSP.exhibit();
 		    Thread.sleep(500);
@@ -205,9 +196,9 @@ public class OCFTestClient
 		break;
 	    case "2":
 		System.out.println("Discovered resources:");
-		for (CoServiceProvider cosp : ServiceManager.coServiceProviders) {
-		    System.out.println("\t" + cosp.uriPath());
-		}
+		// for (CoServiceProvider cosp : CoServiceManager.coServiceProviders) {
+		//     System.out.println("\t" + cosp.uriPath());
+		// }
 		System.out.println();
 		break;
 	    case "3":
@@ -215,47 +206,47 @@ public class OCFTestClient
 
 		// UI tedium:
 		CoServiceProvider cosp = null;
-		int sz = ServiceManager.coServiceProviders.size();
-		for(int i = 0; i < sz; i++) {
-		    cosp = ServiceManager.coServiceProviders.get(i);
-		    DeviceAddress da = cosp.coAddress();
-		    String s;
-		    if (da != null) {
-			s = i + " : " + da.ipAddress()
-			+ " " + da.port()
-			    + " " + cosp.uriPath();
-		    } else {
-			s = i + " : " + cosp.uriPath();
-		    }
-		    System.out.println("\t" + s);
-		}
+		// int sz = ServiceManager.coServiceProviders.size();
+		// for(int i = 0; i < sz; i++) {
+		//     cosp = ServiceManager.coServiceProviders.get(i);
+		//     DeviceAddress da = cosp.coAddress();
+		//     String s;
+		//     if (da != null) {
+		// 	s = i + " : " + da.ipAddress()
+		// 	+ " " + da.port()
+		// 	    + " " + cosp.uriPath();
+		//     } else {
+		// 	s = i + " : " + cosp.uriPath();
+		//     }
+		//     System.out.println("\t" + s);
+		// }
 		System.out.println();
 
 		int i = 0;
-		while(true) {
-		    while (!scanner.hasNextInt()) {
-			System.out.println("Invalid input: " + scanner.next() + "; try again");
-		    }
-		    i = scanner.nextInt();
-		    if ( (i < sz) && i >= 0) {
-			break;
-		    } else {
-			System.out.println("Invalid input: " + i + "; try again");
-		    }
-		}
+		// while(true) {
+		//     while (!scanner.hasNextInt()) {
+		// 	System.out.println("Invalid input: " + scanner.next() + "; try again");
+		//     }
+		//     i = scanner.nextInt();
+		//     if ( (i < sz) && i >= 0) {
+		// 	break;
+		//     } else {
+		// 	System.out.println("Invalid input: " + i + "; try again");
+		//     }
+		// }
 		// Yay! UI done.
 
-		cosp = ServiceManager.coServiceProviders.get(i);
-		cosp.method(OCF.RETRIEVE);
-		Logger.logCoSP(cosp);
-		try {
-		    cosp.exhibit();
-		    // cosp.exhibit();
-		    Thread.sleep(500); // just to let the user prompt work
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    msgError(TAG, e.toString());
-		}
+		// cosp = ServiceManager.coServiceProviders.get(i);
+		// cosp.method(OCF.RETRIEVE);
+		// Logger.logCoSP(cosp);
+		// try {
+		//     cosp.exhibit();
+		//     // cosp.exhibit();
+		//     Thread.sleep(500); // just to let the user prompt work
+		// } catch (Exception e) {
+		//     e.printStackTrace();
+		//     msgError(TAG, e.toString());
+		// }
 		break;
 	    case "4":
 		System.out.println("requested WATCH");
@@ -332,7 +323,7 @@ public class OCFTestClient
 	// 			       new String[] {"dmversion-0.1"});
 
 	discoveryCoSP = new DiscoveryCoSP();
-	ServiceManager.registerCoServiceProvider(discoveryCoSP);
+	CoServiceManager.registerCoServiceProvider(discoveryCoSP);
 
 	OCF.run();
 
