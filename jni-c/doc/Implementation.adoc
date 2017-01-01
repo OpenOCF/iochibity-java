@@ -31,3 +31,26 @@ unable to construct one based on the requestUri you passed."
 But in that case what should really happen is that the GET should be
 interpreted as a DISCOVER method, and a temp default devAddr
 constructed.
+
+== coSP request-response linking
+
+When a CoSP sends a request to an SP, the engine creates a "DoHandle"
+that identifies the "invocation".  This is just an eight-byte random
+number used as an identifier.  We call it a _transaction ID_
+(`CoSP.txnId`) since it identifies the first part of an interaction.
+(An interaction consists of a pair of transactions, a reqest
+transaction and the corresponding response transaction.)  Requests
+carry a copy of this transaction ID, as do responses, and this allows
+the CoSP to match incoming response messages to the request messages
+from which they (indirectly) originate.
+
+Requests and responses are handled by separate threads.  This is
+problematic, because we use thread-local storage to ensure thread
+safety, and this means that the response handler (`react` method of
+CoSP) cannot directly refer to the the originating request stimulus.
+
+We get around this inconvenience by storing submitted requests in a
+global list, as a side-effect of the `exhibit` method.  The
+transaction ID (`txnId`) serves as the unique key, and the response
+will contain this transactionId, so the ServiceManager can use it to
+find the request corresponding to any incoming response.
