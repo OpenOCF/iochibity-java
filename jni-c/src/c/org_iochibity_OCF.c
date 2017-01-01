@@ -7,11 +7,12 @@
  */
 
 #include <ctype.h>
-#include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
+
+#include "_threads.h"
 
 #include "org_iochibity_OCF.h"
 #include "org_iochibity_Init.h"
@@ -29,13 +30,13 @@
 
 
 /* PRIVATE */
-pthread_t pt_work;
+THREAD_T tid_work;
 bool g_quit_flag = false;
 
 const char* g_config_fname;
 
 /* thread routine - service client requests */
-void *troutine_work(void *arg)
+THREAD_EXIT_T troutine_work(void *arg)
 {
     OC_UNUSED(arg);
     printf("Entering server work thread...\n");
@@ -49,7 +50,9 @@ void *troutine_work(void *arg)
     /* we're the only thread left, pthread_exit(NULL) would kill us,
        but not the process. */
     /* exit(0); */
-    return NULL;
+
+    /* FIXME: pthreads return void*, c11 threads return int */
+    return THREAD_EXIT_OK;
 }
 
 FILE* server_fopen(const char *path, const char *mode)
@@ -162,10 +165,12 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_run
     OC_UNUSED(env);
     OC_UNUSED(clazz);
     printf("Launching worker thread...\n");
-    pthread_create (&pt_work, NULL, troutine_work, (void *)NULL);
+    THREAD_CREATE_DEFAULT((THREAD_T*)&tid_work,
+			  (THREAD_START_T)troutine_work,
+			  (void *)NULL);
     /* main thread has nothing to do. by calling pthread_exit it exits
        but the process continues, so any spawned threads do too. */
-    /* pthread_exit(NULL); */
+    /* THREAD_EXIT(THREAD_EXIT_OK); */
 }
 
 /*

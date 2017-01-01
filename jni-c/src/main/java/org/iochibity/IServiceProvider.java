@@ -2,19 +2,16 @@ package org.iochibity;
 
 import java.util.List;
 
-// All methods EXCEPT observeStimulus implemented by ServiceProvider abstract class
+// All methods EXCEPT react are implemented by ServiceProvider abstract class
 public interface IServiceProvider {
 
     public long                   getHandle(); // OCResource*
 
-    // black boxing
-    public void             exhibit();  // Behavior(); // called by user
-    // observeStimulus: implemented by user, called by stack
-    // abstract public int            observeStimulus(StimulusIn stimulusIn);
-    public void             react(); // called by stack
+    public void                   exhibit();  // Behavior(); // called by user
+    public void                   react(); // called by stack
 
     // OCResource fields
-    public InstanceId             getInstanceId();
+    public LinkId                 getLinkId();
 
     public String                 getUriPath();
     public void                   setUriPath(String theUri);

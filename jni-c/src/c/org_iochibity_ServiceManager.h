@@ -9,35 +9,19 @@ extern "C" {
 #endif
 /*
  * Class:     org_iochibity_ServiceManager
- * Method:    resourceCount
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_iochibity_ServiceManager_resourceCount
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_iochibity_ServiceManager
- * Method:    registerPlatformProvider
+ * Method:    configurePlatformSP
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerPlatformProvider
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_configurePlatformSP
   (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring);
 
 /*
  * Class:     org_iochibity_ServiceManager
- * Method:    registerDeviceProvider
+ * Method:    configureDeviceSP
  * Signature: (Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDeviceProvider
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_configureDeviceSP
   (JNIEnv *, jclass, jstring, jobjectArray, jstring, jobjectArray);
-
-/*
- * Class:     org_iochibity_ServiceManager
- * Method:    registerDefaultServiceRoutine
- * Signature: (Ljava/lang/Object;Ljava/lang/Object;)V
- */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDefaultServiceRoutine
-  (JNIEnv *, jclass, jobject, jobject);
 
 /*
  * Class:     org_iochibity_ServiceManager
@@ -46,6 +30,22 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDefaultServiceR
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvider
   (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     org_iochibity_ServiceManager
+ * Method:    registeredServiceProviders
+ * Signature: ()Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registeredServiceProviders
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     org_iochibity_ServiceManager
+ * Method:    getRelatedServiceProviders
+ * Signature: ()Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_getRelatedServiceProviders
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }

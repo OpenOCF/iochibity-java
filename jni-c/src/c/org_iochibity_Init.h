@@ -2,25 +2,26 @@
 
 #include "octypes.h"
 
+#include "_threads.h"
+
 /* externs used in CoServiceProvider, DeviceAddress */
 
 typedef struct ResponseIn
 {
-  OCDoHandle        * handle;	/* key */
+  OCDoHandle        * txnId;	/* key */
   OCClientResponse  * response;	/* val */
   struct ResponseIn * next;
 } response_in_t;
 
-extern response_in_t g_response_map;
+extern response_in_t*  g_response_map;
 
-extern _Thread_local response_in_t* gtls_response_in; /**< thread local etc. */
+extern THREAD_LOCAL response_in_t* gtls_response_in; /**< thread local etc. */
 
 #define RESPONSE_IN ((OCClientResponse*)gtls_response_in->response)
 
+extern THREAD_LOCAL jobject g_CoSP;             /**< blah blah */
 
-extern _Thread_local jobject g_CoSP;             /**< blah blah */
-
-/* extern _Thread_local OCDevAddr* gtls_defaultCoAddress; */
+/* extern THREAD_LOCAL OCDevAddr* gtls_defaultCoAddress; */
 
 #define JNI_ASSERT_NULL(arg, msg, ...)		\
     if (NULL == (arg)) \
@@ -187,22 +188,22 @@ extern jmethodID MID_MsgRspOut_CTOR;
 extern jfieldID  FID_MsgRspOut_RQST_IN;
 
 extern jclass    K_SERVICE_PROVIDER;
-/* extern jmethodID MID_ISP_CTOR; */
-extern jfieldID FID_SP_HANDLE;
-extern jfieldID FID_SP_ID;
-extern jfieldID FID_SP_URI_PATH;
-extern jfieldID FID_SP_TYPES;
-extern jfieldID FID_SP_INTERFACES;
-extern jfieldID FID_SP_PROPERTIES;
-extern jfieldID FID_SP_CHILDREN;
-extern jfieldID FID_SP_ACTION_SET;
-extern jfieldID FID_SP_POLICIES;
+extern jmethodID MID_SP_REACT;
+extern jfieldID  FID_SP_HANDLE;
+/* extern jfieldID  FID_SP_ID; */
+extern jfieldID  FID_SP_URI_PATH;
+extern jfieldID  FID_SP_TYPES;
+extern jfieldID  FID_SP_INTERFACES;
+extern jfieldID  FID_SP_PROPERTIES;
+extern jfieldID  FID_SP_CHILDREN;
+extern jfieldID  FID_SP_ACTION_SET;
+extern jfieldID  FID_SP_POLICIES;
 
 extern jclass    K_I_CO_SERVICE_PROVIDER;
-extern jmethodID MID_ICOSP_REACT;
+extern jmethodID MID_ICOSP_COREACT;
 
 extern jclass    K_CO_SERVICE_PROVIDER;
-extern jfieldID  FID_COSP_HANDLE;
+/* extern jfieldID  FID_COSP_HANDLE; */
 /* extern jfieldID  FID_COSP_MSG_RESPONSE_IN; */
 /* extern jfieldID  FID_COSP_METHOD; */
 extern jfieldID  FID_COSP_URI_PATH;

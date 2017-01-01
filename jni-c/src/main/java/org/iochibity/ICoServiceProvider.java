@@ -6,7 +6,7 @@ public interface ICoServiceProvider {
 
     // black boxing
 
-    public void               react();   // implemented by user
+    public void               coreact();   // implemented by user
 
     // the remaining methods are implemented (natively)by CoServiceProvider
     public void               exhibit(); // called by user

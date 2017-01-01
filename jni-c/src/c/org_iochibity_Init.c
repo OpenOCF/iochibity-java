@@ -7,11 +7,12 @@
  */
 
 #include <ctype.h>
-#include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
+
+#include "_threads.h"
 
 #include "org_iochibity_OCF.h"
 #include "org_iochibity_Init.h"
@@ -23,6 +24,8 @@
 #include "ocstack.h"
 #include "oic_malloc.h"
 #include "oic_string.h"
+
+#include "logger.h"
 
 
 JavaVM* g_JVM;
@@ -148,16 +151,16 @@ jclass    K_ISERVICE_PROVIDER             = NULL;
 /* jmethodID MID_ISP_OBSERVE_STIMULUS      = NULL; */
 
 jclass    K_SERVICE_PROVIDER             = NULL;
-/* extern jmethodID MID_ISP_CTOR; */
-jfieldID FID_SP_HANDLE                   = NULL;
-jfieldID FID_SP_ID                       = NULL;
-jfieldID FID_SP_URI_PATH                 = NULL;
-jfieldID FID_SP_TYPES                    = NULL;
-jfieldID FID_SP_INTERFACES               = NULL;
-jfieldID FID_SP_PROPERTIES               = NULL;
-jfieldID FID_SP_CHILDREN                 = NULL;
-jfieldID FID_SP_ACTION_SET               = NULL;
-jfieldID FID_SP_POLICIES                 = NULL;
+jmethodID MID_SP_REACT                   = NULL;
+jfieldID  FID_SP_HANDLE                   = NULL;
+/* jfieldID  FID_SP_ID                       = NULL; */
+jfieldID  FID_SP_URI_PATH                 = NULL;
+jfieldID  FID_SP_TYPES                    = NULL;
+jfieldID  FID_SP_INTERFACES               = NULL;
+jfieldID  FID_SP_PROPERTIES               = NULL;
+jfieldID  FID_SP_CHILDREN                 = NULL;
+jfieldID  FID_SP_ACTION_SET               = NULL;
+jfieldID  FID_SP_POLICIES                 = NULL;
 
 jclass    K_RESOURCE_LOCAL                = NULL;
 
@@ -198,11 +201,11 @@ jmethodID MID_RQI_GET_QUERY               = NULL;
 jfieldID  FID_RQI_MSG_ID                  = NULL;
 jmethodID MID_RQI_GET_MSG_ID              = NULL;
 
-jclass    K_I_CO_SERVICE_PROVIDER       = NULL;
-jmethodID MID_ICOSP_REACT    = NULL;
+jclass    K_I_CO_SERVICE_PROVIDER         = NULL;
+jmethodID MID_ICOSP_COREACT               = NULL;
 
-jclass    K_CO_SERVICE_PROVIDER      = NULL;
-jfieldID  FID_COSP_HANDLE              = NULL;
+jclass    K_CO_SERVICE_PROVIDER           = NULL;
+/* jfieldID  FID_COSP_HANDLE              = NULL; */
 /* jfieldID  FID_COSP_MSG_RESPONSE_IN  = NULL; */
 /* jfieldID  FID_COSP_METHOD              = NULL; */
 /* jfieldID  FID_COSP_URI_PATH            = NULL; */
@@ -494,6 +497,14 @@ int init_ServiceProviders(JNIEnv* env)
     K_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
+    if (MID_SP_REACT == NULL) {
+	MID_SP_REACT = (*env)->GetMethodID(env, K_SERVICE_PROVIDER,
+					  "react", "()V");
+	if (MID_SP_REACT == NULL) {
+	    printf("ERROR: GetFieldID failed for 'react' of ServiceProvider\n");
+	    return -1;
+	}
+    }
     if (FID_SP_HANDLE == NULL) {
 	FID_SP_HANDLE = (*env)->GetFieldID(env, K_SERVICE_PROVIDER, "_handle", "J");
 	if (FID_SP_HANDLE == NULL) {
@@ -501,14 +512,14 @@ int init_ServiceProviders(JNIEnv* env)
 	    return -1;
 	}
     }
-    if (FID_SP_ID == NULL) {
-	FID_SP_ID = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
-					"_id", "Lorg/iochibity/InstanceId;");
-	if (FID_SP_ID == NULL) {
-	    printf("ERROR: GetFieldID failed for '_id' of ServiceProvider\n");
-	    return -1;
-	}
-    }
+    /* if (FID_SP_ID == NULL) { */
+    /* 	FID_SP_ID = (*env)->GetFieldID(env, K_SERVICE_PROVIDER, */
+    /* 					"_id", "Lorg/iochibity/InstanceId;"); */
+    /* 	if (FID_SP_ID == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for '_id' of ServiceProvider\n"); */
+    /* 	    return -1; */
+    /* 	} */
+    /* } */
     if (FID_SP_URI_PATH == NULL) {
 	FID_SP_URI_PATH = (*env)->GetFieldID(env, K_SERVICE_PROVIDER,
 					      "_uriPath", "Ljava/lang/String;");
@@ -1245,13 +1256,13 @@ int init_ICoServiceProvider(JNIEnv* env)
     K_I_CO_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    jmethodID MID_ICOSP_REACT  = NULL;
-    if (MID_ICOSP_REACT == NULL) {
-	MID_ICOSP_REACT = (*env)->GetMethodID(env,
+    jmethodID MID_ICOSP_COREACT  = NULL;
+    if (MID_ICOSP_COREACT == NULL) {
+	MID_ICOSP_COREACT = (*env)->GetMethodID(env,
 							 K_I_CO_SERVICE_PROVIDER,
-							 "react",
+							 "coreact",
 							 "()V");
-	if (MID_ICOSP_REACT == NULL) {
+	if (MID_ICOSP_COREACT == NULL) {
 	    printf("ERROR: GetMethodID failed for 'react' of ICoServiceProvider\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
@@ -1267,13 +1278,13 @@ int init_CoServiceProvider(JNIEnv* env)
     K_CO_SERVICE_PROVIDER = (jclass)(*env)->NewGlobalRef(env, klass);
     (*env)->DeleteLocalRef(env, klass);
 
-    if (FID_COSP_HANDLE == NULL) {
-	FID_COSP_HANDLE = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, "_handle", "J");
-	if (FID_COSP_HANDLE == NULL) {
-	    printf("ERROR: GetFieldID failed for '_handle' of CoServiceProvider");
-	    return OC_EH_INTERNAL_SERVER_ERROR;
-	}
-    }
+    /* if (FID_COSP_HANDLE == NULL) { */
+    /* 	FID_COSP_HANDLE = (*env)->GetFieldID(env, K_CO_SERVICE_PROVIDER, "_handle", "J"); */
+    /* 	if (FID_COSP_HANDLE == NULL) { */
+    /* 	    printf("ERROR: GetFieldID failed for '_handle' of CoServiceProvider"); */
+    /* 	    return OC_EH_INTERNAL_SERVER_ERROR; */
+    /* 	} */
+    /* } */
     /* obs handle moved to thread-local in CoServiceProvider.c */
     /* if (FID_COSP_MSG_RESPONSE_IN == NULL) { */
     /* 	FID_COSP_MSG_RESPONSE_IN = (*env)->GetFieldID(env, */
@@ -1521,12 +1532,17 @@ int init_CoServiceProvider(JNIEnv* env)
 /*     return c_payload; */
 /* } */
 
+/**
+ * @brief called when native lib is loaded, e.g. by System.loadlibrary("mylib")
+ */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 {
     OC_UNUSED(reserved);
     printf("JNI_OnLoad\n");
     JNIEnv* env = NULL;
     g_JVM = vm;
+
+    oic_set_log_level(ERROR);
 
     int getEnvStat = (*g_JVM)->GetEnv(g_JVM, (void **)&env, JNI_VERSION_1_6);
     if (getEnvStat == JNI_EDETACHED) {

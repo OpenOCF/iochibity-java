@@ -3,6 +3,14 @@ package org.iochibity;
 
 public class OCF
 {
+    static{
+	try{
+	    System.loadLibrary("ocfjni_c");
+	}catch(Exception e){
+	    System.out.println(e.toString());
+	}
+    }
+
     // Methods
     public static final int NOMETHOD       = 0;
     public static final int RETRIEVE       = (1 << 0); // GET

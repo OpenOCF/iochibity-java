@@ -7,13 +7,15 @@
  */
 
 #include <ctype.h>
-#include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
 
+#include "_threads.h"
+
 #include "org_iochibity_ServiceProvider.h"
+#include "c_service_provider.h"
 #include "org_iochibity_DeviceAddress.h"
 
 
@@ -32,7 +34,7 @@
 /**
  * @brief Convert incoming `OCEntityHandlerRequest` to `StimulusIn`
  * object.  Internal implementation routine called by
- * `c_ServiceProvider_observe_stimulus`.
+ * `c_ServiceProvider_react`.
  *
  * @param [in] env JNIEnv Pointer
  *
@@ -45,7 +47,7 @@
 /* FIXME: this is called indirectly from the runtime stack, not java -
    deal with exceptions */
 /* THROW_JNI_EXCEPTION won't work since we're not called from Java */
- jobject c_org_iochibity_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn(JNIEnv* env,
+ jobject c_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn(JNIEnv* env,
 									     OCEntityHandlerRequest* c_EHRequest,
 					     OCEntityHandlerFlag c_watch_flag)
 {
@@ -122,11 +124,11 @@
 }
 
 /**
- * @brief `observe_stimulus` is a wrapper on `OCEntityHandler` callback.
+ * @brief `react` is the `OCEntityHandler` callback.
  *
  * This routine is called by the stack on receipt of an incoming
  * request message originating at client. Calls
- * `c_org_iochibity_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn`
+ * `c_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn`
  * to convert incoming request to Java object, then passes result to
  * user-defined `observeStimulus` method of `ServiceProvider` object.
  *
@@ -137,7 +139,7 @@
  * @param c_OCEntityHandlerRequest Incoming "stimulus" (request
  * message).  In C API, `OCEntityHandlerRequest*`.
  *
- * @param j_IServiceProvider The ServiceProvider object whose
+ * @param j_ServiceProvider The ServiceProvider object whose
  * `observeStimulus` method will handle the request; set by
  * `ServiceManager.registerServiceProvider`.  In C API, `void*
  * callbackParam`.
@@ -151,12 +153,12 @@
 /* typedef OCEntityHandlerResult (*OCEntityHandler) */
 /* (OCEntityHandlerFlag flag, OCEntityHandlerRequest * entityHandlerRequest, void* callbackParam); */
 OCEntityHandlerResult
-c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
-						 OCEntityHandlerRequest* c_OCEntityHandlerRequest,
-						 void* j_IServiceProvider)
+c_ServiceProvider_react(OCEntityHandlerFlag watch_flag,
+			OCEntityHandlerRequest* c_OCEntityHandlerRequest,
+			void* j_ServiceProvider)
 {
     printf("\n%s | %s ENTRY on thread %d\n",
-	   __FILE__, __func__, (int)pthread_self());
+	   __FILE__, __func__, (int)THREAD_ID);
 
     /* FIXME: always called on separate thread?  multiple concurrent
        invocations get separate threads, but serialized invocations
@@ -185,16 +187,16 @@ c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
     }
 
     /* validate input args */
-    if (j_IServiceProvider == NULL) {
+    if (j_ServiceProvider == NULL) {
 	/* FIXME: use proper logging */
-	printf("ERROR %s %d (%s): j_IServiceProvider is NULL\n", __FILE__, __LINE__,__func__);
+	printf("ERROR %s %d (%s): j_ServiceProvider is NULL\n", __FILE__, __LINE__,__func__);
 	return OC_EH_INTERNAL_SERVER_ERROR;
     }
 
     jobject j_StimulusIn = NULL;
-    j_StimulusIn
-	= c_org_iochibity_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn(env,
-									       c_OCEntityHandlerRequest, watch_flag);
+    j_StimulusIn = c_ServiceProvider_OCEntityHandlerRequest_to_StimulusIn(env,
+									  c_OCEntityHandlerRequest,
+									  watch_flag);
     fflush(NULL);
     if (j_StimulusIn == NULL) {
         printf("ERROR:  OCEntityHandlerRequest_to_StimulusIn failed\n");
@@ -203,9 +205,10 @@ c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
 
     /* now invoke the callback on the Java side */
     int op_result = OC_EH_OK;
-    op_result = (*env)->CallIntMethod(env, j_IServiceProvider,
-				      /* MID_ISP_OBSERVE_STIMULUS, */
-				      MID_ICOSP_REACT,
+    op_result = (*env)->CallIntMethod(env, j_ServiceProvider,
+				      /* MID_ISP_REACT, */
+				      /* MID_ICOSP_REACT, */
+				      MID_SP_REACT,
 				      j_StimulusIn);
     if (op_result != OC_STACK_OK) {
         printf("ERROR:  CallIntMethod failed for ResourceServiceProvider.ObserveStimulus\n");
@@ -216,7 +219,7 @@ c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
 
     /* printf("Incoming request: %ld\n", (long)c_OCEntityHandlerRequest); */
     /* printf("Incoming requestHandle: %ld\n", (long)c_OCEntityHandlerRequest->requestHandle); */
-    /* printf("Incoming request param: %ld\n", (long)j_IServiceProvider); */
+    /* printf("Incoming request param: %ld\n", (long)j_ServiceProvider); */
     /* printf("Incoming request flag: %d\n", flag); */
 
     printf("ocf_resource_manager.c/service_routine EXIT\n");
@@ -240,13 +243,13 @@ c_org_iochibity_ServiceProvider_observe_stimulus(OCEntityHandlerFlag watch_flag,
  *
  * @see Java_org_iochibity_CoServiceProvider_exhibitStimulus
  *
- * @see c_org_iochibity_ServiceProvider_observe_stimulus
+ * @see c_ServiceProvider_react
  *
  */
 JNIEXPORT void JNICALL Java_org_iochibity_ServiceProvider_exhibit
 (JNIEnv * env, jobject this_SP)
 {
-    printf("%s | %s: ENTRY on thread %d\n", __FILE__, __func__, (int)pthread_self());
+    printf("%s | %s: ENTRY on thread %d\n", __FILE__, __func__, (int)THREAD_ID);
 
     /* /\* prep_java(env); *\/ */
 

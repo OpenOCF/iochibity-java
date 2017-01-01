@@ -77,6 +77,7 @@ if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOCHIBITY':
                source_root + '/resource/csdk/connectivity/lib/libcoap-4.1.1',
                source_root + '/resource/csdk/security',
                source_root + '/resource/csdk/security/ocsecurity',
+	       source_root + '/resource/csdk/logger', # FIXME: only if LOGGING=1
                source_root + '/extlibs', # for tinydtls debug.h
                install_sysroot + '/include',
                jdk_home + '/include',
@@ -133,6 +134,7 @@ if target_os == 'darwin':
     local_env['SHLIBSUFFIX'] = '.jnilib'
 
 jni_clib_src = ['jni_utils.c',
+                'org_iochibity_CoServiceManager.c',
                 'org_iochibity_CoServiceProvider.c',
 	        'org_iochibity_DeviceAddress.c',
 	        'org_iochibity_Message.c',

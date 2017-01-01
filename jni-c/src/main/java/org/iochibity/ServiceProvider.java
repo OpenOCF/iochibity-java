@@ -9,16 +9,12 @@ public abstract class ServiceProvider
     private long                   _handle; // OCResource*
     public  long                   getHandle() { return _handle; }
 
-    // black boxing
-    native public void             exhibit(); // called by user
-    // observeStimulus: implemented by user, called by stack
-    // abstract public int            observeStimulus(StimulusIn stimulusIn);
-    native public void             react(); // called by stack
-
+    abstract public void           react();   // implemented by user, called by stack
+    native public void             exhibit(); // implemented by engine, called by user
 
     // OCResource fields
-    private InstanceId             _id;
-    public  InstanceId             getInstanceId() { return _id; }
+    // private InstanceId             _id;
+    native public LinkId           getLinkId(); // { return _id; }
 
     private String                 _uriPath;
     public  String                 getUriPath() { return _uriPath; }
@@ -36,6 +32,8 @@ public abstract class ServiceProvider
     public  PropertyMap            getProperties() { return _properties; }
     public  Object                 putProperty(String key, Object val) { return _properties.put(key, val); }
 
+    // OCResource.rsrcChildResourcesHead (for collections)
+    // only for SPs?
     private List<IServiceProvider> _children;
     public  List<IServiceProvider> getChildren() { return _children; }
 

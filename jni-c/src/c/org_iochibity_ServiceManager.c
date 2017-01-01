@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "org_iochibity_ServiceManager.h"
+#include "c_service_provider.h"
 #include "org_iochibity_Init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
@@ -47,10 +48,10 @@ JNIEXPORT jint JNICALL Java_org_iochibity_ServiceManager_resourceCount
 
 /*
  * Class:     org_iochibity_ServiceManager
- * Method:    registerPlatformProvider
+ * Method:    configurePlatformSP
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerPlatformProvider
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_configurePlatformSP
   (JNIEnv * env, jclass klass,
    jstring j_platform_id,
    jstring j_mfg_name,
@@ -234,10 +235,10 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerPlatformProvide
 
 /*
  * Class:     org_iochibity_ServiceManager
- * Method:    registerDeviceProvider
+ * Method:    configureDeviceSP
  * Signature: (Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDeviceProvider
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_configureDeviceSP
   (JNIEnv * env, jclass klass,
    jstring j_device_name,
    jobjectArray j_types,
@@ -317,6 +318,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDefaultServiceR
     OC_UNUSED(j_callback_param);
 }
 
+/* **************************************************************** */
 /*
  * Class:     org_iochibity_ServiceManager
  * Method:    registerServiceProvider
@@ -393,7 +395,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvi
 				  c_resource_type_name,  /* const char *resourceTypeName, */
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
-				  c_org_iochibity_ServiceProvider_observe_stimulus,
+				  c_ServiceProvider_react,
 				  /* x_callback_param, */
 				  x_ServiceProvider,
 				  (uint8_t) j_policies);  /* uint8_t resourceProperties */
@@ -534,7 +536,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvi
 				  c_resource_type_name,  /* const char *resourceTypeName, */
 				  c_resource_if_name,    /* const char *resourceInterfaceName, */
 				  c_uri,                 /* const char *uri, */
-				  c_org_iochibity_ServiceProvider_observe_stimulus,
+				  c_ServiceProvider_react,
 				  x_ServiceProvider,
 				  (uint8_t) c_policies);  /* uint8_t resourceProperties */
 
@@ -594,17 +596,43 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerServiceProvi
 
 /*
  * Class:     org_iochibity_ServiceManager
- * Method:    registerCoServiceProvider
- * Signature: (Lorg/iochibity/CoServiceProvider;)Lorg/iochibity/CoServiceProvider;
+ * Method:    registerDefaultCoServiceProvider
+ * Signature: (Lorg/iochibity/CoServiceProvider;)V
  */
-/* JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registerCoServiceProvider */
-/* (JNIEnv * env, jclass klass, jobject j_CoServiceProvider) */
-/* { */
-/*     OC_UNUSED(env); */
-/*     OC_UNUSED(klass); */
-/*     OC_UNUSED(j_CoServiceProvider); */
-/*     printf("Java_org_iochibity_ServiceManager_registerCoServiceProvider ENTRY\n"); */
-/*     return NULL; */
-/* } */
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerDefaultCoServiceProvider
+(JNIEnv * env, jclass klass, jobject j_CoServiceProvider)
+{
+}
 
+/*
+ * Class:     org_iochibity_ServiceManager
+ * Method:    registerCoServiceProvider
+ * Signature: (Lorg/iochibity/CoServiceProvider;)V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_ServiceManager_registerCoServiceProvider
+(JNIEnv * env, jclass klass, jobject j_CoServiceProvider)
+{
+}
+
+/*
+ * Class:     org_iochibity_ServiceManager
+ * Method:    registeredCoServiceProviders
+ * Signature: ()Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_registeredCoServiceProviders
+(JNIEnv * env, jclass klass)
+{
+    return NULL;
+}
+
+/*
+ * Class:     org_iochibity_ServiceManager
+ * Method:    getRelatedCoServiceProviders
+ * Signature: ()Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_ServiceManager_getRelatedCoServiceProviders
+ (JNIEnv * env, jclass klass)
+{
+    return NULL;
+}
 

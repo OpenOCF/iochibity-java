@@ -10,6 +10,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "_threads.h"
+
 #include "org_iochibity_DeviceAddress.h"
 #include "jni_utils.h"
 #include "org_iochibity_Init.h"
@@ -77,7 +79,7 @@ JNIEXPORT jbyte JNICALL Java_org_iochibity_DeviceAddress_networkScope
   if (gtls_response_in == NULL) {
     return -1;
   } else {
-    return RESPONSE_IN->devAddr.flags & 0x000F;
+    return RESPONSE_IN->devAddr.flags & 0x0F;
   }
 }
 
@@ -172,23 +174,24 @@ JNIEXPORT jint JNICALL Java_org_iochibity_DeviceAddress_port
  * Method:    ipAddress
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_iochibity_DeviceAddress_ipAddress
+ jstring JNICALL Java_org_iochibity_DeviceAddress_ipAddress
 (JNIEnv * env, jobject this)
 {
-  OC_UNUSED(env);
-  OC_UNUSED(this);
-  /* printf("%s : %s ENTRY, %d\n", __FILE__, __func__, pthread_self()); */
-  /* printf("TLS: %d\n", gtls_response_in); */
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    /* printf("%s : %s ENTRY, %d\n", __FILE__, __func__, (intptr_t)THREAD_ID); */
+    /* printf("TLS: %d\n", gtls_response_in); */
 
-  if (gtls_response_in) {
-    /* printf("ipAddress: %s\n", RESPONSE_IN->devAddr.addr); */
-    return(*env)->NewStringUTF(env, RESPONSE_IN->devAddr.addr);
-  } else {
-    // FIXME: if our TLS var has not been initialized, we have not
-    // recieved a discovery response containing the remote
-    // DeviceAddress info.
-    return NULL;
-  }
+    if (gtls_response_in) {
+	printf("c ipAddress: %s\n", RESPONSE_IN->devAddr.addr);
+	return(*env)->NewStringUTF(env, RESPONSE_IN->devAddr.addr);
+    } else {
+	// FIXME: if our TLS var has not been initialized, we have not
+	// recieved a discovery response containing the remote
+	// DeviceAddress info.
+	printf("FIXME: implement %s\n", __func__);
+	return NULL;
+    }
 }
 
 /*

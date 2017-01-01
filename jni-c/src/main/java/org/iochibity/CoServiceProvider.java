@@ -18,22 +18,36 @@ public abstract class CoServiceProvider
 	ctorCoSP();
     }
 
-    // FIXME: rename to _transactionHandle? _stimulusHandle?
-    private long                   _handle; // OCDoHandle from OCDoResource
+    // a CoSP object may be associated with multiple transactions, so
+    // keeping a handle member will not work...
+    // private long _handle; // OCDoHandle from OCDoResource
 
-    // THe heart of the matter: actions and reactions.
+    // THe heart of the matter: (co-)actions and (co-)reactions.
     @Override
-    abstract public void            react(); // must be implemented by user; called by stack
+    abstract public void            coreact(); // must be implemented by user; called by stack
 
     // the remaining methods implement (natively) the ICoServiceProvider interface
     native   public void            exhibit(); // called by user
 
-    // OCDoResource params
+    native public int               method();
+    native public CoServiceProvider method(int method);
+
+    // descriptor, for matching against SPs (and setting OCDoResource params)
     native public String            uriPath();
     native public CoServiceProvider uriPath(String uriPath);
 
-    native public int               method();
-    native public CoServiceProvider method(int method);
+    private List<String>            _types = new LinkedList<String>();
+    public  List<String>            getTypes() { return _types; }
+    public  boolean                 addType(String theTypes) { return _types.add(theTypes); }
+
+    private List<String>            _interfaces = new LinkedList<String>();
+    public List<String>             getInterfaces() { return _interfaces; }
+    public boolean                  addInterface(String iface) { return _interfaces.add(iface); }
+
+    private PropertyMap             _properties;
+    public  PropertyMap             getProperties() { return _properties; }
+    public  Object                  putProperty(String key, Object val) { return _properties.put(key, val); }
+    // end descriptor
 
     //////////////// NETWORKING params ////////////////
     // Raw
@@ -107,37 +121,50 @@ public abstract class CoServiceProvider
 
     ////////////////////////////////////////////////////////////////
     // OCClientResponse data:
-    // OCPayload wrapper
-    private ObservationRecord      _observationRecord;
-    public  ObservationRecord      getObservationRecord() { return _observationRecord; }
-    public  void                   setObservationRecord(ObservationRecord o) { _observationRecord = o; }
+
+    // these data describe the corresponding SP:
+
+    // FIXME: resolve clash between CoSP's descr of SP (which are
+    // match patterns) and the SP description received in the
+    // response.  The former is not really a description, or rather it
+    // is an open description; the latter is a closed description.
+
+    // for example, the CoSP might have type="foo.bar", and the
+    // response might include that plus several other types.  We do
+    // not want to confuse the two "descriptions".
+
+    // one possible solution: leave the open ("query") description
+    // (associated with the CoSP) at the top, and keep the closed
+    // descriptions (associated with the SP) with the
+    // ObservationRecords.  This will work for some payloads, which
+    // contains uri, types[], and interfaces[] (e.g. OCRepPayload,
+    // OCResourcePayload, etc.) but not others
+    // (e.g. OCSecurityPayload).  Note that OCResource also contains
+    // uri, types, and interfaces.
+
 
     native public DeviceAddress    coAddress();
+    native public int              getCoResult();
 
     native public String           getCoSecurityId();
 
-    native public int              getCoResult();
-
     // for observables, https://tools.ietf.org/html/rfc7641
-    native public int              getObservationSerial();
+    native public int              getNotificationSerial();
 
-    private List<String>           _types = new LinkedList<String>();
-    public  List<String>           getTypes() { return _types; }
-    public  boolean                addType(String theTypes) { return _types.add(theTypes); }
+    ////////////////////////////////////////////////////////////////
+    // OCPayload wrapper
+    // NB: ObservationRecords must be read-only!
+    native  List<ObservationRecord> observations();
+    // private ObservationRecord      _observationRecord;
+    // public  ObservationRecord      getObservationRecord() { return _observationRecord; }
+    // public  void                   setObservationRecord(ObservationRecord o) { _observationRecord = o; }
 
-    private List<String>           _interfaces = new LinkedList<String>();
-    public List<String>            getInterfaces() { return _interfaces; }
-    public boolean                 addInterface(String iface) { return _interfaces.add(iface); }
-
-    private PropertyMap            _properties;
-    public  PropertyMap            getProperties() { return _properties; }
-    public  Object                 putProperty(String key, Object val) { return _properties.put(key, val); }
-
+    // // OCResource.rsrcChildResourcesHead (for collections)
     private List<IServiceProvider> _children;
     public  List<IServiceProvider> getChildren() { return _children; }
 
-    private List<ActionSet>        _actionSet;
-    public  List<ActionSet>        getActionSet() { return _actionSet; }
-
+    // // SPs only?
+    // private List<ActionSet>        _actionSet;
+    // public  List<ActionSet>        getActionSet() { return _actionSet; }
 }
 

@@ -8,11 +8,12 @@
 
 
 #include <ctype.h>
-#include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
+
+#include "_threads.h"
 
 #include "org_iochibity_Message.h"
 #include "org_iochibity_Init.h"

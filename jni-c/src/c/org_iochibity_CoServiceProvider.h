@@ -25,22 +25,6 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 
 /*
  * Class:     org_iochibity_CoServiceProvider
- * Method:    uriPath
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath__
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
- * Method:    uriPath
- * Signature: (Ljava/lang/String;)Lorg/iochibity/CoServiceProvider;
- */
-JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_uriPath__Ljava_lang_String_2
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
  * Method:    method
  * Signature: ()I
  */
@@ -54,6 +38,22 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method__
  */
 JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_method__I
   (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    uriPath
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_uriPath__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    uriPath
+ * Signature: (Ljava/lang/String;)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_uriPath__Ljava_lang_String_2
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     org_iochibity_CoServiceProvider
@@ -385,14 +385,6 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
 
 /*
  * Class:     org_iochibity_CoServiceProvider
- * Method:    getCoSecurityId
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_iochibity_CoServiceProvider
  * Method:    getCoResult
  * Signature: ()I
  */
@@ -401,10 +393,26 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getCoResult
 
 /*
  * Class:     org_iochibity_CoServiceProvider
- * Method:    getObservationSerial
+ * Method:    getCoSecurityId
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getNotificationSerial
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getObservationSerial
+JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getNotificationSerial
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    observations
+ * Signature: ()Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_observations
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus
