@@ -34,11 +34,11 @@ public class ObservationRecord implements IObservationRecord
     public static final int RD             = 7;
     public static final int NOTIFICATION   = 8;
 
-    private StimulusIn _stimulusIn;
-    ObservationRecord(StimulusIn msg)
-    {
-	_stimulusIn = msg;
-    }
+    // private StimulusIn _stimulusIn;
+    // ObservationRecord(StimulusIn msg)
+    // {
+    // 	_stimulusIn = msg;
+    // }
 
 
     private long _handle;      // OCPayload*
