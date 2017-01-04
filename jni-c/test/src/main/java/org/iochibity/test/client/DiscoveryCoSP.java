@@ -2,16 +2,17 @@ package org.iochibity.test.client;
 
 import org.iochibity.CoServiceProvider;
 import org.iochibity.constants.Method;
-import org.iochibity.ObservationIn;
-import org.iochibity.IObservationRecord;
+// import org.iochibity.ObservationIn;
+// import org.iochibity.IObservationRecord;
 import org.iochibity.ObservationRecord;
-import org.iochibity.ObservationList;
+// import org.iochibity.ObservationList;
 import org.iochibity.ServiceManager;
 
 import org.iochibity.constants.OCStackResult;
 
 import org.iochibity.test.Logger;
 
+import java.lang.RuntimeException;
 import java.util.List;
 
 public class DiscoveryCoSP
@@ -31,16 +32,17 @@ public class DiscoveryCoSP
     }
 
     /**
-       By the time `coreact` is called, the CoSPs matching the incoming
+       By the time `coReact` is called, the CoSPs matching the incoming
        SPs will have been registered with the ServiceManager.  All
-       this CoSP needs to do is coreact.
+       this CoSP needs to do is coReact.
      */
-    public void coreact()
+    public void coReact()
     {
-	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coreact ENTRY");
+	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coReact ENTRY");
 	System.out.println("DiscoveryCoSP: cbdata: " + cbdata);
 
 	Logger.logResponseIn(this);
+
 
 	// List<CoServiceProvider> cosps = ServiceManager.registeredCoServiceProviders();
 
@@ -96,6 +98,10 @@ public class DiscoveryCoSP
 	// 	}
 	//     }
 	// }
+
+	// throw new RuntimeException("test exception");
+
+	// this.deactivate();
 
 	return;
     }

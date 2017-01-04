@@ -3,7 +3,7 @@ package org.iochibity.test;
 import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.StimulusIn;
+// import org.iochibity.StimulusIn;
 import org.iochibity.PropertyMap;
 import org.iochibity.ServiceProvider;
 import org.iochibity.IServiceProvider;
@@ -92,6 +92,7 @@ public class OCFTestServer
 	// tSP = ServiceManager.registerServiceProvider(tempSP);
 
 	ServiceManager.registerServiceProvider(new WhatsitSP());
+	ServiceManager.registerServiceProvider(new WhatsitSP("/bar/whatsit"));
 
 	// ServiceManager.registerServiceProvider(new LedSP());
 

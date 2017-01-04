@@ -3,10 +3,10 @@ package org.iochibity.test.server;
 import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.StimulusIn;
-import org.iochibity.ObservationOut;
+// import org.iochibity.StimulusIn;
+// import org.iochibity.ObservationOut;
 import org.iochibity.ObservationRecord;
-import org.iochibity.ObservationList;
+// import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
 import org.iochibity.Resource;
 import org.iochibity.ServiceProvider;
@@ -38,9 +38,18 @@ public class WhatsitSP
     int foo = 99;
 
     public WhatsitSP() {
-	setUriPath("/a/whatsit");
-	addType("core.whatsit");
-	addInterface("oc.mi.whatsit");
+	setUriPath("/foo/whatsit");
+	addType("foo.t.whatsit");
+	addInterface("foo.if.whatsit");
+	setPolicies(Resource.DISCOVERABLE
+		    // | Resource.WATCHABLE
+		    | Resource.SECURE);
+    }
+
+    public WhatsitSP(String uriPath) {
+	setUriPath(uriPath);
+	addType("foo.t.whatsit");
+	addInterface("foo.if.whatsit");
 	setPolicies(Resource.DISCOVERABLE
 		    // | Resource.WATCHABLE
 		    | Resource.SECURE);
@@ -111,7 +120,7 @@ public class WhatsitSP
 
     // private ObservationList<Observation> serviceGetRequest(StimulusIn request)
     // private ObservationList<Observation> ObserveGetStimulus(StimulusIn stimulusIn)
-    private void reactToGetObservation(StimulusIn stimulusIn)
+    private void reactToGetObservation()
     {
 	System.out.println("WhatsitSP.serviceGetRequest ENTRY");
 

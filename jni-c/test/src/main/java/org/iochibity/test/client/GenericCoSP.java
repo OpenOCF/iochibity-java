@@ -2,9 +2,9 @@ package org.iochibity.test.client;
 
 import org.iochibity.CoServiceProvider;
 import org.iochibity.constants.Method;
-import org.iochibity.ObservationIn;
+// import org.iochibity.ObservationIn;
 import org.iochibity.ObservationRecord;
-import org.iochibity.ObservationList;
+// import org.iochibity.ObservationList;
 import org.iochibity.constants.OCStackResult;
 
 import org.iochibity.test.Logger;
@@ -28,37 +28,36 @@ public class GenericCoSP
     }
 
     // we need info from both response msg and observation payload to create a unicast request
-    public GenericCoSP(ObservationIn observationIn, ObservationRecord observationRecord) {
-	super();
-	System.out.println("GenericCoSP CTOR");
-	System.out.println("Uri path: " + observationIn.getUriPath());
-	System.out.println("Remote Device Address: "
-			   + observationIn.getRemoteDeviceAddress().ipAddress());
-	System.out.println("Remote Device Port:    "
-			   + observationIn.getRemoteDeviceAddress().port());
+    // public GenericCoSP(ObservationIn observationIn, ObservationRecord observationRecord) {
+    // 	super();
+    // 	System.out.println("GenericCoSP CTOR");
+    // 	System.out.println("Uri path: " + observationIn.getUriPath());
+    // 	System.out.println("Remote Device Address: "
+    // 			   + observationIn.getRemoteDeviceAddress().ipAddress());
+    // 	System.out.println("Remote Device Port:    "
+    // 			   + observationIn.getRemoteDeviceAddress().port());
 
-	// we don't need the following setDestination anymore since
-	// the incoming response rec is already stored in a TLS var,
-	// making the remote DevAddr available.
-	// setDestination(observationIn.getRemoteDeviceAddress());
-	uriPath(observationRecord.getUriPath());
+    // 	// we don't need the following setDestination anymore since
+    // 	// the incoming response rec is already stored in a TLS var,
+    // 	// making the remote DevAddr available.
+    // 	// setDestination(observationIn.getRemoteDeviceAddress());
+    // 	uriPath(observationRecord.getUriPath());
 
-	// method and qos to be set by user before sending
+    // 	// method and qos to be set by user before sending
 
-	// FIXME: deal with header options
+    // 	// FIXME: deal with header options
 
-	// FIXME: explode OCConnectivityType into network protocol,
-	// policies, and scope, and transport security flag
-	int connectivityType = observationIn.connType;
-	// setNetworkPolicies(connectivityType);
+    // 	// FIXME: explode OCConnectivityType into network protocol,
+    // 	// policies, and scope, and transport security flag
+    // 	int connectivityType = observationIn.connType;
+    // 	// setNetworkPolicies(connectivityType);
 
-	// types, interfaces, properties?
-    }
+    // 	// types, interfaces, properties?
+    // }
 
-    // public int observeBehavior(ObservationIn responseIn)
-    public void coreact()
+    public void coReact()
     {
-	System.out.println("JAVA: GenericCoSP.coreact ENTRY");
+	System.out.println("JAVA: GenericCoSP.coReact ENTRY");
 	System.out.println("JAVA: cbdata: " + cbdata);
 	// Logger.logObservationIn(responseIn);
 	// Logger.logObservationIn(this);

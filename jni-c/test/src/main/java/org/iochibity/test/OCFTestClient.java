@@ -14,13 +14,13 @@ import org.iochibity.OCF;
 import org.iochibity.CoServiceManager;
 import org.iochibity.CoServiceProvider;
 import org.iochibity.DeviceAddress;
-import org.iochibity.Message;
-import org.iochibity.StimulusOut;
-import org.iochibity.ObservationIn;
-import org.iochibity.ObservationOut;
+// import org.iochibity.Message;
+// import org.iochibity.StimulusOut;
+// import org.iochibity.ObservationIn;
+// import org.iochibity.ObservationOut;
 import org.iochibity.HeaderOption;
 import org.iochibity.ObservationRecord;
-import org.iochibity.ObservationList;
+// import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
 import org.iochibity.ICoServiceProvider;
 
@@ -119,7 +119,7 @@ public class OCFTestClient
 	Pattern pdrx = Pattern.compile("[dprx]");
 
     	String uri = null;
-	StimulusOut msgRequestOut;
+	// StimulusOut msgRequestOut;
 
 	boolean again = true;
 	while(again) {
@@ -186,7 +186,7 @@ public class OCFTestClient
 		// Logger.logCoSP(discoveryCoSP);
 
 		try {
-		    discoveryCoSP.exhibit();
+		    discoveryCoSP.coExhibit();
 		    Thread.sleep(500);
 		} catch (Exception e) {
 		    System.out.println("ERROR: discovery");
@@ -240,8 +240,8 @@ public class OCFTestClient
 		// cosp.method(OCF.RETRIEVE);
 		// Logger.logCoSP(cosp);
 		// try {
-		//     cosp.exhibit();
-		//     // cosp.exhibit();
+		//     cosp.coExhibit();
+		//     // cosp.coExhibit();
 		//     Thread.sleep(500); // just to let the user prompt work
 		// } catch (Exception e) {
 		//     e.printStackTrace();
@@ -268,11 +268,6 @@ public class OCFTestClient
 	    case "6":
 		System.out.println("requested POST");
 		try {
-		    // StimulusOut requestOut
-		    // 	= new StimulusOut(new WhatsitSR());
-		    // requestOut.dest = gWhatsitAddress;
-		    // requestOut.uri  = "/a/whatsit";
-		    // byte[] bs = Messenger.exhibitStimulus(OCF.POST, requestOut);
 		    Thread.sleep(1000);
 		} catch (Exception e) {
 		    e.printStackTrace();

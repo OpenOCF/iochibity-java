@@ -4,15 +4,15 @@ import org.iochibity.OCF;
 import org.iochibity.CoServiceProvider;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
-import org.iochibity.Message;
-import org.iochibity.ObservationIn;
-import org.iochibity.ObservationOut;
-import org.iochibity.IObservationRecord;
+// import org.iochibity.Message;
+// import org.iochibity.ObservationIn;
+// import org.iochibity.ObservationOut;
+// import org.iochibity.IObservationRecord;
 import org.iochibity.ObservationRecord;
-import org.iochibity.ObservationList;
+// import org.iochibity.ObservationList;
 import org.iochibity.PropertyMap;
 import org.iochibity.IServiceProvider;
-import org.iochibity.StimulusIn;
+// import org.iochibity.StimulusIn;
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
@@ -369,80 +369,80 @@ public class Logger
     // 	System.out.println("RESOURCE: logResource EXIT");
     // }
 
-    static public void logObservation(ObservationRecord observationRecord)
-    {
-	// System.out.println("OBSERVATION: logObservation ENTRY");
+    // static public void logObservation(ObservationRecord observationRecord)
+    // {
+    // 	// System.out.println("OBSERVATION: logObservation ENTRY");
 
-	System.out.println("\tOBSERVED uri: " + observationRecord.getUriPath());
+    // 	System.out.println("\tOBSERVED uri: " + observationRecord.getUriPath());
 
-	System.out.println("\tOBSERVED type: " + observationRecord.getType());
+    // 	System.out.println("\tOBSERVED type: " + observationRecord.getType());
 
-	// log rtypes
-	List<String> rtypes = observationRecord.getResourceTypes();
-	System.out.println("\tOBSERVED RESOURCE TYPES count: " + rtypes.size());
-	for (String t : (List<String>)rtypes) {
-	    System.out.println("\tOBSERVED rtype: " + t);
-	}
+    // 	// log rtypes
+    // 	List<String> rtypes = observationRecord.getResourceTypes();
+    // 	System.out.println("\tOBSERVED RESOURCE TYPES count: " + rtypes.size());
+    // 	for (String t : (List<String>)rtypes) {
+    // 	    System.out.println("\tOBSERVED rtype: " + t);
+    // 	}
 
-	// log interfaces
-	List<String> ifaces = observationRecord.getInterfaces();
-	System.out.println("\tOBSERVED INTERFACES count: " + ifaces.size());
-	for (String iface : ifaces) {
-	    System.out.println("\tOBSERVED interface: " + iface);
-	}
+    // 	// log interfaces
+    // 	List<String> ifaces = observationRecord.getInterfaces();
+    // 	System.out.println("\tOBSERVED INTERFACES count: " + ifaces.size());
+    // 	for (String iface : ifaces) {
+    // 	    System.out.println("\tOBSERVED interface: " + iface);
+    // 	}
 
-	// log properties (PlatformInfo, DeviceInfo, or "values" for resources)
-	PropertyMap<String, Object> pmap = observationRecord.getProperties();
-	System.out.println("\tOBSERVED PROPERTIES count: " + pmap.size());
-	for (Map.Entry<String, Object> entry : pmap.entrySet())
-	    {
-		System.out.println("\tOBSERVED property: "
-				   + entry.getKey()
-				   + " = "
-				   + entry.getValue());
-	    }
-	List<IObservationRecord> kids = observationRecord.getChildren();
-	if (kids != null) {
-	    System.out.println("\tOBSERVED CHILDREN count: " + kids.size());
-	    for (IObservationRecord p : kids) {
-		System.out.println("================ CHILD");
-		logObservation((ObservationRecord)p);
-	    }
-	}
-    }
+    // 	// log properties (PlatformInfo, DeviceInfo, or "values" for resources)
+    // 	PropertyMap<String, Object> pmap = observationRecord.getProperties();
+    // 	System.out.println("\tOBSERVED PROPERTIES count: " + pmap.size());
+    // 	for (Map.Entry<String, Object> entry : pmap.entrySet())
+    // 	    {
+    // 		System.out.println("\tOBSERVED property: "
+    // 				   + entry.getKey()
+    // 				   + " = "
+    // 				   + entry.getValue());
+    // 	    }
+    // 	List<IObservationRecord> kids = observationRecord.getChildren();
+    // 	if (kids != null) {
+    // 	    System.out.println("\tOBSERVED CHILDREN count: " + kids.size());
+    // 	    for (IObservationRecord p : kids) {
+    // 		System.out.println("================ CHILD");
+    // 		logObservation((ObservationRecord)p);
+    // 	    }
+    // 	}
+    // }
 
-    static public void logRequestIn(StimulusIn requestIn)
-    {
-	System.out.println("LOG StimulusIn logRequestIn ENTRY");
-	// System.out.println("LOG StimulusIn this handle: " + requestIn.localHandle);
-	// System.out.println("LOG StimulusIn remote handle: " + requestIn.getRemoteHandle);
-	// System.out.println("LOG StimulusIn resource handle: " + requestIn.getResourceHandle());
-	System.out.println("LOG StimulusIn request method: " + requestIn.getMethod());
-	System.out.println("LOG StimulusIn query : \"" + requestIn.getQueryString() + "\"");
-	System.out.println("LOG StimulusIn msg id : " + requestIn.getMessageId());
+    // static public void logRequestIn(StimulusIn requestIn)
+    // {
+    // 	System.out.println("LOG StimulusIn logRequestIn ENTRY");
+    // 	// System.out.println("LOG StimulusIn this handle: " + requestIn.localHandle);
+    // 	// System.out.println("LOG StimulusIn remote handle: " + requestIn.getRemoteHandle);
+    // 	// System.out.println("LOG StimulusIn resource handle: " + requestIn.getResourceHandle());
+    // 	System.out.println("LOG StimulusIn request method: " + requestIn.getMethod());
+    // 	System.out.println("LOG StimulusIn query : \"" + requestIn.getQueryString() + "\"");
+    // 	System.out.println("LOG StimulusIn msg id : " + requestIn.getMessageId());
 
-	System.out.println("LOG StimulusIn method : " + requestIn.getMethod());
-	System.out.println("LOG StimulusIn watch action : " + requestIn.watchAction);
-	System.out.println("LOG StimulusIn watch id :     " + requestIn.watchId);
+    // 	System.out.println("LOG StimulusIn method : " + requestIn.getMethod());
+    // 	System.out.println("LOG StimulusIn watch action : " + requestIn.watchAction);
+    // 	System.out.println("LOG StimulusIn watch id :     " + requestIn.watchId);
 
 
-	// ResourceLocal resource = requestIn.getResource();
-	// logResource(resource);
+    // 	// ResourceLocal resource = requestIn.getResource();
+    // 	// logResource(resource);
 
-	// logDeviceAddress(requestIn.getRemoteDeviceAddress());
+    // 	// logDeviceAddress(requestIn.getRemoteDeviceAddress());
 
-	// System.out.println("LOG StimulusIn watch action: " + requestIn.watchAction);
-	// System.out.println("LOG StimulusIn watch id    : " + requestIn.watchId);
+    // 	// System.out.println("LOG StimulusIn watch action: " + requestIn.watchAction);
+    // 	// System.out.println("LOG StimulusIn watch id    : " + requestIn.watchId);
 
-	List<HeaderOption> headerOptions = requestIn.getOptions();
-	if (headerOptions != null)
-	    System.out.println("LOG StimulusIn header opts ct: " + headerOptions.size());
+    // 	List<HeaderOption> headerOptions = requestIn.getOptions();
+    // 	if (headerOptions != null)
+    // 	    System.out.println("LOG StimulusIn header opts ct: " + headerOptions.size());
 
-	// ObservationList<PayloadForResourceState> observation = requestIn.getPDUPayload();
-	// if (observation == null) {
-	//     System.out.println("LOG StimulusIn observation is null");
-	// }
-    }
+    // 	// ObservationList<PayloadForResourceState> observation = requestIn.getPDUPayload();
+    // 	// if (observation == null) {
+    // 	//     System.out.println("LOG StimulusIn observation is null");
+    // 	// }
+    // }
 
     static public void logRequestIn(CoServiceProvider cosp)
     {
