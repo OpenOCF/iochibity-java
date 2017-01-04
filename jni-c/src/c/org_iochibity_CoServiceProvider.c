@@ -20,6 +20,7 @@ C11:      strncpy_s
 #include "_threads.h"
 
 #include "org_iochibity_CoServiceProvider.h"
+#include "c_co_service_manager.h"
 #include "jni_utils.h"
 #include "org_iochibity_Init.h"
 #include "org_iochibity_Exceptions.h"
@@ -49,8 +50,6 @@ THREAD_LOCAL jobject tls_CoSP			= NULL;
 response_in_t*  g_response_map;
 
 /* PRIVATE */
-
-OCClientResponse* g_OCClientResponse;
 
 /* tls struct capturing params to OCDoResource */
 typedef struct RequestOut
@@ -399,8 +398,8 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     case PAYLOAD_TYPE_DISCOVERY:
 	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_DISCOVERY", __func__);
 	handle_discovery_payload(c_OCClientResponse);
-	printf("VERIFICATION:\n");
-	OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse);
+	/* printf("VERIFICATION:\n"); */
+	/* OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse); */
 	break;
     case PAYLOAD_TYPE_DEVICE:
 	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_DEVICE", __func__);

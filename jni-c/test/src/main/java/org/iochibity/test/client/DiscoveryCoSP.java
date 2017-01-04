@@ -1,12 +1,12 @@
 package org.iochibity.test.client;
 
+import org.iochibity.CoServiceManager;
 import org.iochibity.CoServiceProvider;
 import org.iochibity.constants.Method;
 // import org.iochibity.ObservationIn;
 // import org.iochibity.IObservationRecord;
 import org.iochibity.ObservationRecord;
 // import org.iochibity.ObservationList;
-import org.iochibity.ServiceManager;
 
 import org.iochibity.constants.OCStackResult;
 
@@ -43,6 +43,7 @@ public class DiscoveryCoSP
 
 	Logger.logResponseIn(this);
 
+	CoServiceManager.registeredCoServiceProviders();
 
 	// List<CoServiceProvider> cosps = ServiceManager.registeredCoServiceProviders();
 

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "org_iochibity_CoServiceManager.h"
-#include "c_service_provider.h"
+#include "c_co_service_manager.h"
 #include "org_iochibity_Init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
@@ -20,9 +20,11 @@
 #include "ocresource.h"
 #include "ocstack.h"
 #include "octypes.h"
+#include "logger.h"
 
 /* PRIVATE */
 
+#define TAG  "CO_SERVICE_MANAGER"
 
 /* **************************************************************** */
 /* PUBLIC */
@@ -328,6 +330,8 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceManager_registerCoServiceP
 JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceManager_registeredCoServiceProviders
 (JNIEnv * env, jclass klass)
 {
+    OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
+    OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse);
     return NULL;
 }
 
