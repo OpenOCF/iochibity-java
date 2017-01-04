@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 /**
  * brief desc of this file
- * 
+ *
  * It wraps the OCDoResource parameters, plus ...
  */
 
@@ -24,10 +24,10 @@ public abstract class CoServiceProvider
 
     // THe heart of the matter: (co-)actions and (co-)reactions.
     @Override
-    abstract public void            coreact(); // must be implemented by user; called by stack
+    abstract public void            coReact(); // must be implemented by user; called by stack
 
     // the remaining methods implement (natively) the ICoServiceProvider interface
-    native   public void            exhibit(); // called by user
+    native   public void            coExhibit(); // called by user
 
     native public int               method();
     native public CoServiceProvider method(int method);
@@ -36,9 +36,10 @@ public abstract class CoServiceProvider
     native public String            uriPath();
     native public CoServiceProvider uriPath(String uriPath);
 
-    private List<String>            _types = new LinkedList<String>();
-    public  List<String>            getTypes() { return _types; }
-    public  boolean                 addType(String theTypes) { return _types.add(theTypes); }
+    // private List<String>            _types = new LinkedList<String>();
+    // public  List<String>            getTypes() { return _types; }
+    native public List<String>      types();
+    native public boolean           addType(String theTypes); // { return _types.add(theTypes); }
 
     private List<String>            _interfaces = new LinkedList<String>();
     public List<String>             getInterfaces() { return _interfaces; }
@@ -146,7 +147,7 @@ public abstract class CoServiceProvider
     native public DeviceAddress    coAddress();
     native public int              getCoResult();
 
-    native public String           getCoSecurityId();
+    native public byte[]           getCoSecurityId();
 
     // for observables, https://tools.ietf.org/html/rfc7641
     native public int              getNotificationSerial();
@@ -154,7 +155,7 @@ public abstract class CoServiceProvider
     ////////////////////////////////////////////////////////////////
     // OCPayload wrapper
     // NB: ObservationRecords must be read-only!
-    native  List<ObservationRecord> observations();
+    // native  List<ObservationRecord> observations();
     // private ObservationRecord      _observationRecord;
     // public  ObservationRecord      getObservationRecord() { return _observationRecord; }
     // public  void                   setObservationRecord(ObservationRecord o) { _observationRecord = o; }
@@ -166,5 +167,7 @@ public abstract class CoServiceProvider
     // // SPs only?
     // private List<ActionSet>        _actionSet;
     // public  List<ActionSet>        getActionSet() { return _actionSet; }
-}
 
+    // for discovery and presence requests:
+    native public void               deactivate();
+}

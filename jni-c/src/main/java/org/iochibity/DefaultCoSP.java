@@ -11,9 +11,10 @@ public class DefaultCoSP
 	method(OCF.RETRIEVE);
     }
 
-    public void coreact()
+    public void coReact()
     {
-	System.out.println("DefaultCoSP: DefaultCoSP.coreact ENTRY");
+	System.out.println("DefaultCoSP: DefaultCoSP.coReact ENTRY");
+	return;
     }
 }
 

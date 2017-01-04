@@ -4,12 +4,10 @@ package org.iochibity;
 // All methods EXCEPT observeBehavior implemented by CoServiceProvider abstract class
 public interface ICoServiceProvider {
 
-    // black boxing
-
-    public void               coreact();   // implemented by user
+    public void               coReact();   // abstract, to be implemented by user
 
     // the remaining methods are implemented (natively)by CoServiceProvider
-    public void               exhibit(); // called by user
+    public void               coExhibit(); // called by user
 
     // OCDoResource params
     public String             uriPath();
@@ -84,7 +82,10 @@ public interface ICoServiceProvider {
 
     // to add: fields from struct OCClientResponse? they will be
     // updated on receipt of ObservationRecordIn
-    public DeviceAddress              coAddress(); // native
+    public DeviceAddress      coAddress(); // native
 
     // what about struct ClientCB?
+
+    // for discovery and presence requests:
+    public void               deactivate();
 }

@@ -38,6 +38,8 @@ install_sysroot = local_env.get('INSTALL_SYSROOT')
 build_sysroot = local_env.get('BUILD_SYSROOT')
 source_root     = env.get('SOURCE_ROOT')
 
+print "BUILD SYSROOT", build_sysroot
+
 jdk_home = env['ENV']['TARGET_JDK_HOME']
 print "JDK:", jdk_home
 
@@ -57,7 +59,6 @@ if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOTIVITY':
 	       iotivity_home + '/resource/csdk/connectivity/api',
 	       iotivity_home + '/resource/csdk/stack/include',
 	       iotivity_home + '/resource/csdk/stack/include/internal',
-	       iotivity_home + '/resource/csdk/logger/include',
 	       iotivity_home + '/resource/oc_logger/include',
 	       iotivity_home + '/extlibs/',
 	       iotivity_home + '/extlibs/cjson',
@@ -67,6 +68,11 @@ if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOTIVITY':
    install_dir = install_sysroot
    local_env.AppendUnique(LIBS=['octbstack', 'logger', 'oc_logger','connectivity_abstraction', 'ocsrm', 'c_common', 'routingmanager'])
    local_env.AppendUnique(LIBPATH = [local_env.get('INSTALL_SYSROOT')])
+   if local_env.get('LOGGING'):
+        local_env.PrependUnique(LIBS = ['logger'])
+	local_env.AppendUnique(CPPDEFINES = ['TB_LOG'])
+	local_env.AppendUnique(LIBPATH = [build_sysroot + '/logger'])
+	CPPPATHS.append(iotivity_home + '/resource/csdk/logger/include')
 
 if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOCHIBITY':
    CPPPATHS = ['#src',
@@ -77,7 +83,6 @@ if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOCHIBITY':
                source_root + '/resource/csdk/connectivity/lib/libcoap-4.1.1',
                source_root + '/resource/csdk/security',
                source_root + '/resource/csdk/security/ocsecurity',
-	       source_root + '/resource/csdk/logger', # FIXME: only if LOGGING=1
                source_root + '/extlibs', # for tinydtls debug.h
                install_sysroot + '/include',
                jdk_home + '/include',
@@ -86,7 +91,11 @@ if env['ENV']['IOTIVITY_IMPLEMENTATION'] == 'IOCHIBITY':
    install_dir = install_sysroot + '/lib'
    local_env.AppendUnique(LIBPATH = [install_dir, "."])
    local_env.AppendUnique(CPPDEFINES = ['IOCHIBITY'])
-
+   if local_env.get('LOGGING'):
+        local_env.AppendUnique(LIBS = ['logger'])
+	local_env.AppendUnique(CPPDEFINES = ['TB_LOG'])
+	local_env.AppendUnique(LIBPATH = [build_sysroot + '/logger'])
+	CPPPATHS.append(source_root + '/resource/csdk/logger')  # logger.h
 
 local_env.AppendUnique(CPPPATH = CPPPATHS)
 

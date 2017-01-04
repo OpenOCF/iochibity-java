@@ -12,6 +12,9 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#include "debug.h"		/* libcoap debugging */
+#include "tinydtls/debug.h"		/* for tinydtls debugging */
+
 #include "_threads.h"
 
 #include "org_iochibity_OCF.h"
@@ -801,7 +804,7 @@ int init_StimulusIn(JNIEnv* env)
 
 
     /* remote device address - handled by Message*/
-    
+
 
     /* msg id */
     if (FID_RQI_MSG_ID == NULL) {
@@ -1248,6 +1251,24 @@ int init_pmap(JNIEnv* env)
     return 0;
 }
 
+int init_observation_list(JNIEnv* env)
+{
+        /* klass = (*env)->FindClass(env, "org/iochibity/ObservationList"); */
+    /* JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ObservationList\n", 0); */
+    /* K_OBSERVATION_LIST = (jclass)(*env)->NewGlobalRef(env, klass); */
+    /* (*env)->DeleteLocalRef(env, klass); */
+    /* MID_PLL_CTOR = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "<init>", "()V"); */
+    /* if (MID_PLL_CTOR == 0) { */
+    /* 	printf("ERROR: GetMethodID failed for ctor of ObservationList.\n"); */
+    /* 	return -1; */
+    /* } */
+    /* MID_PLL_ADD = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "add", "(Ljava/lang/Object;)Z"); */
+    /* if (MID_PLL_ADD == NULL) { */
+    /* 	printf("ERROR: GetMethodID failed for add method of ObservationList\n"); */
+    /* } */
+    return 0;
+}
+
 int init_ICoServiceProvider(JNIEnv* env)
 {
     jclass klass;
@@ -1258,12 +1279,11 @@ int init_ICoServiceProvider(JNIEnv* env)
 
     jmethodID MID_ICOSP_COREACT  = NULL;
     if (MID_ICOSP_COREACT == NULL) {
-	MID_ICOSP_COREACT = (*env)->GetMethodID(env,
-							 K_I_CO_SERVICE_PROVIDER,
-							 "coreact",
-							 "()V");
+	MID_ICOSP_COREACT = (*env)->GetMethodID(env, K_I_CO_SERVICE_PROVIDER,
+						"coReact",
+						"()V");
 	if (MID_ICOSP_COREACT == NULL) {
-	    printf("ERROR: GetMethodID failed for 'react' of ICoServiceProvider\n");
+	    printf("ERROR: GetMethodID failed for 'coReact' of ICoServiceProvider\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
@@ -1321,9 +1341,9 @@ int init_CoServiceProvider(JNIEnv* env)
     jmethodID MID_COSP_EXHIBIT  = NULL;
     if (MID_COSP_EXHIBIT == NULL) {
 	MID_COSP_EXHIBIT = (*env)->GetMethodID(env, K_I_CO_SERVICE_PROVIDER,
-							 "exhibit", "()V");
+							 "coExhibit", "()V");
 	if (MID_COSP_EXHIBIT == NULL) {
-	    printf("ERROR: GetMethodID failed for 'exhibit' of CoServiceProvider\n");
+	    printf("ERROR: GetMethodID failed for 'coExhibit' of CoServiceProvider\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
 	}
     }
@@ -1542,7 +1562,12 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     JNIEnv* env = NULL;
     g_JVM = vm;
 
-    oic_set_log_level(ERROR);
+    oic_set_log_level(DEBUG);
+
+    /* LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_WARNING, LOG_NOTICE, LOG_INFO, LOG_DEBUG */
+    /* coap_set_log_level(LOG_WARNING); */
+
+    /* dtls_set_log_level(DTLS_LOG_WARN); /\* DEBUG, INFO,  NOTICE, WARN, CRIT ... *\/ */
 
     int getEnvStat = (*g_JVM)->GetEnv(g_JVM, (void **)&env, JNI_VERSION_1_6);
     if (getEnvStat == JNI_EDETACHED) {
@@ -1566,19 +1591,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 
     jclass klass = NULL;
 
-    klass = (*env)->FindClass(env, "org/iochibity/ObservationList");
-    JNI_ASSERT_NULL(klass, "FindClass failed for org/iochibity/ObservationList\n", 0);
-    K_OBSERVATION_LIST = (jclass)(*env)->NewGlobalRef(env, klass);
-    (*env)->DeleteLocalRef(env, klass);
-    MID_PLL_CTOR = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "<init>", "()V");
-    if (MID_PLL_CTOR == 0) {
-	printf("ERROR: GetMethodID failed for ctor of ObservationList.\n");
-	return -1;
-    }
-    MID_PLL_ADD = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "add", "(Ljava/lang/Object;)Z");
-    if (MID_PLL_ADD == NULL) {
-	printf("ERROR: GetMethodID failed for add method of ObservationList\n");
-    }
+    /* init_observation_list(env); */
 
     /* DeviceAddress = OCDevAddr */
     if (K_DEVICE_ADDRESS == NULL) {
@@ -1587,7 +1600,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 	K_DEVICE_ADDRESS = (jclass)(*env)->NewGlobalRef(env, klass);
 	(*env)->DeleteLocalRef(env, klass);
     }
-    MID_DA_CTOR = (*env)->GetMethodID(env, K_OBSERVATION_LIST, "<init>", "()V");
+    MID_DA_CTOR = (*env)->GetMethodID(env, K_DEVICE_ADDRESS, "<init>", "()V");
     if (MID_DA_CTOR == 0) {
 	printf("ERROR: GetMethodID failed for ctor of DeviceAddress.\n");
 	return -1;
@@ -1655,19 +1668,19 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     /* K_RESOURCE_LOCAL = (jclass)(*env)->NewGlobalRef(env, klass); */
     /* (*env)->DeleteLocalRef(env, klass); */
 
-    if (init_Messages(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
+    /* if (init_Messages(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR; */
 
     init_ServiceProviders(env);
 
-    init_StimulusOut(env);
+    /* init_StimulusOut(env); */
 
-    init_StimulusIn(env);
+    /* init_StimulusIn(env); */
 
-    init_ObservationIn(env);
+    /* init_ObservationIn(env); */
 
     init_java(env);
 
-    if (init_observation(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR;
+    /* if (init_observation(env) != 0) return OC_EH_INTERNAL_SERVER_ERROR; */
 
     /* init_pfp(env); */
 

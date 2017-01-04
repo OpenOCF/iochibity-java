@@ -38,7 +38,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_DeviceAddress_networkProtocol
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     // FIXME: if our TLS var has not been initialized, we have not
     // recieved a discovery response containing the remote
     // DeviceAddress info.
@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_DeviceAddress_networkFlags
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return -1;
   } else {
     return RESPONSE_IN->devAddr.flags;
@@ -76,7 +76,7 @@ JNIEXPORT jbyte JNICALL Java_org_iochibity_DeviceAddress_networkScope
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return -1;
   } else {
     return RESPONSE_IN->devAddr.flags & 0x0F;
@@ -93,7 +93,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_DeviceAddress_transportIsSecure
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return false;
   } else {
     return  RESPONSE_IN->devAddr.flags & 0x0010;	/* (1 << 4) */
@@ -110,7 +110,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_DeviceAddress_isIPv6
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return false;
   } else {
     return  RESPONSE_IN->devAddr.flags & 0x0020;	/* (1 << 5) */
@@ -127,7 +127,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_DeviceAddress_isIPv4
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return false;
   } else {
     return  RESPONSE_IN->devAddr.flags & 0x0040;	/* (1 << 6) */
@@ -144,7 +144,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_DeviceAddress_isMulticast
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return false;
   } else {
     return RESPONSE_IN->devAddr.flags & 0x0080;	/* (1 << 7) */
@@ -162,7 +162,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_DeviceAddress_port
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return -1;
   } else {
     return RESPONSE_IN->devAddr.port;
@@ -180,10 +180,9 @@ JNIEXPORT jint JNICALL Java_org_iochibity_DeviceAddress_port
     OC_UNUSED(env);
     OC_UNUSED(this);
     /* printf("%s : %s ENTRY, %d\n", __FILE__, __func__, (intptr_t)THREAD_ID); */
-    /* printf("TLS: %d\n", gtls_response_in); */
+    /* printf("TLS: %d\n", tls_response_in); */
 
-    if (gtls_response_in) {
-	printf("c ipAddress: %s\n", RESPONSE_IN->devAddr.addr);
+    if (tls_response_in) {
 	return(*env)->NewStringUTF(env, RESPONSE_IN->devAddr.addr);
     } else {
 	// FIXME: if our TLS var has not been initialized, we have not
@@ -204,7 +203,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_DeviceAddress_ifindex
 {
   OC_UNUSED(env);
   OC_UNUSED(this);
-  if (gtls_response_in == NULL) {
+  if (tls_response_in == NULL) {
     return -1;
   } else {
     return RESPONSE_IN->devAddr.ifindex;

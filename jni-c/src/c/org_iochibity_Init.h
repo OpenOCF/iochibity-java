@@ -15,13 +15,13 @@ typedef struct ResponseIn
 
 extern response_in_t*  g_response_map;
 
-extern THREAD_LOCAL response_in_t* gtls_response_in; /**< thread local etc. */
+extern THREAD_LOCAL response_in_t* tls_response_in; /**< thread local etc. */
 
-#define RESPONSE_IN ((OCClientResponse*)gtls_response_in->response)
+#define RESPONSE_IN ((OCClientResponse*)tls_response_in->response)
 
 extern THREAD_LOCAL jobject g_CoSP;             /**< blah blah */
 
-/* extern THREAD_LOCAL OCDevAddr* gtls_defaultCoAddress; */
+/* extern THREAD_LOCAL OCDevAddr* tls_defaultCoAddress; */
 
 #define JNI_ASSERT_NULL(arg, msg, ...)		\
     if (NULL == (arg)) \

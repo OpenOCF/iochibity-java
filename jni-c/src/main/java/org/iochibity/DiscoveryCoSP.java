@@ -14,9 +14,9 @@ public class DiscoveryCoSP
 	method(Method.GET);
     }
 
-    public void coreact()
+    public void coReact()
     {
-	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coreact ENTRY");
+	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coReact ENTRY");
 
 	return;
     }
