@@ -377,8 +377,7 @@ def host_features(env) :
         try:
                 log = env.get('LOGGING') # not an env var
                 if log == 1:
-                        env.AppendUnique(CPPDEFINES = ['LOGGING'])
-                        env.AppendUnique(TB_LOG = 1)  # ??
+                        env.AppendUnique(CPPDEFINES = ['LOGGING', 'TB_LOG'])
         except KeyError:
                 pass
 
