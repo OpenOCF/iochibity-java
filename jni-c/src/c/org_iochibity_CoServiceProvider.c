@@ -4,7 +4,8 @@
  * @date December 2016
  *
  * @brief JNI implementation of CoServiceProvider (client) Java API:
- * `Java_org_iochibity_CoServiceProvider_exhibitStimulus` and `c_CoServiceProvider_react`
+ * `Java_org_iochibity_CoServiceProvider_coExhibit` and callback
+ * `c_CoServiceProvider_coReact`
  */
 
 #include <string.h>
@@ -25,22 +26,31 @@ C11:      strncpy_s
 
 #include "octypes.h"
 #include "oic_malloc.h"
+#include "oic_string.h"
 #include "ocpayload.h"
 #include "ocresource.h"
 #include "ocresourcehandler.h"
 #include "ocstack.h"
 
+#include "logger.h"
+
+/* logging */
+#define TAG  "CoSP"
+
 /* externs */
 // FIXME: put these in init.c?
-THREAD_LOCAL response_in_t* gtls_response_in	= NULL;
+THREAD_LOCAL response_in_t* tls_response_in	= NULL;
 
-THREAD_LOCAL jobject gtls_CoSP			= NULL;
+THREAD_LOCAL jobject tls_CoSP			= NULL;
 
-/* _Thread_local OCDevAddr* gtls_defaultCoAddress		= NULL; */
+
+/* _Thread_local OCDevAddr* tls_defaultCoAddress		= NULL; */
 
 response_in_t*  g_response_map;
 
 /* PRIVATE */
+
+OCClientResponse* g_OCClientResponse;
 
 /* tls struct capturing params to OCDoResource */
 typedef struct RequestOut
@@ -62,32 +72,37 @@ typedef struct RequestOut
     struct RequestOut  * next;
 } request_out_t;
 
-THREAD_LOCAL request_out_t* gtls_request_out = NULL;
+THREAD_LOCAL request_out_t* tls_request_out = NULL;
 
 typedef struct transaction
 {
-    OCDoHandle            txnId;	/* key; will be returned in response_in */
-    OCMethod              method;
-    struct transaction  * next;
+    OCDoHandle /* void* */ txnId;	/* key; will be returned in response_in */
+    OCMethod               method;
+    bool                   routingIsMulticast;
+    struct transaction   * next;
 } txn_t;
 
 txn_t* g_txn_list = NULL;
 
+THREAD_LOCAL txn_t* tls_txn;
+
+THREAD_LOCAL bool   tls_deactivate;
+
 void request_out_ctor()
 {
-  gtls_request_out                   = OICCalloc(sizeof (request_out_t), 1);
+  tls_request_out                   = OICCalloc(sizeof (request_out_t), 1);
 
-  gtls_request_out->txnId	     = NULL;
-  gtls_request_out->method	     = OC_REST_NOMETHOD;
+  tls_request_out->txnId	     = NULL;
+  tls_request_out->method	     = OC_REST_NOMETHOD;
   /* never pass NULL for destination */
-  gtls_request_out->destination	     = (OCDevAddr *)OICCalloc(sizeof (OCDevAddr), 1);
-  gtls_request_out->connectivityType = CT_DEFAULT; /* 0 */
-  gtls_request_out->qos		     = OC_LOW_QOS;
-  gtls_request_out->cbData	     = NULL;
-  gtls_request_out->options	     = NULL;
-  gtls_request_out->numOptions	     = 0;
+  tls_request_out->destination	     = (OCDevAddr *)OICCalloc(sizeof (OCDevAddr), 1);
+  tls_request_out->connectivityType = CT_DEFAULT; /* 0 */
+  tls_request_out->qos		     = OC_LOW_QOS;
+  tls_request_out->cbData	     = NULL;
+  tls_request_out->options	     = NULL;
+  tls_request_out->numOptions	     = 0;
 
-  gtls_request_out->next	     = NULL;
+  tls_request_out->next	     = NULL;
 }
 
 /**
@@ -95,7 +110,7 @@ void request_out_ctor()
  *
  * Allocate an `ObservationIn` java object, then use data from incoming
  * `OCClientResponse` to initialize it.  Return the initialize object.
- * Called internally by `c_CoServiceProvider_react`.
+ * Called internally by `c_CoServiceProvider_coReact`.
  *
  * @param [in] env JNIEnv pointer
  * @param [in] c_OCClientResponse response data from server
@@ -171,18 +186,116 @@ jobject OCClientResponse_to_ObservationIn(JNIEnv* env, OCClientResponse* c_OCCli
 }
 
 /**
+ *
+ */
+void handle_discovery_payload(OCClientResponse* c_OCClientResponse)
+{
+    OIC_LOG_V(DEBUG, TAG, "%s:%d ENTRY", __func__, __LINE__);
+
+    OIC_LOG_V(DEBUG, TAG, "resource count: %ld\n",
+	      OCDiscoveryPayloadGetResourceCount((OCDiscoveryPayload*)c_OCClientResponse->payload));
+
+    OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, c_OCClientResponse);
+
+    /* Incoming response record is allocated on the stack of the
+       calling routine, so it will be removed after we return.  To
+       keep it around we need to make a deep copy. */
+    g_OCClientResponse = (OCClientResponse *)OICCalloc(sizeof (OCClientResponse), 1);
+    memcpy(g_OCClientResponse, c_OCClientResponse, sizeof (OCClientResponse));
+
+    g_OCClientResponse->addr = &(g_OCClientResponse->devAddr);
+    /* copy the uripath string */
+    /* g_OCClientResponse->resourceUri = */
+    g_OCClientResponse->resourceUri = OICStrdup(c_OCClientResponse->resourceUri);
+
+    /* copy payload; NB: fromDP is a linked list */
+    OCDiscoveryPayload  *fromDP = (OCDiscoveryPayload*)c_OCClientResponse->payload;
+    OCDiscoveryPayload **toDP   = (OCDiscoveryPayload**) &(g_OCClientResponse->payload);
+
+    OCStringLL *fromSLL, **toSLL; // , *toSLLHead;
+    while(fromDP) {
+	if (fromDP->base.type == PAYLOAD_TYPE_DISCOVERY) {
+	    /* 1. create new OCDiscoveryPayload */
+	    (*toDP)                    = OCDiscoveryPayloadCreate();
+
+	    /* 1a. copy fromDP sid, baseURI, name, uri strings */
+	    (*toDP)->sid               = OICStrdup(fromDP->sid);
+	    (*toDP)->baseURI           = OICStrdup(fromDP->baseURI);
+	    (*toDP)->name              = OICStrdup(fromDP->name);
+	    (*toDP)->uri               = OICStrdup(fromDP->uri);
+
+	    /* 1b. copy fromDP types and interfaces */
+	    /* types */
+	    fromSLL                    = fromDP->type;
+	    toSLL                      = &((*toDP)->type);
+	    while(fromSLL) {
+		(*toSLL)               = CloneOCStringLL(fromSLL);
+		toSLL                  = &((*toSLL)->next);
+		fromSLL                = fromSLL->next;
+	    }
+	    /* interfaces */
+	    fromSLL                    = fromDP->iface;
+	    toSLL                      = &((*toDP)->iface);
+	    while(fromSLL) {
+		(*toSLL)               = CloneOCStringLL(fromSLL);
+		toSLL                  = &((*toSLL)->next);
+		fromSLL                = fromSLL->next;
+	    }
+
+	    /* resources (i.e. OCResourcePayload list) */
+	    OCResourcePayload*  fromRP = fromDP->resources;
+	    OCResourcePayload **toRP   = &((*toDP)->resources);
+	    while(fromRP) {
+		(*toRP)                = (OCResourcePayload*)OICCalloc(sizeof (OCResourcePayload), 1);
+		(*toRP)->uri           = OICStrdup(fromRP->uri);
+		(*toRP)->bitmap        = fromRP->bitmap;
+		(*toRP)->secure        = fromRP->secure;
+		(*toRP)->port          = fromRP->port;
+#ifdef TCP_ADAPTER
+		(*toRP)->tcpPort       = fromRP->tcpPort;
+#endif
+
+		/* types */
+		fromSLL                = fromRP->types;
+		toSLL                  = &((*toRP)->types);
+		while(fromSLL) {
+		    (*toSLL)           = CloneOCStringLL(fromSLL);
+		    toSLL              = &((*toSLL)->next);
+		    fromSLL            = fromSLL->next;
+		}
+		/* interfaces */
+		fromSLL                = fromRP->interfaces;
+		toSLL                  = &((*toRP)->interfaces);
+		while(fromSLL) {
+		    (*toSLL)           = CloneOCStringLL(fromSLL);
+		    toSLL              = &((*toSLL)->next);
+		    fromSLL            = fromSLL->next;
+		}
+		fromRP                 = fromRP->next;
+		toRP                   = &((*toRP)->next);
+	    }
+	} else {
+	    /* FIXME: should not happen */
+	}
+	fromDP = fromDP->next;
+	toDP   = &((*toDP)->next);
+    }
+}
+
+
+/**
  * @brief Implementation of `OCClientResponseHandler` function type;
  * called by stack on receipt of incoming `OCClientResponse` from
- * server.
+ * server.  Fatal exceptions must thus exit the whole thing. (?)
  *
  * Stores the incoming `OCClientResponse` and `OCDoHandle` to
- * thread-local storage, then calls the `react` method of the
+ * thread-local storage, then calls the `coReact` method of the
  * transaction's `CoServiceProvider` object for handling.
  *
  * The `CoServiceProvider` object is conveyed by the c_CoSP parameter
  * (in the C API, void* context), which was passed (as the "context"
  * pointer of the `OCCallbackData` param of `OCDoResource`) by the
- * `exhibitStimulus` routine of the `CoServiceProvider`.
+ * `coExhibit` routine of the `CoServiceProvider`.
  *
  * IMPORTANT: this is an internal implementation routine, with no
  * header prototoype.  It serves as an intermediary between the stack
@@ -196,32 +309,47 @@ jobject OCClientResponse_to_ObservationIn(JNIEnv* env, OCClientResponse* c_OCCli
  *
  * @param [in] c_OCClientResponse response data from server
  *
- * @return result code of type `OCStackApplicationResult`
+ * @return result code directive to retain or delete the CoSP
  *
- * @see Java_org_iochibity_CoServiceProvider_exhibitStimulus
- * @see observe_stimulus
- * @see Java_org_iochibity_ServiceProvider_exhibitBehavior
+ * @see Java_org_iochibity_CoServiceProvider_coExhibit
+ * @see Java_org_iochibity_ServiceProvider_exhibit
  */
-OCStackApplicationResult c_CoServiceProvider_coreact(void* c_CoSP,
-					  OCDoHandle c_TxnId,
-					  OCClientResponse* c_OCClientResponse)
+OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
+						     OCDoHandle c_TxnId,
+						     OCClientResponse* c_OCClientResponse)
 {
-  printf("%s : %s ENTRY, %ld\n", __FILE__, __func__, (intptr_t)THREAD_ID);
+    // FIXME: switch ERROR back to DEBUG
+    OIC_LOG_V(DEBUG, TAG, "%s ENTRY, %ld", __func__, (intptr_t)THREAD_ID);
+
+    OIC_LOG_V(DEBUG, TAG, "%s txn id:", __func__);
+    OIC_LOG_BUFFER(DEBUG, TAG, (const uint8_t *) c_TxnId, CA_MAX_TOKEN_LEN);
 
     /* To support multi-threading, we cache the incoming
        OCClientResponse record in a TLS var: */
-    gtls_response_in = OICCalloc(sizeof (response_in_t), 1);
-    gtls_response_in->txnId    = c_TxnId;
-    gtls_response_in->response = c_OCClientResponse;
-
-    /* printf("TLS: %ld\n", (intptr_t)gtls_response_in); */
-
-    /* printf("STACK RESULT: %d\n", c_OCClientResponse->result); */
-
-    /* printf("SP Address: %s\n", */
-    /* 	   ((OCClientResponse*)gtls_response_in->response)->devAddr.addr); */
+    tls_response_in = OICCalloc(sizeof (response_in_t), 1);
+    tls_response_in->txnId    = c_TxnId;
+    tls_response_in->response = c_OCClientResponse;
 
     /* now look up the corresponding request_out record, using c_TxnId as key. */
+    if (g_txn_list) {
+	tls_txn = g_txn_list;
+	while (tls_txn) {
+	    if ( memcmp( tls_txn->txnId, c_TxnId, CA_MAX_TOKEN_LEN ) == 0 ) {
+		OIC_LOG_V(ERROR, TAG, "%s: found txn key", __func__);
+		break;
+	    } else {
+	    	if (tls_txn->next) {
+	    	    tls_txn = tls_txn->next;
+	    	} else {
+		    OIC_LOG_V(ERROR, TAG, "%s: txn key not found!", __func__);
+		    tls_txn = NULL;
+		    break;
+	    	}
+	    }
+	}
+    } else {
+	OIC_LOG_V(ERROR, TAG, "%s: missing transaction list!", __func__);
+    }
 
     /* if response is OCDiscoveryPayload (containing
        OCResourcePayloads) or OCResourceCollectionPayload (containing
@@ -240,88 +368,114 @@ OCStackApplicationResult c_CoServiceProvider_coreact(void* c_CoSP,
 	/* printf("GetEnv: not attached; attaching now\n"); */
 	/* if ((*g_JVM)->AttachCurrentThreadAsDaemon(g_JVM, (void **) &env, NULL) != 0) { */
 	if ((*g_JVM)->AttachCurrentThread(g_JVM, (void **) &env, NULL) != 0) {
-	    printf("ERROR %s %d (%s): AttachCurrentThread failure\n", __FILE__, __LINE__,__func__);
-	    return OC_STACK_DELETE_TRANSACTION;
+	    printf("FATAL %s %d (%s): AttachCurrentThread failure\n", __FILE__, __LINE__,__func__);
+	    exit(1);
+	    /* OIC_LOG_V(FATAL, TAG, "ERROR %s %d (%s): AttachCurrentThread failure\n", */
+	    /* 	      __FILE__, __LINE__,__func__); */
+	    /* return OC_STACK_DELETE_TRANSACTION; */
 	}
     } else if (getEnvStat == JNI_OK) {
 	/* printf("GetEnv: attached\n"); */
     } else if (getEnvStat == JNI_EVERSION) {
-	printf("ERROR %s %d (%s): JNI version not supported\n", __FILE__, __LINE__,__func__);
-	return OC_STACK_DELETE_TRANSACTION;
+	printf("FATAL %s %d (%s): JNI version not supported\n", __FILE__, __LINE__,__func__);
+	exit(1);
+	/* return OC_STACK_DELETE_TRANSACTION; */
     }
     if ((*env)->ExceptionCheck(env)) {
 	(*env)->ExceptionDescribe(env);
     }
 
-    /* print_class_name(env, c_CoSP); */
-
     /* if ctx param is null something went wrong */
     if (c_CoSP == NULL) {
-
-	printf("ERROR %s %d (%s): ctx param is NULL for c_CoServiceProvider_react\n",
-	       __FILE__, __LINE__,__func__);
+	/* printf("ERROR %s %d (%s): ctx param is NULL for c_CoServiceProvider_coReact\n", */
+	/*        __FILE__, __LINE__,__func__); */
+	OIC_LOG_V(ERROR, TAG, "ERROR %s (line %d): ctx param is NULL for c_CoServiceProvider_coReact",
+		  __func__,__LINE__);
 	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    // FIXME: we do not need ObservationIn if we're caching an
-    // OCClientResponse* and using native methods to access details ...
-
-    /* 2. construct ObservationIn from incoming OCClientResponse ... */
-    /* jobject j_ObservationIn = OCClientResponse_to_ObservationIn(env, c_OCClientResponse); */
-
-    /* /\* ... and insert pointer to it.*\/ */
-    /* (*env)->SetLongField(env, j_ObservationIn, */
-    /* 			 FID_MSG_LOCAL_HANDLE, (intptr_t)c_OCClientResponse); */
-
+    /* Process the observation before passing control to user-defined coReact method. */
+    switch(c_OCClientResponse->payload->type) {
+    case PAYLOAD_TYPE_DISCOVERY:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_DISCOVERY", __func__);
+	handle_discovery_payload(c_OCClientResponse);
+	printf("VERIFICATION:\n");
+	OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse);
+	break;
+    case PAYLOAD_TYPE_DEVICE:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_DEVICE", __func__);
+	break;
+    case PAYLOAD_TYPE_PLATFORM:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_PLATFORM", __func__);
+	break;
+    case PAYLOAD_TYPE_REPRESENTATION:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_REPRESENTATION", __func__);
+	break;
+    case PAYLOAD_TYPE_SECURITY:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_SECURITY", __func__);
+	break;
+    case PAYLOAD_TYPE_PRESENCE:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_PRESENCE", __func__);
+	break;
+    case PAYLOAD_TYPE_RD:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_RD", __func__);
+	break;
+    case PAYLOAD_TYPE_INVALID:
+	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_INVALID", __func__);
+	break;
+    default:
+	break;
+    }
 
     // To call the Java-side handler for incoming response data, we
     // need to get a reference to it.
 
-    /* 2. extract ref to observeBehavior routine from CoSP callback param */
-    /* /\* we need to get the method from the object, not the class? */
+    /* 1. Extract ref to coReact routine from CoSP callback param. We
+       get the method from the object, not the class. */
+
+    // FIXME: replace printf with OIC_LOG_...
     jclass k_cosp = (*env)->GetObjectClass(env, (jobject)c_CoSP);
     if((*env)->ExceptionOccurred(env)) { return OC_STACK_DELETE_TRANSACTION; }
     if (k_cosp == NULL) {
-    	THROW_JNI_EXCEPTION("GetObjectClass failed for CoServiceProvider object\n");
+	OIC_LOG_V(ERROR, TAG, "%s (line %d): GetObjectClass failed for CoServiceProvider object",
+	       __func__,__LINE__);
     	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    jmethodID mid_cosp_react = (*env)->GetMethodID(env, k_cosp, "coreact", "()V");
-    if (mid_cosp_react == NULL) {
-    	THROW_JNI_EXCEPTION("GetMethodID failed for mid_cosp_react of CoServiceProvider\n");
+    jmethodID mid_cosp_coReact = (*env)->GetMethodID(env, k_cosp, "coReact", "()V");
+    if (mid_cosp_coReact == NULL) {
+	OIC_LOG_V(ERROR, TAG, "%s (line %d): GetMethodID failed for mid_cosp_coReact of CoServiceProvider",
+		  __func__, __LINE__);
     	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    /* jmethodID mid_cosp_c_CoServiceProvider_react = (*env)->GetMethodID(env, k_cosp, */
-    /* 								 "observeBehavior", */
-    /* 								 "(Lorg/iochibity/ObservationIn;)I"); */
-    /* if (mid_cosp_c_CoServiceProvider_react == NULL) { */
-    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for mid_cosp_c_CoServiceProvider_react of CoServiceProvider\n"); */
-    /* 	return OC_STACK_DELETE_TRANSACTION; */
-    /* } */
+    /* 2. call the coReact method of the CoServiceProvider */
+    (*env)->CallVoidMethod(env, (jobject)c_CoSP, mid_cosp_coReact);
 
-    /* 5. call the observeBehavior method of the CoServiceProvider */
-    int op_result = OC_EH_OK;
-    op_result = (*env)->CallIntMethod(env,
-				      (jobject)c_CoSP,
-				      mid_cosp_react);
-				      /* mid_cosp_c_CoServiceProvider_react, */
-				      /* MID_ICOSP_C_SERVICEPROVIDER_REACT, */
-				      /* j_ObservationIn); */
-
-    if (op_result != OC_STACK_OK) {
-        printf("ERROR:  CallIntMethod failed for CoServiceProvider.ObserveStimulus\n");
+    if((*env)->ExceptionOccurred(env)) {
+	// FIXME: print exception message
+	OIC_LOG_V(ERROR, TAG, "%s:%d CAUGHT EXCEPTION thrown by coReact method",
+		  __func__, __LINE__);
 	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    /* free the global cosp that we pinned in exhibitStimulus */
+    /* FIXME: free the global cosp that we pinned in coExhibit? */
     /* (*env)->DeleteGlobalRef(env, (jobject)c_CoSP); */
 
+    /* we're done with the JVM */
     (*g_JVM)->DetachCurrentThread(g_JVM);
 
-    printf("c_CoServiceProvider_react EXIT\n");
-    /* the stack handles this automatically so we can return anything */
-    return OC_STACK_KEEP_TRANSACTION;
+    if (tls_deactivate) {
+	OIC_LOG(DEBUG, TAG, "c_CoServiceProvider_react EXIT, deactivating handler");
+    	return OC_STACK_DELETE_TRANSACTION;
+    }
+    if (tls_txn->routingIsMulticast) {
+	OIC_LOG(DEBUG, TAG, "c_CoServiceProvider_react EXIT, retaining multicast handler");
+    	return OC_STACK_KEEP_TRANSACTION;
+    } else {
+	OIC_LOG(DEBUG, TAG, "c_CoServiceProvider_react EXIT, deactivating unicast handler");
+    	return OC_STACK_DELETE_TRANSACTION;
+    }
 }
 
 /* EXTERNAL */
@@ -337,7 +491,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_ctorCoSP
     OC_UNUSED(env);
     OC_UNUSED(this);
     printf("%s : %s ENTRY, %ld\n", __FILE__, __func__,  (intptr_t)THREAD_ID);
-    /* gtls_CoSP = this; */
+    /* tls_CoSP = this; */
     request_out_ctor();
 }
 
@@ -365,7 +519,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_uriPath__Ljava_la
 (JNIEnv * env, jobject this, jstring j_uriPath)
 {
   /* printf("Java_org_iochibity_CoServiceProvider_setUriPath ENTRY\n"); */
-  gtls_request_out->requestUri = (*env)->GetStringUTFChars(env, j_uriPath, 0);
+  tls_request_out->requestUri = (*env)->GetStringUTFChars(env, j_uriPath, 0);
   return this;
 }
 
@@ -379,13 +533,13 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_method__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    if (gtls_request_out) {
-	return gtls_request_out->method;
+    if (tls_request_out) {
+	return tls_request_out->method;
     } else {
 	/* FIXME: pull method for request_out associated with response_in */
-	if (gtls_response_in) {
-	    // FIXME: use gtls_response_in->handle to get associate request record
-	    return gtls_response_in->response;
+	if (tls_response_in) {
+	    // FIXME: use tls_response_in->handle to get associate request record
+	    return tls_response_in->response;
 	} else {
 	    return -1;
 	}
@@ -403,8 +557,8 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_method__I
     OC_UNUSED(env);
     OC_UNUSED(this);
     OC_UNUSED(m);
-    if (gtls_request_out) {
-	gtls_request_out->method = m;
+    if (tls_request_out) {
+	tls_request_out->method = m;
     } else {
 	/* response_in is read-only? */
     }
@@ -429,21 +583,21 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_networkFlags
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return gtls_request_out->connectivityType;
+    return tls_request_out->connectivityType;
 }
 
 /* **************************************************************** */
 jboolean test_network_flag(int flag)
 {
-    return (bool)(gtls_request_out->connectivityType & flag);
+    return (bool)(tls_request_out->connectivityType & flag);
 }
 
 void set_network_flag(int flag, jboolean torf)
 {
     if (torf) {
-	gtls_request_out->connectivityType |= flag;
+	tls_request_out->connectivityType |= flag;
     } else {
-	gtls_request_out->connectivityType &= ~flag;
+	tls_request_out->connectivityType &= ~flag;
     }
 }
 /* **************************************************************** */
@@ -516,7 +670,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsTCP__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_TCP);
+    return (bool)(tls_request_out->connectivityType & CT_ADAPTER_TCP);
 }
 
 
@@ -531,9 +685,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsTCP__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_ADAPTER_TCP;
+	tls_request_out->connectivityType |= CT_ADAPTER_TCP;
     } else {
-	gtls_request_out->connectivityType &= ~CT_ADAPTER_TCP;
+	tls_request_out->connectivityType &= ~CT_ADAPTER_TCP;
     }
     return this;
 }
@@ -549,7 +703,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsGATT_
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_GATT_BTLE);
+    return (bool)(tls_request_out->connectivityType & CT_ADAPTER_GATT_BTLE);
 }
 
 /*
@@ -563,9 +717,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsGATT__
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_ADAPTER_GATT_BTLE;
+	tls_request_out->connectivityType |= CT_ADAPTER_GATT_BTLE;
     } else {
-	gtls_request_out->connectivityType &= ~CT_ADAPTER_GATT_BTLE;
+	tls_request_out->connectivityType &= ~CT_ADAPTER_GATT_BTLE;
     }
     return this;
 }
@@ -581,7 +735,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsRFCOM
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_RFCOMM_BTEDR);
+    return (bool)(tls_request_out->connectivityType & CT_ADAPTER_RFCOMM_BTEDR);
 }
 
 /*
@@ -595,9 +749,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsRFCOMM
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_ADAPTER_RFCOMM_BTEDR;
+	tls_request_out->connectivityType |= CT_ADAPTER_RFCOMM_BTEDR;
     } else {
-	gtls_request_out->connectivityType &= ~CT_ADAPTER_RFCOMM_BTEDR;
+	tls_request_out->connectivityType &= ~CT_ADAPTER_RFCOMM_BTEDR;
     }
     return this;
 }
@@ -613,7 +767,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_transportIsNFC__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_ADAPTER_NFC);
+    return (bool)(tls_request_out->connectivityType & CT_ADAPTER_NFC);
 }
 
 /*
@@ -627,9 +781,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_transportIsNFC__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_ADAPTER_NFC;
+	tls_request_out->connectivityType |= CT_ADAPTER_NFC;
     } else {
-	gtls_request_out->connectivityType &= ~CT_ADAPTER_NFC;
+	tls_request_out->connectivityType &= ~CT_ADAPTER_NFC;
     }
     return this;
 }
@@ -645,9 +799,9 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIP__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)((gtls_request_out->connectivityType & CT_ADAPTER_IP)
+    return (bool)((tls_request_out->connectivityType & CT_ADAPTER_IP)
 		  ||
-		  (gtls_request_out->connectivityType & CT_ADAPTER_TCP));
+		  (tls_request_out->connectivityType & CT_ADAPTER_TCP));
 }
 
 /*
@@ -680,7 +834,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv4__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_IP_USE_V4);
+    return (bool)(tls_request_out->connectivityType & CT_IP_USE_V4);
 }
 
 
@@ -695,9 +849,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv4__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_IP_USE_V4;
+	tls_request_out->connectivityType |= CT_IP_USE_V4;
     } else {
-	gtls_request_out->connectivityType &= ~CT_IP_USE_V4;
+	tls_request_out->connectivityType &= ~CT_IP_USE_V4;
     }
     return this;
 }
@@ -713,7 +867,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv6__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_IP_USE_V6);
+    return (bool)(tls_request_out->connectivityType & CT_IP_USE_V6);
 }
 
 /*
@@ -727,9 +881,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_networkIsIPv6__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_IP_USE_V6;
+	tls_request_out->connectivityType |= CT_IP_USE_V6;
     } else {
-	gtls_request_out->connectivityType &= ~CT_IP_USE_V6;
+	tls_request_out->connectivityType &= ~CT_IP_USE_V6;
     }
     return this;
 }
@@ -745,7 +899,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsInterface
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_INTERFACE);
+    return (bool)(tls_request_out->connectivityType & CT_SCOPE_INTERFACE);
 }
 
 /*
@@ -759,9 +913,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsInterface_
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_SCOPE_INTERFACE;
+	tls_request_out->connectivityType |= CT_SCOPE_INTERFACE;
     } else {
-	gtls_request_out->connectivityType &= ~CT_SCOPE_INTERFACE;
+	tls_request_out->connectivityType &= ~CT_SCOPE_INTERFACE;
     }
     return this;
 }
@@ -777,7 +931,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsLink__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_LINK);
+    return (bool)(tls_request_out->connectivityType & CT_SCOPE_LINK);
 }
 
 /*
@@ -791,9 +945,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsLink__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_SCOPE_LINK;
+	tls_request_out->connectivityType |= CT_SCOPE_LINK;
     } else {
-	gtls_request_out->connectivityType &= ~CT_SCOPE_LINK;
+	tls_request_out->connectivityType &= ~CT_SCOPE_LINK;
     }
     return this;
 }
@@ -809,7 +963,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsRealm__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_REALM);
+    return (bool)(tls_request_out->connectivityType & CT_SCOPE_REALM);
 }
 
 /*
@@ -823,9 +977,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsRealm__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_SCOPE_REALM;
+	tls_request_out->connectivityType |= CT_SCOPE_REALM;
     } else {
-	gtls_request_out->connectivityType &= ~CT_SCOPE_REALM;
+	tls_request_out->connectivityType &= ~CT_SCOPE_REALM;
     }
     return this;
 }
@@ -841,7 +995,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsAdmin__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_ADMIN);
+    return (bool)(tls_request_out->connectivityType & CT_SCOPE_ADMIN);
 }
 
 /*
@@ -855,9 +1009,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsAdmin__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_SCOPE_ADMIN;
+	tls_request_out->connectivityType |= CT_SCOPE_ADMIN;
     } else {
-	gtls_request_out->connectivityType &= ~CT_SCOPE_ADMIN;
+	tls_request_out->connectivityType &= ~CT_SCOPE_ADMIN;
     }
     return this;
 }
@@ -873,7 +1027,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsSite__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_SITE);
+    return (bool)(tls_request_out->connectivityType & CT_SCOPE_SITE);
 }
 
 /*
@@ -887,9 +1041,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsSite__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_SCOPE_SITE;
+	tls_request_out->connectivityType |= CT_SCOPE_SITE;
     } else {
-	gtls_request_out->connectivityType &= ~CT_SCOPE_SITE;
+	tls_request_out->connectivityType &= ~CT_SCOPE_SITE;
     }
     return this;
 }
@@ -905,7 +1059,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsOrg__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_ORG);
+    return (bool)(tls_request_out->connectivityType & CT_SCOPE_ORG);
 }
 
 /*
@@ -919,9 +1073,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsOrg__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_SCOPE_ORG;
+	tls_request_out->connectivityType |= CT_SCOPE_ORG;
     } else {
-	gtls_request_out->connectivityType &= ~CT_SCOPE_ORG;
+	tls_request_out->connectivityType &= ~CT_SCOPE_ORG;
     }
     return this;
 }
@@ -937,7 +1091,7 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_scopeIsGlobal__
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    return (bool)(gtls_request_out->connectivityType & CT_SCOPE_GLOBAL);
+    return (bool)(tls_request_out->connectivityType & CT_SCOPE_GLOBAL);
 }
 
 /*
@@ -951,9 +1105,9 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_scopeIsGlobal__Z
     OC_UNUSED(env);
     OC_UNUSED(this);
     if (torf) {
-	gtls_request_out->connectivityType |= CT_SCOPE_GLOBAL;
+	tls_request_out->connectivityType |= CT_SCOPE_GLOBAL;
     } else {
-	gtls_request_out->connectivityType &= ~CT_SCOPE_GLOBAL;
+	tls_request_out->connectivityType &= ~CT_SCOPE_GLOBAL;
     }
     return this;
 }
@@ -969,10 +1123,10 @@ JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_routingIsMultica
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    if (gtls_request_out->destination) {
-	return gtls_request_out->destination->flags & OC_MULTICAST;
+    if (tls_request_out->destination) {
+	return tls_request_out->destination->flags & OC_MULTICAST;
     } else {
-	return gtls_request_out->routingIsMulticast;
+	return tls_request_out->routingIsMulticast;
     }
 }
 
@@ -985,16 +1139,16 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_routingIsMulticas
 (JNIEnv * env, jobject this, jboolean torf)
 {
     OC_UNUSED(env);
-    printf("%s: ENTRY, tid %ld\n", __func__, (intptr_t)THREAD_ID);
-    if (gtls_request_out->destination) {
+    /* printf("%s: ENTRY, tid %ld\n", __func__, (intptr_t)THREAD_ID); */
+    if (tls_request_out->destination) {
 	if (torf) {
-	    gtls_request_out->destination->flags
-		= gtls_request_out->destination->flags | OC_MULTICAST;
+	    tls_request_out->destination->flags
+		= tls_request_out->destination->flags | OC_MULTICAST;
 	} else {
-	    gtls_request_out->destination->flags &= ~OC_MULTICAST;
+	    tls_request_out->destination->flags &= ~OC_MULTICAST;
 	}
     }
-    gtls_request_out->routingIsMulticast = torf;
+    tls_request_out->routingIsMulticast = torf;
     return this;
 }
 /*
@@ -1045,7 +1199,7 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
      stack, which is thread safe. */
   /* The methods of the returned DeviceAddress object will pull info
      from the TLS OCClientResponse var */
-  if (gtls_response_in) {
+  if (tls_response_in) {
     jobject j_CoAddress = NULL;
     j_CoAddress =  (*env)->NewObject(env, K_DEVICE_ADDRESS, MID_DA_CTOR);
     if (j_CoAddress == NULL) {
@@ -1062,28 +1216,21 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_coAddress
 /*
  * Class:     org_iochibity_CoServiceProvider
  * Method:    getCoSecurityId
- * Signature: ()Ljava/lang/String;
+ * Signature: ()[B
  */
-JNIEXPORT jstring JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
+JNIEXPORT jbyteArray JNICALL Java_org_iochibity_CoServiceProvider_getCoSecurityId
 (JNIEnv * env, jobject this)
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-  printf("%s ENTRY\n", __func__);
-  size_t length; /* this will hold the length of string copied */
-  char buffer[MAX_IDENTITY_SIZE]; /* fast mem on stack */
-  length = strlcpy(buffer, (char*) RESPONSE_IN->identity.id, RESPONSE_IN->identity.id_length);
-  if (length < sizeof(buffer)) {
-    /* printf("CoSecurityID len %d, str: %s\n", */
-    /* 	   RESPONSE_IN->identity.id_length, buffer); */
-    jstring sid = (*env)->NewStringUTF(env, buffer);
-    // FIXME: free sid? no need since we're returning it to jvm
-    return sid;
-  } else {
-    /* printf("CoSecurityID: ERROR\n"); */
-    THROW_JNI_EXCEPTION("URI too long!");
-    return NULL;
-  }
+    /* printf("%s ENTRY\n", __func__); */
+
+    int size = RESPONSE_IN->identity.id_length;
+    jbyte* buffer[size];
+    memcpy(buffer, (char*) RESPONSE_IN->identity.id, size);
+    jbyteArray ret = (*env)->NewByteArray(env, size);
+    (*env)->SetByteArrayRegion(env, ret, 0, size, (jbyte*)buffer);
+    return ret;
 }
 
 /*
@@ -1097,7 +1244,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getCoResult
     OC_UNUSED(env);
     OC_UNUSED(this);
   /* printf("%s ENTRY\n", __func__); */
-  return gtls_response_in->response->result;
+  return tls_response_in->response->result;
 }
 
 /*
@@ -1110,7 +1257,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getNotificationSeria
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    if (gtls_response_in) {
+    if (tls_response_in) {
 	return RESPONSE_IN->sequenceNumber;
     } else {
 	return -1;
@@ -1119,7 +1266,7 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getNotificationSeria
 
 /*
  * Class:     org_iochibity_CoServiceProvider
- * Method:    exhibit
+ * Method:    coExhibit
  * Signature: ()V
  */
 /**
@@ -1139,15 +1286,15 @@ JNIEXPORT jint JNICALL Java_org_iochibity_CoServiceProvider_getNotificationSeria
  * @throws org.iochibity.exceptions.JNIRuntimeException Indicates a
  * bad result from a JNI API routine (e.g. `GetIntField`)
  *
- * @see observe_stimulus
- * @see Java_org_iochibity_ServiceProvider_exhibitBehavior
- * @see c_CoServiceProvider_coreact
+ * @see Java_org_iochibity_ServiceProvider_exhibit
+ * @see c_CoServiceProvider_coReact
  */
-JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_coExhibit
 (JNIEnv * env, jobject this_CoSP)
 {
     OC_UNUSED(env);
-    printf("%s: ENTRY, tid %ld\n", __func__, (intptr_t)THREAD_ID);
+    OIC_LOG_V(DEBUG, TAG, "%s: ENTRY, tid %ld\n", __func__, (intptr_t)THREAD_ID);
+
     /* We will pass this_CoSP as the callbackParam to OCDoResource.
        It will be passed back on a different thread, so after we call
        OCDoResource, we will store our thread-local request_out struct
@@ -1162,46 +1309,46 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 
     /* in order to be able to reliably call-back our react method, we
        must pin the object */
-    gtls_CoSP = (*env)->NewGlobalRef(env, this_CoSP);
+    tls_CoSP = (*env)->NewGlobalRef(env, this_CoSP);
 
-    OCDoHandle c_txnId = NULL;
+    OCDoHandle c_TxnId = NULL;
     txn_t* txn;
 
     OCStackResult ret;
     OCCallbackData cbData;
 
     /* does this request follow receipt of a response? */
-    /* FIXME: this logic is semi-broken.  gtls_response_in will be on a
-       react thread, we're on an exhibit thread, which may be
+    /* FIXME: this logic is semi-broken.  tls_response_in will be on a
+       react thread, we're on an coExhibit thread, which may be
        different. */
 
-    if (gtls_response_in == NULL) {
+    if (tls_response_in == NULL) {
 	/* NULL response does not necessarily mean we're starting from
 	   scratch!  it just means we're not on a react thread.  but we
 	   could be (co-)reacting to a response that was recd on another
 	   thread. */
 
 	/* FIXME: use case: we're using a predefined address */
-	printf("gtls_response_in is NULL\n");
-	printf("gtls_request_out %ld\n", (intptr_t)gtls_request_out);
-	printf("gtls_request_out->destination %ld\n", (intptr_t)gtls_request_out->destination );
-	if (gtls_request_out->routingIsMulticast) {
-	    /* if (gtls_request_out->destination->flags & OC_MULTICAST) { */
-		/* if (gtls_request_out->method == OC_REST_GET) { */
-		gtls_request_out->method = OC_REST_DISCOVER;
+	printf("tls_response_in is NULL\n");
+	printf("tls_request_out %ld\n", (intptr_t)tls_request_out);
+	printf("tls_request_out->destination %ld\n", (intptr_t)tls_request_out->destination );
+	if (tls_request_out->routingIsMulticast) {
+	    /* if (tls_request_out->destination->flags & OC_MULTICAST) { */
+		/* if (tls_request_out->method == OC_REST_GET) { */
+		tls_request_out->method = OC_REST_DISCOVER;
 		/* this is broken, but it's the way the C API works: */
-		gtls_request_out->destination = NULL;
+		tls_request_out->destination = NULL;
 	    /* } */
 	}
-	cbData.cb = c_CoServiceProvider_coreact;
+	cbData.cb = c_CoServiceProvider_coReact;
 	cbData.context = (void*)(long)this_CoSP;
 	cbData.cd = NULL;
-	ret = OCDoResource(&c_txnId,	/* OCDoHandle = void* */
-			   gtls_request_out->method,      // (OCMethod)c_method,
-			   gtls_request_out->requestUri,  // c_uri,
-			   gtls_request_out->destination, // c_destDevAddr,
-			   gtls_request_out->payload,     // OCPayload* payload
-			   gtls_request_out->connectivityType,
+	ret = OCDoResource(&c_TxnId,	/* OCDoHandle = void* */
+			   tls_request_out->method,      // (OCMethod)c_method,
+			   tls_request_out->requestUri,  // c_uri,
+			   tls_request_out->destination, // c_destDevAddr,
+			   tls_request_out->payload,     // OCPayload* payload
+			   tls_request_out->connectivityType,
 			   /* CT_ADAPTER_IP */
 			   /* CT_FLAG_SECURE,	 /\* OCConnectivityType conn_type *\/ */
 			   OC_LOW_QOS,
@@ -1210,7 +1357,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 			   0);	/* uint8_t numOptions */
 
 	/* first: update the TLS request data with the newly coined txnId token */
-	gtls_request_out->txnId = c_txnId;
+	tls_request_out->txnId = c_TxnId;
 
 	/* now copy tls request_out to the global list, so that we can
 	 * correlate with response_in in the react routine. we cannot
@@ -1218,10 +1365,15 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 	 * if/when the thread died. */
 	/* why not just use the global list directly, no tls? because we
 	   don't have a key (txnId) until we call OCDoResource. */
-	txn            	= OICCalloc(sizeof (txn_t), 1);
-	txn->txnId		= gtls_request_out->txnId;
-	txn->method		= gtls_request_out->method;
-	txn->next = NULL;
+	txn                         = OICCalloc(sizeof (txn_t), 1);
+	txn->txnId                  = tls_request_out->txnId;
+	txn->method                 = tls_request_out->method;
+	if (tls_request_out->destination) {
+	    txn->routingIsMulticast = tls_request_out->destination->flags & OC_MULTICAST;
+	} else {
+	    txn->routingIsMulticast =tls_request_out->routingIsMulticast;
+	}
+	txn->next                   = NULL;
 
 	/* FIXME: do we really need anything other than method?
 	   everything else will be available in response. */
@@ -1229,7 +1381,7 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 	/* size_t length; /\* this will hold the length of string copied *\/ */
 	/* char buffer[MAX_URI_LENGTH]; /\* fast mem on stack *\/ */
 	/* length			= strlcpy(buffer, */
-	/* 				  gtls_request_out->requestUri, */
+	/* 				  tls_request_out->requestUri, */
 	/* 				  sizeof(buffer)); */
 	/* if (length < sizeof(buffer)) { */
 	/*     rqst->requestUri	= buffer;	/\* it fit, use the stack buffer *\/ */
@@ -1238,23 +1390,23 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 	/* } */
 
 	/* // FIXME: verify the ptr stuff is heap-allocated */
-	/* rqst->destination = gtls_request_out->destination; */
-	/* rqst->payload = gtls_request_out->payload; */
-	/* rqst->connectivityType = gtls_request_out->connectivityType; */
-	/* rqst->qos = gtls_request_out->qos; */
-	/* rqst->cbData = gtls_request_out->cbData; */
-	/* rqst->options = gtls_request_out->options; */
-	/* rqst->numOptions = gtls_request_out->numOptions; */
+	/* rqst->destination = tls_request_out->destination; */
+	/* rqst->payload = tls_request_out->payload; */
+	/* rqst->connectivityType = tls_request_out->connectivityType; */
+	/* rqst->qos = tls_request_out->qos; */
+	/* rqst->cbData = tls_request_out->cbData; */
+	/* rqst->options = tls_request_out->options; */
+	/* rqst->numOptions = tls_request_out->numOptions; */
     } else {
 
-	printf("gtls_response_in is NOT null\n");
+	printf("tls_response_in is NOT null\n");
 	/* we have an OCClientResponse - this CoSP is interacting with an SP */
 	/* that probably - but not necessarily - means that we're
 	   sending a request following a discovery? */
 
-      /* But we're on an exhibit thread; we have a gtls_request_out,
+      /* But we're on an coExhibit thread; we have a tls_request_out,
        * but the args we need for OCDoResource are on a react thread,
-       * in gtls_response_in.  so if we have a gtls_response_in, that
+       * in tls_response_in.  so if we have a tls_response_in, that
        * must mean that we are in fact on the react thread - maybe we
        * discovered a resource and are now trying to read it.  in that
        * case what we're doing now may be part of our reaction; but
@@ -1269,10 +1421,10 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 	   relation to the previous one.  So we can call this a
 	   co-reaction; the CoSP's co-reaction to a response is dual
 	   to the SP's reaction to a request.  Maybe we should even
-	   call the CoSP's response handler "coreact" instead of
+	   call the CoSP's response handler "coReact" instead of
 	   "react" to highlight the difference.  Reaction will always
 	   result in a response that is paired with the request,
-	   whereas Coreaction never results in a response, although it
+	   whereas CoReaction never results in a response, although it
 	   may involve new transactions.
 	*/
 
@@ -1287,10 +1439,10 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
       /* } */
       /* uri */
       /* For thread safety, we must use the Uri from the response */
-      /* char* c_uri gtls_response_in->resourceUri, NULL); */
+      /* char* c_uri tls_response_in->resourceUri, NULL); */
 
       /* if (c_uri == NULL) { */
-      /* 	THROW_JNI_EXCEPTION("No resourceUri in gtls_response_in\n"); */
+      /* 	THROW_JNI_EXCEPTION("No resourceUri in tls_response_in\n"); */
       /* 	return; */
       /* } */
 
@@ -1300,16 +1452,16 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 
       OCDevAddr* c_destDevAddr = NULL;
       /* jobject j_destDevAddr = NULL; */
-      /* j_destDevAddr = (*env)->GetObjectField(env, gtls_CoSP, FID_COSP_DESTINATION); */
+      /* j_destDevAddr = (*env)->GetObjectField(env, tls_CoSP, FID_COSP_DESTINATION); */
 
       printf("UNICASTING\n");
       /* we have an OCDevAddr from a response */
-      c_destDevAddr = &(gtls_response_in->response->devAddr);
+      c_destDevAddr = &(tls_response_in->response->devAddr);
 
-      cbData.cb = c_CoServiceProvider_coreact;
-      cbData.context = (void*)(long)gtls_CoSP;
+      cbData.cb = c_CoServiceProvider_coReact;
+      cbData.context = (void*)(long)tls_CoSP;
       cbData.cd = NULL;
-      /* ret = OCDoResource(&c_txnId,	/\* OCDoHandle = void* *\/ */
+      /* ret = OCDoResource(&c_TxnId,	/\* OCDoHandle = void* *\/ */
       /* 			 (OCMethod)c_method, */
       /* 			 c_uri, */
       /* 			 c_destDevAddr, */
@@ -1324,20 +1476,41 @@ JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_exhibit
 
       /* now update the handle field */
       /* FIXME: thread safety */
-      /* (*env)->SetLongField(env, gtls_CoSP, FID_COSP_HANDLE, (intptr_t)c_txnId); */
+      /* (*env)->SetLongField(env, tls_CoSP, FID_COSP_HANDLE, (intptr_t)c_TxnId); */
     }
+
+    OIC_LOG_V(DEBUG, TAG, "%s txn id:", __func__);
+    OIC_LOG_BUFFER(DEBUG, TAG, (const uint8_t *) c_TxnId, CA_MAX_TOKEN_LEN);
 
     /* FIXME: synch access to global g_txn_list */
     if (g_txn_list) {
 	txn_t*  t = g_txn_list;
 	while (t) {
-	    t = t->next;
+	    if (t->next) {
+		t = t->next;
+	    } else {
+		break;
+	    }
 	}
 	t->next = txn;
     } else {
 	g_txn_list = txn;
     }
 
-    printf("%s: EXIT\n", __func__);
+    OIC_LOG_V(DEBUG, TAG, "%s: EXIT", __func__);
+    OIC_LOG(DEBUG, TAG, "");
     return;
+}
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    deactivate
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_iochibity_CoServiceProvider_deactivate
+(JNIEnv * env, jobject this)
+{
+    OC_UNUSED(env);
+    OC_UNUSED(this);
+    tls_deactivate = true;
 }
