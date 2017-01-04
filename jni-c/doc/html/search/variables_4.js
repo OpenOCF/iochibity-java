@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pt_5fwork',['pt_work',['../org__iochibity___o_c_f_8c.html#ae9b4ddf3a058aff239d48e4986afe60d',1,'org_iochibity_OCF.c']]]
+  ['handle',['handle',['../struct_request_out.html#a37e7f41a35721d5525cd1b68e5dc4690',1,'RequestOut::handle()'],['../struct_response_in.html#a8d3efb137906d870992869d1b963c912',1,'ResponseIn::handle()']]]
 ];
