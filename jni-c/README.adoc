@@ -76,6 +76,90 @@ This will create the jar file in the `targets` subdir, and copy it to
 your local Maven repo
 (e.g. `$HOME/.m2/repository/org/iochibity/jni-c/0.1.0-SNAPSHOT/jni-c-0.1.0-SNAPSHOT.pom`)
 
+
+== dev tools and techniques
+
+https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html[JNI Spec]
+
+https://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html[Java Programming with JNI] excellent tutorial from IBM
+
+https://www.ibm.com/developerworks/java/library/j-jni/[Best Practices for using the JNI] another from IBM
+
+1.  write the java file containing native methods
+2.  compile it with javac to get a class file, e.g. `$ cd jn-c; mvn compile`
+3.  run javah against the class name (not the path) to generate the JNI C header file:
+
+[source,bash]
+----
+jni-c $ javah -jni -cp target/classes/ -d src/c/ org.iochibity.CoServiceProvider
+----
+
+Never manually edit the generated header files.
+
+https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html[JNI Types and Data Structures]
+
+To see the signatures of methods, use `javap`, e.g. from jni-c:
+
+[source,bash]
+----
+$ javap -s target/classes/org/iochibity/CoServiceManager.class
+----
+
+=== os x
+
+bash code to set the jdk version:
+
+[source,bash]
+----
+function removeFromPath() {
+  export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")
+}
+
+function setjdk() {
+  if [ $# -ne 0 ]; then
+   removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
+   if [ -n "${JAVA_HOME+x}" ]; then
+    removeFromPath $JAVA_HOME
+   fi
+   export JAVA_HOME=`/usr/libexec/java_home -v $@`
+   export PATH=$PATH:$JAVA_HOME/bin
+  fi
+ }
+
+JAVA_VERSION=1.8
+setjdk $JAVA_VERSION
+----
+
+Now you can run `setjdk` on the command line to switch to another version, e.g. `$ setjdk 1.7`.
+
+`otool` is like `ldd` or `readelf` on Linux.  E.g. use `$ otool -L` to print the shared libs used by a file.
+
+See http://log.zyxar.com/blog/2012/03/10/install-name-on-os-x/[install_name on OS X]
+
+Use `install_name_tool` to change install names.
+
+See also https://www.mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html[Linking and Install Names]
+
+Compiling a shared lib on OS X:  `-Wl,-undefined -Wl,dynamic_lookup` or `clang -shared -undefined dynamic_lookup -o libfoo.so foo.c`
+
+== troubleshooting
+
+[source,sh]
+----
+java.lang.reflect.InvocationTargetException
+...
+Caused by: java.lang.UnsatisfiedLinkError: no ocfjni_c in java.library.path
+----
+
+This probably means you did not source the right files in `xc/source.me`, e.g.:
+
+[source,sh]
+----
+$ source ~/xc/source.me/darwin.devhost
+$ source ~/xc/source.me/darwin.targethost
+----
+
+
 == examples
 
 Security configuration is *required*.  You must create the appropriate

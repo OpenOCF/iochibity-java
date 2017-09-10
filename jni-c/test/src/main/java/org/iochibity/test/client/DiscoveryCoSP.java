@@ -15,10 +15,15 @@ import org.iochibity.test.Logger;
 import java.lang.RuntimeException;
 import java.util.List;
 
+import java.util.concurrent.CountDownLatch;
+
+
 public class DiscoveryCoSP
     extends  CoServiceProvider
     // implements ICoServiceProvider
 {
+    public CountDownLatch finished; // to control UI in OCFTestClient
+
     public int cbdata = 99;  // callback param data
 
     public DiscoveryCoSP() {
@@ -29,6 +34,11 @@ public class DiscoveryCoSP
 	super();
 	method(Method.GET);
 	uriPath(uri);
+    }
+
+    public CountDownLatch latch() {
+	finished = new CountDownLatch(1);
+	return finished;
     }
 
     /**
@@ -44,6 +54,8 @@ public class DiscoveryCoSP
 	Logger.logResponseIn(this);
 
 	CoServiceManager.registeredCoServiceProviders();
+
+	finished.countDown();
 
 	// List<CoServiceProvider> cosps = ServiceManager.registeredCoServiceProviders();
 

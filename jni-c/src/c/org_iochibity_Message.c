@@ -16,7 +16,7 @@
 #include "_threads.h"
 
 #include "org_iochibity_Message.h"
-#include "org_iochibity_Init.h"
+#include "jni_init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
 

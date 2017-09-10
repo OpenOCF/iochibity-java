@@ -12,7 +12,7 @@
 
 #include "org_iochibity_CoServiceManager.h"
 #include "c_co_service_manager.h"
-#include "org_iochibity_Init.h"
+#include "jni_init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
 
@@ -320,6 +320,22 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceManager_registerDefaultCoS
 JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceManager_registerCoServiceProvider
 (JNIEnv * env, jclass klass, jobject j_CoServiceProvider)
 {
+    OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
+    /* pseudo-registration - coSP's call CoServiceProvider.coExhibit,
+       which is a native method
+       Java_org_iochibity_CoServiceProvider_coExhibit, which runs
+       OCDoResource, which registers the coSP (resource).
+
+       IOW, the low-level service manager registers the cosp at the
+       start of each transaction, then deregisters it after response
+       is handled, unless it is a multicast request and tls_deactivate
+       is false
+
+       iow, coSPs are one-off affairs, unlike SPs, which are
+       registered once and for all and then start observing.
+     */
+    OIC_LOG_V(DEBUG, TAG, "%s EXIT", __func__);
+    return NULL;
 }
 
 /*
@@ -331,7 +347,8 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceManager_registeredCoServic
 (JNIEnv * env, jclass klass)
 {
     OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
-    OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse);
+    /* OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse); */
+    // return coSP list object
     return NULL;
 }
 

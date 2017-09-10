@@ -6,6 +6,8 @@
  * @brief macros to generalize thread operations
  */
 
+/* TODO: use tinycthread? https://github.com/tinycthread/tinycthread */
+
 #ifndef _threads_h
 #define _threads_h
 
@@ -14,7 +16,7 @@
 
 #define THREAD_T pthread_t
 
-#define THREAD_LOCAL _Thread_local
+#define THREAD_LOCAL _Thread_local /* C11 */
 
 /* pthread_t pthread_self(void); */
 #define THREAD_ID    pthread_self()

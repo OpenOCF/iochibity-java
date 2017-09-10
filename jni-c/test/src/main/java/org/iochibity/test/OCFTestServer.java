@@ -101,7 +101,7 @@ public class OCFTestServer
         while(true){
 	    try {
 		Thread.sleep(2000);
-		System.out.println("GUI thread loop");
+		// System.out.println("GUI thread loop");
 	    } catch (InterruptedException e) {
 		e.printStackTrace();
 		msgError(TAG, e.toString());

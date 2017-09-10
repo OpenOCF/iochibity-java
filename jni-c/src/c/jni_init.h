@@ -6,6 +6,37 @@
 
 /* externs used in CoServiceProvider, DeviceAddress */
 
+/* keep a list of all outbound requests */
+typedef struct transaction
+{
+    OCDoHandle /* void* */ txnId;	/* key; will be returned in response_in */
+    OCMethod               method;
+    bool                   routingIsMulticast;
+    struct transaction   * next;
+} txn_t;
+
+extern txn_t* g_txn_list;
+
+/* struct capturing params to OCDoResource */
+typedef struct RequestOut
+{
+    OCDoHandle           txnId;	/* key: created by OCDoResource, returned in response_in */
+    /* val: */
+    OCMethod             method;
+    const char         * requestUri;
+    OCDevAddr          * destination;
+    OCPayload          * payload;
+    OCConnectivityType   connectivityType;
+    OCQualityOfService   qos;
+    OCCallbackData     * cbData;
+    OCHeaderOption     * options;
+    uint8_t              numOptions;
+
+    bool                 routingIsMulticast;
+
+    struct RequestOut  * next;
+} request_out_t;
+
 typedef struct ResponseIn
 {
   OCDoHandle        * txnId;	/* key */

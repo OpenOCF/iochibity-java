@@ -19,7 +19,7 @@
 #include "org_iochibity_DeviceAddress.h"
 
 
-#include "org_iochibity_Init.h"
+#include "jni_init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
 

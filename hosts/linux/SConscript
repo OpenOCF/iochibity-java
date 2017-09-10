@@ -34,7 +34,8 @@ SConscript('../external_libs.scons')
 if env.get('RELEASE'):
 	env.AppendUnique(CCFLAGS = ['-Os'])
 	env.AppendUnique(CPPDEFINES = ['NDEBUG'])
-else:
+
+if env.get('LOGGING')
 	env.AppendUnique(CPPDEFINES = ['TB_LOG'])
 
 if env.get('PROFILING'):

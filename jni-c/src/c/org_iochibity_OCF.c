@@ -15,7 +15,7 @@
 #include "_threads.h"
 
 #include "org_iochibity_OCF.h"
-#include "org_iochibity_Init.h"
+#include "jni_init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
 
@@ -24,8 +24,11 @@
 #include "ocstack.h"
 #include "oic_malloc.h"
 #include "oic_string.h"
+#include "logger.h"
 
 /* PRIVATE */
+#define TAG  "OCF"
+
 THREAD_T tid_work;
 bool g_quit_flag = false;
 
@@ -41,6 +44,7 @@ THREAD_EXIT_T troutine_work(void *arg)
 	if (OCProcess() != OC_STACK_OK) {
 	    printf("OCStack process error\n");
 	}
+	sleep(1);
     }
     printf("Exiting server work thread...\n");
     /* we're the only thread left, pthread_exit(NULL) would kill us,
@@ -84,8 +88,6 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init__ILjava_lang_String_2
     OCPersistentStorage ps = {server_fopen, fread, fwrite, fclose, unlink};
     printf("calling OCRegisterPersistentStorageHandler: %s\n", g_config_fname);
     OCRegisterPersistentStorageHandler(&ps);
-    printf("XXXXXXXXXXXXXXXX\n");
-
 
     /* (*env)->ReleaseStringUTFChars(env, j_config_fname, g_config_fname); */
 
@@ -152,18 +154,30 @@ JNIEXPORT void JNICALL Java_org_iochibity_OCF_Init__III
  * Method:    run
  * Signature: ()I
  */
+
+ /* FIXME: call this "observe"? */
 JNIEXPORT void JNICALL Java_org_iochibity_OCF_run
   (JNIEnv * env, jclass clazz)
 {
     OC_UNUSED(env);
     OC_UNUSED(clazz);
-    printf("Launching worker thread...\n");
-    THREAD_CREATE_DEFAULT((THREAD_T*)&tid_work,
-			  (THREAD_START_T)troutine_work,
-			  (void *)NULL);
+    OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
+    /* FIXME: broken! OCProcess is not thread safe */
+    /* printf("Launching worker thread...\n"); */
+    /* THREAD_CREATE_DEFAULT((THREAD_T*)&tid_work, */
+    /* 			  (THREAD_START_T)troutine_work, */
+    /* 			  (void *)NULL); */
+    while (!g_quit_flag) {
+	if (OCProcess() != OC_STACK_OK) {
+	    printf("OCStack process error\n");
+	}
+	sleep(1);
+    }
+
     /* main thread has nothing to do. by calling pthread_exit it exits
        but the process continues, so any spawned threads do too. */
     /* THREAD_EXIT(THREAD_EXIT_OK); */
+    OIC_LOG_V(DEBUG, TAG, "%s EXIT", __func__);
 }
 
 /*

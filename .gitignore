@@ -17,6 +17,8 @@ jni-c/doc/html
 jni-c/doc/latex
 jni-c/doc/javadoc
 
+jni-cxx/examples/minimal/bin
+
 *.class
 
 # Mobile Tools for Java (J2ME)

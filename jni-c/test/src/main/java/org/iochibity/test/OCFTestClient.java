@@ -50,66 +50,7 @@ import java.util.stream.Collectors;
 
 public class OCFTestClient
 {
-    static CountDownLatch gLatch;
-
-    // public static class DeviceCoSP implements ICoServiceProvider
-    // {
-    // 	private int cbdata = 123;
-
-    // 	public int observeBehavior(ObservationIn responseIn)
-    // 	{
-    // 	    System.out.println("LOG: DeviceCoSP.serviceResponse ENTRY");
-    // 	    System.out.println("LOG: cbdata: " + cbdata);
-    // 	    Logger.logObservationIn(responseIn);
-
-    // 	    // save incoming resource info - ServiceManager.registerRemoteResource(...)?
-    // 	    // update screen ...
-    // 	    System.out.flush();
-    // 	    return 0;
-    // 	}
-
-    // }
-
-    // public static DeviceAddress gRemoteResourceAddress;
-    // public static DeviceAddress gLEDAddress;
-    // public static DeviceAddress gWhatsitAddress;
-
-    // public static class DiscoverResourcesCoSP implements ICoServiceProvider
-    // {
-    // 	private int cbdata = 123;
-
-    // 	public int observeBehavior(ObservationIn responseIn)
-    // 	{
-    // 	    System.out.println("LOG: DiscoverResourcesCoSP.serviceResponse ENTRY");
-    // 	    System.out.println("LOG: cbdata: " + cbdata);
-
-    // 	// }
-    // 	    Logger.logObservationIn(responseIn);
-
-    // 	    // save incoming resource info - ServiceManager.registerRemoteResource(...)?
-    // 	    // update screen ...
-    // 	    return 0;
-    // 	}
-    // }
-
-    // public static class WhatsitCoSP implements ICoServiceProvider
-    // {
-    // 	private int cbdata = 123;
-
-    // 	public int observeBehavior(ObservationIn responseIn)
-    // 	{
-    // 	    System.out.println("LOG: DiscoverResourcesCoServiceProvider.serviceResponse ENTRY");
-    // 	    System.out.println("LOG: cbdata: " + cbdata);
-    // 	    Logger.logObservationIn(responseIn);
-
-    // 	    // save incoming resource info - ServiceManager.registerRemoteResource(...)?
-    // 	    // update screen ...
-    // 	    return 0;
-    // 	}
-
-    // }
-
-    static DiscoveryCoSP discoveryCoSP;
+    public static DiscoveryCoSP discoveryCoSP;
 
     public static synchronized void promptUser()
     {
@@ -120,6 +61,8 @@ public class OCFTestClient
 
     	String uri = null;
 	// StimulusOut msgRequestOut;
+
+	// CoServiceManager.registerCoServiceProvider(discoveryCoSP);
 
 	boolean again = true;
 	while(again) {
@@ -177,6 +120,7 @@ public class OCFTestClient
 		discoveryCoSP
 		    .method(OCF.RETRIEVE)
 		    .uriPath(uri)
+		    .addType("foo.t.bar")
 		    .transportIsUDP(true)
 		    // .networkIsIPv6(true)
 		    .routingIsMulticast(true);
@@ -186,8 +130,9 @@ public class OCFTestClient
 		// Logger.logCoSP(discoveryCoSP);
 
 		try {
+		    CountDownLatch finished = discoveryCoSP.latch();
 		    discoveryCoSP.coExhibit();
-		    Thread.sleep(500);
+		    finished.await();
 		} catch (Exception e) {
 		    System.out.println("ERROR: discovery");
 		    e.printStackTrace();
@@ -195,11 +140,11 @@ public class OCFTestClient
 		}
 		break;
 	    case "2":
-		System.out.println("Discovered resources:");
-		// for (CoServiceProvider cosp : CoServiceManager.coServiceProviders) {
+		System.out.println("Discovered Resources:");
+		CoServiceManager.registeredCoServiceProviders();
+		// for (CoServiceProvider cosp : CoServiceManager.registeredCoServiceProviders()) {
 		//     System.out.println("\t" + cosp.uriPath());
 		// }
-		System.out.println();
 		break;
 	    case "3":
 		System.out.println("RETRIEVE: Select a resource.");
@@ -283,6 +228,7 @@ public class OCFTestClient
 	    case "x":
 		System.out.println("EXITING");
 		again = false;
+		System.exit(0);
 		break;
 	    default:
 		break;
@@ -317,12 +263,20 @@ public class OCFTestClient
 	// 			       "version-0.1",
 	// 			       new String[] {"dmversion-0.1"});
 
-	discoveryCoSP = new DiscoveryCoSP();
-	CoServiceManager.registerCoServiceProvider(discoveryCoSP);
+	Thread uithread = new Thread() {
+		@Override
+		public void run()
+		{
+		    // cosp must be alloced on same thread that calls its methods
+		    discoveryCoSP = new DiscoveryCoSP();
+		    promptUser();
+		}
+	    };
+	uithread.start();
 
 	OCF.run();
 
-	promptUser();
+	// promptUser();
 
 	// try {
 	//     Thread.sleep(500);

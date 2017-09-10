@@ -66,9 +66,25 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_types
 /*
  * Class:     org_iochibity_CoServiceProvider
  * Method:    addType
- * Signature: (Ljava/lang/String;)Z
+ * Signature: (Ljava/lang/String;)Lorg/iochibity/CoServiceProvider;
  */
-JNIEXPORT jboolean JNICALL Java_org_iochibity_CoServiceProvider_addType
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_addType
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    getInterfaces
+ * Signature: ()Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_getInterfaces
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_iochibity_CoServiceProvider
+ * Method:    addInterface
+ * Signature: (Ljava/lang/String;)Lorg/iochibity/CoServiceProvider;
+ */
+JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceProvider_addInterface
   (JNIEnv *, jobject, jstring);
 
 /*

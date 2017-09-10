@@ -6,6 +6,7 @@ public class DeviceAddress	// OCDevAddr
     private long handle; // ref to TLS var in underlying C struct?
 
     native public int       networkProtocol();   // OCTransportAdapter adapter;
+    // OC_ADAPTER_IP, OC_ADAPTER_GATT_BLE, etc.
 
     native public int       networkFlags();  // OCTransportFlags flags
 

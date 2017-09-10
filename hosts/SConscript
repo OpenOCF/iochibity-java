@@ -156,7 +156,7 @@ if target_os in targets_support_cc:
 	if prefix or tc_path:
 		print tc_set_msg
 
-if not env.get('RELEASE'):
+if env.get('LOGGING'):
 	env.AppendUnique(CPPDEFINES = ['TB_LOG'])
 
 # If cross-compiling, honor environment settings for toolchain to avoid picking up native tools

@@ -1,5 +1,5 @@
 /**
- * @file org_iochibity_Init.c
+ * @file jni_init.c
  * @author Gregg Reynolds
  * @date December 2016
  *
@@ -18,8 +18,8 @@
 #include "_threads.h"
 
 #include "org_iochibity_OCF.h"
-#include "org_iochibity_Init.h"
 #include "org_iochibity_Exceptions.h"
+#include "jni_init.h"
 #include "jni_utils.h"
 
 #include "octypes.h"
@@ -1562,7 +1562,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     JNIEnv* env = NULL;
     g_JVM = vm;
 
+#ifdef TB_LOG
     oic_set_log_level(DEBUG);
+#endif
 
     /* LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_WARNING, LOG_NOTICE, LOG_INFO, LOG_DEBUG */
     /* coap_set_log_level(LOG_WARNING); */

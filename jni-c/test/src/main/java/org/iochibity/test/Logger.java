@@ -100,43 +100,43 @@ public class Logger
 
 	if (da != null) {
 	    try {
-		System.out.println("LOGGER DeviceAddress\t IP address:\t\t" + da.ipAddress());
-		System.out.println("LOGGER DeviceAddress\t port:\t\t\t" + da.port());
-		System.out.println("LOGGER DeviceAddress\t network protocol:\t"
+		System.out.println("APP_LOGGER DeviceAddress\t IP address:\t\t" + da.ipAddress());
+		System.out.println("APP_LOGGER DeviceAddress\t port:\t\t\t" + da.port());
+		System.out.println("APP_LOGGER DeviceAddress\t network protocol:\t"
 				   + String.format("0x%04X", da.networkProtocol()
 						   & 0xFFFFF)
 				   + " " + netProtocols.get(da.networkProtocol()));
 
-		System.out.println("LOGGER DeviceAddress\t network flags:\t\t"
+		System.out.println("APP_LOGGER DeviceAddress\t network flags:\t\t"
 				   + String.format("0x%04X", da.networkFlags()
 						   & 0xFFFFF));
 
-		System.out.println("LOGGER DeviceAddress\t IPv4?\t\t\t" + da.isIPv4());
+		System.out.println("APP_LOGGER DeviceAddress\t IPv4?\t\t\t" + da.isIPv4());
 
-		System.out.println("LOGGER DeviceAddress\t IPv6?\t\t\t" + da.isIPv6());
+		System.out.println("APP_LOGGER DeviceAddress\t IPv6?\t\t\t" + da.isIPv6());
 
-		System.out.println("LOGGER DeviceAddress\t Multicast?\t\t" + da.isMulticast());
+		System.out.println("APP_LOGGER DeviceAddress\t Multicast?\t\t" + da.isMulticast());
 
-		System.out.println("LOGGER DeviceAddress\t nework scope:\t\t"
+		System.out.println("APP_LOGGER DeviceAddress\t nework scope:\t\t"
 				   + String.format("0x%02X", da.networkScope())
 				   + " " + netScope.get((int)da.networkScope()));
 
-		System.out.println("LOGGER DeviceAddress\t transport security:\t"
+		System.out.println("APP_LOGGER DeviceAddress\t transport security:\t"
 				   + da.transportIsSecure());
 
 		// int scope = (da.networkPolicy >> 4) & 0x000F;
-		// System.out.println("LOGGER DeviceAddress\t nework scope:\t\t"
+		// System.out.println("APP_LOGGER DeviceAddress\t nework scope:\t\t"
 		// 		       // + String.format("0x%02X", scope)
 		// 		       + netPolicy.get(scope));
 
 		// String sec = (0 == (da.networkPolicy & 0x0010))? "OFF" : "ON";
-		// System.out.println("LOGGER DeviceAddress\t transport security:\t" + sec);
+		// System.out.println("APP_LOGGER DeviceAddress\t transport security:\t" + sec);
 
-		System.out.println("LOGGER DeviceAddress\t ifindex:\t\t" + da.ifindex());
+		System.out.println("APP_LOGGER DeviceAddress\t ifindex:\t\t" + da.ifindex());
 		// System.out.println("REQUEST IN: devaddr route data: " + da.routeData);
 
 
-		// System.out.println("LOGGER DeviceAddress route data: " + da.routeData);
+		// System.out.println("APP_LOGGER DeviceAddress route data: " + da.routeData);
 	    } catch (NullPointerException e) {
 		System.out.println("Device Address is NULL");
 	    }
@@ -158,18 +158,18 @@ public class Logger
 
     static public void logNetworking(CoServiceProvider cosp)
     {
-	System.out.println("LOGGER transportIsUDP?\t\t" + cosp.transportIsUDP());
-	System.out.println("LOGGER transportIsTCP?\t\t" + cosp.transportIsTCP());
-	System.out.println("LOGGER transportIsGATT?\t\t" + cosp.transportIsGATT());
-	System.out.println("LOGGER transportIsRFCOMM?\t" + cosp.transportIsRFCOMM());
-	System.out.println("LOGGER transportIsNFC?\t\t" + cosp.transportIsNFC());
-	System.out.println("LOGGER networkIsIP?\t\t" + cosp.networkIsIP());
-	System.out.println("LOGGER networkIsIPv4?\t\t" + cosp.networkIsIPv4());
-	System.out.println("LOGGER networkIsIPv6?\t\t" + cosp.networkIsIPv6());
-	System.out.println("LOGGER scopeIsInterface?\t" + cosp.scopeIsInterface());
-	System.out.println("LOGGER scopeIsLink?\t\t" + cosp.scopeIsLink());
-	System.out.println("LOGGER transportIsSecure?\t" + cosp.transportIsSecure());
-	System.out.println("LOGGER routingIsMulticast?\t" + cosp.routingIsMulticast());
+	System.out.println("APP_LOGGER transportIsUDP?\t\t" + cosp.transportIsUDP());
+	System.out.println("APP_LOGGER transportIsTCP?\t\t" + cosp.transportIsTCP());
+	System.out.println("APP_LOGGER transportIsGATT?\t\t" + cosp.transportIsGATT());
+	System.out.println("APP_LOGGER transportIsRFCOMM?\t" + cosp.transportIsRFCOMM());
+	System.out.println("APP_LOGGER transportIsNFC?\t\t" + cosp.transportIsNFC());
+	System.out.println("APP_LOGGER networkIsIP?\t\t" + cosp.networkIsIP());
+	System.out.println("APP_LOGGER networkIsIPv4?\t\t" + cosp.networkIsIPv4());
+	System.out.println("APP_LOGGER networkIsIPv6?\t\t" + cosp.networkIsIPv6());
+	System.out.println("APP_LOGGER scopeIsInterface?\t" + cosp.scopeIsInterface());
+	System.out.println("APP_LOGGER scopeIsLink?\t\t" + cosp.scopeIsLink());
+	System.out.println("APP_LOGGER transportIsSecure?\t" + cosp.transportIsSecure());
+	System.out.println("APP_LOGGER routingIsMulticast?\t" + cosp.routingIsMulticast());
    }
 
     static public void testNetworking(CoServiceProvider cosp)
@@ -446,16 +446,16 @@ public class Logger
 
     static public void logRequestIn(CoServiceProvider cosp)
     {
-	System.out.println("LOGGER logRequestIn ENTRY, thread "
+	System.out.println("APP_LOGGER logRequestIn ENTRY, thread "
 			   + Thread.currentThread().getId());
 
-	System.out.println("LOGGER: stack result: " + cosp.getCoResult());
+	System.out.println("APP_LOGGER: stack result: " + cosp.getCoResult());
 
-	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("LOGGER CoSP method:\t" + cosp.method());
-	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
-	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
-	System.out.println("LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
+	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
+	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
+	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
+	System.out.println("APP_LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
+	System.out.println("APP_LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
 
 	System.out.println("LOGGING CO-ADDRESS:");
 	logCoAddress(cosp);
@@ -467,8 +467,8 @@ public class Logger
 	// FIXME:
 	// if (cosp.result == OCStackResult.OK) {
 
-	//     System.out.println("LOGGER CoSP OBSERVATIONS:");
-	//     // System.out.println("LOGGER CoSP OBSERVATION type: "
+	//     System.out.println("APP_LOGGER CoSP OBSERVATIONS:");
+	//     // System.out.println("APP_LOGGER CoSP OBSERVATION type: "
 	//     // 		       + cosp.getObservationType()
 	//     // 		       + ": "
 	//     // 		       + observationTypes.get(cosp.getObservationType()));
@@ -490,12 +490,12 @@ public class Logger
 
     static public void logRequestOut(CoServiceProvider cosp)
     {
-	System.out.println("LOGGER logRequestOut ENTRY, thread "
+	System.out.println("APP_LOGGER logRequestOut ENTRY, thread "
 			   + Thread.currentThread().getId());
 
-	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("LOGGER CoSP method:\t" + cosp.method());
-	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
+	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
+	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
+	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
 
 	// List<HeaderOption> headerOptions = cosp.getOptions();
 	// if (headerOptions != null)
@@ -504,8 +504,8 @@ public class Logger
 	// FIXME:
 	// if (cosp.result == OCStackResult.OK) {
 
-	//     System.out.println("LOGGER CoSP OBSERVATIONS:");
-	//     // System.out.println("LOGGER CoSP OBSERVATION type: "
+	//     System.out.println("APP_LOGGER CoSP OBSERVATIONS:");
+	//     // System.out.println("APP_LOGGER CoSP OBSERVATION type: "
 	//     // 		       + cosp.getObservationType()
 	//     // 		       + ": "
 	//     // 		       + observationTypes.get(cosp.getObservationType()));
@@ -527,16 +527,16 @@ public class Logger
 
     static public void logResponseIn(CoServiceProvider cosp)
     {
-	System.out.println("LOGGER logResponseIn ENTRY, thread "
+	System.out.println("APP_LOGGER logResponseIn ENTRY, thread "
 			   + Thread.currentThread().getId());
 
-	System.out.println("LOGGER stack result: " + cosp.getCoResult());
+	System.out.println("APP_LOGGER stack result: " + cosp.getCoResult());
 
-	System.out.println("LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("LOGGER CoSP method:\t" + cosp.method());
-	// System.out.println("LOGGER CoSP conn type:\t" + cosp.connType());
-	System.out.println("LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
-	System.out.println("LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
+	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
+	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
+	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
+	System.out.println("APP_LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
+	System.out.println("APP_LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
 
 	System.out.println("LOGGING CO-ADDRESS:");
 	logCoAddress(cosp);
@@ -548,8 +548,8 @@ public class Logger
 	// FIXME:
 	// if (cosp.result == OCStackResult.OK) {
 
-	//     System.out.println("LOGGER CoSP OBSERVATIONS:");
-	//     // System.out.println("LOGGER CoSP OBSERVATION type: "
+	//     System.out.println("APP_LOGGER CoSP OBSERVATIONS:");
+	//     // System.out.println("APP_LOGGER CoSP OBSERVATION type: "
 	//     // 		       + cosp.getObservationType()
 	//     // 		       + ": "
 	//     // 		       + observationTypes.get(cosp.getObservationType()));

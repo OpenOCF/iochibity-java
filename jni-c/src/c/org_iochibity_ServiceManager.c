@@ -12,7 +12,7 @@
 
 #include "org_iochibity_ServiceManager.h"
 #include "c_service_provider.h"
-#include "org_iochibity_Init.h"
+#include "jni_init.h"
 #include "org_iochibity_Exceptions.h"
 #include "jni_utils.h"
 

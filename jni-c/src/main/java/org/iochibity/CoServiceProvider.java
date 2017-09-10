@@ -9,6 +9,23 @@ import java.util.LinkedList;
  * It wraps the OCDoResource parameters, plus ...
  */
 
+/* notes
+
+   this class encapsulates both the CoSP (i.e. client request) and the SP (i.e. server response).
+
+   for example, the networking properties are one thing on the way
+   out, but could be sth else in the response.  e.g. the response to a
+   multicast will be a unicast.
+
+   legacy stuff: OCClientResponse contains redundant networking info,
+   in that OCDevAddr contains the same info as connType
+   (OCConnectivityType).  The source is commented: connType is for
+   backward compatibility.
+
+   but note that OCDevAddr is misnamed; it contains not just address info, but also info about networking params, which is not really address info.
+
+ */
+
 public abstract class CoServiceProvider
     implements ICoServiceProvider
 {
@@ -36,18 +53,19 @@ public abstract class CoServiceProvider
     native public String            uriPath();
     native public CoServiceProvider uriPath(String uriPath);
 
-    // private List<String>            _types = new LinkedList<String>();
-    // public  List<String>            getTypes() { return _types; }
-    native public List<String>      types();
-    native public boolean           addType(String theTypes); // { return _types.add(theTypes); }
+    // // FIXME:  do we needd types, interfaces, and props in a CoSP?
+    // // private List<String>            _types = new LinkedList<String>();
+    // // public  List<String>            getTypes() { return _types; }
+    // native public List<String>      types();
+    // native public CoServiceProvider addType(String theTypes); // { return _types.add(theTypes); }
 
-    private List<String>            _interfaces = new LinkedList<String>();
-    public List<String>             getInterfaces() { return _interfaces; }
-    public boolean                  addInterface(String iface) { return _interfaces.add(iface); }
+    // // private List<String>            _interfaces = new LinkedList<String>();
+    // native public List<String>      getInterfaces();  // { return _interfaces; }
+    // native public CoServiceProvider addInterface(String iface); // { return _interfaces.add(iface); }
 
-    private PropertyMap             _properties;
-    public  PropertyMap             getProperties() { return _properties; }
-    public  Object                  putProperty(String key, Object val) { return _properties.put(key, val); }
+    // private PropertyMap             _properties;
+    // public  PropertyMap             getProperties() { return _properties; }
+    // public  Object                  putProperty(String key, Object val) { return _properties.put(key, val); }
     // end descriptor
 
     //////////////// NETWORKING params ////////////////
