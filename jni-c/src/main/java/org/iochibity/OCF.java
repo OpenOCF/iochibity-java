@@ -5,7 +5,8 @@ public class OCF
 {
     static{
 	try{
-	    System.loadLibrary("ocfjni_c");
+	    System.out.println("java.library.path: " + System.getProperty("java.library.path"));
+	    System.loadLibrary("openocf");
 	}catch(Exception e){
 	    System.out.println(e.toString());
 	}

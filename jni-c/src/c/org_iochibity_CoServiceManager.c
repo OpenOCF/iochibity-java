@@ -346,9 +346,10 @@ JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceManager_registerCoServiceP
 JNIEXPORT jobject JNICALL Java_org_iochibity_CoServiceManager_registeredCoServiceProviders
 (JNIEnv * env, jclass klass)
 {
-    OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
+    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s ENTRY", __LINE__, __func__);
     /* OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse); */
     // return coSP list object
+    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s EXIT", __LINE__, __func__);
     return NULL;
 }
 

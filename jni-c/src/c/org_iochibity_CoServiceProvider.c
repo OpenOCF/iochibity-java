@@ -223,11 +223,11 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
 						     OCClientResponse* c_OCClientResponse)
 {
     // FIXME: switch ERROR back to DEBUG
-    OIC_LOG_V(DEBUG, TAG, "%s ENTRY, %ld", __func__, (intptr_t)THREAD_ID);
-    OIC_LOG_V(DEBUG, TAG, "%s txn id:", __func__);
-    OIC_LOG_BUFFER(DEBUG, TAG, (const uint8_t *) c_TxnId, CA_MAX_TOKEN_LEN);
+    OIC_LOG_V(DEBUG, __FILE__, "%s ENTRY, %ld", __func__, (intptr_t)THREAD_ID);
+    OIC_LOG_V(DEBUG, __FILE__, "%s txn id:", __func__);
+    OIC_LOG_BUFFER(DEBUG, __FILE__, (const uint8_t *) c_TxnId, CA_MAX_TOKEN_LEN);
 
-    OIC_LOG_V(DEBUG, TAG, "%s c_CoSP: %p", __func__, c_CoSP);
+    OIC_LOG_V(DEBUG, __FILE__, "%s c_CoSP: %p", __func__, c_CoSP);
 
     /* To support multi-threading, we cache the incoming
        OCClientResponse record in a TLS var: */
@@ -240,20 +240,20 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
 	tls_txn = g_txn_list;
 	while (tls_txn) {
 	    if ( memcmp( tls_txn->txnId, c_TxnId, CA_MAX_TOKEN_LEN ) == 0 ) {
-		OIC_LOG_V(DEBUG, TAG, "%s: found txn key", __func__);
+		OIC_LOG_V(DEBUG, __FILE__, "%s: found txn key", __func__);
 		break;
 	    } else {
 	    	if (tls_txn->next) {
 	    	    tls_txn = tls_txn->next;
 	    	} else {
-		    OIC_LOG_V(ERROR, TAG, "%s: txn key not found!", __func__);
+		    OIC_LOG_V(ERROR, __FILE__, "%s: txn key not found!", __func__);
 		    tls_txn = NULL;
 		    break;
 	    	}
 	    }
 	}
     } else {
-	OIC_LOG_V(ERROR, TAG, "%s: missing transaction list!", __func__);
+	OIC_LOG_V(ERROR, __FILE__, "%s: missing transaction list!", __func__);
     }
 
     /* if response is OCDiscoveryPayload (containing
@@ -275,7 +275,7 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
 	if ((*g_JVM)->AttachCurrentThread(g_JVM, (void **) &env, NULL) != 0) {
 	    printf("FATAL %s %d (%s): AttachCurrentThread failure\n", __FILE__, __LINE__,__func__);
 	    exit(1);
-	    /* OIC_LOG_V(FATAL, TAG, "ERROR %s %d (%s): AttachCurrentThread failure\n", */
+	    /* OIC_LOG_V(FATAL, __FILE__, "ERROR %s %d (%s): AttachCurrentThread failure\n", */
 	    /* 	      __FILE__, __LINE__,__func__); */
 	    /* return OC_STACK_DELETE_TRANSACTION; */
 	}
@@ -294,7 +294,7 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     if (c_CoSP == NULL) {
 	/* printf("ERROR %s %d (%s): ctx param is NULL for c_CoServiceProvider_coReact\n", */
 	/*        __FILE__, __LINE__,__func__); */
-	OIC_LOG_V(ERROR, TAG, "ERROR %s (line %d): ctx param is NULL for c_CoServiceProvider_coReact",
+	OIC_LOG_V(ERROR, __FILE__, "ERROR %s (line %d): ctx param is NULL for c_CoServiceProvider_coReact",
 		  __func__,__LINE__);
 	return OC_STACK_DELETE_TRANSACTION;
     }
@@ -302,33 +302,40 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     /* Process the observation before passing control to user-defined coReact method. */
     switch(c_OCClientResponse->payload->type) {
     case PAYLOAD_TYPE_DISCOVERY:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_DISCOVERY", __func__);
+	OIC_LOG_V(DEBUG, __FILE__, "[%d] %s: PAYLOAD_TYPE_DISCOVERY", __LINE__, __func__);
 	register_resources(c_OCClientResponse);
 	/* printf("VERIFICATION:\n"); */
-	/* OIC_LOG_DISCOVERY_RESPONSE(DEBUG, TAG, g_OCClientResponse); */
+	/* OIC_LOG_DISCOVERY_RESPONSE(DEBUG, __FILE__, g_OCClientResponse); */
 	break;
     case PAYLOAD_TYPE_DEVICE:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_DEVICE", __func__);
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_DEVICE", __func__);
 	register_device(c_OCClientResponse);
 	break;
     case PAYLOAD_TYPE_PLATFORM:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_PLATFORM", __func__);
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_PLATFORM", __func__);
 	register_platform(c_OCClientResponse);
 	break;
     case PAYLOAD_TYPE_REPRESENTATION:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_REPRESENTATION", __func__);
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_REPRESENTATION", __func__);
 	break;
     case PAYLOAD_TYPE_SECURITY:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_SECURITY", __func__);
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_SECURITY", __func__);
 	break;
     case PAYLOAD_TYPE_PRESENCE:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_PRESENCE", __func__);
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_PRESENCE", __func__);
 	break;
-    case PAYLOAD_TYPE_RD:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_RD", __func__);
+    /* case PAYLOAD_TYPE_RD: */
+    /* 	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_RD", __func__); */
+    /* 	break; */
+	/*GAR: v 1.3 types: */
+    case PAYLOAD_TYPE_DIAGNOSTIC:
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_DIAGNOSTIC", __func__);
+	break;
+    case PAYLOAD_TYPE_INTROSPECTION:
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_INTROSPECTION", __func__);
 	break;
     case PAYLOAD_TYPE_INVALID:
-	OIC_LOG_V(DEBUG, TAG, "%s: PAYLOAD_TYPE_INVALID", __func__);
+	OIC_LOG_V(DEBUG, __FILE__, "%s: PAYLOAD_TYPE_INVALID", __func__);
 	break;
     default:
 	break;
@@ -344,27 +351,28 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     jclass k_cosp = (*env)->GetObjectClass(env, (jobject)c_CoSP);
     if((*env)->ExceptionOccurred(env)) { return OC_STACK_DELETE_TRANSACTION; }
     if (k_cosp == NULL) {
-	OIC_LOG_V(ERROR, TAG, "%s (line %d): GetObjectClass failed for CoServiceProvider object",
+	OIC_LOG_V(ERROR, __FILE__, "%s (line %d): GetObjectClass failed for CoServiceProvider object",
 	       __func__,__LINE__);
     	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    jmethodID mid_cosp_coReact = (*env)->GetMethodID(env, k_cosp, "coReact", "()V");
+    jmethodID mid_cosp_coReact = (*env)->GetMethodID(env, k_cosp, "coReact", "()I");
     if (mid_cosp_coReact == NULL) {
-	OIC_LOG_V(ERROR, TAG, "%s (line %d): GetMethodID failed for mid_cosp_coReact of CoServiceProvider",
+	OIC_LOG_V(ERROR, __FILE__, "%s (line %d): GetMethodID failed for mid_cosp_coReact of CoServiceProvider",
 		  __func__, __LINE__);
     	return OC_STACK_DELETE_TRANSACTION;
     }
-    OIC_LOG_V(INFO, TAG, "%s (line %d): Calling user coReact method",
-		  __func__, __LINE__);
 
     /* 2. call the coReact method of the CoServiceProvider */
-    (*env)->CallVoidMethod(env, (jobject)c_CoSP, mid_cosp_coReact);
+    OIC_LOG_V(INFO, __FILE__, "[%d] %s: Calling user coReact method", __LINE__, __func__);
+    //GAR FIXME: return result flag (KEEP_PAYLOAD, KEEP_TRANSACTION)
+    int coReact_result;
+    coReact_result = (*env)->CallIntMethod(env, (jobject)c_CoSP, mid_cosp_coReact);
 
     if((*env)->ExceptionOccurred(env)) {
 	// FIXME: print exception message
-	OIC_LOG_V(ERROR, TAG, "%s:%d CAUGHT EXCEPTION thrown by coReact method",
-		  __func__, __LINE__);
+	OIC_LOG_V(ERROR, __FILE__, "[%d] %s: CAUGHT EXCEPTION thrown by coReact method",
+		  __LINE__, __func__);
 	return OC_STACK_DELETE_TRANSACTION;
     }
 
@@ -374,16 +382,21 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     if (tls_deactivate) {
 	/* free the global cosp that we pinned in coExhibit */
 	(*env)->DeleteGlobalRef(env, (jobject)c_CoSP);
-	OIC_LOG(DEBUG, TAG, "c_CoServiceProvider_react EXIT, deactivating handler");
+	OIC_LOG(DEBUG, __FILE__, "c_CoServiceProvider_react EXIT, deactivating handler");
     	return OC_STACK_DELETE_TRANSACTION;
     } else {
 	if (tls_txn->routingIsMulticast) {
-	    OIC_LOG(DEBUG, TAG, "c_CoServiceProvider_react EXIT, retaining multicast handler");
-	    return OC_STACK_KEEP_TRANSACTION;
+	    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s EXIT, retaining multicast handler",
+		    __LINE__, __func__);
+	    return (OC_STACK_DELETE_TRANSACTION);
+	    /* return (OC_STACK_KEEP_TRANSACTION); */
+	    /* return (OC_STACK_KEEP_TRANSACTION | OC_STACK_KEEP_PAYLOAD); */
+	    /* return (OC_STACK_DELETE_TRANSACTION | OC_STACK_KEEP_PAYLOAD); */
 	} else {
 	    /* free the global cosp that we pinned in coExhibit */
 	    (*env)->DeleteGlobalRef(env, (jobject)c_CoSP);
-	    OIC_LOG(DEBUG, TAG, "c_CoServiceProvider_react EXIT, deactivating unicast handler");
+	    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s EXIT, deactivating unicast handler",
+		    __LINE__, __func__);
 	    return OC_STACK_DELETE_TRANSACTION;
 	}
     }

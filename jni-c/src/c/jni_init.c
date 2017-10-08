@@ -12,8 +12,12 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#include "debug.h"		/* libcoap debugging */
+/* #ifdef DEBUG_COAP */
+#include "coap/debug.h"		/* libcoap debugging */
+/* #endif */
+#ifdef DEBUG_TINYDTLS
 #include "tinydtls/debug.h"		/* for tinydtls debugging */
+#endif
 
 #include "_threads.h"
 
@@ -1281,7 +1285,7 @@ int init_ICoServiceProvider(JNIEnv* env)
     if (MID_ICOSP_COREACT == NULL) {
 	MID_ICOSP_COREACT = (*env)->GetMethodID(env, K_I_CO_SERVICE_PROVIDER,
 						"coReact",
-						"()V");
+						"()I");
 	if (MID_ICOSP_COREACT == NULL) {
 	    printf("ERROR: GetMethodID failed for 'coReact' of ICoServiceProvider\n");
 	    return OC_EH_INTERNAL_SERVER_ERROR;
@@ -1563,7 +1567,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     g_JVM = vm;
 
 #ifdef TB_LOG
-    oic_set_log_level(DEBUG);
+    OCSetLogLevel(DEBUG, false);
 #endif
 
     /* LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_WARNING, LOG_NOTICE, LOG_INFO, LOG_DEBUG */

@@ -360,8 +360,10 @@ jobject OCDiscoveryPayload_to_Observation(JNIEnv* env, OCDiscoveryPayload* c_pay
     (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_IFS, j_ifaces);
 
     /* _uri */
+    /*GAR: removed in 1.3
     jstring j_uri = (*env)->NewStringUTF(env, c_payload->uri);
     (*env)->SetObjectField(env, j_Observation, FID_OBSERVATION_URI_PATH, j_uri);
+    */
 
     /* convert remaining flds to PropertyMap */
     jobject j_pmap  = (*env)->NewObject(env, K_PMAP, MID_PMAP_CTOR);
@@ -370,10 +372,14 @@ jobject OCDiscoveryPayload_to_Observation(JNIEnv* env, OCDiscoveryPayload* c_pay
 	return NULL;
     }
 
+    /*GAR: removed in 1.3
     jstring j_n = (*env)->NewStringUTF(env, "baseURI");
     jstring j_s = (*env)->NewStringUTF(env, c_payload->baseURI);
     (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_n, j_s);
+    */
 
+    jstring j_n;
+    jstring j_s;
     j_n = (*env)->NewStringUTF(env, OC_RSRVD_DEVICE_ID);         /* di */
     j_s = (*env)->NewStringUTF(env, c_payload->sid);
     (*env)->CallObjectMethod(env, j_pmap, MID_PMAP_PUT, j_n, j_s);

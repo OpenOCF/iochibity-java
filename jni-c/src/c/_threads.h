@@ -11,6 +11,8 @@
 #ifndef _threads_h
 #define _threads_h
 
+#include "iotivity_config.h"
+
 #if defined(HAVE_PTHREAD_H)
 #include <pthread.h>
 

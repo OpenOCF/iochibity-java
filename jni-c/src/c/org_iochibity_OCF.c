@@ -58,9 +58,9 @@ THREAD_EXIT_T troutine_work(void *arg)
 FILE* server_fopen(const char *path, const char *mode)
 {
     (void)path;
-    /* printf("%s: fopening %s\n", __func__, g_config_fname); */
-    return fopen(g_config_fname, mode);
-    /* return fopen(path, mode); */
+    printf("%s: fopening %s\n", __func__, g_config_fname);
+    /* return fopen(g_config_fname, mode); */
+    return fopen(path, mode);
 }
 
 /* PUBLIC */

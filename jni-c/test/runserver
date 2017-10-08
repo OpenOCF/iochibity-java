@@ -1,8 +1,12 @@
 #!/bin/sh
 
+INSTALL_SYSROOT="/Users/gar/iotivity/kit/jni-c/bazel-bin"
+
+## openocf
+export MAVEN_OPTS=-Djava.library.path=${INSTALL_SYSROOT}
 
 ## iochibity
-export MAVEN_OPTS=-Djava.library.path=${INSTALL_SYSROOT}/lib
+## export MAVEN_OPTS=-Djava.library.path=${INSTALL_SYSROOT}/lib
 
 ## iotivity
 ##export MAVEN_OPTS=-Djava.library.path=${INSTALL_SYSROOT}
@@ -15,4 +19,4 @@ export MAVEN_OPTS=-Djava.library.path=${INSTALL_SYSROOT}/lib
 ## linux iotivity
 ##export LD_LIBRARY_PATH=${INSTALL_SYSROOT}
 
-mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestServer"
+mvn exec:java -Dexec.mainClass="org.openocf.test.OCFTestServer"
