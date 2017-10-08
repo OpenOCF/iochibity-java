@@ -11,10 +11,10 @@ public class DefaultCoSP
 	method(OCF.RETRIEVE);
     }
 
-    public void coReact()
+    public int coReact()
     {
 	System.out.println("DefaultCoSP: DefaultCoSP.coReact ENTRY");
-	return;
+	return 0;
     }
 }
 

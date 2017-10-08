@@ -1,4 +1,4 @@
-package org.iochibity.test.server;
+package org.openocf.test.server;
 
 import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
@@ -16,7 +16,7 @@ import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
 import org.iochibity.constants.ServiceResult;
 
-import org.iochibity.test.Logger;
+import org.openocf.test.Logger;
 
 import org.iochibity.exceptions.OCFNotImplementedException;
 

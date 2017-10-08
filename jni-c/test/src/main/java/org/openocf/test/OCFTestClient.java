@@ -1,4 +1,4 @@
-package org.iochibity.test;
+package org.openocf.test;
 
 // UI stuff
 // import com.googlecode.lanterna.TerminalSize;
@@ -24,8 +24,8 @@ import org.iochibity.ObservationRecord;
 import org.iochibity.PropertyMap;
 import org.iochibity.ICoServiceProvider;
 
-import org.iochibity.test.client.DiscoveryCoSP;
-import org.iochibity.test.client.GenericCoSP;
+import org.openocf.test.client.DiscoveryCoSP;
+import org.openocf.test.client.GenericCoSP;
 
 import org.iochibity.constants.OCStackResult;
 import org.iochibity.constants.ResourcePolicy;
@@ -120,7 +120,7 @@ public class OCFTestClient
 		discoveryCoSP
 		    .method(OCF.RETRIEVE)
 		    .uriPath(uri)
-		    .addType("foo.t.bar")
+		    // .addType("foo.t.bar")
 		    .transportIsUDP(true)
 		    // .networkIsIPv6(true)
 		    .routingIsMulticast(true);
@@ -142,9 +142,9 @@ public class OCFTestClient
 	    case "2":
 		System.out.println("Discovered Resources:");
 		CoServiceManager.registeredCoServiceProviders();
-		// for (CoServiceProvider cosp : CoServiceManager.registeredCoServiceProviders()) {
-		//     System.out.println("\t" + cosp.uriPath());
-		// }
+		for (CoServiceProvider cosp : CoServiceManager.registeredCoServiceProviders()) {
+		    System.out.println("\t" + cosp.uriPath());
+		}
 		break;
 	    case "3":
 		System.out.println("RETRIEVE: Select a resource.");

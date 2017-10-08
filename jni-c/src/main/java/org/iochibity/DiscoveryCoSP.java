@@ -14,11 +14,11 @@ public class DiscoveryCoSP
 	method(Method.GET);
     }
 
-    public void coReact()
+    public int coReact()
     {
 	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coReact ENTRY");
 
-	return;
+	return 0;
     }
 }
 

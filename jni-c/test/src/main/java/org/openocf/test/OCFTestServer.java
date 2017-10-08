@@ -1,4 +1,4 @@
-package org.iochibity.test;
+package org.openocf.test;
 
 import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
@@ -9,10 +9,10 @@ import org.iochibity.ServiceProvider;
 import org.iochibity.IServiceProvider;
 import org.iochibity.ServiceManager;
 
-// import org.iochibity.test.server.LedSP;
-// import org.iochibity.test.server.LightSP;
-// import org.iochibity.test.server.TemperatureSP;
-import org.iochibity.test.server.WhatsitSP;
+// import org.openocf.test.server.LedSP;
+// import org.openocf.test.server.LightSP;
+// import org.openocf.test.server.TemperatureSP;
+import org.openocf.test.server.WhatsitSP;
 
 import org.iochibity.exceptions.OCFNotImplementedException;
 
@@ -41,8 +41,8 @@ public class OCFTestServer
 {
     static{			// FIXME: put this in OCF.java?
 	try{
-	    System.out.println(System.getProperty("java.library.path"));
-	    System.loadLibrary("ocfjni_c");
+	    System.out.println("java.library.path: " + System.getProperty("java.library.path"));
+	    System.loadLibrary("openocf");
 	    // System.loadLibrary("mraajava");
 	}catch(Exception e){
 	    System.out.println(e.toString());

@@ -1,4 +1,4 @@
-package org.iochibity.test.client;
+package org.openocf.test.client;
 
 import org.iochibity.CoServiceManager;
 import org.iochibity.CoServiceProvider;
@@ -10,7 +10,7 @@ import org.iochibity.ObservationRecord;
 
 import org.iochibity.constants.OCStackResult;
 
-import org.iochibity.test.Logger;
+import org.openocf.test.Logger;
 
 import java.lang.RuntimeException;
 import java.util.List;
@@ -46,7 +46,7 @@ public class DiscoveryCoSP
        SPs will have been registered with the ServiceManager.  All
        this CoSP needs to do is coReact.
      */
-    public void coReact()
+    public int coReact()
     {
 	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coReact ENTRY");
 	System.out.println("DiscoveryCoSP: cbdata: " + cbdata);
@@ -116,7 +116,7 @@ public class DiscoveryCoSP
 
 	// this.deactivate();
 
-	return;
+	return 0;
     }
 }
 

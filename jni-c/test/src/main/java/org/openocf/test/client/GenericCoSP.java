@@ -1,4 +1,4 @@
-package org.iochibity.test.client;
+package org.openocf.test.client;
 
 import org.iochibity.CoServiceProvider;
 import org.iochibity.constants.Method;
@@ -7,7 +7,7 @@ import org.iochibity.ObservationRecord;
 // import org.iochibity.ObservationList;
 import org.iochibity.constants.OCStackResult;
 
-import org.iochibity.test.Logger;
+import org.openocf.test.Logger;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class GenericCoSP
     // 	// types, interfaces, properties?
     // }
 
-    public void coReact()
+    public int coReact()
     {
 	System.out.println("JAVA: GenericCoSP.coReact ENTRY");
 	System.out.println("JAVA: cbdata: " + cbdata);
@@ -65,7 +65,7 @@ public class GenericCoSP
 	// save incoming resource info - ServiceManager.registerRemoteResource(...)?
 	// update screen ...
 
-	return;
+	return 0;
     }
 }
 

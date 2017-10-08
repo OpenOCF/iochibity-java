@@ -1,4 +1,4 @@
-package org.iochibity.test;
+package org.openocf.test;
 
 import org.iochibity.OCF;
 import org.iochibity.CoServiceProvider;
@@ -22,8 +22,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
@@ -454,7 +455,8 @@ public class Logger
 	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
 	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
 	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
-	System.out.println("APP_LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
+	System.out.println("APP_LOGGER CoSP sec ID:\t"
+			   + Arrays.toString(cosp.getCoSecurityId()));
 	System.out.println("APP_LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
 
 	System.out.println("LOGGING CO-ADDRESS:");
@@ -535,7 +537,8 @@ public class Logger
 	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
 	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
 	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
-	System.out.println("APP_LOGGER CoSP sec ID:\t" + cosp.getCoSecurityId());
+	System.out.println("APP_LOGGER CoSP sec ID:\t"
+			   + Arrays.toString(cosp.getCoSecurityId()));
 	System.out.println("APP_LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
 
 	System.out.println("LOGGING CO-ADDRESS:");

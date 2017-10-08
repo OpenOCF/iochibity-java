@@ -4,7 +4,7 @@ package org.iochibity;
 // All methods EXCEPT observeBehavior implemented by CoServiceProvider abstract class
 public interface ICoServiceProvider {
 
-    public void               coReact();   // abstract, to be implemented by user
+    public int                coReact();   // abstract, to be implemented by user
 
     // the remaining methods are implemented (natively)by CoServiceProvider
     public void               coExhibit(); // called by user

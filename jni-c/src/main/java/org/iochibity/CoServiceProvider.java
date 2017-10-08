@@ -41,7 +41,7 @@ public abstract class CoServiceProvider
 
     // THe heart of the matter: (co-)actions and (co-)reactions.
     @Override
-    abstract public void            coReact(); // must be implemented by user; called by stack
+    abstract public int            coReact(); // must be implemented by user; called by stack
 
     // the remaining methods implement (natively) the ICoServiceProvider interface
     native   public void            coExhibit(); // called by user
@@ -53,7 +53,7 @@ public abstract class CoServiceProvider
     native public String            uriPath();
     native public CoServiceProvider uriPath(String uriPath);
 
-    // // FIXME:  do we needd types, interfaces, and props in a CoSP?
+    // // FIXME:  do we need types, interfaces, and props in a CoSP?
     // // private List<String>            _types = new LinkedList<String>();
     // // public  List<String>            getTypes() { return _types; }
     // native public List<String>      types();
