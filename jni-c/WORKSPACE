@@ -9,6 +9,12 @@ new_local_repository(
   build_file = 'platforms/ndk/toolchain.BUILD',
 )
 
+new_local_repository(
+  name = "toolchain_rpi3b",
+  path = "/Volumes/CrossToolNG/armv8-rpi3-linux-gnueabihf",
+  build_file = 'platforms/rpi3b/toolchain.BUILD',
+)
+
 # new_local_repository(
 #   name = "cosysroot_ndk",
 #   path = "/Users/gar/cosysroots/ndk",
