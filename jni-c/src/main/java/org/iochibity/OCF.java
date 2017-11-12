@@ -3,14 +3,14 @@ package org.iochibity;
 
 public class OCF
 {
-    static{
-	try{
-	    System.out.println("java.library.path: " + System.getProperty("java.library.path"));
-	    System.loadLibrary("openocf");
-	}catch(Exception e){
-	    System.out.println(e.toString());
-	}
-    }
+    // static{
+    // 	try{
+    // 	    System.out.println("java.library.path: " + System.getProperty("java.library.path"));
+    // 	    System.loadLibrary("openocf_jni");
+    // 	}catch(Exception e){
+    // 	    System.out.println(e.toString());
+    // 	}
+    // }
 
     // Methods
     public static final int NOMETHOD       = 0;
