@@ -1,11 +1,10 @@
 = jni-c
 
-A Java wrapper around the Iotivity C API.
+A Java wrapper around the
+https://github.com/OpenOCF/iochibity[OpenOCF] API. Works with Android.
 
 WARNING: Work-in-Progress.  Discovery seems to work, and GET works for
-resources with "*" permissions.  I expect to
-have a more-or-less complete (but basic) implementation within a week
-or so.
+resources with "*" permissions.
 
 See also
 
@@ -30,8 +29,56 @@ Always use `--crosstool_top=//platforms/ndk:toolchain` and
 android - the builtin toolchain is broken (pulls in the wrong
 headers).
 
-See `tools/bazel.rc`.
+See link:tools/bazel.rc[tools/bazel.rc].
 
+==== plain old java
+
+When building for the local host, make sure you comment out the
+cross-compile stuff in `tools/bazel.rc`
+
+You'll have to edit `jni-c/BUILD` to get the right shared lib suffix
+(dylib for OS X, so for linux). Sorry, that will be automatic in the future.
+
+[source,sh]
+----
+$ bazel build OpenOCF
+----
+
+To test it:
+
+[source,sh]
+----
+$ bazel build test:OCFTestServer
+$ bazel build test:OCFTestClient
+----
+
+Then run `./bazel-bin/test/OCFTestServer` in one terminal and
+`./bazel-bin/test/OCFTestClient` in another.
+
+To cross-compile same, you'll have to build the toolchain first (or
+install NDK if that's your target) and then just add the right flags
+in `tools/bazel.rc`.  See
+https://github.com/mobileink/bazel-crosscompile[bazel-crosscompile]
+for detailed examples of how to crosscompile with Bazel.
+
+WARNING: Crosscompiling works, but deploying the result (with native
+libs) to the target machine is a 'nother story. Still researching.
+
+NOTE: It looks like you have to install the JRE/JDK for the target on
+your build machine, otherwise bazel includes the host local_jdk in the
+output.
+
+(Crosscompiling Java alone is fine, it's crosscompiling JNI that's
+tricky.)
+
+==== android
+
+[source,sh]
+----
+$ bazel build test/android/java:openocfserver
+$ bazel mobile-install test/android/java:openocfserver
+$ bazel mobile-install test/android/java:openocfserver --incremental
+----
 
 == dev tools and techniques
 
