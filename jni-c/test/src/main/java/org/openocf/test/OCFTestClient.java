@@ -50,6 +50,16 @@ import java.util.stream.Collectors;
 
 public class OCFTestClient
 {
+    static{			// FIXME: put this in openocf/Service.java?
+	try{
+	    System.out.println("java.library.path: " + System.getProperty("java.library.path"));
+	    System.loadLibrary("openocf_jni");
+	    // System.loadLibrary("mraajava");
+	}catch(Exception e){
+	    System.out.println(e.toString());
+	}
+    }
+
     public static DiscoveryCoSP discoveryCoSP;
 
     public static synchronized void promptUser()
