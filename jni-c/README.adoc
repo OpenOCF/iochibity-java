@@ -14,9 +14,8 @@ See also
 
 == prerequisites
 
-* Scons
+* Bazel
 * Java 8
-* Maven
 * doxygen for C docs
 * ... etc. ...
 * Xcode (OS X)
@@ -24,57 +23,14 @@ See also
 
 == building
 
-The build mechanism uses environment variables set using the `source`
-shell command.  The files to be `source` -ed are located in a separate
-repository, https://github.com/iotk/xc[xc].  This is admittedly
-clunky, but the files are used across multiple projects
-(e.g. https://github.com/iotk/iochibity[iochibity],
-https://github.com/iotk/iochibity-java[iochibity-java], etc.).
+Edit `WORKSPACE` to set the paths appropriately.
 
-First clone https://github.com/iotk/xc[xc] and edit the devhost and
-target host files as needed.  For example, you need to set
-IOTIVITY_FLAVOR to either "iotivity" or "iochibity", depending on
-which implementation you're targeting.  You'll also need to set some
-paths, e.g. `IOTIVITY_HOME`, `PREFIX`, etc.  See `darwin.devhost` and
-`darwin.targethost` as examples.
+Always use `--crosstool_top=//platforms/ndk:toolchain` and
+`--android_crosstool_top=//platforms/ndk:toolchain` to target
+android - the builtin toolchain is broken (pulls in the wrong
+headers).
 
-Then source the devhost and targethost files; e.g. to develop on a
-mac, targeting the mac, do:
-
-[source,sh]
-----
-source ~/xc/source.me/darwin.devhost
-source ~/xc/source.me/darwin.targethost
-----
-
-Build the jni-c shared library:
-
-[source,sh]
-----
-$ scons jni-c
-## options:  VERBOSE=0 | 1, LOGGING= 0 | 1
-----
-
-NOTE: if you get something like `jni-c/src/c/jni_utils.h:6:10: fatal
-error: 'jni.h' file not found`, it means you did not source the right
-files, or they were not correctly configured.
-
-This will put the shared lib in `${INSTALL_SYSROOT}/lib.  For example,
-`$HOME/iochibity/sysroot/darwin/x86_64/debug/lib/libocfjni_c.jnilib`
-on the Mac (`libocfjni_c.so` on Linux).
-
-
-Then build the jni-c Java library:
-
-[source,sh]
-----
-$ cd jni-c
-$ mvn install
-----
-
-This will create the jar file in the `targets` subdir, and copy it to
-your local Maven repo
-(e.g. `$HOME/.m2/repository/org/iochibity/jni-c/0.1.0-SNAPSHOT/jni-c-0.1.0-SNAPSHOT.pom`)
+See `tools/bazel.rc`.
 
 
 == dev tools and techniques
