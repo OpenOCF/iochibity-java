@@ -46,7 +46,7 @@ public class ServerActivity extends ListActivity {
 	try{
 	    Log.v("Bazel", "Hello, Android");
 	    System.out.println("java.library.path: " + System.getProperty("java.library.path"));
-	    System.loadLibrary("openocf_jni");
+	    System.loadLibrary("openocfserver");
 	    Log.v("Bazel", "JNI says: " + Service.configuration());
 	    // System.loadLibrary("mraajava");
 	}catch(Exception e){

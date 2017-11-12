@@ -1,9 +1,9 @@
 java_library(
     name = "OpenOCF",
     srcs = glob(["src/main/**/*.java"]),
-    # runtime_deps = [#"libopenocf_jni.dylib",
-    deps = [#"libopenocf_jni.dylib",
-                    "libopenocf_jni.so"
+    runtime_deps = ["libopenocf_jni.so"],
+    deps = [# "libopenocf_jni.dylib",
+            "libopenocf_jni.so"
     ],
     visibility = ["//visibility:public"]
 )
@@ -19,10 +19,10 @@ android_library(
 
 cc_binary(
     # java on mac:
-    # name = "libopenocf_jni.dylib",
+    name = "libopenocf_jni.dylib",
     # java on linux/android:
     # name = "libopenocf_jni.so",
-    name = "libopenocf_jni",
+    # name = "libopenocf_jni",
     # linkstatic = 1,
     # alwayslink = 1,
     linkshared = 1,
