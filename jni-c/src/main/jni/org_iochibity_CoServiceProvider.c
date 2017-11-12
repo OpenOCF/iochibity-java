@@ -344,18 +344,16 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     // To call the Java-side handler for incoming response data, we
     // need to get a reference to it.
 
-    /* 1. Extract ref to coReact routine from CoSP callback param. We
-       get the method from the object, not the class. */
-
-    // FIXME: replace printf with OIC_LOG_...
+    /* 1. Extract ref to coSP class from the CoSP callback param (object) */
     jclass k_cosp = (*env)->GetObjectClass(env, (jobject)c_CoSP);
     if((*env)->ExceptionOccurred(env)) { return OC_STACK_DELETE_TRANSACTION; }
     if (k_cosp == NULL) {
-	OIC_LOG_V(ERROR, __FILE__, "%s (line %d): GetObjectClass failed for CoServiceProvider object",
-	       __func__,__LINE__);
+	OIC_LOG_V(ERROR, __FILE__, "[%d] %s: GetObjectClass failed for CoServiceProvider object",
+	       __LINE__,__func__);
     	return OC_STACK_DELETE_TRANSACTION;
     }
 
+    /* 2. Pull the coReact method ID from the coSP class */
     jmethodID mid_cosp_coReact = (*env)->GetMethodID(env, k_cosp, "coReact", "()I");
     if (mid_cosp_coReact == NULL) {
 	OIC_LOG_V(ERROR, __FILE__, "%s (line %d): GetMethodID failed for mid_cosp_coReact of CoServiceProvider",
@@ -363,15 +361,13 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     	return OC_STACK_DELETE_TRANSACTION;
     }
 
-    /* 2. call the coReact method of the CoServiceProvider */
+    /* 3. call user's coReact method of the CoServiceProvider */
     OIC_LOG_V(INFO, __FILE__, "[%d] %s: Calling user coReact method", __LINE__, __func__);
-    //GAR FIXME: return result flag (KEEP_PAYLOAD, KEEP_TRANSACTION)
     int coReact_result;
     coReact_result = (*env)->CallIntMethod(env, (jobject)c_CoSP, mid_cosp_coReact);
 
     if((*env)->ExceptionOccurred(env)) {
-	// FIXME: print exception message
-	OIC_LOG_V(ERROR, __FILE__, "[%d] %s: CAUGHT EXCEPTION thrown by coReact method",
+	OIC_LOG_V(ERROR, __FILE__, "[%d] %s: CAUGHT EXCEPTION thrown by user coReact method",
 		  __LINE__, __func__);
 	return OC_STACK_DELETE_TRANSACTION;
     }
@@ -379,27 +375,27 @@ OCStackApplicationResult c_CoServiceProvider_coReact(void* c_CoSP,
     /* we're done with the JVM */
     (*g_JVM)->DetachCurrentThread(g_JVM);
 
-    if (tls_deactivate) {
-	/* free the global cosp that we pinned in coExhibit */
-	(*env)->DeleteGlobalRef(env, (jobject)c_CoSP);
-	OIC_LOG(DEBUG, __FILE__, "c_CoServiceProvider_react EXIT, deactivating handler");
-    	return OC_STACK_DELETE_TRANSACTION;
-    } else {
+    /* if (tls_deactivate) { */
+    /* 	/\* free the global cosp that we pinned in coExhibit *\/ */
+    /* 	(*env)->DeleteGlobalRef(env, (jobject)c_CoSP); */
+    /* 	OIC_LOG(DEBUG, __FILE__, "c_CoServiceProvider_react EXIT, deactivating handler"); */
+    /* 	return OC_STACK_DELETE_TRANSACTION; */
+    /* } else { */
 	if (tls_txn->routingIsMulticast) {
-	    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s EXIT, retaining multicast handler",
-		    __LINE__, __func__);
-	    return (OC_STACK_DELETE_TRANSACTION);
+	    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s EXITing multicast handler", __LINE__, __func__);
+	    return coReact_result;
 	    /* return (OC_STACK_KEEP_TRANSACTION); */
 	    /* return (OC_STACK_KEEP_TRANSACTION | OC_STACK_KEEP_PAYLOAD); */
 	    /* return (OC_STACK_DELETE_TRANSACTION | OC_STACK_KEEP_PAYLOAD); */
 	} else {
 	    /* free the global cosp that we pinned in coExhibit */
 	    (*env)->DeleteGlobalRef(env, (jobject)c_CoSP);
-	    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s EXIT, deactivating unicast handler",
+	    OIC_LOG_V(DEBUG, __FILE__, "[%d] %s EXITing unicast handler",
 		    __LINE__, __func__);
-	    return OC_STACK_DELETE_TRANSACTION;
+	    /* always remove unicast CB */
+	    return (coReact_result & OC_STACK_DELETE_TRANSACTION);
 	}
-    }
+    /* } */
 }
 
 /* EXTERNAL */
