@@ -233,6 +233,12 @@ public class OCFTestClient
 	    default:
 		break;
 	    }
+	    // give logger time to flush
+	    try {
+		Thread.sleep(1000);
+	    } catch (InterruptedException e) {
+		e.printStackTrace();
+	    }
 	}
     }
 

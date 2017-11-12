@@ -116,7 +116,7 @@ public class DiscoveryCoSP
 
 	// this.deactivate();
 
-	return 0;
+	return 3;
     }
 }
 

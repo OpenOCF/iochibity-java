@@ -1,5 +1,6 @@
 package org.openocf.test;
 
+// TODO:  import org.openocf.Service;
 import org.iochibity.OCF;
 import org.iochibity.DeviceAddress;
 import org.iochibity.HeaderOption;
@@ -39,10 +40,10 @@ import java.util.Map;
 
 public class OCFTestServer
 {
-    static{			// FIXME: put this in OCF.java?
+    static{			// FIXME: put this in openocf/Service.java?
 	try{
 	    System.out.println("java.library.path: " + System.getProperty("java.library.path"));
-	    System.loadLibrary("openocf");
+	    System.loadLibrary("openocf_jni");
 	    // System.loadLibrary("mraajava");
 	}catch(Exception e){
 	    System.out.println(e.toString());
@@ -70,7 +71,7 @@ public class OCFTestServer
 	// System.out.println(System.getProperty("java.library.path"));
 	OCF.Init(OCF.SERVER, "src/main/resources/ocftestserver_config.cbor");
 
-	ServiceManager.configurePlatformSP("Fartmaster",
+	ServiceManager.configurePlatformSP("76a10fbf-0cbb-4e27-a748-cec0eb9bdc92",
 					   "Acme Novelties",
 					   "http://acme.example.org",
 					   "modelnbr", "mfgdate", "platversion",
