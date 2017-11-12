@@ -1,0 +1,27 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.openocf.test"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="21" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- <application -->
+    <!--     android:label="OpenOCF Test App" -->
+    <!--     android:theme="@style/MyTheme" > -->
+    <application android:label="OCFTestServer"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/Theme.Sample"
+        android:allowBackup="true">
+        <activity
+            android:name="org.openocf.test.ServerActivity"
+            android:label="OpenOCF Server" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
