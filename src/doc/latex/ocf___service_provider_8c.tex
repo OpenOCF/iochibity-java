@@ -1,0 +1,91 @@
+\hypertarget{ocf___service_provider_8c}{}\section{src/c/ocf\+\_\+\+Service\+Provider.c File Reference}
+\label{ocf___service_provider_8c}\index{src/c/ocf\+\_\+\+Service\+Provider.\+c@{src/c/ocf\+\_\+\+Service\+Provider.\+c}}
+
+
+J\+NI implementation of Service\+Provider Java A\+PI.  
+
+
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Service\+Provider.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+\+Init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+malloc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+string.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+jobject \hyperlink{ocf___service_provider_8c_a15421d8c5313383172789cacd101d6f5}{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In} (J\+N\+I\+Env $\ast$env, O\+C\+Entity\+Handler\+Request $\ast$c\+\_\+\+E\+H\+Request, O\+C\+Entity\+Handler\+Flag c\+\_\+watch\+\_\+flag)
+\begin{DoxyCompactList}\small\item\em Convert incoming {\ttfamily O\+C\+Entity\+Handler\+Request} to {\ttfamily Stimulus\+In} object. Called by {\ttfamily observe\+\_\+stimulus}. \end{DoxyCompactList}\item 
+O\+C\+Entity\+Handler\+Result \hyperlink{ocf___service_provider_8c_ab86f7480d9586214cee656c860f65a94}{observe\+\_\+stimulus} (O\+C\+Entity\+Handler\+Flag watch\+\_\+flag, O\+C\+Entity\+Handler\+Request $\ast$c\+\_\+\+O\+C\+Entity\+Handler\+Request, void $\ast$j\+\_\+\+I\+Service\+Provider)
+\begin{DoxyCompactList}\small\item\em {\ttfamily O\+C\+Entity\+Handler} callback \end{DoxyCompactList}\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___service_provider_8c_a4596493fca77594f516776768fde6d92}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior} (J\+N\+I\+Env $\ast$env, jobject this\+\_\+\+SP)
+\begin{DoxyCompactList}\small\item\em Wrapper on {\ttfamily O\+C\+Do\+Response} \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+J\+NI implementation of Service\+Provider Java A\+PI. 
+
+\begin{DoxyAuthor}{Author}
+Gregg Reynolds 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2016 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\hypertarget{ocf___service_provider_8c_a4596493fca77594f516776768fde6d92}{}\label{ocf___service_provider_8c_a4596493fca77594f516776768fde6d92} 
+\index{ocf\+\_\+\+Service\+Provider.\+c@{ocf\+\_\+\+Service\+Provider.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior}!ocf\+\_\+\+Service\+Provider.\+c@{ocf\+\_\+\+Service\+Provider.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior()}{Java\_org\_iochibity\_ServiceProvider\_exhibitBehavior()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this\+\_\+\+SP }\end{DoxyParamCaption})}
+
+
+
+Wrapper on {\ttfamily O\+C\+Do\+Response} 
+
+Example usage\+: 
+\begin{DoxyCode}
+...
+this.exhibitBehavior();
+...
+\end{DoxyCode}
+
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{ocf___co_service_provider_8c_ac1feb9ab9d78fc7ad97a65216310d44f}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Co\+Service\+Provider\+\_\+exhibit\+Stimulus} 
+
+\hyperlink{ocf___service_provider_8c_ab86f7480d9586214cee656c860f65a94}{observe\+\_\+stimulus} 
+\end{DoxySeeAlso}
+\hypertarget{ocf___service_provider_8c_ab86f7480d9586214cee656c860f65a94}{}\label{ocf___service_provider_8c_ab86f7480d9586214cee656c860f65a94} 
+\index{ocf\+\_\+\+Service\+Provider.\+c@{ocf\+\_\+\+Service\+Provider.\+c}!observe\+\_\+stimulus@{observe\+\_\+stimulus}}
+\index{observe\+\_\+stimulus@{observe\+\_\+stimulus}!ocf\+\_\+\+Service\+Provider.\+c@{ocf\+\_\+\+Service\+Provider.\+c}}
+\subsubsection{\texorpdfstring{observe\+\_\+stimulus()}{observe\_stimulus()}}
+{\footnotesize\ttfamily O\+C\+Entity\+Handler\+Result observe\+\_\+stimulus (\begin{DoxyParamCaption}\item[{O\+C\+Entity\+Handler\+Flag}]{watch\+\_\+flag,  }\item[{O\+C\+Entity\+Handler\+Request $\ast$}]{c\+\_\+\+O\+C\+Entity\+Handler\+Request,  }\item[{void $\ast$}]{j\+\_\+\+I\+Service\+Provider }\end{DoxyParamCaption})}
+
+
+
+{\ttfamily O\+C\+Entity\+Handler} callback 
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{ocf___service_provider_8c_a4596493fca77594f516776768fde6d92}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit\+Behavior} 
+\end{DoxySeeAlso}
+\hypertarget{ocf___service_provider_8c_a15421d8c5313383172789cacd101d6f5}{}\label{ocf___service_provider_8c_a15421d8c5313383172789cacd101d6f5} 
+\index{ocf\+\_\+\+Service\+Provider.\+c@{ocf\+\_\+\+Service\+Provider.\+c}!O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In@{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In}}
+\index{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In@{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In}!ocf\+\_\+\+Service\+Provider.\+c@{ocf\+\_\+\+Service\+Provider.\+c}}
+\subsubsection{\texorpdfstring{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In()}{OCEntityHandlerRequest\_to\_StimulusIn()}}
+{\footnotesize\ttfamily jobject O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{O\+C\+Entity\+Handler\+Request $\ast$}]{c\+\_\+\+E\+H\+Request,  }\item[{O\+C\+Entity\+Handler\+Flag}]{c\+\_\+watch\+\_\+flag }\end{DoxyParamCaption})}
+
+
+
+Convert incoming {\ttfamily O\+C\+Entity\+Handler\+Request} to {\ttfamily Stimulus\+In} object. Called by {\ttfamily observe\+\_\+stimulus}. 
+

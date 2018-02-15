@@ -1,0 +1,122 @@
+\hypertarget{org__iochibity___service_provider_8c}{}\section{src/c/org\+\_\+iochibity\+\_\+\+Service\+Provider.c File Reference}
+\label{org__iochibity___service_provider_8c}\index{src/c/org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c@{src/c/org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c}}
+
+
+J\+NI implementation of Service\+Provider Java A\+PI.  
+
+
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Service\+Provider.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Device\+Address.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+malloc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+string.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+jobject \hyperlink{org__iochibity___service_provider_8c_a10f28a81822f1d1b9ec844372885c62d}{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In} (J\+N\+I\+Env $\ast$env, O\+C\+Entity\+Handler\+Request $\ast$c\+\_\+\+E\+H\+Request, O\+C\+Entity\+Handler\+Flag c\+\_\+watch\+\_\+flag)
+\begin{DoxyCompactList}\small\item\em Convert incoming {\ttfamily O\+C\+Entity\+Handler\+Request} to {\ttfamily Stimulus\+In} object. Internal implementation routine called by {\ttfamily c\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus}. \end{DoxyCompactList}\item 
+O\+C\+Entity\+Handler\+Result \hyperlink{org__iochibity___service_provider_8c_a87e4cf3c267ab9e286789f31fde6a0f9}{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus} (O\+C\+Entity\+Handler\+Flag watch\+\_\+flag, O\+C\+Entity\+Handler\+Request $\ast$c\+\_\+\+O\+C\+Entity\+Handler\+Request, void $\ast$j\+\_\+\+I\+Service\+Provider)
+\begin{DoxyCompactList}\small\item\em {\ttfamily observe\+\_\+stimulus} is a wrapper on {\ttfamily O\+C\+Entity\+Handler} callback. \end{DoxyCompactList}\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___service_provider_8c_a79dcf3336d0cc478e1d468a36c950af5}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit} (J\+N\+I\+Env $\ast$env, jobject this\+\_\+\+SP)
+\begin{DoxyCompactList}\small\item\em Wrapper on {\ttfamily O\+C\+Do\+Response} \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+J\+NI implementation of Service\+Provider Java A\+PI. 
+
+\begin{DoxyAuthor}{Author}
+Gregg Reynolds 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2016 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\hypertarget{org__iochibity___service_provider_8c_a87e4cf3c267ab9e286789f31fde6a0f9}{}\label{org__iochibity___service_provider_8c_a87e4cf3c267ab9e286789f31fde6a0f9} 
+\index{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c@{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c}!c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus@{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus}}
+\index{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus@{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus}!org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c@{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c}}
+\subsubsection{\texorpdfstring{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus()}{c\_org\_iochibity\_ServiceProvider\_observe\_stimulus()}}
+{\footnotesize\ttfamily O\+C\+Entity\+Handler\+Result c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus (\begin{DoxyParamCaption}\item[{O\+C\+Entity\+Handler\+Flag}]{watch\+\_\+flag,  }\item[{O\+C\+Entity\+Handler\+Request $\ast$}]{c\+\_\+\+O\+C\+Entity\+Handler\+Request,  }\item[{void $\ast$}]{j\+\_\+\+I\+Service\+Provider }\end{DoxyParamCaption})}
+
+
+
+{\ttfamily observe\+\_\+stimulus} is a wrapper on {\ttfamily O\+C\+Entity\+Handler} callback. 
+
+This routine is called by the stack on receipt of an incoming request message originating at client. Calls {\ttfamily c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In} to convert incoming request to Java object, then passes result to user-\/defined {\ttfamily observe\+Stimulus} method of {\ttfamily Service\+Provider} object.
+
+
+\begin{DoxyParams}{Parameters}
+{\em watch\+\_\+flag} & Indicates whether request is for W\+A\+T\+CH (in O\+I\+C-\/speak, O\+B\+S\+E\+R\+VE) or not. Only two options, {\ttfamily O\+C\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+F\+L\+AG} (1) or {\ttfamily O\+C\+\_\+\+O\+B\+S\+E\+R\+V\+E\+R\+\_\+\+F\+L\+AG} (2). In C A\+PI, \char`\"{}\+O\+C\+Entity\+Handler\+Flag flag\char`\"{}.\\
+\hline
+{\em c\+\_\+\+O\+C\+Entity\+Handler\+Request} & Incoming \char`\"{}stimulus\char`\"{} (request message). In C A\+PI, {\ttfamily O\+C\+Entity\+Handler\+Request$\ast$}.\\
+\hline
+{\em j\+\_\+\+I\+Service\+Provider} & The Service\+Provider object whose {\ttfamily observe\+Stimulus} method will handle the request; set by {\ttfamily Service\+Manager.\+register\+Service\+Provider}. In C A\+PI, {\ttfamily void$\ast$ callback\+Param}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+$<$\+O\+C\+Entity\+Handler\+Request$>$ Indicates result of applying user-\/defined handler method to incoming request.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{org__iochibity___service_manager_8c_a58fb4e254676baf4849e49d94e337f31}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2} 
+
+\hyperlink{org__iochibity___service_provider_8c_a79dcf3336d0cc478e1d468a36c950af5}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit} 
+\end{DoxySeeAlso}
+\hypertarget{org__iochibity___service_provider_8c_a10f28a81822f1d1b9ec844372885c62d}{}\label{org__iochibity___service_provider_8c_a10f28a81822f1d1b9ec844372885c62d} 
+\index{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c@{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c}!c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In@{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In}}
+\index{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In@{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In}!org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c@{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c}}
+\subsubsection{\texorpdfstring{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In()}{c\_org\_iochibity\_ServiceProvider\_OCEntityHandlerRequest\_to\_StimulusIn()}}
+{\footnotesize\ttfamily jobject c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+\+O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{O\+C\+Entity\+Handler\+Request $\ast$}]{c\+\_\+\+E\+H\+Request,  }\item[{O\+C\+Entity\+Handler\+Flag}]{c\+\_\+watch\+\_\+flag }\end{DoxyParamCaption})}
+
+
+
+Convert incoming {\ttfamily O\+C\+Entity\+Handler\+Request} to {\ttfamily Stimulus\+In} object. Internal implementation routine called by {\ttfamily c\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em env} & J\+N\+I\+Env Pointer\\
+\hline
+\mbox{\tt in}  & {\em c\+\_\+\+E\+H\+Request} & Incoming request message originating at client (Co\+Service\+Provider)\\
+\hline
+\mbox{\tt in}  & {\em c\+\_\+watch\+\_\+flag} & Indicates whether this is a {\ttfamily W\+A\+T\+CH} request or an ordinary {\ttfamily R\+E\+Q\+U\+E\+ST} request\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{[}out\mbox{]} j\+\_\+\+Stimulus\+In Java Stimulus\+In object corresponding to {\ttfamily c\+\_\+\+E\+H\+Request} input data 
+\end{DoxyReturn}
+\hypertarget{org__iochibity___service_provider_8c_a79dcf3336d0cc478e1d468a36c950af5}{}\label{org__iochibity___service_provider_8c_a79dcf3336d0cc478e1d468a36c950af5} 
+\index{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c@{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit}!org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c@{org\+\_\+iochibity\+\_\+\+Service\+Provider.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit()}{Java\_org\_iochibity\_ServiceProvider\_exhibit()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+exhibit (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this\+\_\+\+SP }\end{DoxyParamCaption})}
+
+
+
+Wrapper on {\ttfamily O\+C\+Do\+Response} 
+
+Example usage\+: 
+\begin{DoxyCode}
+...
+this.exhibit();
+...
+\end{DoxyCode}
+
+
+\begin{DoxySeeAlso}{See also}
+c\+\_\+org\+\_\+iochibity\+\_\+\+Co\+Service\+Provider\+\_\+observe\+\_\+behavior
+
+Java\+\_\+org\+\_\+iochibity\+\_\+\+Co\+Service\+Provider\+\_\+exhibit\+Stimulus
+
+\hyperlink{org__iochibity___service_provider_8c_a87e4cf3c267ab9e286789f31fde6a0f9}{c\+\_\+org\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+observe\+\_\+stimulus} 
+\end{DoxySeeAlso}

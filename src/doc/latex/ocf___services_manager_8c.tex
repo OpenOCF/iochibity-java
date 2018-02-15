@@ -1,0 +1,67 @@
+\hypertarget{ocf___services_manager_8c}{}\section{src/c/ocf\+\_\+\+Services\+Manager.c File Reference}
+\label{ocf___services_manager_8c}\index{src/c/ocf\+\_\+\+Services\+Manager.\+c@{src/c/ocf\+\_\+\+Services\+Manager.\+c}}
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Services\+Manager.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocpayload.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL \hyperlink{ocf___services_manager_8c_aea1bdfa5bc868d0af84da7ae676c069e}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+resource\+Count} (J\+N\+I\+Env $\ast$env, jclass klass)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___services_manager_8c_ab7612ecc94fb42090864d1376f022260}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Platform\+Provider} (J\+N\+I\+Env $\ast$env, jclass klass, jstring j\+\_\+platform\+\_\+id, jstring j\+\_\+mfg\+\_\+name, jstring j\+\_\+mfg\+\_\+url, jstring j\+\_\+model\+\_\+number, jstring j\+\_\+mfg\+\_\+date, jstring j\+\_\+platform\+\_\+version, jstring j\+\_\+os\+\_\+version, jstring j\+\_\+hw\+\_\+version, jstring j\+\_\+fw\+\_\+version, jstring j\+\_\+support\+\_\+url, jstring j\+\_\+sys\+\_\+time)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___services_manager_8c_a8a064e1e1f1b7e049c19cb6e19be53f4}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Device\+Provider} (J\+N\+I\+Env $\ast$env, jclass klass, jstring j\+\_\+device\+\_\+name, jobject\+Array j\+\_\+types, jstring j\+\_\+spec\+\_\+version, jobject\+Array j\+\_\+data\+\_\+model\+\_\+versions)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___services_manager_8c_ac490540dd12396fca228af3b69cccebd}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Default\+Service\+Routine} (J\+N\+I\+Env $\ast$env, jclass klass, jobject j\+\_\+resource\+\_\+service\+\_\+provider, jobject j\+\_\+callback\+\_\+param)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \hyperlink{ocf___services_manager_8c_a59837472ccd4da2bfc381abb066c35d0}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+Lorg\+\_\+iochibity\+\_\+\+I\+Service\+Provider\+\_\+2B} (J\+N\+I\+Env $\ast$env, jclass klass, jstring j\+\_\+uri, jobject\+Array j\+\_\+tnames, jobject\+Array j\+\_\+ifnames, jobject j\+\_\+\+Service\+Provider, jbyte j\+\_\+policies)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \hyperlink{ocf___services_manager_8c_af579e148dba23778f76a6413b1d873f6}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2} (J\+N\+I\+Env $\ast$env, jclass klass, jobject j\+\_\+\+Service\+Provider)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ocf___services_manager_8c_ac490540dd12396fca228af3b69cccebd}{}\label{ocf___services_manager_8c_ac490540dd12396fca228af3b69cccebd} 
+\index{ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Default\+Service\+Routine@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Default\+Service\+Routine}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Default\+Service\+Routine@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Default\+Service\+Routine}!ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Default\+Service\+Routine()}{Java\_org\_iochibity\_ServicesManager\_registerDefaultServiceRoutine()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Default\+Service\+Routine (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass,  }\item[{jobject}]{j\+\_\+resource\+\_\+service\+\_\+provider,  }\item[{jobject}]{j\+\_\+callback\+\_\+param }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___services_manager_8c_a8a064e1e1f1b7e049c19cb6e19be53f4}{}\label{ocf___services_manager_8c_a8a064e1e1f1b7e049c19cb6e19be53f4} 
+\index{ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Device\+Provider@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Device\+Provider}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Device\+Provider@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Device\+Provider}!ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Device\+Provider()}{Java\_org\_iochibity\_ServicesManager\_registerDeviceProvider()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Device\+Provider (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass,  }\item[{jstring}]{j\+\_\+device\+\_\+name,  }\item[{jobject\+Array}]{j\+\_\+types,  }\item[{jstring}]{j\+\_\+spec\+\_\+version,  }\item[{jobject\+Array}]{j\+\_\+data\+\_\+model\+\_\+versions }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___services_manager_8c_ab7612ecc94fb42090864d1376f022260}{}\label{ocf___services_manager_8c_ab7612ecc94fb42090864d1376f022260} 
+\index{ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Platform\+Provider@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Platform\+Provider}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Platform\+Provider@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Platform\+Provider}!ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Platform\+Provider()}{Java\_org\_iochibity\_ServicesManager\_registerPlatformProvider()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Platform\+Provider (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass,  }\item[{jstring}]{j\+\_\+platform\+\_\+id,  }\item[{jstring}]{j\+\_\+mfg\+\_\+name,  }\item[{jstring}]{j\+\_\+mfg\+\_\+url,  }\item[{jstring}]{j\+\_\+model\+\_\+number,  }\item[{jstring}]{j\+\_\+mfg\+\_\+date,  }\item[{jstring}]{j\+\_\+platform\+\_\+version,  }\item[{jstring}]{j\+\_\+os\+\_\+version,  }\item[{jstring}]{j\+\_\+hw\+\_\+version,  }\item[{jstring}]{j\+\_\+fw\+\_\+version,  }\item[{jstring}]{j\+\_\+support\+\_\+url,  }\item[{jstring}]{j\+\_\+sys\+\_\+time }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___services_manager_8c_a59837472ccd4da2bfc381abb066c35d0}{}\label{ocf___services_manager_8c_a59837472ccd4da2bfc381abb066c35d0} 
+\index{ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+Lorg\+\_\+iochibity\+\_\+\+I\+Service\+Provider\+\_\+2B@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+Lorg\+\_\+iochibity\+\_\+\+I\+Service\+Provider\+\_\+2B}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+Lorg\+\_\+iochibity\+\_\+\+I\+Service\+Provider\+\_\+2B@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+Lorg\+\_\+iochibity\+\_\+\+I\+Service\+Provider\+\_\+2B}!ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+Lorg\+\_\+iochibity\+\_\+\+I\+Service\+Provider\+\_\+2\+B()}{Java\_org\_iochibity\_ServicesManager\_registerServiceProvider\_\_Ljava\_lang\_String\_2\_3Ljava\_lang\_String\_2\_3Ljava\_lang\_String\_2Lorg\_iochibity\_IServiceProvider\_2B()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+\_\+3\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2\+Lorg\+\_\+iochibity\+\_\+\+I\+Service\+Provider\+\_\+2B (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass,  }\item[{jstring}]{j\+\_\+uri,  }\item[{jobject\+Array}]{j\+\_\+tnames,  }\item[{jobject\+Array}]{j\+\_\+ifnames,  }\item[{jobject}]{j\+\_\+\+Service\+Provider,  }\item[{jbyte}]{j\+\_\+policies }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___services_manager_8c_af579e148dba23778f76a6413b1d873f6}{}\label{ocf___services_manager_8c_af579e148dba23778f76a6413b1d873f6} 
+\index{ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2}!ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2()}{Java\_org\_iochibity\_ServicesManager\_registerServiceProvider\_\_Lorg\_iochibity\_ServiceProvider\_2()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+register\+Service\+Provider\+\_\+\+\_\+\+Lorg\+\_\+iochibity\+\_\+\+Service\+Provider\+\_\+2 (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass,  }\item[{jobject}]{j\+\_\+\+Service\+Provider }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___services_manager_8c_aea1bdfa5bc868d0af84da7ae676c069e}{}\label{ocf___services_manager_8c_aea1bdfa5bc868d0af84da7ae676c069e} 
+\index{ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+resource\+Count@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+resource\+Count}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+resource\+Count@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+resource\+Count}!ocf\+\_\+\+Services\+Manager.\+c@{ocf\+\_\+\+Services\+Manager.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+resource\+Count()}{Java\_org\_iochibity\_ServicesManager\_resourceCount()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Services\+Manager\+\_\+resource\+Count (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass }\end{DoxyParamCaption})}
+

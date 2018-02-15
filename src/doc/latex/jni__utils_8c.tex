@@ -1,0 +1,61 @@
+\hypertarget{jni__utils_8c}{}\section{src/c/jni\+\_\+utils.c File Reference}
+\label{jni__utils_8c}\index{src/c/jni\+\_\+utils.\+c@{src/c/jni\+\_\+utils.\+c}}
+
+
+Utility functions for working in J\+NI.  
+
+
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Exceptions.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{jni__utils_8c_a247767db766889ef639ee4ba02549e18}{print\+\_\+class\+\_\+name} (J\+N\+I\+Env $\ast$env, jobject obj)
+\item 
+jobject \hyperlink{jni__utils_8c_adb3ee7f710627d9ea6dd9e9440f01b00}{int2\+Integer} (J\+N\+I\+Env $\ast$env, int i)
+\item 
+jobject \hyperlink{jni__utils_8c_aba2f341d1b3acaeefb525901123caaa2}{bool2\+Boolean} (J\+N\+I\+Env $\ast$env, bool b)
+\item 
+jobject \hyperlink{jni__utils_8c_ada546a8fa7c0a3fd5633d091cf25fa89}{double2\+Double} (J\+N\+I\+Env $\ast$env, double d)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Utility functions for working in J\+NI. 
+
+\begin{DoxyAuthor}{Author}
+Gregg Reynolds 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2016 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\hypertarget{jni__utils_8c_aba2f341d1b3acaeefb525901123caaa2}{}\label{jni__utils_8c_aba2f341d1b3acaeefb525901123caaa2} 
+\index{jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}!bool2\+Boolean@{bool2\+Boolean}}
+\index{bool2\+Boolean@{bool2\+Boolean}!jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}}
+\subsubsection{\texorpdfstring{bool2\+Boolean()}{bool2Boolean()}}
+{\footnotesize\ttfamily jobject bool2\+Boolean (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{bool}]{b }\end{DoxyParamCaption})}
+
+\hypertarget{jni__utils_8c_ada546a8fa7c0a3fd5633d091cf25fa89}{}\label{jni__utils_8c_ada546a8fa7c0a3fd5633d091cf25fa89} 
+\index{jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}!double2\+Double@{double2\+Double}}
+\index{double2\+Double@{double2\+Double}!jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}}
+\subsubsection{\texorpdfstring{double2\+Double()}{double2Double()}}
+{\footnotesize\ttfamily jobject double2\+Double (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{double}]{d }\end{DoxyParamCaption})}
+
+\hypertarget{jni__utils_8c_adb3ee7f710627d9ea6dd9e9440f01b00}{}\label{jni__utils_8c_adb3ee7f710627d9ea6dd9e9440f01b00} 
+\index{jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}!int2\+Integer@{int2\+Integer}}
+\index{int2\+Integer@{int2\+Integer}!jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}}
+\subsubsection{\texorpdfstring{int2\+Integer()}{int2Integer()}}
+{\footnotesize\ttfamily jobject int2\+Integer (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{int}]{i }\end{DoxyParamCaption})}
+
+\hypertarget{jni__utils_8c_a247767db766889ef639ee4ba02549e18}{}\label{jni__utils_8c_a247767db766889ef639ee4ba02549e18} 
+\index{jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}!print\+\_\+class\+\_\+name@{print\+\_\+class\+\_\+name}}
+\index{print\+\_\+class\+\_\+name@{print\+\_\+class\+\_\+name}!jni\+\_\+utils.\+c@{jni\+\_\+utils.\+c}}
+\subsubsection{\texorpdfstring{print\+\_\+class\+\_\+name()}{print\_class\_name()}}
+{\footnotesize\ttfamily void print\+\_\+class\+\_\+name (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{obj }\end{DoxyParamCaption})}
+

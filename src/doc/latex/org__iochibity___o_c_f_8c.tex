@@ -1,0 +1,119 @@
+\hypertarget{org__iochibity___o_c_f_8c}{}\section{src/c/org\+\_\+iochibity\+\_\+\+O\+CF.c File Reference}
+\label{org__iochibity___o_c_f_8c}\index{src/c/org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{src/c/org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+
+
+Wrappers for Init, O\+C\+Process, etc.  
+
+
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+O\+C\+F.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+malloc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+string.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}debug.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}tinydtls/debug.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$ \hyperlink{org__iochibity___o_c_f_8c_ab0e75c90a1bb9777c209593cfc3e0cc7}{troutine\+\_\+work} (void $\ast$arg)
+\item 
+F\+I\+LE $\ast$ \hyperlink{org__iochibity___o_c_f_8c_ad16d2207194a6708bec7896a8ffa85cc}{server\+\_\+fopen} (const char $\ast$path, const char $\ast$mode)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___o_c_f_8c_aef84f468fa85c6c8df6ca40ef6f6786a}{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2} (J\+N\+I\+Env $\ast$env, jclass klass, jint mode, jstring j\+\_\+config\+\_\+fname)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___o_c_f_8c_aa3d35f762dd51b7fe9c9d596c5d643f5}{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+II} (J\+N\+I\+Env $\ast$env, jclass clazz, jint mode, jint server\+\_\+flags, jint client\+\_\+flags)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___o_c_f_8c_a91cdb64ba5d0a7c84109921ee61f6a42}{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+run} (J\+N\+I\+Env $\ast$env, jclass clazz)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___o_c_f_8c_a705170028f68ab6dba814715bf8c17a5}{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+stop} (J\+N\+I\+Env $\ast$env, jclass clazz)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+pthread\+\_\+t \hyperlink{org__iochibity___o_c_f_8c_ae9b4ddf3a058aff239d48e4986afe60d}{pt\+\_\+work}
+\item 
+bool \hyperlink{org__iochibity___o_c_f_8c_acbf531a177c42373f0129ed34b3fc54a}{g\+\_\+quit\+\_\+flag} = false
+\item 
+const char $\ast$ \hyperlink{org__iochibity___o_c_f_8c_a909d2ea8b232b941ec72f7204ea4060d}{g\+\_\+config\+\_\+fname}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Wrappers for Init, O\+C\+Process, etc. 
+
+\begin{DoxyAuthor}{Author}
+Gregg Reynolds 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2016 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\hypertarget{org__iochibity___o_c_f_8c_aa3d35f762dd51b7fe9c9d596c5d643f5}{}\label{org__iochibity___o_c_f_8c_aa3d35f762dd51b7fe9c9d596c5d643f5} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+II@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+II}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+II@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+II}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+I\+I()}{Java\_org\_iochibity\_OCF\_Init\_\_III()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+II (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{clazz,  }\item[{jint}]{mode,  }\item[{jint}]{server\+\_\+flags,  }\item[{jint}]{client\+\_\+flags }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___o_c_f_8c_aef84f468fa85c6c8df6ca40ef6f6786a}{}\label{org__iochibity___o_c_f_8c_aef84f468fa85c6c8df6ca40ef6f6786a} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2()}{Java\_org\_iochibity\_OCF\_Init\_\_ILjava\_lang\_String\_2()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+\+Init\+\_\+\+\_\+\+I\+Ljava\+\_\+lang\+\_\+\+String\+\_\+2 (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass,  }\item[{jint}]{mode,  }\item[{jstring}]{j\+\_\+config\+\_\+fname }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___o_c_f_8c_a91cdb64ba5d0a7c84109921ee61f6a42}{}\label{org__iochibity___o_c_f_8c_a91cdb64ba5d0a7c84109921ee61f6a42} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+run@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+run}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+run@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+run}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+run()}{Java\_org\_iochibity\_OCF\_run()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+run (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{clazz }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___o_c_f_8c_a705170028f68ab6dba814715bf8c17a5}{}\label{org__iochibity___o_c_f_8c_a705170028f68ab6dba814715bf8c17a5} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+stop@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+stop}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+stop@{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+stop}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+stop()}{Java\_org\_iochibity\_OCF\_stop()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+O\+C\+F\+\_\+stop (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{clazz }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___o_c_f_8c_ad16d2207194a6708bec7896a8ffa85cc}{}\label{org__iochibity___o_c_f_8c_ad16d2207194a6708bec7896a8ffa85cc} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!server\+\_\+fopen@{server\+\_\+fopen}}
+\index{server\+\_\+fopen@{server\+\_\+fopen}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{server\+\_\+fopen()}{server\_fopen()}}
+{\footnotesize\ttfamily F\+I\+LE$\ast$ server\+\_\+fopen (\begin{DoxyParamCaption}\item[{const char $\ast$}]{path,  }\item[{const char $\ast$}]{mode }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___o_c_f_8c_ab0e75c90a1bb9777c209593cfc3e0cc7}{}\label{org__iochibity___o_c_f_8c_ab0e75c90a1bb9777c209593cfc3e0cc7} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!troutine\+\_\+work@{troutine\+\_\+work}}
+\index{troutine\+\_\+work@{troutine\+\_\+work}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{troutine\+\_\+work()}{troutine\_work()}}
+{\footnotesize\ttfamily void$\ast$ troutine\+\_\+work (\begin{DoxyParamCaption}\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{org__iochibity___o_c_f_8c_a909d2ea8b232b941ec72f7204ea4060d}{}\label{org__iochibity___o_c_f_8c_a909d2ea8b232b941ec72f7204ea4060d} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!g\+\_\+config\+\_\+fname@{g\+\_\+config\+\_\+fname}}
+\index{g\+\_\+config\+\_\+fname@{g\+\_\+config\+\_\+fname}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{g\+\_\+config\+\_\+fname}{g\_config\_fname}}
+{\footnotesize\ttfamily const char$\ast$ g\+\_\+config\+\_\+fname}
+
+\hypertarget{org__iochibity___o_c_f_8c_acbf531a177c42373f0129ed34b3fc54a}{}\label{org__iochibity___o_c_f_8c_acbf531a177c42373f0129ed34b3fc54a} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!g\+\_\+quit\+\_\+flag@{g\+\_\+quit\+\_\+flag}}
+\index{g\+\_\+quit\+\_\+flag@{g\+\_\+quit\+\_\+flag}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{g\+\_\+quit\+\_\+flag}{g\_quit\_flag}}
+{\footnotesize\ttfamily bool g\+\_\+quit\+\_\+flag = false}
+
+\hypertarget{org__iochibity___o_c_f_8c_ae9b4ddf3a058aff239d48e4986afe60d}{}\label{org__iochibity___o_c_f_8c_ae9b4ddf3a058aff239d48e4986afe60d} 
+\index{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}!pt\+\_\+work@{pt\+\_\+work}}
+\index{pt\+\_\+work@{pt\+\_\+work}!org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c@{org\+\_\+iochibity\+\_\+\+O\+C\+F.\+c}}
+\subsubsection{\texorpdfstring{pt\+\_\+work}{pt\_work}}
+{\footnotesize\ttfamily pthread\+\_\+t pt\+\_\+work}
+

@@ -1,0 +1,51 @@
+\hypertarget{ocf__property__map_8c}{}\section{src/c/ocf\+\_\+property\+\_\+map.c File Reference}
+\label{ocf__property__map_8c}\index{src/c/ocf\+\_\+property\+\_\+map.\+c@{src/c/ocf\+\_\+property\+\_\+map.\+c}}
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Property\+Map.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocpayload.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresourcehandler.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{ocf__property__map_8c_ae845d9ae8e95941425a495bed25765fe}{O\+C\+Rep\+Payload\+Set\+Prop} (O\+C\+Rep\+Payload $\ast$payload, const char $\ast$name, void $\ast$value, O\+C\+Rep\+Payload\+Prop\+Type type)
+\item 
+jlong \hyperlink{ocf__property__map_8c_a7ba93c10c0cbb67b9200f10cb4031529}{get\+Handle} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \hyperlink{ocf__property__map_8c_a813353fa5146938ec9b04f49aa1ba69f}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+get\+Prop} (J\+N\+I\+Env $\ast$env, jobject this, jstring name)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \hyperlink{ocf__property__map_8c_a25c661ffba79756309f11388effa44aa}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+set\+Prop} (J\+N\+I\+Env $\ast$env, jobject this, jstring j\+\_\+name, jobject j\+\_\+value, jlong type)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ocf__property__map_8c_a7ba93c10c0cbb67b9200f10cb4031529}{}\label{ocf__property__map_8c_a7ba93c10c0cbb67b9200f10cb4031529} 
+\index{ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}!get\+Handle@{get\+Handle}}
+\index{get\+Handle@{get\+Handle}!ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}}
+\subsubsection{\texorpdfstring{get\+Handle()}{getHandle()}}
+{\footnotesize\ttfamily jlong get\+Handle (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__property__map_8c_a813353fa5146938ec9b04f49aa1ba69f}{}\label{ocf__property__map_8c_a813353fa5146938ec9b04f49aa1ba69f} 
+\index{ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+get\+Prop@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+get\+Prop}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+get\+Prop@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+get\+Prop}!ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+get\+Prop()}{Java\_org\_iochibity\_PayloadProperties\_getProp()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+get\+Prop (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this,  }\item[{jstring}]{name }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__property__map_8c_a25c661ffba79756309f11388effa44aa}{}\label{ocf__property__map_8c_a25c661ffba79756309f11388effa44aa} 
+\index{ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+set\+Prop@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+set\+Prop}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+set\+Prop@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+set\+Prop}!ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+set\+Prop()}{Java\_org\_iochibity\_PayloadProperties\_setProp()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+Properties\+\_\+set\+Prop (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this,  }\item[{jstring}]{j\+\_\+name,  }\item[{jobject}]{j\+\_\+value,  }\item[{jlong}]{type }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__property__map_8c_ae845d9ae8e95941425a495bed25765fe}{}\label{ocf__property__map_8c_ae845d9ae8e95941425a495bed25765fe} 
+\index{ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}!O\+C\+Rep\+Payload\+Set\+Prop@{O\+C\+Rep\+Payload\+Set\+Prop}}
+\index{O\+C\+Rep\+Payload\+Set\+Prop@{O\+C\+Rep\+Payload\+Set\+Prop}!ocf\+\_\+property\+\_\+map.\+c@{ocf\+\_\+property\+\_\+map.\+c}}
+\subsubsection{\texorpdfstring{O\+C\+Rep\+Payload\+Set\+Prop()}{OCRepPayloadSetProp()}}
+{\footnotesize\ttfamily bool O\+C\+Rep\+Payload\+Set\+Prop (\begin{DoxyParamCaption}\item[{O\+C\+Rep\+Payload $\ast$}]{payload,  }\item[{const char $\ast$}]{name,  }\item[{void $\ast$}]{value,  }\item[{O\+C\+Rep\+Payload\+Prop\+Type}]{type }\end{DoxyParamCaption})}
+

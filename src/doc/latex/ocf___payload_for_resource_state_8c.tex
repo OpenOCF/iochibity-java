@@ -1,0 +1,60 @@
+\hypertarget{ocf___payload_for_resource_state_8c}{}\section{src/c/ocf\+\_\+\+Payload\+For\+Resource\+State.c File Reference}
+\label{ocf___payload_for_resource_state_8c}\index{src/c/ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{src/c/ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}}
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocpayload.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresourcehandler.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+O\+C\+Rep\+Payload $\ast$ \hyperlink{ocf___payload_for_resource_state_8c_abb41f9f3b70c029ce2fa4cc632556859}{get\+Object\+Handle} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \hyperlink{ocf___payload_for_resource_state_8c_ae3ff9b3b5b771844c4b94b38c681b847}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+create\+Payload} (J\+N\+I\+Env $\ast$env, jobject this, jobject j\+\_\+\+Stimulus\+In)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___payload_for_resource_state_8c_ab15ac3f33a0c2d72a27a27153eced601}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Resource\+Types} (J\+N\+I\+Env $\ast$, jobject, jobject)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___payload_for_resource_state_8c_a61b68a8ed98f40158c92af41277b4f0d}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Interfaces} (J\+N\+I\+Env $\ast$, jobject, jobject)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___payload_for_resource_state_8c_a7be77f8a5f1b0bc4068b598d8d3cc622}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Properties} (J\+N\+I\+Env $\ast$, jobject, jobject)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ocf___payload_for_resource_state_8c_abb41f9f3b70c029ce2fa4cc632556859}{}\label{ocf___payload_for_resource_state_8c_abb41f9f3b70c029ce2fa4cc632556859} 
+\index{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}!get\+Object\+Handle@{get\+Object\+Handle}}
+\index{get\+Object\+Handle@{get\+Object\+Handle}!ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}}
+\subsubsection{\texorpdfstring{get\+Object\+Handle()}{getObjectHandle()}}
+{\footnotesize\ttfamily O\+C\+Rep\+Payload$\ast$ get\+Object\+Handle (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___payload_for_resource_state_8c_ae3ff9b3b5b771844c4b94b38c681b847}{}\label{ocf___payload_for_resource_state_8c_ae3ff9b3b5b771844c4b94b38c681b847} 
+\index{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+create\+Payload@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+create\+Payload}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+create\+Payload@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+create\+Payload}!ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+create\+Payload()}{Java\_org\_iochibity\_PayloadForResourceState\_createPayload()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+create\+Payload (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this,  }\item[{jobject}]{j\+\_\+\+Stimulus\+In }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___payload_for_resource_state_8c_a61b68a8ed98f40158c92af41277b4f0d}{}\label{ocf___payload_for_resource_state_8c_a61b68a8ed98f40158c92af41277b4f0d} 
+\index{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Interfaces@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Interfaces}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Interfaces@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Interfaces}!ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Interfaces()}{Java\_org\_iochibity\_PayloadForResourceState\_setInterfaces()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Interfaces (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{,  }\item[{jobject}]{,  }\item[{jobject}]{ }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___payload_for_resource_state_8c_a7be77f8a5f1b0bc4068b598d8d3cc622}{}\label{ocf___payload_for_resource_state_8c_a7be77f8a5f1b0bc4068b598d8d3cc622} 
+\index{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Properties@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Properties}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Properties@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Properties}!ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Properties()}{Java\_org\_iochibity\_PayloadForResourceState\_setProperties()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Properties (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{,  }\item[{jobject}]{,  }\item[{jobject}]{ }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___payload_for_resource_state_8c_ab15ac3f33a0c2d72a27a27153eced601}{}\label{ocf___payload_for_resource_state_8c_ab15ac3f33a0c2d72a27a27153eced601} 
+\index{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Resource\+Types@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Resource\+Types}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Resource\+Types@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Resource\+Types}!ocf\+\_\+\+Payload\+For\+Resource\+State.\+c@{ocf\+\_\+\+Payload\+For\+Resource\+State.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Resource\+Types()}{Java\_org\_iochibity\_PayloadForResourceState\_setResourceTypes()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Payload\+For\+Resource\+State\+\_\+set\+Resource\+Types (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{,  }\item[{jobject}]{,  }\item[{jobject}]{ }\end{DoxyParamCaption})}
+

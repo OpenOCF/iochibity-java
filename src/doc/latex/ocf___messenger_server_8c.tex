@@ -1,0 +1,47 @@
+\hypertarget{ocf___messenger_server_8c}{}\section{src/c/ocf\+\_\+\+Messenger\+Server.c File Reference}
+\label{ocf___messenger_server_8c}\index{src/c/ocf\+\_\+\+Messenger\+Server.\+c@{src/c/ocf\+\_\+\+Messenger\+Server.\+c}}
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Messenger.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocf\+\_\+exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+malloc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+string.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+jobject \hyperlink{ocf___messenger_server_8c_a15421d8c5313383172789cacd101d6f5}{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In} (J\+N\+I\+Env $\ast$env, O\+C\+Entity\+Handler\+Request $\ast$c\+\_\+\+E\+H\+Request, O\+C\+Entity\+Handler\+Flag c\+\_\+watch\+\_\+flag)
+\item 
+O\+C\+Entity\+Handler\+Result \hyperlink{ocf___messenger_server_8c_a0eb8cff41ef058abb4363f80e1116b93}{service\+\_\+request\+\_\+in} (O\+C\+Entity\+Handler\+Flag watch\+\_\+flag, O\+C\+Entity\+Handler\+Request $\ast$c\+\_\+\+O\+C\+Entity\+Handler\+Request, void $\ast$j\+\_\+\+I\+Service\+Provider)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL \hyperlink{ocf___messenger_server_8c_a95dc89d410591e04cb65fbf6d4353553}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Messenger\+\_\+exhibit\+Behavior} (J\+N\+I\+Env $\ast$env, jclass klass, jobject j\+\_\+\+Observation\+Out)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ocf___messenger_server_8c_a95dc89d410591e04cb65fbf6d4353553}{}\label{ocf___messenger_server_8c_a95dc89d410591e04cb65fbf6d4353553} 
+\index{ocf\+\_\+\+Messenger\+Server.\+c@{ocf\+\_\+\+Messenger\+Server.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Messenger\+\_\+exhibit\+Behavior@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Messenger\+\_\+exhibit\+Behavior}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Messenger\+\_\+exhibit\+Behavior@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Messenger\+\_\+exhibit\+Behavior}!ocf\+\_\+\+Messenger\+Server.\+c@{ocf\+\_\+\+Messenger\+Server.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Messenger\+\_\+exhibit\+Behavior()}{Java\_org\_iochibity\_Messenger\_exhibitBehavior()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT void J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Messenger\+\_\+exhibit\+Behavior (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jclass}]{klass,  }\item[{jobject}]{j\+\_\+\+Observation\+Out }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___messenger_server_8c_a15421d8c5313383172789cacd101d6f5}{}\label{ocf___messenger_server_8c_a15421d8c5313383172789cacd101d6f5} 
+\index{ocf\+\_\+\+Messenger\+Server.\+c@{ocf\+\_\+\+Messenger\+Server.\+c}!O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In@{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In}}
+\index{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In@{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In}!ocf\+\_\+\+Messenger\+Server.\+c@{ocf\+\_\+\+Messenger\+Server.\+c}}
+\subsubsection{\texorpdfstring{O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In()}{OCEntityHandlerRequest\_to\_StimulusIn()}}
+{\footnotesize\ttfamily jobject O\+C\+Entity\+Handler\+Request\+\_\+to\+\_\+\+Stimulus\+In (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{O\+C\+Entity\+Handler\+Request $\ast$}]{c\+\_\+\+E\+H\+Request,  }\item[{O\+C\+Entity\+Handler\+Flag}]{c\+\_\+watch\+\_\+flag }\end{DoxyParamCaption})}
+
+\hypertarget{ocf___messenger_server_8c_a0eb8cff41ef058abb4363f80e1116b93}{}\label{ocf___messenger_server_8c_a0eb8cff41ef058abb4363f80e1116b93} 
+\index{ocf\+\_\+\+Messenger\+Server.\+c@{ocf\+\_\+\+Messenger\+Server.\+c}!service\+\_\+request\+\_\+in@{service\+\_\+request\+\_\+in}}
+\index{service\+\_\+request\+\_\+in@{service\+\_\+request\+\_\+in}!ocf\+\_\+\+Messenger\+Server.\+c@{ocf\+\_\+\+Messenger\+Server.\+c}}
+\subsubsection{\texorpdfstring{service\+\_\+request\+\_\+in()}{service\_request\_in()}}
+{\footnotesize\ttfamily O\+C\+Entity\+Handler\+Result service\+\_\+request\+\_\+in (\begin{DoxyParamCaption}\item[{O\+C\+Entity\+Handler\+Flag}]{watch\+\_\+flag,  }\item[{O\+C\+Entity\+Handler\+Request $\ast$}]{c\+\_\+\+O\+C\+Entity\+Handler\+Request,  }\item[{void $\ast$}]{j\+\_\+\+I\+Service\+Provider }\end{DoxyParamCaption})}
+

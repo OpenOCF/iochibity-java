@@ -1,0 +1,91 @@
+\hypertarget{ocf__exceptions_8c}{}\section{src/c/ocf\+\_\+exceptions.c File Reference}
+\label{ocf__exceptions_8c}\index{src/c/ocf\+\_\+exceptions.\+c@{src/c/ocf\+\_\+exceptions.\+c}}
+{\ttfamily \#include \char`\"{}ocf\+\_\+exceptions.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+jint \hyperlink{ocf__exceptions_8c_a8367bffc1c9943e3f2bf46ffa937e346}{throw\+\_\+no\+\_\+class\+\_\+def\+\_\+error} (J\+N\+I\+Env $\ast$env, char $\ast$message)
+\item 
+jint \hyperlink{ocf__exceptions_8c_aa0f44828cf75cae871c2ac729e8185ef}{throw\+\_\+not\+\_\+implemented} (J\+N\+I\+Env $\ast$env, char $\ast$message)
+\item 
+void \hyperlink{ocf__exceptions_8c_a7b42e7918692e5c543e51b9d511fbc71}{throw\+\_\+jni\+\_\+exception} (J\+N\+I\+Env $\ast$env, const char $\ast$function\+Name, const char $\ast$file, const int line, const char $\ast$message)
+\item 
+char $\ast$ \hyperlink{ocf__exceptions_8c_a3ac5c2282b149cd4d220756de6817750}{get\+Stack\+Code\+String} (int code)
+\item 
+void \hyperlink{ocf__exceptions_8c_a2f8c0fdf880da3f5ec82172e0deae380}{throw\+\_\+stack\+\_\+exception} (J\+N\+I\+Env $\ast$env, const char $\ast$function\+Name, const char $\ast$file, const int line, const int code, const char $\ast$message)
+\item 
+char $\ast$ \hyperlink{ocf__exceptions_8c_a1817e4e3041631707098bf253f206d1a}{get\+E\+H\+Code\+String} (int code)
+\item 
+void \hyperlink{ocf__exceptions_8c_ac9f5b1795f9b478075e2c567c7666deb}{throw\+\_\+eh\+\_\+exception} (J\+N\+I\+Env $\ast$env, const char $\ast$function\+Name, const char $\ast$file, const int line, const int code, const char $\ast$message)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ocf__exceptions_8c_a1817e4e3041631707098bf253f206d1a}{}\label{ocf__exceptions_8c_a1817e4e3041631707098bf253f206d1a} 
+\index{ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}!get\+E\+H\+Code\+String@{get\+E\+H\+Code\+String}}
+\index{get\+E\+H\+Code\+String@{get\+E\+H\+Code\+String}!ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}}
+\subsubsection{\texorpdfstring{get\+E\+H\+Code\+String()}{getEHCodeString()}}
+{\footnotesize\ttfamily char$\ast$ get\+E\+H\+Code\+String (\begin{DoxyParamCaption}\item[{int}]{code }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__exceptions_8c_a3ac5c2282b149cd4d220756de6817750}{}\label{ocf__exceptions_8c_a3ac5c2282b149cd4d220756de6817750} 
+\index{ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}!get\+Stack\+Code\+String@{get\+Stack\+Code\+String}}
+\index{get\+Stack\+Code\+String@{get\+Stack\+Code\+String}!ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}}
+\subsubsection{\texorpdfstring{get\+Stack\+Code\+String()}{getStackCodeString()}}
+{\footnotesize\ttfamily char$\ast$ get\+Stack\+Code\+String (\begin{DoxyParamCaption}\item[{int}]{code }\end{DoxyParamCaption})}
+
+Success status code -\/ S\+T\+A\+RT H\+E\+RE.
+
+Success status code -\/ E\+ND H\+E\+RE.
+
+Error status code -\/ S\+T\+A\+RT H\+E\+RE.
+
+Invalid parameter.
+
+Resource not found.
+
+e.\+g\+: not supported method or interface.
+
+Resource has no registered observers.
+
+The remote reply contained malformed data.
+
+Request is not authorized by Resource Server.
+
+Error code from P\+DM
+
+Error code from O\+TM This error is pushed from D\+T\+LS interface when handshake failure happens
+
+Insert all new error codes here!.
+
+E\+R\+R\+OR in stack.
+
+Error status code -\/ E\+ND H\+E\+RE. \hypertarget{ocf__exceptions_8c_ac9f5b1795f9b478075e2c567c7666deb}{}\label{ocf__exceptions_8c_ac9f5b1795f9b478075e2c567c7666deb} 
+\index{ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}!throw\+\_\+eh\+\_\+exception@{throw\+\_\+eh\+\_\+exception}}
+\index{throw\+\_\+eh\+\_\+exception@{throw\+\_\+eh\+\_\+exception}!ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}}
+\subsubsection{\texorpdfstring{throw\+\_\+eh\+\_\+exception()}{throw\_eh\_exception()}}
+{\footnotesize\ttfamily void throw\+\_\+eh\+\_\+exception (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{const char $\ast$}]{function\+Name,  }\item[{const char $\ast$}]{file,  }\item[{const int}]{line,  }\item[{const int}]{code,  }\item[{const char $\ast$}]{message }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__exceptions_8c_a7b42e7918692e5c543e51b9d511fbc71}{}\label{ocf__exceptions_8c_a7b42e7918692e5c543e51b9d511fbc71} 
+\index{ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}!throw\+\_\+jni\+\_\+exception@{throw\+\_\+jni\+\_\+exception}}
+\index{throw\+\_\+jni\+\_\+exception@{throw\+\_\+jni\+\_\+exception}!ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}}
+\subsubsection{\texorpdfstring{throw\+\_\+jni\+\_\+exception()}{throw\_jni\_exception()}}
+{\footnotesize\ttfamily void throw\+\_\+jni\+\_\+exception (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{const char $\ast$}]{function\+Name,  }\item[{const char $\ast$}]{file,  }\item[{const int}]{line,  }\item[{const char $\ast$}]{message }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__exceptions_8c_a8367bffc1c9943e3f2bf46ffa937e346}{}\label{ocf__exceptions_8c_a8367bffc1c9943e3f2bf46ffa937e346} 
+\index{ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}!throw\+\_\+no\+\_\+class\+\_\+def\+\_\+error@{throw\+\_\+no\+\_\+class\+\_\+def\+\_\+error}}
+\index{throw\+\_\+no\+\_\+class\+\_\+def\+\_\+error@{throw\+\_\+no\+\_\+class\+\_\+def\+\_\+error}!ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}}
+\subsubsection{\texorpdfstring{throw\+\_\+no\+\_\+class\+\_\+def\+\_\+error()}{throw\_no\_class\_def\_error()}}
+{\footnotesize\ttfamily jint throw\+\_\+no\+\_\+class\+\_\+def\+\_\+error (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{char $\ast$}]{message }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__exceptions_8c_aa0f44828cf75cae871c2ac729e8185ef}{}\label{ocf__exceptions_8c_aa0f44828cf75cae871c2ac729e8185ef} 
+\index{ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}!throw\+\_\+not\+\_\+implemented@{throw\+\_\+not\+\_\+implemented}}
+\index{throw\+\_\+not\+\_\+implemented@{throw\+\_\+not\+\_\+implemented}!ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}}
+\subsubsection{\texorpdfstring{throw\+\_\+not\+\_\+implemented()}{throw\_not\_implemented()}}
+{\footnotesize\ttfamily jint throw\+\_\+not\+\_\+implemented (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{char $\ast$}]{message }\end{DoxyParamCaption})}
+
+\hypertarget{ocf__exceptions_8c_a2f8c0fdf880da3f5ec82172e0deae380}{}\label{ocf__exceptions_8c_a2f8c0fdf880da3f5ec82172e0deae380} 
+\index{ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}!throw\+\_\+stack\+\_\+exception@{throw\+\_\+stack\+\_\+exception}}
+\index{throw\+\_\+stack\+\_\+exception@{throw\+\_\+stack\+\_\+exception}!ocf\+\_\+exceptions.\+c@{ocf\+\_\+exceptions.\+c}}
+\subsubsection{\texorpdfstring{throw\+\_\+stack\+\_\+exception()}{throw\_stack\_exception()}}
+{\footnotesize\ttfamily void throw\+\_\+stack\+\_\+exception (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{const char $\ast$}]{function\+Name,  }\item[{const char $\ast$}]{file,  }\item[{const int}]{line,  }\item[{const int}]{code,  }\item[{const char $\ast$}]{message }\end{DoxyParamCaption})}
+

@@ -1,0 +1,117 @@
+\hypertarget{org__iochibity___device_address_8c}{}\section{src/c/org\+\_\+iochibity\+\_\+\+Device\+Address.c File Reference}
+\label{org__iochibity___device_address_8c}\index{src/c/org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{src/c/org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+
+
+J\+NI implementation of Device\+Address Java A\+PI.  
+
+
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Device\+Address.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+malloc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocpayload.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresourcehandler.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a631f22640c93ac985f29ccc1ecf3f7f0}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Protocol} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a57fac862d4de2a4d357db3efc2b6b724}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Flags} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jbyte J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a571e1ea0da157f97d2b56ec63ba33bf2}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Scope} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_ac305769b158c04d2cf3ac42b320ec625}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+transport\+Is\+Secure} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a31767ecdfe4b4a539042fd273f72a267}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv6} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a8d80d3b36caa1c6048b40e8988a9a0da}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv4} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_ae2ea9a9f6db9a3ffab6f86366488089b}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+Multicast} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a4dc5a7d2792155db38a83fec672f160b}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+port} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jstring J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a3056a87189e19f14573c64efcefca327}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ip\+Address} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___device_address_8c_a8da488cafbbe2fc80633772b72cca250}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ifindex} (J\+N\+I\+Env $\ast$env, jobject this)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+J\+NI implementation of Device\+Address Java A\+PI. 
+
+\begin{DoxyAuthor}{Author}
+Gregg Reynolds 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2016 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\hypertarget{org__iochibity___device_address_8c_a8da488cafbbe2fc80633772b72cca250}{}\label{org__iochibity___device_address_8c_a8da488cafbbe2fc80633772b72cca250} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ifindex@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ifindex}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ifindex@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ifindex}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ifindex()}{Java\_org\_iochibity\_DeviceAddress\_ifindex()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ifindex (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_a3056a87189e19f14573c64efcefca327}{}\label{org__iochibity___device_address_8c_a3056a87189e19f14573c64efcefca327} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ip\+Address@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ip\+Address}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ip\+Address@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ip\+Address}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ip\+Address()}{Java\_org\_iochibity\_DeviceAddress\_ipAddress()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jstring J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+ip\+Address (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_a8d80d3b36caa1c6048b40e8988a9a0da}{}\label{org__iochibity___device_address_8c_a8d80d3b36caa1c6048b40e8988a9a0da} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv4@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv4}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv4@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv4}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv4()}{Java\_org\_iochibity\_DeviceAddress\_isIPv4()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv4 (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_a31767ecdfe4b4a539042fd273f72a267}{}\label{org__iochibity___device_address_8c_a31767ecdfe4b4a539042fd273f72a267} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv6@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv6}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv6@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv6}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv6()}{Java\_org\_iochibity\_DeviceAddress\_isIPv6()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+I\+Pv6 (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_ae2ea9a9f6db9a3ffab6f86366488089b}{}\label{org__iochibity___device_address_8c_ae2ea9a9f6db9a3ffab6f86366488089b} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+Multicast@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+Multicast}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+Multicast@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+Multicast}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+Multicast()}{Java\_org\_iochibity\_DeviceAddress\_isMulticast()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+is\+Multicast (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_a57fac862d4de2a4d357db3efc2b6b724}{}\label{org__iochibity___device_address_8c_a57fac862d4de2a4d357db3efc2b6b724} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Flags@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Flags}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Flags@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Flags}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Flags()}{Java\_org\_iochibity\_DeviceAddress\_networkFlags()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Flags (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_a631f22640c93ac985f29ccc1ecf3f7f0}{}\label{org__iochibity___device_address_8c_a631f22640c93ac985f29ccc1ecf3f7f0} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Protocol@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Protocol}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Protocol@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Protocol}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Protocol()}{Java\_org\_iochibity\_DeviceAddress\_networkProtocol()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Protocol (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_a571e1ea0da157f97d2b56ec63ba33bf2}{}\label{org__iochibity___device_address_8c_a571e1ea0da157f97d2b56ec63ba33bf2} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Scope@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Scope}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Scope@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Scope}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Scope()}{Java\_org\_iochibity\_DeviceAddress\_networkScope()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jbyte J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+network\+Scope (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_a4dc5a7d2792155db38a83fec672f160b}{}\label{org__iochibity___device_address_8c_a4dc5a7d2792155db38a83fec672f160b} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+port@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+port}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+port@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+port}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+port()}{Java\_org\_iochibity\_DeviceAddress\_port()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jint J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+port (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___device_address_8c_ac305769b158c04d2cf3ac42b320ec625}{}\label{org__iochibity___device_address_8c_ac305769b158c04d2cf3ac42b320ec625} 
+\index{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+transport\+Is\+Secure@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+transport\+Is\+Secure}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+transport\+Is\+Secure@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+transport\+Is\+Secure}!org\+\_\+iochibity\+\_\+\+Device\+Address.\+c@{org\+\_\+iochibity\+\_\+\+Device\+Address.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+transport\+Is\+Secure()}{Java\_org\_iochibity\_DeviceAddress\_transportIsSecure()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jboolean J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Device\+Address\+\_\+transport\+Is\+Secure (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+

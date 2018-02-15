@@ -1,0 +1,79 @@
+\hypertarget{org__iochibity___message_8c}{}\section{src/c/org\+\_\+iochibity\+\_\+\+Message.c File Reference}
+\label{org__iochibity___message_8c}\index{src/c/org\+\_\+iochibity\+\_\+\+Message.\+c@{src/c/org\+\_\+iochibity\+\_\+\+Message.\+c}}
+
+
+Routines to convert O\+C\+Payload structs to {\ttfamily Observation} objects.  
+
+
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Message.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Init.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}org\+\_\+iochibity\+\_\+\+Exceptions.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}jni\+\_\+utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}octypes.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocresource.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ocstack.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+malloc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}oic\+\_\+string.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+jobject \hyperlink{org__iochibity___message_8c_ab098ba1f3583c20642d6376244ac769e}{O\+C\+Resource\+Payload\+\_\+to\+\_\+\+Observation} (J\+N\+I\+Env $\ast$env, O\+C\+Resource\+Payload $\ast$c\+\_\+payload)
+\item 
+jobject \hyperlink{org__iochibity___message_8c_a9b8178174171c79d58d37013e4d71787}{O\+C\+Discovery\+Payload\+\_\+to\+\_\+\+Observation} (J\+N\+I\+Env $\ast$env, O\+C\+Discovery\+Payload $\ast$c\+\_\+payload)
+\item 
+jobject \hyperlink{org__iochibity___message_8c_aba919d7da55b8392a92cbf5f7ef7097d}{O\+C\+Rep\+Payload\+\_\+to\+\_\+\+Observation} (J\+N\+I\+Env $\ast$env, O\+C\+Rep\+Payload $\ast$c\+\_\+payload)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___message_8c_a2c2137d9c482d480a76c5a4d0e786517}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Observation\+Records} (J\+N\+I\+Env $\ast$env, jobject this)
+\item 
+J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL \hyperlink{org__iochibity___message_8c_ac73de0094b02aa50d2eb5142e25360aa}{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Options} (J\+N\+I\+Env $\ast$env, jobject this)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Routines to convert O\+C\+Payload structs to {\ttfamily Observation} objects. 
+
+\begin{DoxyAuthor}{Author}
+Gregg Reynolds 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2016 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\hypertarget{org__iochibity___message_8c_a2c2137d9c482d480a76c5a4d0e786517}{}\label{org__iochibity___message_8c_a2c2137d9c482d480a76c5a4d0e786517} 
+\index{org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Observation\+Records@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Observation\+Records}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Observation\+Records@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Observation\+Records}!org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Observation\+Records()}{Java\_org\_iochibity\_Message\_getObservationRecords()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Observation\+Records (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___message_8c_ac73de0094b02aa50d2eb5142e25360aa}{}\label{org__iochibity___message_8c_ac73de0094b02aa50d2eb5142e25360aa} 
+\index{org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}!Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Options@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Options}}
+\index{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Options@{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Options}!org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}}
+\subsubsection{\texorpdfstring{Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Options()}{Java\_org\_iochibity\_Message\_getOptions()}}
+{\footnotesize\ttfamily J\+N\+I\+E\+X\+P\+O\+RT jobject J\+N\+I\+C\+A\+LL Java\+\_\+org\+\_\+iochibity\+\_\+\+Message\+\_\+get\+Options (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{jobject}]{this }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___message_8c_a9b8178174171c79d58d37013e4d71787}{}\label{org__iochibity___message_8c_a9b8178174171c79d58d37013e4d71787} 
+\index{org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}!O\+C\+Discovery\+Payload\+\_\+to\+\_\+\+Observation@{O\+C\+Discovery\+Payload\+\_\+to\+\_\+\+Observation}}
+\index{O\+C\+Discovery\+Payload\+\_\+to\+\_\+\+Observation@{O\+C\+Discovery\+Payload\+\_\+to\+\_\+\+Observation}!org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}}
+\subsubsection{\texorpdfstring{O\+C\+Discovery\+Payload\+\_\+to\+\_\+\+Observation()}{OCDiscoveryPayload\_to\_Observation()}}
+{\footnotesize\ttfamily jobject O\+C\+Discovery\+Payload\+\_\+to\+\_\+\+Observation (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{O\+C\+Discovery\+Payload $\ast$}]{c\+\_\+payload }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___message_8c_aba919d7da55b8392a92cbf5f7ef7097d}{}\label{org__iochibity___message_8c_aba919d7da55b8392a92cbf5f7ef7097d} 
+\index{org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}!O\+C\+Rep\+Payload\+\_\+to\+\_\+\+Observation@{O\+C\+Rep\+Payload\+\_\+to\+\_\+\+Observation}}
+\index{O\+C\+Rep\+Payload\+\_\+to\+\_\+\+Observation@{O\+C\+Rep\+Payload\+\_\+to\+\_\+\+Observation}!org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}}
+\subsubsection{\texorpdfstring{O\+C\+Rep\+Payload\+\_\+to\+\_\+\+Observation()}{OCRepPayload\_to\_Observation()}}
+{\footnotesize\ttfamily jobject O\+C\+Rep\+Payload\+\_\+to\+\_\+\+Observation (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{O\+C\+Rep\+Payload $\ast$}]{c\+\_\+payload }\end{DoxyParamCaption})}
+
+\hypertarget{org__iochibity___message_8c_ab098ba1f3583c20642d6376244ac769e}{}\label{org__iochibity___message_8c_ab098ba1f3583c20642d6376244ac769e} 
+\index{org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}!O\+C\+Resource\+Payload\+\_\+to\+\_\+\+Observation@{O\+C\+Resource\+Payload\+\_\+to\+\_\+\+Observation}}
+\index{O\+C\+Resource\+Payload\+\_\+to\+\_\+\+Observation@{O\+C\+Resource\+Payload\+\_\+to\+\_\+\+Observation}!org\+\_\+iochibity\+\_\+\+Message.\+c@{org\+\_\+iochibity\+\_\+\+Message.\+c}}
+\subsubsection{\texorpdfstring{O\+C\+Resource\+Payload\+\_\+to\+\_\+\+Observation()}{OCResourcePayload\_to\_Observation()}}
+{\footnotesize\ttfamily jobject O\+C\+Resource\+Payload\+\_\+to\+\_\+\+Observation (\begin{DoxyParamCaption}\item[{J\+N\+I\+Env $\ast$}]{env,  }\item[{O\+C\+Resource\+Payload $\ast$}]{c\+\_\+payload }\end{DoxyParamCaption})}
+
