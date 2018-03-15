@@ -1,0 +1,336 @@
+= jni-c
+
+A Java wrapper around the
+https://github.com/OpenOCF/iochibity[OpenOCF] API. Works with Android.
+
+WARNING: Work-in-Progress.  Discovery seems to work, and GET works for
+resources with "*" permissions.
+
+See also
+
+* link:doc/Design.adoc[Design Considerations]
+* link:doc/Implementation.adoc[Implementation Notes]
+
+== prerequisites
+
+* Bazel
+* Java 8
+* doxygen for C docs
+* ... etc. ...
+* Xcode (OS X)
+
+
+== building
+
+Edit `WORKSPACE` to set the paths appropriately.
+
+Always use `--crosstool_top=//platforms/ndk:toolchain` and
+`--android_crosstool_top=//platforms/ndk:toolchain` to target
+android - the builtin toolchain is broken (pulls in the wrong
+headers).
+
+See link:tools/bazel.rc[tools/bazel.rc].
+
+==== plain old java
+
+When building for the local host, make sure you comment out the
+cross-compile stuff in `tools/bazel.rc`
+
+You'll have to edit `jni-c/BUILD` to get the right shared lib suffix
+(dylib for OS X, so for linux). Sorry, that will be automatic in the future.
+
+[source,sh]
+----
+$ bazel build OpenOCF
+----
+
+To test it:
+
+[source,sh]
+----
+$ bazel build test:OCFTestServer
+$ bazel build test:OCFTestClient
+----
+
+Then run `./bazel-bin/test/OCFTestServer` in one terminal and
+`./bazel-bin/test/OCFTestClient` in another.
+
+To cross-compile same, you'll have to build the toolchain first (or
+install NDK if that's your target) and then just add the right flags
+in `tools/bazel.rc`.  See
+https://github.com/mobileink/bazel-crosscompile[bazel-crosscompile]
+for detailed examples of how to crosscompile with Bazel.
+
+WARNING: Crosscompiling works, but deploying the result (with native
+libs) to the target machine is a 'nother story. Still researching.
+
+NOTE: It looks like you have to install the JRE/JDK for the target on
+your build machine, otherwise bazel includes the host local_jdk in the
+output.
+
+(Crosscompiling Java alone is fine, it's crosscompiling JNI that's
+tricky.)
+
+==== android
+
+[source,sh]
+----
+$ bazel build test/android/java:openocfserver
+$ bazel mobile-install test/android/java:openocfserver
+$ bazel mobile-install test/android/java:openocfserver --incremental
+----
+
+== dev tools and techniques
+
+https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html[JNI Spec]
+
+https://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html[Java Programming with JNI] excellent tutorial from IBM
+
+https://www.ibm.com/developerworks/java/library/j-jni/[Best Practices for using the JNI] another from IBM
+
+1.  write the java file containing native methods
+2.  build the OpenOCF target to get the compiled class files
+3.  run javah against the class name (not the path) to generate the JNI C header file:
+
+For example, to develop `src/main/java/openocf/OCFService.java` start
+by building the Java API lib without the JNI layer:
+
+[source,bash]
+----
+jni-c $ bazel build openocf_japi
+## puts class files into bazel-bin/_javac/openocf_japi/libopenocf_japi_classes
+
+jni-c $ javah -jni \
+      -cp bazel-bin/_javac/OpenOCFJ/libOpenOCFJ-class_classes \
+      -d src/common/jni \
+      openocf.standard.OCFService
+# puts generated header into src/main/jni/openocf_Service.h
+----
+
+Never manually edit the generated header files.
+
+https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html[JNI Types and Data Structures]
+
+To see the signatures of methods, use `javap`, e.g. from jni-c:
+
+[source,bash]
+----
+$ javap -s target/classes/org/iochibity/CoServiceManager.class
+----
+
+=== os x
+
+bash code to set the jdk version:
+
+[source,bash]
+----
+function removeFromPath() {
+  export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")
+}
+
+function setjdk() {
+  if [ $# -ne 0 ]; then
+   removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
+   if [ -n "${JAVA_HOME+x}" ]; then
+    removeFromPath $JAVA_HOME
+   fi
+   export JAVA_HOME=`/usr/libexec/java_home -v $@`
+   export PATH=$PATH:$JAVA_HOME/bin
+  fi
+ }
+
+JAVA_VERSION=1.8
+setjdk $JAVA_VERSION
+----
+
+Now you can run `setjdk` on the command line to switch to another version, e.g. `$ setjdk 1.7`.
+
+`otool` is like `ldd` or `readelf` on Linux.  E.g. use `$ otool -L` to print the shared libs used by a file.
+
+See http://log.zyxar.com/blog/2012/03/10/install-name-on-os-x/[install_name on OS X]
+
+Use `install_name_tool` to change install names.
+
+See also https://www.mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html[Linking and Install Names]
+
+Compiling a shared lib on OS X:  `-Wl,-undefined -Wl,dynamic_lookup` or `clang -shared -undefined dynamic_lookup -o libfoo.so foo.c`
+
+== troubleshooting
+
+[source,sh]
+----
+java.lang.reflect.InvocationTargetException
+...
+Caused by: java.lang.UnsatisfiedLinkError: no ocfjni_c in java.library.path
+----
+
+This probably means you did not source the right files in `xc/source.me`, e.g.:
+
+[source,sh]
+----
+$ source ~/xc/source.me/darwin.devhost
+$ source ~/xc/source.me/darwin.targethost
+----
+
+
+== examples
+
+Security configuration is *required*.  You must create the appropriate
+CBOR files and tell the implementation where to find them (in the
+"Init" call); see the link:example[example] code.
+
+Then run the example:
+
+[source,sh]
+----
+$ cd examples
+$ export MAVEN_OPTS="-Djava.library.path=${INSTALL_SYSROOT}/lib"
+$ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestClient"
+or
+$ mvn exec:java -Dexec.mainClass="org.iochibity.test.OCFTestServer"
+----
+
+
+== edison
+
+You can cross-compile to target the Intel Edison.  Currently this has
+only been tested on OS X as the dev host, but it should work for Linux
+as well.
+
+To target the Intel Edison, source the appropriate devhost file, then
+`edison.targethost`.  E.g., I develop on the Mac, so I do this:
+
+[source,sh]
+----
+source ~/xc/source.me/darwin.devhost
+source ~/xc/source.me/edison.targethost
+----
+
+*NOTE*: you may need to edit the devhost and targethost files to fit
+ your system.
+
+Then build the library as above, and `scp` the result to the Edison.
+
+Open a terminal to the Edison and (assuming you've copied
+Iochibity/Iotivity and the jni- lib to `$HOME/iochibity`, and the jar
+files to `$HOME`) do:
+
+[source,sh]
+----
+$ export LD_LIBRARY_PATH=$HOME/iochibity/lib
+$ java -Djava.library.path=$HOME/iochibity/lib -cp "jni-c-0.1.0-SNAPSHOT.jar:iochibity-eg-0.1.0-SNAPSHOT.jar" org.iochibity.test.OCFTestServer
+----
+
+== naming conventions
+
+
+JNI:
+
+* 'klass' is reserved for the jclass arg (Class object) of static methods
+* 'this' is reserved for the (this) jobject arg of object methods
+* k_  is the prefix used for klasses other than the klass object
+* fid_ is the prefix for field ids from GetFieldId, e.g. fid_class_method
+* mid_ is the prefix for method ids from GetMethodId, e.g. mid_class_method
+* mids_ is for static methods
+* j_ - prefix for java objects
+* c_ - prefix for native c data
+
+UPPER_CASE prefixes are used for global vars, set by `JNI_OnLoad` (in
+`ocf_init.c`); e.g. K_LINKED_LIST for the java.util.LinkedList
+class, MID_LL_CTOR for the LinkedList constructor etc.
+
+
+Java:
+
+* _ - underscore prefix marks a field as both private and
+  corresponding to an underlying var, ptr, struct, e.g. _handle
+
+
+== exceptions
+
+Instead of returning an OCStackResult code we return void and throw
+Java exceptions as needed.
+
+
+== conceptual structure
+
+We eschew talk of "Resources" and "Representations", because those
+terms are so abstract as to be useless; in software, everything is
+both a "resource" and a "representation".
+
+The basic idea is that servers are ServiceProviders, and clients are
+ServiceRequestors.  The mechanism of communication is the message.
+Messages may contain payloads, and may reference state ("Resource").
+
+The library itself provides services to clients and servers.  The
+`Messenger` provides messaging services; the `ServiceManager` keeps
+track of service requestors and providers (callbacks).
+
+ServiceProviders are composed of some meta-data, such as a URL path, a
+state machine that functions as a callback/handler for dealing with
+incoming messages requesting services, and data.  The data are state
+data (conventionally, they are a "resource representation).  The state
+machine may maintain state data in memory, or it may acquire it
+dynamically (as in the case of "reading" a sensor instrument).
+
+On a ServiceProvider (server), the state machine is a routine called
+`serviceRequestIn`; on a ServiceRequestor (client), it's a routine
+called `serviceResponseIn`;
+
+ServiceProviders must be registered with the ServiceManager.
+
+A Client (ServiceRequestor) creates an outgoing service request
+message (MsgRequestOut), and uses the Messenger to send it
+(Messenger.sendRequest(...)).
+
+A (application) Server (ServiceProvider) receives (from a client
+ServiceRequestor) an incoming request message (MsgRequestIn), which
+refers to Resources (ResourceLocal).  The ServiceProvider creates an
+outgoing message (MsgResponseOut), creates a Payload containing
+relevant (state) data, inserts it in the MsgResponseOut, and asks the
+Messenger to send it to the client ServiceRequestor.
+
+The client ServiceRequestor then receives an incoming response message
+(MsgResponseIn) that corresponds to the MsgResponseOut sent by the
+ServiceProvider.
+
+ServiceProviders (on the server side) are always associated with
+state, and the messages handled by ServiceProviders
+(MsgRequestIn/MsgResponseOut) always contain a reference to that
+state.
+
+Messages may also contain payloads.
+
+
+
+setPlatformInfo  => ServicesManager.registerPlatformProvider
+
+setDeviceInfo    => ServicesManager.registerDeviceProvider
+
+OCCreateResource => ServicesManager.registerServiceProvider
+
+new: Messenger
+
+OCDoResource     => Messenger.sendRequest
+
+OCDoResponse     => Messenger.sendResponse
+
+OCResource       => Resource
+
+			        ResourceLocal  (new; resource on server)
+
+			        ResourceRemote (new; resource on client, rec'd from server)
+
+new: IMessage, Message implements IMessage
+
+new: MsgForServiceProvider extends Message
+
+OCEntityHandlerRequest   => MsgRequestIn   extends MsgForServiceProvider
+
+OCEntityHandlerResponse  => MsgResponseOut extends MsgForServiceProvider
+
+new: MsgForServiceRequestor extends Message
+
+OCClientResponse         => MsgResponseIn  extends MsgForServiceRequestor
+
+new:                        MsgRequestOut  extends MsgForServiceRequestor

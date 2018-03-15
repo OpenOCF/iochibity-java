@@ -1,0 +1,67 @@
+= todo
+
+=== TODO
+
+* support iotivity logging for the jni bits called by stack, e.g. the
+  OCEntityHandler service routine.  needed so we can log errors since
+  we cannot throw java exceptions for that sort of error.
+
+* subclass LinkedList and HashMap so we can use them to add and remove items
+
+* cache field ids
+
+* memory leakage:  DeleteLocalRef, etc.
+
+== react
+
+* "registration" of responses to discovery requests
+* 
+
+== retrieve/discover
+
+* notes on difference
+** no DISCOVER method
+** discovery is just RETRIEVE, either multicast or unicast
+** unicast discover is same as GET on a resource
+** difference is some URIs are special (/oic/p, etc.) in that they can be read without DTLS
+** implications for reaction to response
+
+== renaming
+
+
+Fix:  ObservationRecord.PLATFORM -> ??
+
+
+ObservationOut  =>  removed, implicit in exhibitBehavior
+
+ObservationIn =>  Behavior
+
+StimulusOut => removed, implicity in exhibitStimulus
+
+StimulusIn => Stimulus
+
+ObservationRecord => Observation?  Stimulii and Behaviors contain Observations?
+
+== multithreading
+
+* call "init" (or "thread") method first thing in new thread in order
+  to intialize TLS?
+* jni multithreading and JVM
+** (*env)->MonitorEnter(obj), (*env)->MonitorExit(obj)
+* memory leaks
+** _finally_ blocks?
+** free jni strings
+* thread_local
+** does not compile on OS X, but _Thread_local does
+** use pthread_key_create etc. instead of C11's thread_local?
+
+* exception checking:
+
+[source,c]
+----
+    if ((*env)->ExceptionCheck(env)) {
+	(*env)->ExceptionDescribe(env);
+    }
+----
+
+* general checklist: https://www.ibm.com/developerworks/library/j-jni/

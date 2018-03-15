@@ -1,0 +1,95 @@
+= resources
+
+There are two kinds of resources: OCF-defined, and Application-defined.
+
+OCF-defined resources: all have an OIC rt, but not all have an
+OCF-defined URI:
+
+* Core:
+** oic.wk.res  - /oic/res
+** oic.wk.p    - /oic/p
+** oic.wk.d    - /oic.d
+** oic.wk.mnt  - /oic/mnt
+** oic.wk.con  - (no URI)
+
+* SVRs:
+** oic.r.doxm  - /oic/sec/doxm
+** oic.r.cred  - /oic/sec/cred
+** oic.r.crl   - /oic/sec/crl
+** oic.r.acl   - /oic/sec/acl
+** oic.r.acl2  - /oic/sec/acl2
+** oic.r.amacl - /oic/sec/amacl
+** oic.r.sacl  - /oic/sec/sacl
+** oic.r.pstat - /oic/sec/pstat
+** oic.r.csr   - /oic/sec/csr
+** oic.r.roles - /oic/sec/roles
+
+* "Vendor" defined (e.g. light, fan, etc. for which we have OCF
+  schemata). URIs are vendor-defined; interfaces and resource types
+  are OCF-defined. For example:
+
+oic.r.switch.binary - /acme/foo/BinarySwitch
+oic.r.door          - /acme/bar/Door
+oic.r.temperature   - /foo/bar/temp
+
+NOTE: what matters most is resource type, since that (and not the URI)
+is what OCF defines.
+
+So we can represent these resources in code with a straightforward
+mapping of RT to class, e.g. /oic/sec/doxm has rt oic.r.doxm, so we
+abstract it in class openocf.oic.r.DOXM.
+
+The C equivalent is OicSecDoxm_t, which is in //src/sec/svrs/doxmresource.c
+
+TODO: reorg C code, so Resource implementations are in
+e.g. //src/oic/r/doxm/... IOW, treat the OIC type as a package
+namespace (bazel).
+
+Alternatives:
+
+	openocf.rt.oic.wk.res
+	openocf.rt.oic.r.doxm
+	openocf.rt.oic.r.switch.binary
+	openocf.rts.oic.r.doxm  // rts instead of rt
+
+However: OCF-defined app resources like binary switch are expressed as
+ordinary resources.  OpenOCF does not define Java classes for them;
+it's up to the application to do that.
+
+Resource
+==> ODR - OCF-Defined Resource Type
+====> Core resources
+====> Security resources (SVRs)
+====> Application resources (profiles)
+==> ADR - Application-Defined Resource Type
+===> Resource types not defined by OCF
+
+What to call these things?  The C code is a struct, encoding the type
+definition qua list of properties.  So "it" is not a "resource" but a
+token of a resource type (struct).  Or in OCF terminology an
+"instance" of a "resource" (more accurately, of a resource type).
+Need we add anything to openocf.rt.oic.r.DOXM?  That's a class (type);
+an object of that class is ipso facto a token or instance of the
+class, which stands as proxy for a resource instance.
+
+So we have resource type, and we have Java classes, C structs, and
+other programming language structures that correspond to resource
+type.
+
+Advantage: same structs used on both client and server.
+
+== resource api
+
+Current ODR implementations support:
+
+    * life cycle? e.g. CreateDoxmResource, InitDoxmResource, DeInitDoxmResource
+
+    * request handling - the engine handles requests on SVRs, so the
+      engine must have these callbacks. E.g. HandleDoxmPostRequestMfg,
+      HandleDoxmPostRequest, etc.
+
+    * cbor encoding/decoding, e.g. CBORPayloadToDoxm
+
+    * querying.  GetDoxmRownerId, SetMOTStatus, etc.
+
+    * encryption stuff?

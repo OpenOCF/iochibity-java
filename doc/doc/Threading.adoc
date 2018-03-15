@@ -1,0 +1,74 @@
+= threading
+
+Support for multithreading unfortunately clashes with the idea of
+splitting things up into JNI layer and Java layer, with the former
+hiding some of the mundane housekeeping chores.
+
+The problem is that incoming messages are handled on separate threads.
+Which is a Good Thing if you do not have any thread-global data.  But
+as soon as you delegate processing to a method of a Java object
+containing member fields, you have thread-global data.
+
+One way to handle this is to synchronize everything.  But this defeats
+the purpose of multi-threading.
+
+Another option is to use Thread Local Storage, either at the JNI C
+level or using Java's ThreadLocal class.  This solves the problem but
+only partially.  [Explain]
+
+The problem is that once we have exposed our underlying C data by
+creating thread-specific Java data accessible to a java method, we
+open ourselves to synch problems of another kind: for the thread-local
+stuff to work, all accesses to it must be on the same (originating)
+thread.  what happens if the app code launches other threads and calls
+the TLS stuff?
+
+Example: DeviceAddress.  We can create devaddrs from the underlying
+data, on the callstack, so they're thread-safe.  But what about
+updating them?  We can make our DevAddrs read-only to force the app
+code to use methods of (Co)ServiceProvider.  If we want to allow
+updates, we must alse force the user to use the originating thread.
+Unfortunately even then we cannot force this to happen - we cannot
+prevent the app from using work threads, for example.
+
+Seq:
+
+    stack calls react with incoming message to be handled, on originating thread
+
+    react stores ref in TLS var then calls app react
+
+    app's react can call Provider methods, but *only* from originating
+    thread.  for example, if app react can run a method on a thread,
+    which can call getX on the originating Provider instance, but
+    being on a different thread it will have no access to the
+    originating TLS var.
+
+    so it seems the only way to make this work is to state a policy
+    and warn the user of the consequences of violating it.  The policy
+    is: react methods (handlers of incoming messages) must not call
+    Provider methods from any but the originating thread.  That
+    doesn't mean you cannot use additional threads, it just means you
+    cannot run the Provider methods from them.  If you do you'll get
+    an exception.  I guess that's one way of enforcing discipline.
+
+    For member objects, write-only access to underlying data is
+    provided by the (Co)ServiceProvider. Read-only access is provided
+    by call-stack allocated objects.  Native data are not exposed;
+    only object data.  So what goes for a compound object like
+    DeviceAddress goes of simple data like Method - it's exposed as
+    Integer, not int.  Or rather, it's exposed as getX and putX,
+    taking and returning either int or Integer.
+
+idea: for e.g. DeviceAddress.  We create a new DeviceAddress and
+populate it with underlying data, then return it, whereupon the app
+can read its fields.  The alternative is to do with DevAddr the same
+thing we do with with (Co)ServiceProvider: just store a ref to a TLS
+var, and only ever return data from the underlying struct.  In other
+words we never store data in java objects, we only ever use getters to
+return the underlying data.  In fact maybe we should only every store
+the OCClientResponse*?
+
+Or maybe we should discard DeviceAddress.  Why do we need to reify in
+the first place?  It's fields are really properties of the Provider,
+at least in a sense.
+

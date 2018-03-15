@@ -1,0 +1,56 @@
+= jni-c implementation
+
+Calling across the JVM boundary is expensive, so one implementation
+goal is to minimize such calls.
+
+There are two basic strategies, which roughly correspond to Ahead Of
+Time (AOT) and Just In Time (JIT) compilation.
+
+
+== C API OCDoResource processing
+
+A unicast address can be passed in two ways:
+
+* requestUri = a "full" url, including ip address
+* requestUri = a path, and destination contains ip address
+
+OCDoResource creates an internal OCDevAddr based on the requestUri and
+the conntype arg.  If the requestUri is a path (starts with '/') then
+it does not create a devAddr.  Otherwise, it creates a devAddr based
+on the requestUri.
+
+If the requestUri starts with '/', and a destination is not provided
+(NULL), and the method is OC_REST_DISCOVER, then OCDoResource will
+alloc a temp devAddr with OC_DEFAULT_ADAPTER.
+
+What if the requestUri starts with '/' and no destination is provided,
+and the method is GET?  Error: "no devAddr and no destination".  Which
+really means "you did not provide a destination devAddr, and I was
+unable to construct one based on the requestUri you passed."
+
+But in that case what should really happen is that the GET should be
+interpreted as a DISCOVER method, and a temp default devAddr
+constructed.
+
+== coSP request-response linking
+
+When a CoSP sends a request to an SP, the engine creates a "DoHandle"
+that identifies the "invocation".  This is just an eight-byte random
+number used as an identifier.  We call it a _transaction ID_
+(`CoSP.txnId`) since it identifies the first part of an interaction.
+(An interaction consists of a pair of transactions, a reqest
+transaction and the corresponding response transaction.)  Requests
+carry a copy of this transaction ID, as do responses, and this allows
+the CoSP to match incoming response messages to the request messages
+from which they (indirectly) originate.
+
+Requests and responses are handled by separate threads.  This is
+problematic, because we use thread-local storage to ensure thread
+safety, and this means that the response handler (`react` method of
+CoSP) cannot directly refer to the the originating request stimulus.
+
+We get around this inconvenience by storing submitted requests in a
+global list, as a side-effect of the `exhibit` method.  The
+transaction ID (`txnId`) serves as the unique key, and the response
+will contain this transactionId, so the ServiceManager can use it to
+find the request corresponding to any incoming response.

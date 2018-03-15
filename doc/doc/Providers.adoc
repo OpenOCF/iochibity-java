@@ -1,0 +1,269 @@
+= providers
+
+== ServiceProviders
+
+
+== CoServiceProviders
+
+CoServiceProviders (CoSPs) are designed to interact with ServiceProviders (SPs).
+
+Steps:
+
+* create CoSP
+* configure CoSP
+* register CoSP with ServiceManager
+* use CoSP
+
+To configure a CoSP, one gives it a description of the class of SPs
+with which it may interact.  Such a description consists of:
+
+* a Uri path
+* a list of types
+* a list of interfaces
+
+Each CoSP will be associated with a set of "correspondant SPs", the
+SPs with which the CoSP interacts (literally co-responds).  For
+example, a CoSP configured to correspond with SPs supporting type
+"foo.whatsit" may have zero, one, or many correspondant SPs.
+
+== System providers
+
+These are predefined and owned by the (Co)ServiceManager
+
+* PlatformSP  - ServiceManager.configurePlatformSP
+* DeviceSP    - ServiceManager.configureDeviceSP
+
+* DiscoveryCoSP - CoServiceManager.configureDiscoveryCoSP
+
+etc.  conceptually, one per predefined resource (/oic/sec/doxm, etc.)
+
+
+== observations
+
+Some resources are actually intermediaries: they service client
+requests, but do so by making requests to an attached device such as a
+sensor instrument.  Others are really meta-resources, containing
+information about other resources, e.g. `/oic/res`, `/oic/sec/doxm`, etc.
+
+There are several kinds of observation, corresponding roughly to
+resource "kinds": one for observing instruments e.g. sensor devices,
+and one for observing SPs themselves (their metadata),
+e.g. `/oic/res`.  In jni-c we call them both ObservationRecords.
+
+composed of OCClientResponse plus Payload.
+
+Payload types:
+
+* OCRepPayload.  Contains descriptive metadata plus a properties map (= state data).
+* OCResourcePayload - this is just like OCRepPayload, except without
+  the properties map.  In other words, this contains descriptive
+  metadata for an SP.  Only comes as a sub-payload of a Discovery payload.
+
+==== related SPs (links)
+
+Every SP is related to zero or more other SPs.  For example, a room
+may have multiple lights; the RoomSP will have one related LightSP
+per light.
+
+The implementation mechanism for related SPs is "weblink".  The OCF
+defines a link as a set of parameters, expressed in JSON in the spec
+(Appendix D.2).  Iotivity expresses them as struct fields:
+
+* `href` - Target Uri
+* instance ID `ins`
+* `anchor` - Context Uri
+* `rel` - a relation param, indicating nature of relation
+  e.g. "hosts"; see
+  http://www.iana.org/assignments/link-relations/link-relations.xhtml
+  for a list
+* `rt` - resource types list
+* `if` - interfaces list
+* An optional "policy parameter", `p`, containing the following "keys":
+** bm - policy bitmask, indicating discoverability, observability
+** sec - security boolean, referring to DTLS
+** port
+* A media type param `type`
+* A batch param `bp` with the following keys:
+** `q` - query string, to be appended to `href` to handle batch requests ("oic.if.b")
+* A device ID param, `di`
+* A base Uri param `buri` used to resolve the relative `href`.
+
+Note that a "tags" block can be used to express parameters common to
+all the links in the collection, such as device id `di`.
+
+== discovery
+
+IMPORTANT: CoSP's have a TTL; that is, their coreact methods remain
+active for TTL.  Discovery CoSPs are retained after each coreaction,
+since they are multicast.  Unicast requests are deactivated after each
+coreaction.  The user can explicitly deactivate a discovery handler by
+calling `deactivate` (`OCCancel`) on the CoSP.
+
+
+[source,c]
+----
+/**
+ * Sets the time to live (TTL) for response callback(s).
+ * The callback(s) will be up for deletion after such time but are not guaranteed
+ * to be deleted immediately and you may get responses even after timeout.
+ * This timeout will NOT apply to OBSERVE requests. OBSERVE needs an explicit cancel using OCCancel().
+ * @note: Changing the setting to a very long duration may lead to unsupported and untested
+ * operation. Setting this to as small a value as reasonable will reclaim memory faster.
+ */
+#define MAX_CB_TIMEOUT_SECONDS   (2 * 60 * 60)  // 2 hours = 7200 seconds.
+----
+
+
+
+
+
+==== platform
+
+==== device
+
+==== resource discovery
+
+The response to a discovery request will contain contain "descriptors"
+for the discovered SPs.
+
+ServiceProviders live on servers, not clients, so it makes no sense to
+register them directly on the client.  Instead, we register the
+corresponding CoServiceProviders, and we do this in the JNI layer.
+Before passing control to the DiscoveryCoSP's `react` method, we
+intercept the response and "register" a CoSP for each discovered SP.
+We do this at the JNI level because it is a rote operation that the
+programmer should not have to worry about.  On the other hand, the
+programmer may not want to register all or any CoSPs; she might just
+want to log the response.  So we provide a means of configuring the
+mechanism.
+
+The default is to match the `DefaultCoServiceProvider` to each
+discovered SP.  The user can control this by configuring the
+ServiceManager.  This is done by associating a "descriptor" to each
+CoSP, which will be used to select SPs.  For example, associating type
+"foo.whatsit" to the WhatsitCoSP will result in the WhatsitCoSP to be
+used for each SP that supports type "foo.whatsit".
+
+WARNING: TODO: such configuration goes by SP classes; for example,
+configuring type "foo.whatsit" as above will configure a WhatsitSP for
+that, rather than a URI path.  Configuring a URI path like
+"foo/whatsit" will configure the CoSP for all such SPs, without regard
+to IP address.  We also need a way to configure CoSPs for fully
+qualified URIs as well.
+
+The result of such behind-the-scenes CoSP registration will not
+necessarily be one CoSP per discovered SP.  For example, suppose we
+configure CoSP `WhatsitCoSP` for type "foo.whatsit", and we receive
+_n_ SPs supporting that type.  Each will have a unique FQU, and may
+have different URI paths; e.g. a single IP address may be used with
+multiple foo.whatsit SPs, each of which would have to have a different
+URI path.
+
+WARNING: TODO: this means we need a means of listing all the
+discovered SPs (with their FQUs) as well as listing all registered
+CoSPs.  Maybe `ServiceManager.listFQUs()` or the like?  Or, we could
+have each CoSP list all the SPs it matches:
+`CoServiceProvider.listCorrespondantSPs()` or some such.
+
+NOTE: a discovery CoSP will always intercept the response and register
+(with the ServiceManager) the CoSPs matching the incoming SPs.  So it
+can be implemented by the JNI level rather than the user.
+
+
+"The OCF architecture utilizes typed Links as a mechanism for
+bootstrapping Resource discovery through the known Core Resource
+/oic/res. A RETRIEVE operation on /oic/res returns (among other
+things) a serialized representation of typed Links to Resources that
+are discoverable on that Device... The JSON Schema that specifies the
+representation of the response to /oic/res is defined D.8."
+(Spec p. 48)
+
+This is all about the "resources" resource, "/oic/res".  That is a
+collection resource maintains a list of "links" to resources (SPs)
+registered with the ServiceManager.
+
+NOTE: Iotivity treats "/oic/res" specially, using "special" payload
+record types, rather than using standard ResourceCollection and Links
+payload records.
+
+
+A resource discovery payload contains a record for the "resources"
+resource ("/oic/res"), and one child OCResourcePayload for each
+resource hosted by the device. The latter contains descriptive
+metadata, not state data; it contains only the data needed to form a
+request: uri, types, interfaces, secure flag, policies bitmask, and
+port.
+
+In jni-c we treat these as "registered SPs", albeit registered on
+remote devices.  The service manager automatically handles discovery,
+so that such registered SPs become available to the client device as
+CoSPs, via `ServiceManager.coServiceProviders()`.  By default, the
+`DefaultCoServiceProvider` is used; the user may specify others by
+configuring the ServiceManager [TODO].
+
+Registration of CoSPs allows the ServiceManager to intercept incoming
+responses to a resource discovery request and automatically match
+observed SPs (encoded as payload) with the appropriate CoSPs.  The
+discoveryCoSP's react method will then look like this:
+
+[source,java]
+----
+void react()
+{
+    // iterate over this.observations, calling getCoSP (or similar)
+    // c implementation:  service_manager_find_cosp_for_sp(...)
+}
+----
+
+The idea is that each payload (ObservationRecord) is associated with a
+corresponding SP, and each SP is associated with a CoSP (by the CoSP's
+SP descriptor) so the `react` method of a discoverySP can ask for the
+CoSP associated with each payload.  It can then tweak the CoSP's
+configuration if desired, and direct it to `exhibit`.
+
+=== React to observations, exhibit behaviors
+
+For PUTs and POSTs, the CoSP may want to include a payload, so we need
+an operation for this.  `setObservationRecord`, or `setBehavior`?  In
+any case, the payload of the CoSP request must be kept separate from
+the payload of the most recent response.  So the CoSP must actually
+maintain two states, one for itself and one for the corresponding SP.
+
+Incoming responses contain ObservationRecords (to which the CoSP reacts).
+
+Outgoing requests contain BehaviorRecords (which the CoSP exhibits).
+
+An ObservationRecord is a record of one observation of a correspondant
+ServiceProvider.
+
+Conceptually, each CoSP contains an `observe` method, which observes
+the response behavior of the correspondant SP and passes the
+observation record up to the `react` method.  But since observation
+processing is always the same, on both server and client, the
+functionality of `observe` is implemented by the Iotivity engine
+rather than the application.  What happens in practice is that the
+CommunicationManager of the engine "observes" the (remote) behavior by
+receiving the corresponding incoming response message, marshalling its
+content (converting the binary stream into C structs), and turning it
+over to the ServiceManger, which searches its table of registered
+CoSPs for the appropriate CoSP, and then passes the observation record
+to the CoSP's `react` method for processing.
+
+Same thing happens on the ServiceProvider - the CommMgr "observes" the
+stimulus behavior of the client CoSP, marshalls the data, and passes
+it to the ServiceManager, which finds the right ServiceProvider and
+passes the data to its `react` method.
+
+=== retrieve
+
+Scenario: whatsitSP sends a RETRIEVE request.  The response is routed
+to the whatsitSP's `react` method.  But first, behind the scenes, the
+ServiceManager integrates the incoming response info (which describes
+the observable behavior of the SP) into the CoSP's state.  So by the
+time control is transferred to `react`, the CoSP already contains the
+response data (as a structure of `ObservationRecord` s) .
+
+Conceptually what has happened is that the CoSP has "observed" the
+behavior of the SP in reaction to the CoSP's request.  The CoSP
+"contains" that observation; the `react` method gives the CoSP a
+chance to react to that observation.
