@@ -1,0 +1,3 @@
+for info on building native deps and selecting for android target
+
+see https://github.com/bazelbuild/bazel/issues/3924

@@ -1,0 +1,33 @@
+bind(name = "android/crosstool", actual = "@android_ndk//:toolchain-libcpp")
+
+android_sdk_repository(
+    name="androidsdk",
+    path="/home/gar/Android/Sdk",
+    # Feb 2018::: latest api supported is 25
+    # api_level=25,	   # Oreo, 8.0.0, required for java.nio.file.*
+    api_level=26,	   # Oreo, 8.0.0, required for java.nio.file.*
+    # default uses latest build tools installed
+    # build_tools_version="27.0.3"
+)
+
+android_ndk_repository(
+    name="androidndk",
+    # Feb 2018: latest NDK version supported is 14:
+    path="/home/gar/ndk/android-ndk-r14b",
+    # future:
+    #path="/home/gar/Android/Sdk/ndk-bundle",
+    # Feb 2018::: latest api supported is 25
+    api_level=25,
+)
+
+local_repository(
+	name = "openocf_java",
+	path = "/home/gar/openocfj",
+)
+
+# bug workaround: openocfj/src/BUILD cannot use its own WORKSPACE so we
+# must add a local repo for the openocf repo:
+local_repository(
+	name = "openocf",
+	path = "/home/gar/openocf",
+)
