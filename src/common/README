@@ -1,0 +1,16 @@
+
+namespace structure:
+
+openocf.app - application-level stuff: resources and coresources
+
+openocf.signals - symmetric messaging data: StimulusIn, StimulusOut, etc.
+
+openocf.engine - services provided by the engine to application and peer code
+
+openocf.ocfresources - OCF-defined application resources, i.e. device, platform, svrs
+
+alternatively:  openocf.device, openocf.platform, openocf.svrs?
+
+
+
+DeviceAddress - should be a field in a device abstraction? or a utils/Address.java?
