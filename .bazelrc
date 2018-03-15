@@ -1,38 +1,14 @@
-# Bazel option defaults
-
-## Copy what you need to <root>/.bazelrc in order to customize.
-## build options specified here are cumulative.
-
-# startup --batch --host_jvm_args=-XX:-UseParallelGC
-# import /home/bobs_project/bazelrc
-
-# OpenOCF build options
-# sorry, this is temporarily necessary.
-build --define=role=client
-
-# build --javacopt="-source 8"
-# build --javacopt="-target 8"
-
-################################################################
 # dev/debug options
-build -c dbg
 build -s --verbose_failures
-#build --sandbox_debug
+# build --sandbox_debug
 # build --show_timestamps --keep_going --jobs 600
 build --color=yes
 # query --keep_going
 
 ################################################################
-# target: mingw64
-#build --crosstool_top=//platforms/windows:toolchains
-#build --action_env=TMP=/tmp
-#build --cpu=x64_windows_msys
-#build --compiler=mingw64-gcc
-
-################################################################
 # target: Raspberry Pi 3B
 #build --crosstool_top=//platforms/rpi3b:toolchain
-#build --cpu=armv8 --host_cpu=k8
+#build --cpu=armv8
 
 ################################################################
 # target: Intel IoT Gateway running WindRiver Linux
@@ -56,7 +32,3 @@ build --color=yes
 ## compilers
 #build --android_compiler=clang3.8
 #build --android_compiler=gcc
-
-################################################################
-# misc
-# build:memcheck --strip=never --test_timeout=3600
