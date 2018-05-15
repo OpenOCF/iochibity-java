@@ -1,6 +1,0 @@
-package openocf.signals;
-
-public class MsgNotificationOut extends BehaviorExhibited
-{
-    int dummy;
-}

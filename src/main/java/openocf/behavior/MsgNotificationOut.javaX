@@ -1,0 +1,6 @@
+package openocf.behavior;
+
+public class MsgNotificationOut extends BehaviorExhibited
+{
+    int dummy;
+}
