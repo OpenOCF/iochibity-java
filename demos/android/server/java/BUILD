@@ -7,8 +7,8 @@ android_binary(
     srcs = glob(["org/openocf/test/server/*.java"])
     + glob(["org/openocf/test/*.java"]),
     manifest = "org/openocf/test/server/ServerManifest.xml",
-    deps = ["@openocf_java//:OpenOCFAndroid",
-            "//android/common/java:common"],
+    deps = ["//:OpenOCFAndroid",
+            "//demos/android/common/java:common"],
         # "@androidsdk//com.android.support:appcompat-v7-22.0.0",
     resource_files = glob(["org/openocf/test/server/res/**"]),
     assets_dir = "config",

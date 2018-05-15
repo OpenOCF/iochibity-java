@@ -1,8 +1,9 @@
 java_binary(
     name = "Client",
     srcs = glob(["src/main/java/**/*.java"]),
-    deps = ["@openocf_java//:OpenOCFJ",
-            "//stdjava/common"],
+    deps = [ # "@openocf_java//:OpenOCFJ",
+        "//:OpenOCFJava",
+        "//demos/stdjava/common"],
     classpath_resources = [":client_config"]
 )
 

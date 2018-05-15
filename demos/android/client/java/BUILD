@@ -3,8 +3,9 @@ android_binary(
     srcs = glob(["org/openocf/test/client/*.java"])
     + glob(["org/openocf/test/*.java"]),
     manifest = "org/openocf/test/client/ClientManifest.xml",
-    deps = ["@openocf_java//:OpenOCFAndroid",
-            "//android/common/java:common"],
+    deps = ["//:OpenOCFAndroid",
+            "//:AndroidConfig",
+            "//demos/android/common/java:common"],
     resource_files = glob(["org/openocf/test/client/res/**"]),
     assets_dir = "config",
     assets = [":client_config"]
