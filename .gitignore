@@ -1,5 +1,7 @@
 bazel-*
 
+.bazelrc
+
 GPATH
 GRTAGS
 GTAGS
