@@ -37,7 +37,7 @@ public class ConfigJava {
 	    System.out.println("NativeUtils.loadLibraryFromJar failed");
             e.printStackTrace();
         }
-	System.out.println("LOADED " + JNILIB);
+	System.out.println("LOADED (java)" + JNILIB);
 
 	try {
 	    OpenOCF.config_logging(logfile_fname);
