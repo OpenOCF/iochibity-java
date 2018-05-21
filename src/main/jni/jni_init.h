@@ -61,7 +61,7 @@ extern THREAD_LOCAL jobject g_CoSP;             /**< blah blah */
 #define FINDCLASS_FAIL(arg) "FindClass failed for " arg
 
 extern JavaVM* g_JVM;
-
+extern pthread_key_t pthread_key;
 
 extern jclass    K_ANDROID_HANDLER;
 extern jmethodID MID_ANDROID_SEND_EMPTY_MSG;
