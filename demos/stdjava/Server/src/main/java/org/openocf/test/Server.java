@@ -42,7 +42,7 @@ public class Server
 {
     static{
 	// FIXME - init method handles configuration
-	ConfigJava.config("./log/server.log", // logfile_fname
+	ConfigJava.config("./logs/server.log", // logfile_fname
 			     "/server_config.cbor"	  // FIXME: constant "svrs.cbor"
 			     );
     }

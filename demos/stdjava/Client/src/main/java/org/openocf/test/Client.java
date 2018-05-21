@@ -62,7 +62,7 @@ public class Client
     // private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     static{
-	ConfigJava.config("./log/client.log", // logfile_fname
+	ConfigJava.config("./logs/client.log", // logfile_fname
 			     "/client_config.cbor"   // FIXME: use constant "svrs.cbor"
 			     );
     }
