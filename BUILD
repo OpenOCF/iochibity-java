@@ -16,29 +16,29 @@ java_library(
     # + ["src/main/java/openocf/ConfigJava.java",
     #    "src/main/java/openocf/OpenOCF.java"],
     # deps = [":OpenOCFJ"],
-    exports = [":OpenOCFJ", "openocfjni"],
+    # exports = ["openocfjni"],
     resources = [":libopenocf_jni.so"],
     visibility = ["//visibility:public"]
 )
 
 android_library(
     name = "AndroidConfig",
-    srcs = glob(["src/main/java/**/*.java"],
-                exclude = ["src/main/java/openocf/ConfigJava.java"]),
-    # srcs = ["src/main/java/openocf/OpenOCF.java",
-    #         "src/main/java/openocf/ConfigAndroid.java"],
+    # srcs = glob(["src/main/java/**/*.java"],
+    #             exclude = ["src/main/java/openocf/ConfigJava.java"]),
+    srcs = ["src/main/java/openocf/OpenOCF.java",
+            "src/main/java/openocf/ConfigAndroid.java"],
     visibility = ["//visibility:public"]
 )
 
 android_library(
     name = "OpenOCFAndroid",
-    # srcs = glob(["src/main/java/**/*.java"],
-    #             exclude = ["src/main/java/openocf/ConfigJava.java"]),
+    srcs = glob(["src/main/java/**/*.java"],
+                exclude = ["src/main/java/openocf/ConfigJava.java"]),
     #+ [#"src/main/java/openocf/OpenOCF.java",
     #srcs = [":OpenOCFJ"],
     #deps = [":AndroidConfig"],
-    exports = [":OpenOCFJ",
-               ":AndroidConfig",
+    exports = [#":OpenOCFJ",
+               #":AndroidConfig",
                # android_library does not support runtime_deps or
                # resources, so we must export the native lib.  we
                # cannot use a cc_binary here, so we refer to a
@@ -213,5 +213,6 @@ cc_library(
             "@openocf//third_party/coap",
             "@openocf//third_party/tinycbor",
             "@openocf//include"],
+    linkopts = ["-llog"],
     visibility = ["//visibility:public"]
 )
