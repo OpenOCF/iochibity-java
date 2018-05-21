@@ -23,36 +23,38 @@ public class ConfigAndroid {
 
     public static void config(Context ctx, String apk)
     {
-	Log.v(TAG, "config");
-String property = System.getProperty("java.library.path");
-StringTokenizer parser = new StringTokenizer(property, ";");
-while (parser.hasMoreTokens()) {
-    Log.v(TAG, parser.nextToken());
-    }
-	System.out.println("openocf.ConfigAndroid::config");
+	Log.v(TAG, "CONFIG");
+	String property = System.getProperty("java.library.path");
+	StringTokenizer parser = new StringTokenizer(property, ";");
+	while (parser.hasMoreTokens()) {
+	    Log.v(TAG, parser.nextToken());
+	}
+	// Log.v(TAG, "openocf.ConfigAndroid::config");
 	try{
 	    System.loadLibrary(apk); // "openocf_jni");
 	    //System.load("/libopenocf_jni.so");
 	} catch (Exception e) {
             // This is probably not the best way to handle exception :-)
-	    System.out.println("loadLibrary failed for openocfserver");
+	    Log.i(TAG, "loadLibrary failed for openocfserver");
             e.printStackTrace();
         }
-	System.out.println("LOADED lib" + apk + ".so");
+
+	Log.v(TAG, "LOADED LIB" + apk + ".so");
 
 	try {
 	    OpenOCF.config_logging(null);
 	} catch(Exception e){
-	    System.out.println(e.toString());
+	    Log.e(TAG, e.toString());
 	    System.exit(0);
 	}
+	Log.e(TAG, "logging configured");
 
 	try {
-	    System.out.println("Getting path for resource " + "svrs.cbor");
+	    Log.i(TAG, "Getting path for resource " + "svrs.cbor");
 	    String f = extractAssetToFile(ctx, "svrs.cbor");
 	    OpenOCF.config_svrs(f);
 	} catch(Exception e){
-	    System.out.println(e.toString());
+	    Log.i(TAG, e.toString());
 	    System.exit(0);
 	}
     }
@@ -77,7 +79,7 @@ while (parser.hasMoreTokens()) {
 	    myOutput.close();
 	    myInput.close();
 	} catch (Exception e) {
-	    System.out.println(e.toString());
+	    Log.i(TAG, e.toString());
 	    System.exit(0);
 	}
     }
