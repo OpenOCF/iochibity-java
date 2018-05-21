@@ -55,6 +55,11 @@ $ bazel build test:OCFTestClient
 Then run `./bazel-bin/test/OCFTestServer` in one terminal and
 `./bazel-bin/test/OCFTestClient` in another.
 
+== cross-compiling
+
+You will have to run ./configure to get the appropriate #define
+macros. that's a little tricky; see the examples (link below).
+
 To cross-compile same, you'll have to build the toolchain first (or
 install NDK if that's your target) and then just add the right flags
 in `tools/bazel.rc`.  See

@@ -1,27 +1,40 @@
 package org.openocf.test.client;
 
-import openocf.engine.OCFClientSP;
+import openocf.OpenOCFClient;
 import openocf.app.CoResourceSP;
 import openocf.constants.Method;
-// import openocf.ObservationIn;
+import openocf.behavior.InboundResponse;
 // import openocf.IObservationRecord;
-import openocf.signals.ObservationRecord;
+import openocf.behavior.ObservationRecord;
 // import openocf.ObservationList;
 
 import openocf.constants.OCStackResult;
 
-import org.openocf.test.Logger;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.openocf.test.OCFLogger;
 
 import java.lang.RuntimeException;
 import java.util.List;
 
 import java.util.concurrent.CountDownLatch;
 
+// CoResourceSPs contain everything needed to create OutboundStimulus
+// messages to be exhibited.
 
 public class DiscoveryCoRSP
     extends  CoResourceSP
     // implements ICoResourceSP
 {
+    private final static Logger LOGGER = Logger.getLogger(DiscoveryCoRSP.class.getName());
+
+    // 1. set properties of OutboundStimulus msg so server can select it:
+    // UriPath, Action (method), etc.
+    // 2. set properties of comm mechanism:
+    // qos, UDP/TCP, IPv6/IPv4, multicast/unicast, etc.
+    // 3. set resource state properties
+
     public CountDownLatch finished; // to control UI in OCFTestClient
     public CountDownLatch latch() {
 	finished = new CountDownLatch(1);
@@ -32,11 +45,9 @@ public class DiscoveryCoRSP
 
     public DiscoveryCoRSP() {
 	super();
-	setMethod(Method.GET);
     }
     public DiscoveryCoRSP(String uri) {
 	super();
-	setMethod(Method.GET);
 	setUri(uri);
     }
 
@@ -45,16 +56,23 @@ public class DiscoveryCoRSP
        SPs will have been registered with the ServiceManager.  All
        this CoRSP needs to do is coReact.
      */
-    // FIXME: call this Observe(Behavior beh)? No, the lower layer observes incoming, passes to coReact method
+    // The lower layer observes inbound msg (OCClientResponse), passes to coReact method
     @Override
-    public int coReact(InboundStimulus resp)
+    public void coReact(InboundResponse resp)
     {
 	System.out.println("DiscoveryCoRSP: DiscoveryCoRSP.coReact ENTRY");
 	System.out.println("DiscoveryCoRSP: cbdata: " + cbdata);
 
-	Logger.logInboundResponse(this);
+	try {
+	    OCFLogger.logInboundResponse(resp);
+	}
+	catch (Exception e) {
+	    System.out.println("Logger Exception occurred");
+	    System.out.println(e.getMessage());
+	}
 
-	OCFClientSP.retain(resp);
+	this.isRetain = true;
+	resp.isRetain = true;
 
 	finished.countDown();
 
@@ -73,17 +91,17 @@ public class DiscoveryCoRSP
 	//     ObservationList<ObservationRecord> observationRecords = observationIn.getObservationRecords();
 	//     for (ObservationRecord observationRecord
 	// 	     : (ObservationList<ObservationRecord>) observationRecords) {
-	// 	System.out.println("\tOBSERVED: " + observationRecord.getUriPath());
+	// 	OCFLogger.System.out.println("\tOBSERVED: " + observationRecord.getUriPath());
 	// 	List<IObservationRecord> kids = observationRecord.getChildren();
 	// 	if (kids != null) {
 	// 	    for (IObservationRecord childObservationRecord : kids) {
-	// 		System.out.println("\t->OBSERVED: " + childObservationRecord.getUriPath());
+	// 		OCFLogger.System.out.println("\t->OBSERVED: " + childObservationRecord.getUriPath());
 
 	// 		GenericCoRSP cosp = new GenericCoRSP(observationIn, (ObservationRecord)childObservationRecord);
 	// 		ServiceManager.registerCoResourceSP(cosp);
 
 	// 		if (childObservationRecord.getUriPath().equals("/a/temperature")) {
-	// 		    System.out.println("LOG: found temperature resource");
+	// 		    OCFLogger.System.out.println("LOG: found temperature resource");
 	// 		    // gRemoteResourceAddress = observationIn.getRemoteDeviceAddress();
 	// 		    // gRemoteResourceAddress.port
 	// 		    // 	= ((Integer)childObservation.getProperties().get("port"))
@@ -92,7 +110,7 @@ public class DiscoveryCoRSP
 	// 		}
 
 	// 		if (childObservationRecord.getUriPath().equals("/a/led")) {
-	// 		    System.out.println("LOG: found LED resource");
+	// 		    OCFLogger.System.out.println("LOG: found LED resource");
 	// 		    // gLEDAddress = observationIn.getRemoteDeviceAddress();
 	// 		    // gLEDAddress.port
 	// 		    // 	= ((Integer)childObservationRecord.getProperties().get("port"))
@@ -101,7 +119,7 @@ public class DiscoveryCoRSP
 	// 		}
 
 	// 		if (childObservationRecord.getUriPath().equals("/a/whatsit")) {
-	// 		    System.out.println("LOG: found whatsit resource");
+	// 		    OCFLogger.System.out.println("LOG: found whatsit resource");
 	// 		    // gWhatsitAddress = observationIn.getRemoteDeviceAddress();
 	// 		    // gWhatsitAddress.port
 	// 		    // 	= ((Integer)childObservation.getProperties().get("port"))
@@ -117,6 +135,6 @@ public class DiscoveryCoRSP
 
 	// this.deactivate();
 
-	return 3; // (OC_STACK_KEEP_TRANSACTION | OC_STACK_KEEP_PAYLOAD);
+	// return 3; // (OC_STACK_KEEP_TRANSACTION | OC_STACK_KEEP_PAYLOAD);
     }
 }

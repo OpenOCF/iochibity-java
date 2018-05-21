@@ -9,24 +9,30 @@ package org.openocf.test;
 // import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 // import com.googlecode.lanterna.terminal.Terminal;
 
-import openocf.standard.OCFServices;
-// iochibity jni-c stuff
-import openocf.engine.OCFClientSP;
+import openocf.OpenOCFClient;
+import openocf.ConfigJava;
+
+//import openocf.engine.OCFClientSP;
 // import openocf.CoServiceManager;
 import openocf.app.CoResourceSP;
-import openocf.utils.EndPoint;
+import openocf.utils.Endpoint;
 // import openocf.Message;
-// import openocf.OutboundStimulus;
-// import openocf.ObservationIn;
+import openocf.behavior.OutboundStimulus;
+import openocf.behavior.InboundResponse;
 // import openocf.ObservationOut;
-import openocf.signals.HeaderOption;
-import openocf.signals.ObservationRecord;
+import openocf.utils.CoAPOption;
+import openocf.behavior.ObservationRecord;
 // import openocf.ObservationList;
 import openocf.utils.PropertyMap;
 import openocf.app.ICoResourceSP;
 
 import org.openocf.test.client.DiscoveryCoRSP;
 import org.openocf.test.client.GenericCoRSP;
+
+import java.io.IOException;
+import java.util.logging.Level;
+//import java.util.logging.Logger;
+import org.openocf.test.OCFLogger;
 
 import openocf.constants.Method;
 import openocf.constants.OCStackResult;
@@ -45,6 +51,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
@@ -52,10 +59,12 @@ import java.util.stream.Collectors;
 
 public class Client
 {
+    // private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     static{
-	OCFServices.config("/tmp/oocf_client.log", // logfile_fname
-			  "/client_config.cbor"   // FIXME: use constant "svrs.cbor"
-			  );
+	ConfigJava.config("./log/client.log", // logfile_fname
+			     "/client_config.cbor"   // FIXME: use constant "svrs.cbor"
+			     );
     }
 
     public static DiscoveryCoRSP discoveryCoRSP;
@@ -130,26 +139,54 @@ public class Client
 		    break;
 		}
 
-		discoveryCoRSP
-		    .setMethod(Method.RETRIEVE)
-		    .setUri(uri)
-		    // .addType("foo.t.bar")
-		    .setTransportUDP(true)
-		    // .networkIsIPv6(true)
-		    .routingIsMulticast(true);
+		// NB: in Iotivity all these params are passed as args
+		// to OCDoResource, not retained as state; there is no
+		// analog to OutboundStimulus (or CoRSP) in Iotivity.
 
-		// System.out.println("BEFORE EXHIBIT");
-		Logger.logNetworking(discoveryCoRSP);
+		// a resource is identified by UriPath, independent of
+		// network address. /foo/bar could be hosted at
+		// multiple addresses; same CoRSP could be used for
+		// each. Addressing is set by OutboundStimulus created
+		// for the CoRSP.
+		discoveryCoRSP
+		    // metadata:
+		    .setUri(uri);
+		// data: .setPayload(???)
+		    // .addType("foo.t.bar")
+
+		OutboundStimulus requestOut =
+		    new OutboundStimulus(discoveryCoRSP)
+		    .setMethod(Method.DISCOVER)
+		    .setQualityOfService(OpenOCFClient.QOS_HIGH);
+
+		    // Alternative: pass an Endpoint object instead of setting individual props
+		requestOut
+		    .getEndpoint()
+		    // .setIPAddress("foo")
+		    // .setPort(9999)
+		    // .setTransportSecure(true)
+		    // .setTransportUDP(true)
+		    // .setNetworkIPv6(true)
+		    // .setScopeGlobal(true)
+		    //.setRoutingMulticast(true)
+		    // .setCoAPOptions(...)
+		    ;
+
+
+
+		// LOGGER.info("BEFORE EXHIBIT");
+		//Logger.logEndpoint(requestOut.getEndpoint());
 		// Logger.logCoRSP(discoveryCoRSP);
 
 		try {
 		    CountDownLatch finished = discoveryCoRSP.latch();
 		    // discoveryCoRSP.coExhibit();
 		    // Or:  coServiceManager.coExhibit(discoveryCoRSP);
-		    OCFClientSP.coExhibit(discoveryCoRSP);
-		    finished.await();
+		    //OCFClientSP.coExhibit(requestOut);
+		    OpenOCFClient.coExhibit(requestOut);
+		    finished.await(5, TimeUnit.SECONDS);
 		} catch (Exception e) {
-		    System.out.println("ERROR: discovery");
+		    OCFLogger.LOGGER.info("ERROR: discovery");
 		    e.printStackTrace();
 		    msgError(TAG, e.toString());
 		}
@@ -157,8 +194,9 @@ public class Client
 	    case "2":
 		System.out.println("Discovered Resources:");
 		// OCFClientSP.registeredCoServiceProviders();
-		for (CoResourceSP cosp : OCFClientSP.registeredCoResourceSPs()) {
-		    System.out.println("\t" + cosp.getUri());
+		// for (CoResourceSP cosp : OpenOCFClient.registeredCoResourceSPs()) {
+		for (InboundResponse r : OpenOCFClient.getInboundResponses()) {
+		    System.out.println("\t" + r.getUri());
 		}
 		break;
 	    case "3":
@@ -180,7 +218,6 @@ public class Client
 		//     }
 		//     System.out.println("\t" + s);
 		// }
-		System.out.println();
 
 		int i = 0;
 		// while(true) {
@@ -246,6 +283,12 @@ public class Client
 	    case "x":
 		System.out.println("EXITING");
 		again = false;
+		OpenOCFClient.stop();
+		try {
+		    Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
 		System.exit(0);
 		break;
 	    default:
@@ -269,23 +312,22 @@ public class Client
 		public void run()
 		{
 		    System.out.println("Shutdown hook running!");
-		    OCFClientSP.stop();
+		    try {
+			Thread.sleep(1000);
+		    } catch (InterruptedException e) {
+			e.printStackTrace();
+		    }
+		    OpenOCFClient.stop();
 		}
 	    });
 
-	OCFClientSP.Init(OCFClientSP.CLIENT); // _SERVER);
-	// ServiceManager.registerPlatform("Fartmaster",
-	// 				 "Acme Novelties",
-	// 				 "http://acme.example.org",
-	// 				 "modelnbr", "mfgdate", "platversion",
-	// 				 "osversion", "hwversion", "firmwareversion",
-	// 				 "http://acme.example.org/support",
-	// 				 new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+	//OCFClientSP
+	OpenOCFClient.Init(OpenOCFClient.CLIENT); // _SERVER);
 
-	// ServiceManager.registerDevice("Fartmaster2020 Client",
-	// 			       new String[] {"type1", "type2"},
-	// 			       "version-0.1",
-	// 			       new String[] {"dmversion-0.1"});
+	// 0. run OpenOCF.observe()
+	// 1. create and register corsp
+	// 2. create corresponding OutboundStimulus message
+	// 3. coexhibit msg
 
 	Thread uithread = new Thread() {
 		@Override
@@ -298,7 +340,8 @@ public class Client
 	    };
 	uithread.start();
 
-	OCFClientSP.run();
+	OpenOCFClient.run();
+	// OpenOCF.monitor();
 
 	// promptUser();
 
@@ -346,7 +389,7 @@ public class Client
         // while(true){
 	//     try {
 	// 	Thread.sleep(2000);
-	// 	System.out.println("GUI thread loop");
+	// 	LOGGER.info("GUI thread loop");
 	//     } catch (InterruptedException e) {
 	// 	e.printStackTrace();
 	// 	msgError(TAG, e.toString());
@@ -355,7 +398,7 @@ public class Client
     }
 
     public static void msgError(final String tag ,final String text) {
-        System.out.println("[E]" + tag + " | " + text);
+        OCFLogger.LOGGER.info("[E]" + tag + " | " + text);
     }
 
     private final static String TAG = Client.class.getSimpleName();

@@ -1,13 +1,14 @@
 package org.openocf.test;
 
-import openocf.standard.OCFServices;
-import openocf.utils.EndPoint;
-import openocf.signals.HeaderOption;
+import openocf.OpenOCFServer;
+import openocf.ConfigJava;
+//import openocf.utils.Endpoint;
+import openocf.utils.CoAPOption;
 // import openocf.InboundStimulus;
 import openocf.utils.PropertyMap;
 import openocf.app.ResourceSP;
 import openocf.app.IResourceSP;
-import openocf.engine.OCFServerSP; // ServiceManager;
+// import openocf.engine.OCFServerSP; // ServiceManager;
 
 // import org.openocf.test.server.LedSP;
 // import org.openocf.test.server.LightSP;
@@ -40,9 +41,10 @@ import java.util.Map;
 public class Server
 {
     static{
-	OCFServices.config(null,  // "/tmp/oocf_server.log", // logfile_fname
-			  "/server_config.cbor"	  // FIXME: constant "svrs.cbor"
-			  );
+	// FIXME - init method handles configuration
+	ConfigJava.config("./log/server.log", // logfile_fname
+			     "/server_config.cbor"	  // FIXME: constant "svrs.cbor"
+			     );
     }
 
     public static void main(String[] args)
@@ -59,25 +61,26 @@ public class Server
 		public void run()
 		{
 		    System.out.println("Shutdown hook running!");
-		    OCFServices.stop();
+		    OpenOCFServer.stop();
 		}
 	    });
 
-	OCFServices.Init(OCFServices.SERVER);
+	//OCFServices.Init(OCFServices.SERVER);
+	OpenOCFServer.Init(OpenOCFServer.SERVER);
 
 	// ServiceManager.
-	OCFServerSP.configurePlatformSP("76a10fbf-0cbb-4e27-a748-cec0eb9bdc92",
-					   "Acme Novelties",
-					   "http://acme.example.org",
-					   "modelnbr", "mfgdate", "platversion",
-					   "osversion", "hwversion", "firmwareversion",
-					   "http://acme.example.org/support",
-					   new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+	// OpenOCFServer.configurePlatformSP("76a10fbf-0cbb-4e27-a748-cec0eb9bdc92",
+	// 				   "Acme Novelties",
+	// 				   "http://acme.example.org",
+	// 				   "modelnbr", "mfgdate", "platversion",
+	// 				   "osversion", "hwversion", "firmwareversion",
+	// 				   "http://acme.example.org/support",
+	// 				   new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
 
-	OCFServerSP.configureDeviceSP("Fartmaster2020 Server",
-					 new String[] {"type1", "type2"},
-					 "version-0.1",
-					 new String[] {"dmversion-0.1"});
+	// OpenOCFServer.configureDeviceSP("Fartmaster2020 Server",
+	// 				 new String[] {"type1", "type2"},
+	// 				 "version-0.1",
+	// 				 new String[] {"dmversion-0.1"});
 
 	// TemperatureSP tempSP = new TemperatureSP();
 	// tempSP.addType("foo.t.bar");
@@ -87,12 +90,14 @@ public class Server
 	// ResourceSP tSP = null;
 	// tSP = ServiceManager.registerResourceSP(tempSP);
 
-	OCFServerSP.registerResourceSP(new WhatsitSP());
-	OCFServerSP.registerResourceSP(new WhatsitSP("/bar/whatsit"));
+	//OCFServerSP
+	OpenOCFServer.registerResourceSP(new WhatsitSP());
+	OpenOCFServer.registerResourceSP(new WhatsitSP("/bar/whatsit"));
 
 	// ServiceManager.registerResourceSP(new LedSP());
 
-	OCFServices.run();
+	OpenOCFServer.run();
+	//OpenOCF.observe();
 
         while(true){
 	    try {

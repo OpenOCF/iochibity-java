@@ -2,12 +2,15 @@ package org.openocf.test.client;
 
 import openocf.app.CoResourceSP;
 import openocf.constants.Method;
-// import openocf.ObservationIn;
-import openocf.signals.ObservationRecord;
+import openocf.behavior.InboundResponse;
+import openocf.behavior.ObservationRecord;
 // import openocf.ObservationList;
 import openocf.constants.OCStackResult;
 
-import org.openocf.test.Logger;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.openocf.test.OCFLogger;
 
 import java.util.List;
 
@@ -15,15 +18,15 @@ public class GenericCoRSP
     extends  CoResourceSP
     // implements ICoResourceSP
 {
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     private int cbdata = 99;
 
     public GenericCoRSP() {
 	super();
-	setMethod(Method.GET);
     }
     public GenericCoRSP(String uri) {
 	super();
-	setMethod(Method.GET);
 	setUri(uri);
     }
 
@@ -55,16 +58,16 @@ public class GenericCoRSP
     // 	// types, interfaces, properties?
     // }
 
-    public int coReact()
+    public void coReact(InboundResponse resp)
     {
 	System.out.println("JAVA: GenericCoSP.coReact ENTRY");
-	System.out.println("JAVA: cbdata: " + cbdata);
+	// System.out.println("JAVA: cbdata: " + cbdata);
 	// Logger.logObservationIn(responseIn);
 	// Logger.logObservationIn(this);
 
 	// save incoming resource info - ServiceManager.registerRemoteResource(...)?
 	// update screen ...
 
-	return 0;
+	// return 0;
     }
 }
