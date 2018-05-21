@@ -12,6 +12,26 @@ Iotivity stripped of C++.  See link:jni-c/doc/Design.adoc[jni-c
 Design Considerations] for a list of the goals of the project.
 
 
+=== troubleshooting
+
+[source,sh]
+----
+external/openocf/third_party/coap/src/coap_io.c:75:4: error: "Need IPV6_PKTINFO or IPV6_RECVPKTINFO to request ancillary data from OS."
+#  error "Need IPV6_PKTINFO or IPV6_RECVPKTINFO to request ancillary data from OS."
+   ^
+external/openocf/third_party/coap/src/coap_io.c:187:40: error: use of undeclared identifier 'GEN_IPV6_PKTINFO'
+  if (setsockopt(sockfd, IPPROTO_IPV6, GEN_IPV6_PKTINFO, OPTVAL_T(&on), sizeof(on)) < 0)
+                                       ^
+external/openocf/third_party/coap/src/coap_io.c:339:23: error: use of undeclared identifier 'IPV6_PKTINFO'
+    cmsg->cmsg_type = IPV6_PKTINFO;
+                      ^
+external/openocf/third_party/coap/src/coap_io.c:576:66: error: use of undeclared identifier 'IPV6_PKTINFO'
+      if (cmsg->cmsg_level == IPPROTO_IPV6 && cmsg->cmsg_type == IPV6_PKTINFO) {
+----
+
+This probably means the OpenOCF lib and the jni c lib are configured for different targets.
+
+
 == link:jni-cxx[jni-cxx]
 
 This is the legacy Java wrapper around the Iotivity C++ API, pulled
