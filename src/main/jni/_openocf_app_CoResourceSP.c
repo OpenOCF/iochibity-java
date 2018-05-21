@@ -185,6 +185,7 @@ OCStackApplicationResult _openocf_app_CoResourceSP_coReact(void* c_CoRSP,
     /* 1. set up: attach this thread to JVM */
     /* http://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls */
     /* http://adamish.com/blog/archives/327 */
+    /* detach is handled by pthread_destructor created in JNI_OnLoad */
     JNIEnv * env;
     // FIXMED double check it's all ok
     int getEnvStat = (*g_JVM)->GetEnv(g_JVM, (void **)&env, JNI_VERSION_1_6);
@@ -210,7 +211,8 @@ OCStackApplicationResult _openocf_app_CoResourceSP_coReact(void* c_CoRSP,
 	(*env)->ExceptionDescribe(env);
     }
 
-    OIC_LOG(INFO, __FILE__, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    /* register with pthread destructor */
+    pthread_setspecific(pthread_key, (void*)env);
 
     /* if ctx param is null something went wrong */
     if (c_CoRSP == NULL) {
@@ -305,29 +307,61 @@ OCStackApplicationResult _openocf_app_CoResourceSP_coReact(void* c_CoRSP,
 
     jthrowable e = (*env)->ExceptionOccurred(env);
     if(e) {
+	OIC_LOG_V(ERROR, __FILE__, "CAUGHT EXCEPTION thrown by user coReact method");
+
+	jclass throwable_class = (*env)->FindClass(env, "java/lang/Throwable");
+
+	/* jmethodID mid_throwable_getCause = */
+	/*     (*env)->GetMethodID(env, throwable_class, */
+	/* 			"getCause", */
+	/* 			"()Ljava/lang/Throwable;"); */
+	/* jmethodID mid_throwable_getStackTrace = */
+	/*     (*env)->GetMethodID(env, throwable_class, */
+	/* 			"getStackTrace", */
+	/* 			"()[Ljava/lang/StackTraceElement;"); */
+	jmethodID mid_throwable_toString =
+	    (*env)->GetMethodID(env, throwable_class,
+				"toString",
+				"()Ljava/lang/String;");
+	jmethodID mid_throwable_getMessage =
+	    (*env)->GetMethodID(env, throwable_class,
+				"getMessage",
+				"()Ljava/lang/String;");
+
+/* jclass frame_class = (*env)->FindClass("java/lang/StackTraceElement"); */
+/* jmethodID mid_frame_toString = */
+/*     (*env)->GetMethodID(frame_class, */
+/*                       "toString", */
+/*                       "()Ljava/lang/String;"); */
+
+	/* jclass clazz = (*env)->GetObjectClass(env, e); */
+	/* if (clazz == NULL) { */
+	/*     OIC_LOG_V(ERROR, __FILE__, "GetObjectClass failed foor throwable"); */
+	/* } */
+
+	/* jmethodID getMessage = (*env)->GetMethodID(env, clazz, */
+	/* 					"getMessage", */
+	/* 					"()Ljava/lang/String;"); */
+
+	jstring message = (jstring)(*env)->CallObjectMethod(env, e, mid_throwable_getMessage);
+	jstring s = (jstring)(*env)->CallObjectMethod(env, e, mid_throwable_toString);
+	//OIC_LOG_V(ERROR, __FILE__, "BAAAR %s", message);
+
+	const char *mstr = (*env)->GetStringUTFChars(env, s, NULL);
+
+	OIC_LOG_V(ERROR, __FILE__, "[%d]: %s", __LINE__, s);
+
 	(*env)->ExceptionClear(env); // clears the exception; e seems to remain valid
-	OIC_LOG_V(ERROR, __FILE__, "[%d] %s: CAUGHT EXCEPTION thrown by user coReact method",
-		  __LINE__, __func__);
-	jclass clazz = (*env)->GetObjectClass(env, e);
-	jmethodID getMessage = (*env)->GetMethodID(env, clazz,
-						"getMessage",
-						"()Ljava/lang/String;");
-	jstring message = (jstring)(*env)->CallObjectMethod(env, e, getMessage);
-	const char *mstr = (*env)->GetStringUTFChars(env, message, NULL);
-
-	OIC_LOG_V(ERROR, __FILE__, "[%d]: %s", __LINE__, mstr);
-
 	(*env)->ReleaseStringUTFChars(env, message, mstr);
 	(*env)->DeleteLocalRef(env, message);
-	(*env)->DeleteLocalRef(env, clazz);
+	(*env)->DeleteLocalRef(env, throwable_class);
+	// FIXME: delete the methods
 	(*env)->DeleteLocalRef(env, e);
 
 	return OC_STACK_DELETE_TRANSACTION;
     }
 
     /* we're done with the JVM */
-    (*g_JVM)->DetachCurrentThread(g_JVM);
-
     /* FIXME: free everything - this routine does not return to the JVM */
 
 
