@@ -5,6 +5,19 @@
 #include <unistd.h>
 #include <jni.h>
 
+#ifdef __ANDROID__
+#include <android/api-level.h>
+#include <android/log.h>
+#endif
+
+#ifdef __ANDROID_API__
+/* this will be contained on android */
+#endif
+
+#ifndef __ANDROID_API__
+/* this will NOT be contained for android builds */
+#endif
+
 
 #include "openocf.h"
 
@@ -44,6 +57,7 @@ THREAD_EXIT_T troutine_work(void *arg)
 	sleep(1);
     }
     printf("Exiting server work thread...\n");
+    OCStop();
     /* we're the only thread left, pthread_exit(NULL) would kill us,
        but not the process. */
     /* exit(0); */
@@ -95,15 +109,16 @@ Java_openocf_OpenOCF_config_1svrs(JNIEnv *env, jclass klass, jstring j_svrs_conf
 JNIEXPORT void JNICALL
 Java_openocf_OpenOCF_config_1logging(JNIEnv *env, jclass klass, jstring j_logfname)
 {
-    printf("config_logging ENTRY: %s\n",
-	   (j_logfname == NULL)? "NULL"
-	   : (char*) (*env)->GetStringUTFChars(env, j_logfname, NULL));
+    /* __android_log_print(ANDROID_LOG_INFO, TAG, "config_logging ENTRY"); */
+	/* : %s\n", */
+	/*    (j_logfname == NULL)? "NULL" */
+	/*    : (char*) (*env)->GetStringUTFChars(env, j_logfname, NULL)); */
     if (j_logfname) {
 	logfd = fopen((char*) (*env)->GetStringUTFChars(env, j_logfname, NULL), "w");
-	if (logfd)
+	if (logfd) {
 	    OCLogInit(logfd);
-	else {
-	    printf("Logfile fopen failed\n");
+	} else {
+	    OIC_LOG(ERROR, TAG, "Logfile fopen failed\n");
 	    exit(EXIT_FAILURE);
 	}
     } else {
@@ -111,7 +126,7 @@ Java_openocf_OpenOCF_config_1logging(JNIEnv *env, jclass klass, jstring j_logfna
 #ifdef TB_LOG
 	OCSetLogLevel(DEBUG, false);
 #endif
-	OIC_LOG_V(DEBUG, TAG, "%s OCLogInit done", __func__);
+	/* OIC_LOG_V(DEBUG, TAG, "%s OCLogInit done", __func__); */
     /* LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_WARNING, LOG_NOTICE, LOG_INFO, LOG_DEBUG */
     /* coap_set_log_level(LOG_WARNING); */
 
@@ -501,13 +516,13 @@ JNIEXPORT void JNICALL Java_openocf_OpenOCF_run (JNIEnv *env, jclass clazz)
     /* 			  (THREAD_START_T)troutine_work, */
     /* 			  (void *)NULL); */
     while (!g_quit_flag) {
-	/* OIC_LOG_V(DEBUG, TAG, "%s LOOP", __func__); */
+	OIC_LOG_V(DEBUG, TAG, "%s LOOP", __func__);
 	if (OCProcess() != OC_STACK_OK) {
 	    printf("OCStack process error\n");
 	}
-	/* sleep(1); */
+	sleep(1);
     }
-
+    OCStop();
     /* main thread has nothing to do. by calling pthread_exit it exits
        but the process continues, so any spawned threads do too. */
     /* THREAD_EXIT(THREAD_EXIT_OK); */
