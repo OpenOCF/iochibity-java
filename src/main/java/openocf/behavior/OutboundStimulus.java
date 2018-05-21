@@ -27,6 +27,8 @@ public class OutboundStimulus extends Outbound
 
     long contextDeleter;       // typedef void (* OCClientContextDeleter)(void *context);
 
+    private OutboundStimulus() { }
+
     public OutboundStimulus(CoResourceSP corsp) {
 	_coResourceSP = corsp;
 	// _ep = NULL;
