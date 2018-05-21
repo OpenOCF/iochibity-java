@@ -1,14 +1,17 @@
 package org.openocf.test.client;
 
-import org.iochibity.CoServiceManager;
-import org.iochibity.CoServiceProvider;
-import org.iochibity.constants.Method;
-// import org.iochibity.ObservationIn;
-// import org.iochibity.IObservationRecord;
-import org.iochibity.ObservationRecord;
-// import org.iochibity.ObservationList;
+import android.util.Log;
 
-import org.iochibity.constants.OCStackResult;
+/// import openocf.CoServiceManager;
+import openocf.app.CoResourceSP;
+import openocf.constants.Method;
+// import openocf.ObservationIn;
+// import openocf.IObservationRecord;
+import openocf.behavior.InboundResponse;
+import openocf.behavior.ObservationRecord;
+// import openocf.ObservationList;
+
+import openocf.constants.OCStackResult;
 
 import org.openocf.test.Logger;
 
@@ -19,21 +22,23 @@ import java.util.concurrent.CountDownLatch;
 
 
 public class DiscoveryCoSP
-    extends  CoServiceProvider
-    // implements ICoServiceProvider
+    extends  CoResourceSP
+    // implements ICoResourceSP
 {
+    private final String TAG = "DiscoveryCoSP";
+
     public CountDownLatch finished; // to control UI in OCFTestClient
 
     public int cbdata = 99;  // callback param data
 
     public DiscoveryCoSP() {
 	super();
-	method(Method.GET);
+	// setMethod(Method.GET);
     }
     public DiscoveryCoSP(String uri) {
 	super();
-	method(Method.GET);
-	uriPath(uri);
+	setUri(uri);
+	// setMethod(Method.GET);
     }
 
     public CountDownLatch latch() {
@@ -46,22 +51,27 @@ public class DiscoveryCoSP
        SPs will have been registered with the ServiceManager.  All
        this CoSP needs to do is coReact.
      */
-    public int coReact()
+    public void coReact(InboundResponse resp)
     {
-	System.out.println("DiscoveryCoSP: DiscoveryCoSP.coReact ENTRY");
-	System.out.println("DiscoveryCoSP: cbdata: " + cbdata);
+	Log.i(TAG, "coReact ENTRY");
+	Log.i(TAG, "cbdata: " + cbdata);
 
-	Logger.logResponseIn(this);
+	Log.i(TAG, "method: " + this._method);
 
-	CoServiceManager.registeredCoServiceProviders();
+	Logger.logInboundResponse(resp);
+
+	this.isRetain = true;
+	resp.isRetain = true;
+
+	// TODO: open flutter channel; resp.getFlutterInboundResponse; send to flutter
 
 	finished.countDown();
 
-	// List<CoServiceProvider> cosps = ServiceManager.registeredCoServiceProviders();
+	// List<CoResourceSP> cosps = ServiceManager.registeredCoResourceSPs();
 
 
-	// ServiceManager.registerCoServiceProviders(this.observations());
-	// ServiceManager.registerCoServiceProviders(this.getSPObservations());
+	// ServiceManager.registerCoResourceSPs(this.observations());
+	// ServiceManager.registerCoResourceSPs(this.getSPObservations());
 
 	// first update _this_ with incoming data
 	// this.setDestination(observationIn.getRemoteDeviceAddress());
@@ -72,17 +82,17 @@ public class DiscoveryCoSP
 	//     ObservationList<ObservationRecord> observationRecords = observationIn.getObservationRecords();
 	//     for (ObservationRecord observationRecord
 	// 	     : (ObservationList<ObservationRecord>) observationRecords) {
-	// 	System.out.println("\tOBSERVED: " + observationRecord.getUriPath());
+	// 	Log.i(TAG, "\tOBSERVED: " + observationRecord.getUriPath());
 	// 	List<IObservationRecord> kids = observationRecord.getChildren();
 	// 	if (kids != null) {
 	// 	    for (IObservationRecord childObservationRecord : kids) {
-	// 		System.out.println("\t->OBSERVED: " + childObservationRecord.getUriPath());
+	// 		Log.i(TAG, "\t->OBSERVED: " + childObservationRecord.getUriPath());
 
 	// 		GenericCoSP cosp = new GenericCoSP(observationIn, (ObservationRecord)childObservationRecord);
-	// 		ServiceManager.registerCoServiceProvider(cosp);
+	// 		ServiceManager.registerCoResourceSP(cosp);
 
 	// 		if (childObservationRecord.getUriPath().equals("/a/temperature")) {
-	// 		    System.out.println("LOG: found temperature resource");
+	// 		    Log.i(TAG, "LOG: found temperature resource");
 	// 		    // gRemoteResourceAddress = observationIn.getRemoteDeviceAddress();
 	// 		    // gRemoteResourceAddress.port
 	// 		    // 	= ((Integer)childObservation.getProperties().get("port"))
@@ -91,7 +101,7 @@ public class DiscoveryCoSP
 	// 		}
 
 	// 		if (childObservationRecord.getUriPath().equals("/a/led")) {
-	// 		    System.out.println("LOG: found LED resource");
+	// 		    Log.i(TAG, "LOG: found LED resource");
 	// 		    // gLEDAddress = observationIn.getRemoteDeviceAddress();
 	// 		    // gLEDAddress.port
 	// 		    // 	= ((Integer)childObservationRecord.getProperties().get("port"))
@@ -100,7 +110,7 @@ public class DiscoveryCoSP
 	// 		}
 
 	// 		if (childObservationRecord.getUriPath().equals("/a/whatsit")) {
-	// 		    System.out.println("LOG: found whatsit resource");
+	// 		    Log.i(TAG, "LOG: found whatsit resource");
 	// 		    // gWhatsitAddress = observationIn.getRemoteDeviceAddress();
 	// 		    // gWhatsitAddress.port
 	// 		    // 	= ((Integer)childObservation.getProperties().get("port"))
@@ -116,7 +126,7 @@ public class DiscoveryCoSP
 
 	// this.deactivate();
 
-	return 3;
+	// return 3;
     }
 }
 

@@ -1,7 +1,14 @@
 package org.openocf.test.client;
 
+import org.openocf.test.Logger;
+
 import org.openocf.test.client.R;
-import openocf.android.OCFService;
+import openocf.OpenOCF;
+import openocf.OpenOCFClient;
+import openocf.ConfigAndroid;
+import openocf.behavior.OutboundStimulus;
+import openocf.constants.Method;
+
 
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
@@ -27,6 +34,8 @@ import android.widget.Toast;
  */
 public class ClientActivity extends ListActivity {
 
+    private static final String TAG = "ClientActivity";
+
     private static final Uri DOCS_URI = Uri.parse(
             "http://developer.android.com/design/building-blocks/buttons.html#borderless");
 
@@ -34,12 +43,13 @@ public class ClientActivity extends ListActivity {
         super.onCreate(savedInstanceState);
 
 	try{
-	    Log.v("Bazel ClientActivity:", "onCreate");
-	    OCFService.config(getApplicationContext(), "client");  // 2nd arg is name of android_binary from BUILD
-	    Log.v("Bazel", "JNI says: " + OCFService.configuration());
+	    Log.v("OCF", "Bazel ClientActivity: onCreate");
+	    ConfigAndroid.config(getApplicationContext(),
+				 "client");  // 2nd arg is name of android_binary from BUILD
+	    Log.v("OCF", "JNI says: " + OpenOCF.configuration());
 	    // System.loadLibrary("mraajava");
 	}catch(Exception e){
-	    System.out.println(e.toString());
+	    Log.i("OCF", e.toString());
 	}
 
         setContentView(R.layout.sample_main);
@@ -56,12 +66,30 @@ public class ClientActivity extends ListActivity {
         findViewById(R.id.ok_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                // finish();
+		DiscoveryCoSP discoveryCoRSP = new DiscoveryCoSP();
+		discoveryCoRSP.setUri("/oic/res");
+		// .setMethod(Method.DISCOVER);
+
+		OutboundStimulus requestOut =
+		    new OutboundStimulus(discoveryCoRSP)
+		    .setMethod(Method.DISCOVER)
+		    .setQualityOfService(OpenOCFClient.QOS_HIGH);
+
+		//		Logger.logOutboundStimulus(requestOut);
+
+		Log.i(TAG, "DiscoveryCoRSP method before coexhibit: " + discoveryCoRSP._method);
+
+		OpenOCFClient.coExhibit(requestOut);
+
+		Log.i(TAG, "DiscoveryCoRSP method after coexhibit: " + discoveryCoRSP._method);
             }
         });
+
+	// AndroidClient client = new AndroidClient();
 	new Thread(new Runnable() {
 		public void run() {
-		    AndroidClient.go();
+		    ClientConfig.configure();
 		}
 	    }).start();
     }
@@ -69,11 +97,13 @@ public class ClientActivity extends ListActivity {
     private BaseAdapter mListAdapter = new BaseAdapter() {
         @Override
         public int getCount() {
+	    // OpenOCF.getMessageCount();
             return 10;
         }
 
         @Override
         public Object getItem(int position) {
+	    // return OpenOCF.getMessage(position); // returns InboundResponse object
             return null;
         }
 
@@ -88,6 +118,9 @@ public class ClientActivity extends ListActivity {
                 convertView = getLayoutInflater().inflate(R.layout.list_item, container, false);
             }
 
+	    // get current item to be displayed
+	    //InboundResponse currentResponse = (Item) getItem(position);
+
             // Because the list item contains multiple touch targets, you should not override
             // onListItemClick. Instead, set a click listener for each target individually.
 
@@ -97,7 +130,7 @@ public class ClientActivity extends ListActivity {
                         public void onClick(View view) {
                             Toast.makeText(ClientActivity.this,
                                     // R.string.touched_primary_message,
-					   OCFService.configuration(),
+					   OpenOCFClient.configuration(),
                                     Toast.LENGTH_SHORT).show();
                         }
                     });

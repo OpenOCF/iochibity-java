@@ -1,22 +1,25 @@
 package org.openocf.test;
 
-import org.iochibity.OCF;
-import org.iochibity.CoServiceProvider;
-import org.iochibity.DeviceAddress;
-import org.iochibity.HeaderOption;
-// import org.iochibity.Message;
-// import org.iochibity.ObservationIn;
-// import org.iochibity.ObservationOut;
-// import org.iochibity.IObservationRecord;
-import org.iochibity.ObservationRecord;
-// import org.iochibity.ObservationList;
-import org.iochibity.PropertyMap;
-import org.iochibity.IServiceProvider;
-// import org.iochibity.StimulusIn;
-import org.iochibity.constants.OCStackResult;
-import org.iochibity.constants.ResourcePolicy;
-import org.iochibity.constants.ServiceResult;
-import org.iochibity.exceptions.OCFNotImplementedException;
+// import openocf.OCF;
+import openocf.app.CoResourceSP;
+import openocf.utils.Endpoint;
+import openocf.utils.CoAPOption;
+// import openocf.Message;
+import openocf.behavior.InboundResponse;
+import openocf.behavior.OutboundStimulus;
+// import openocf.ObservationOut;
+// import openocf.IObservationRecord;
+import openocf.behavior.ObservationRecord;
+// import openocf.ObservationList;
+/// import openocf.PropertyMap;
+import openocf.app.IResourceSP;
+// import openocf.StimulusIn;
+import openocf.constants.OCStackResult;
+import openocf.constants.ResourcePolicy;
+import openocf.constants.ServiceResult;
+import openocf.exceptions.OCFNotImplementedException;
+
+import openocf.utils.Endpoint;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,8 +33,12 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 
+import android.util.Log;
+
 public class Logger
 {
+    private final static String TAG = "Logger";
+
     public static final HashMap errcodeMap;
     public static final HashMap observationTypes;
     public static final HashMap netProtocols;
@@ -94,394 +101,431 @@ public class Logger
 	netScope.put( 0xE,      "OC_SCOPE_GLOBAL");
     }
 
-    static public void logCoAddress(CoServiceProvider cosp)
+    static public void logCoAddress(Endpoint ep)
     {
 
-	DeviceAddress da = cosp.coAddress();
+	// Endpoint da = ep.coAddress();
 
-	if (da != null) {
+	if (ep != null) {
 	    try {
-		System.out.println("APP_LOGGER DeviceAddress\t IP address:\t\t" + da.ipAddress());
-		System.out.println("APP_LOGGER DeviceAddress\t port:\t\t\t" + da.port());
-		System.out.println("APP_LOGGER DeviceAddress\t network protocol:\t"
-				   + String.format("0x%04X", da.networkProtocol()
-						   & 0xFFFFF)
-				   + " " + netProtocols.get(da.networkProtocol()));
+		Log.i(TAG, "APP_LOGGER Endpoint\t IP address:\t\t" + ep.getIPAddress());
+		Log.i(TAG, "APP_LOGGER Endpoint\t port:\t\t\t" + ep.getPort());
+		// Log.i(TAG, "APP_LOGGER Endpoint\t network protocol:\t"
+		// 		   + String.format("0x%04X", ep.networkProtocol()
+		// 				   & 0xFFFFF)
+		// 		   + " " + netProtocols.get(ep.networkProtocol()));
 
-		System.out.println("APP_LOGGER DeviceAddress\t network flags:\t\t"
-				   + String.format("0x%04X", da.networkFlags()
-						   & 0xFFFFF));
+		// Log.i(TAG, "APP_LOGGER Endpoint\t network flags:\t\t"
+		// 		   + String.format("0x%04X", ep.networkFlags()
+		// 				   & 0xFFFFF));
 
-		System.out.println("APP_LOGGER DeviceAddress\t IPv4?\t\t\t" + da.isIPv4());
+		Log.i(TAG, "APP_LOGGER Endpoint\t IPv4?\t\t\t" + ep.isNetworkIPv4());
 
-		System.out.println("APP_LOGGER DeviceAddress\t IPv6?\t\t\t" + da.isIPv6());
+		Log.i(TAG, "APP_LOGGER Endpoint\t IPv6?\t\t\t" + ep.isNetworkIPv6());
 
-		System.out.println("APP_LOGGER DeviceAddress\t Multicast?\t\t" + da.isMulticast());
+		Log.i(TAG, "APP_LOGGER Endpoint\t Multicast?\t\t" + ep.isRoutingMulticast());
 
-		System.out.println("APP_LOGGER DeviceAddress\t nework scope:\t\t"
-				   + String.format("0x%02X", da.networkScope())
-				   + " " + netScope.get((int)da.networkScope()));
+		// Log.i(TAG, "APP_LOGGER Endpoint\t nework scope:\t\t"
+		// 		   + String.format("0x%02X", ep.networkScope())
+		// 		   + " " + netScope.get((int)ep.networkScope()));
 
-		System.out.println("APP_LOGGER DeviceAddress\t transport security:\t"
-				   + da.transportIsSecure());
+		Log.i(TAG, "APP_LOGGER Endpoint\t transport security:\t"
+				   + ep.isTransportSecure());
 
-		// int scope = (da.networkPolicy >> 4) & 0x000F;
-		// System.out.println("APP_LOGGER DeviceAddress\t nework scope:\t\t"
+		// int scope = (ep.networkPolicy >> 4) & 0x000F;
+		// Log.i(TAG, "APP_LOGGER Endpoint\t nework scope:\t\t"
 		// 		       // + String.format("0x%02X", scope)
 		// 		       + netPolicy.get(scope));
 
-		// String sec = (0 == (da.networkPolicy & 0x0010))? "OFF" : "ON";
-		// System.out.println("APP_LOGGER DeviceAddress\t transport security:\t" + sec);
+		// String sec = (0 == (ep.networkPolicy & 0x0010))? "OFF" : "ON";
+		// Log.i(TAG, "APP_LOGGER Endpoint\t transport security:\t" + sec);
 
-		System.out.println("APP_LOGGER DeviceAddress\t ifindex:\t\t" + da.ifindex());
-		// System.out.println("REQUEST IN: devaddr route data: " + da.routeData);
+		// Log.i(TAG, "APP_LOGGER Endpoint\t ifindex:\t\t" + ep.ifindex());
+		// Log.i(TAG, "REQUEST IN: devaddr route data: " + ep.routeData);
 
 
-		// System.out.println("APP_LOGGER DeviceAddress route data: " + da.routeData);
+		// Log.i(TAG, "APP_LOGGER Endpoint route data: " + ep.routeData);
 	    } catch (NullPointerException e) {
-		System.out.println("Device Address is NULL");
+		Log.i(TAG, "Device Address is NULL");
 	    }
 	} else {
-	    System.out.println("Device Address is NULL");
+	    Log.i(TAG, "Device Address is NULL");
 	}
     }
 
     // static public void logResourcePolicies(ResourceLocal resource)
     // {
-    // 	System.out.println("RESOURCE: policies: "
+    // 	Log.i(TAG, "RESOURCE: policies: "
     // 			   + String.format("0x%X", resource.policies & 0xFFFFF));
     // 	if ( (resource.policies & ResourcePolicy.DISCOVERABLE) > 0 )
-    // 	    {System.out.println("\tDISCOVERABLE");}
-    // 	if ( (resource.policies & ResourcePolicy.ACTIVE) > 0 ) {System.out.println("\tACTIVE");}
-    // 	if ( (resource.policies & ResourcePolicy.OBSERVABLE) > 0) {System.out.println("\tOBSERVABLE");}
-    // 	if ( (resource.policies & ResourcePolicy.SECURE) > 0) {System.out.println("\tSECURE");}
+    // 	    {Log.i(TAG, "\tDISCOVERABLE");}
+    // 	if ( (resource.policies & ResourcePolicy.ACTIVE) > 0 ) {Log.i(TAG, "\tACTIVE");}
+    // 	if ( (resource.policies & ResourcePolicy.OBSERVABLE) > 0) {Log.i(TAG, "\tOBSERVABLE");}
+    // 	if ( (resource.policies & ResourcePolicy.SECURE) > 0) {Log.i(TAG, "\tSECURE");}
     // }
 
-    static public void logNetworking(CoServiceProvider cosp)
+    static public void logNetworking(Endpoint ep)
     {
-	System.out.println("APP_LOGGER transportIsUDP?\t\t" + cosp.transportIsUDP());
-	System.out.println("APP_LOGGER transportIsTCP?\t\t" + cosp.transportIsTCP());
-	System.out.println("APP_LOGGER transportIsGATT?\t\t" + cosp.transportIsGATT());
-	System.out.println("APP_LOGGER transportIsRFCOMM?\t" + cosp.transportIsRFCOMM());
-	System.out.println("APP_LOGGER transportIsNFC?\t\t" + cosp.transportIsNFC());
-	System.out.println("APP_LOGGER networkIsIP?\t\t" + cosp.networkIsIP());
-	System.out.println("APP_LOGGER networkIsIPv4?\t\t" + cosp.networkIsIPv4());
-	System.out.println("APP_LOGGER networkIsIPv6?\t\t" + cosp.networkIsIPv6());
-	System.out.println("APP_LOGGER scopeIsInterface?\t" + cosp.scopeIsInterface());
-	System.out.println("APP_LOGGER scopeIsLink?\t\t" + cosp.scopeIsLink());
-	System.out.println("APP_LOGGER transportIsSecure?\t" + cosp.transportIsSecure());
-	System.out.println("APP_LOGGER routingIsMulticast?\t" + cosp.routingIsMulticast());
+	Log.i(TAG, "APP_LOGGER isTransportUDP?\t\t" + ep.isTransportUDP());
+	Log.i(TAG, "APP_LOGGER isTransportTCP?\t\t" + ep.isTransportTCP());
+	Log.i(TAG, "APP_LOGGER isTransportGATT?\t\t" + ep.isTransportGATT());
+	Log.i(TAG, "APP_LOGGER isTransportRFCOMM?\t" + ep.isTransportRFCOMM());
+	Log.i(TAG, "APP_LOGGER isTransportNFC?\t\t" + ep.isTransportNFC());
+	Log.i(TAG, "APP_LOGGER networkIsIP?\t\t" + ep.isNetworkIP());
+	Log.i(TAG, "APP_LOGGER networkIsIPv4?\t\t" + ep.isNetworkIPv4());
+	Log.i(TAG, "APP_LOGGER networkIsIPv6?\t\t" + ep.isNetworkIPv6());
+	Log.i(TAG, "APP_LOGGER scopeIsInterface?\t" + ep.isScopeInterface());
+	Log.i(TAG, "APP_LOGGER scopeIsLink?\t\t" + ep.isScopeLink());
+	Log.i(TAG, "APP_LOGGER isTransportSecure?\t" + ep.isTransportSecure());
+	Log.i(TAG, "APP_LOGGER routingIsMulticast?\t" + ep.isRoutingMulticast());
    }
 
-    static public void testNetworking(CoServiceProvider cosp)
+    static public void testNetworking(Endpoint ep)
     {
 	boolean torf;
-	torf = cosp.transportIsUDP();
-	System.out.println("PRE  transportIsUDP? " + cosp.transportIsUDP());
-	cosp.transportIsUDP(true);
-	System.out.println("POST transportIsUDP? (t) " + cosp.transportIsUDP());
-	cosp.transportIsUDP(false);
-	System.out.println("POST transportIsUDP? (f) " + cosp.transportIsUDP());
-	cosp.transportIsUDP(torf);
+	torf = ep.isTransportUDP();
+	Log.i(TAG, "PRE  isTransportUDP? " + ep.isTransportUDP());
+	ep.setTransportUDP(true);
+	Log.i(TAG, "POST isTransportUDP? (t) " + ep.isTransportUDP());
+	ep.setTransportUDP(false);
+	Log.i(TAG, "POST isTransportUDP? (f) " + ep.isTransportUDP());
+	ep.setTransportUDP(torf);
 
-	torf = cosp.transportIsTCP();
-	System.out.println("PRE transportIsTCP? " + cosp.transportIsTCP());
-	cosp.transportIsTCP(true);
-	System.out.println("POST transportIsTCP? (t) " + cosp.transportIsTCP());
-	cosp.transportIsTCP(false);
-	System.out.println("POST transportIsTCP? (f) " + cosp.transportIsTCP());
-	cosp.transportIsTCP(torf);
+	torf = ep.isTransportTCP();
+	Log.i(TAG, "PRE isTransportTCP? " + ep.isTransportTCP());
+	ep.setTransportTCP(true);
+	Log.i(TAG, "POST isTransportTCP? (t) " + ep.isTransportTCP());
+	ep.setTransportTCP(false);
+	Log.i(TAG, "POST isTransportTCP? (f) " + ep.isTransportTCP());
+	ep.setTransportTCP(torf);
 
-	torf = cosp.transportIsGATT();
-	System.out.println("PRE transportIsGATT? " + cosp.transportIsGATT());
-	cosp.transportIsGATT(true);
-	System.out.println("POST transportIsGATT? (t) " + cosp.transportIsGATT());
-	cosp.transportIsGATT(false);
-	System.out.println("POST transportIsGATT? (f) " + cosp.transportIsGATT());
-	cosp.transportIsGATT(torf);
+	torf = ep.isTransportGATT();
+	Log.i(TAG, "PRE isTransportGATT? " + ep.isTransportGATT());
+	ep.setTransportGATT(true);
+	Log.i(TAG, "POST isTransportGATT? (t) " + ep.isTransportGATT());
+	ep.setTransportGATT(false);
+	Log.i(TAG, "POST isTransportGATT? (f) " + ep.isTransportGATT());
+	ep.setTransportGATT(torf);
 
-	torf = cosp.transportIsRFCOMM();
-	System.out.println("PRE transportIsRFCOMM? " + cosp.transportIsRFCOMM());
-	cosp.transportIsRFCOMM(true);
-	System.out.println("POST transportIsRFCOMM? (t) " + cosp.transportIsRFCOMM());
-	cosp.transportIsRFCOMM(false);
-	System.out.println("POST transportIsRFCOMM? (f) " + cosp.transportIsRFCOMM());
-	cosp.transportIsRFCOMM(torf);
+	torf = ep.isTransportRFCOMM();
+	Log.i(TAG, "PRE isTransportRFCOMM? " + ep.isTransportRFCOMM());
+	ep.setTransportRFCOMM(true);
+	Log.i(TAG, "POST isTransportRFCOMM? (t) " + ep.isTransportRFCOMM());
+	ep.setTransportRFCOMM(false);
+	Log.i(TAG, "POST isTransportRFCOMM? (f) " + ep.isTransportRFCOMM());
+	ep.setTransportRFCOMM(torf);
 
-	torf = cosp.transportIsNFC();
-	System.out.println("PRE transportIsNFC? " + cosp.transportIsNFC());
-	cosp.transportIsNFC(true);
-	System.out.println("POST transportIsNFC? (t) " + cosp.transportIsNFC());
-	cosp.transportIsNFC(false);
-	System.out.println("POST transportIsNFC? (f) " + cosp.transportIsNFC());
-	cosp.transportIsNFC(torf);
+	torf = ep.isTransportNFC();
+	Log.i(TAG, "PRE isTransportNFC? " + ep.isTransportNFC());
+	ep.setTransportNFC(true);
+	Log.i(TAG, "POST isTransportNFC? (t) " + ep.isTransportNFC());
+	ep.setTransportNFC(false);
+	Log.i(TAG, "POST isTransportNFC? (f) " + ep.isTransportNFC());
+	ep.setTransportNFC(torf);
 
-	System.out.println("PRE networkIsIP? " + cosp.networkIsIP());
-	torf = cosp.transportIsUDP();
-	cosp.transportIsUDP(true); // implies IP
-	System.out.println("POST networkIsIP? (t) " + cosp.networkIsIP());
-	cosp.transportIsUDP(false);
-	System.out.println("POST networkIsIP? (f) " + cosp.networkIsIP());
-	cosp.transportIsUDP(torf);
+	Log.i(TAG, "PRE isNetworkIP? " + ep.isNetworkIP());
+	// torf = ep.isNetworkIP();
+	// ep.setNetworkIP(true);
+	// Log.i(TAG, "POST isNetworkIP? (t) " + ep.isNetworkIP());
+	// ep.setNetworkIP(false);
+	// Log.i(TAG, "POST isNetworkIP? (f) " + ep.isNetworkIP());
+	// ep.setNetworkIP(torf);
 
-	torf = cosp.transportIsTCP();
-	cosp.transportIsTCP(true); // implies IP
-	System.out.println("POST networkIsIP? (t) " + cosp.networkIsIP());
-	cosp.transportIsTCP(false);
-	System.out.println("POST networkIsIP? (f) " + cosp.networkIsIP());
-	cosp.transportIsTCP(torf);
+	// torf = ep.transportIsTCP();
+	// ep.transportIsTCP(true); // implies IP
+	// Log.i(TAG, "POST isNetworkIP? (t) " + ep.isNetworkIP());
+	// ep.transportIsTCP(false);
+	// Log.i(TAG, "POST isNetworkIP? (f) " + ep.isNetworkIP());
+	// ep.transportIsTCP(torf);
 
-	torf = cosp.networkIsIPv4();
-	System.out.println("PRE networkIsIPv4? " + cosp.networkIsIPv4());
-	cosp.networkIsIPv4(true);
-	System.out.println("POST networkIsIPv4? (t) " + cosp.networkIsIPv4());
-	cosp.networkIsIPv4(false);
-	System.out.println("POST networkIsIPv4? (f) " + cosp.networkIsIPv4());
-	cosp.networkIsIPv4(torf);
+	torf = ep.isNetworkIPv4();
+	Log.i(TAG, "PRE isNetworkIPv4? " + ep.isNetworkIPv4());
+	ep.setNetworkIPv4(true);
+	Log.i(TAG, "POST isNetworkIPv4? (t) " + ep.isNetworkIPv4());
+	ep.setNetworkIPv4(false);
+	Log.i(TAG, "POST isNetworkIPv4? (f) " + ep.isNetworkIPv4());
+	ep.setNetworkIPv4(torf);
 
-	torf = cosp.networkIsIPv6();
-	System.out.println("PRE networkIsIPv6? " + cosp.networkIsIPv6());
-	cosp.networkIsIPv6(true);
-	System.out.println("POST networkIsIPv6? (t) " + cosp.networkIsIPv6());
-	cosp.networkIsIPv6(false);
-	System.out.println("POST networkIsIPv6? (f) " + cosp.networkIsIPv6());
-	cosp.networkIsIPv6(torf);
+	torf = ep.isNetworkIPv6();
+	Log.i(TAG, "PRE isNetworkIPv6? " + ep.isNetworkIPv6());
+	ep.setNetworkIPv6(true);
+	Log.i(TAG, "POST isNetworkIPv6? (t) " + ep.isNetworkIPv6());
+	ep.setNetworkIPv6(false);
+	Log.i(TAG, "POST isNetworkIPv6? (f) " + ep.isNetworkIPv6());
+	ep.setNetworkIPv6(torf);
 
-	torf = cosp.scopeIsInterface();
-	System.out.println("PRE scopeIsInterface? " + cosp.scopeIsInterface());
-	cosp.scopeIsInterface(true);
-	System.out.println("POST scopeIsInterface? (t) " + cosp.scopeIsInterface());
-	cosp.scopeIsInterface(false);
-	System.out.println("POST scopeIsInterface? (f) " + cosp.scopeIsInterface());
-	cosp.scopeIsInterface(torf);
+	torf = ep.isScopeInterface();
+	Log.i(TAG, "PRE isScopeInterface? " + ep.isScopeInterface());
+	ep.setScopeInterface(true);
+	Log.i(TAG, "POST isScopeInterface? (t) " + ep.isScopeInterface());
+	ep.setScopeInterface(false);
+	Log.i(TAG, "POST isScopeInterface? (f) " + ep.isScopeInterface());
+	ep.setScopeInterface(torf);
 
-	torf = cosp.scopeIsLink();
-	System.out.println("PRE scopeIsLink? " + cosp.scopeIsLink());
-	cosp.scopeIsLink(true);
-	System.out.println("POST scopeIsLink? (t) " + cosp.scopeIsLink());
-	cosp.scopeIsLink(false);
-	System.out.println("POST scopeIsLink? (f) " + cosp.scopeIsLink());
-	cosp.scopeIsLink(torf);
+	torf = ep.isScopeLink();
+	Log.i(TAG, "PRE isScopeLink? " + ep.isScopeLink());
+	ep.setScopeLink(true);
+	Log.i(TAG, "POST isScopeLink? (t) " + ep.isScopeLink());
+	ep.setScopeLink(false);
+	Log.i(TAG, "POST isScopeLink? (f) " + ep.isScopeLink());
+	ep.setScopeLink(torf);
 
-	torf = cosp.transportIsSecure();
-	System.out.println("PRE transportIsSecure? " + cosp.transportIsSecure());
-	cosp.transportIsSecure(true);
-	System.out.println("POST transportIsSecure? (t) " + cosp.transportIsSecure());
-	cosp.transportIsSecure(false);
-	System.out.println("POST transportIsSecure? (f) " + cosp.transportIsSecure());
-	cosp.transportIsSecure(torf);
+	torf = ep.isTransportSecure();
+	Log.i(TAG, "PRE isTransportSecure? " + ep.isTransportSecure());
+	ep.setTransportSecure(true);
+	Log.i(TAG, "POST isTransportSecure? (t) " + ep.isTransportSecure());
+	ep.setTransportSecure(false);
+	Log.i(TAG, "POST isTransportSecure? (f) " + ep.isTransportSecure());
+	ep.setTransportSecure(torf);
 
-	torf = cosp.routingIsMulticast();
-	System.out.println("PRE routingIsMulticast? " + cosp.routingIsMulticast());
-	cosp.routingIsMulticast(true);
-	System.out.println("POST routingIsMulticast? (t) " + cosp.routingIsMulticast());
-	cosp.routingIsMulticast(false);
-	System.out.println("POST routingIsMulticast? (f) " + cosp.routingIsMulticast());
-	cosp.routingIsMulticast(torf);
+	torf = ep.isRoutingMulticast();
+	Log.i(TAG, "PRE isRoutingMulticast? " + ep.isRoutingMulticast());
+	ep.setRoutingMulticast(true);
+	Log.i(TAG, "POST isRoutingMulticast? (t) " + ep.isRoutingMulticast());
+	ep.setRoutingMulticast(false);
+	Log.i(TAG, "POST isRoutingMulticast? (f) " + ep.isRoutingMulticast());
+	ep.setRoutingMulticast(torf);
     }
 
-    static public void logCoSP(CoServiceProvider cosp)
+    static public void logCoSP(CoResourceSP cosp)
     {
-	// System.out.println("CoSP URI PATH: " + cosp.getUriPath());
-	// logDeviceAddress(cosp.coAddress());
+	// Log.i(TAG, "CoSP URI PATH: " + cosp.getUriPath());
+	// logEndpoint(cosp.coAddress());
 
-	// System.out.println("CoSP network protocol: "
+	// Log.i(TAG, "CoSP network protocol: "
 	// 		   + String.format("0x%04X",
 	// 				   cosp.networkProtocol() & 0xFFFFF));
-	// System.out.println("CoSP network Scope: "    + cosp.networkScope());
-	// System.out.println("CoSP network Policies: "
+	// Log.i(TAG, "CoSP network Scope: "    + cosp.networkScope());
+	// Log.i(TAG, "CoSP network Policies: "
 	// 			       + String.format("0x%04X",
 	// 					       cosp.networkPolicies() & 0xFFFFF));
-	// System.out.println("CoSP transport secure?: " + cosp.transportIsSecure());
+	// Log.i(TAG, "CoSP transport secure?: " + cosp.isTransportSecure());
 
 	// List<String> ts = cosp.getTypes();
-	// System.out.println("SP Types:");
-	// ts.forEach(typ -> System.out.println("\t" + typ));
+	// Log.i(TAG, "SP Types:");
+	// ts.forEach(typ -> Log.i(TAG, "\t" + typ));
 
 	// List<String> ifs = cosp.getInterfaces();
-	// System.out.println("SP Interfaces");
-	// ifs.forEach(iface -> System.out.println("\t" + iface));
+	// Log.i(TAG, "SP Interfaces");
+	// ifs.forEach(iface -> Log.i(TAG, "\t" + iface));
     }
 
-    static public void logSP(IServiceProvider theSP)
+    static public void logSP(IResourceSP theSP)
     {
-	System.out.println("SP URI PATH: " + theSP.getUriPath());
+	Log.i(TAG, "SP URI PATH: " + theSP.getUriPath());
 	List<String> ts = theSP.getTypes();
-	System.out.println("SP Types:");
-	// ts.forEach(typ -> System.out.println("\t" + typ));
+	Log.i(TAG, "SP Types:");
+	// ts.forEach(typ -> Log.i(TAG, "\t" + typ));
 
 	// List<String> ifs = theSP.getInterfaces();
-	// System.out.println("SP Interfaces");
-	// ifs.forEach(iface -> System.out.println("\t" + iface));
+	// Log.i(TAG, "SP Interfaces");
+	// ifs.forEach(iface -> Log.i(TAG, "\t" + iface));
     }
 
     // static public void logResource(ResourceLocal resource)
     // {
-    // 	System.out.println("RESOURCE: logResource ENTRY");
-    // 	System.out.println("RESOURCE: resource uri: " + resource.getUri());
+    // 	Log.i(TAG, "RESOURCE: logResource ENTRY");
+    // 	Log.i(TAG, "RESOURCE: resource uri: " + resource.getUri());
 
     // 	List<String> tll = resource.getTypes();
-    // 	tll.forEach(t -> System.out.println("RESOURCE: type:     " + t)); // Java 8
+    // 	tll.forEach(t -> Log.i(TAG, "RESOURCE: type:     " + t)); // Java 8
 
     // 	List<String> ifll = resource.getInterfaces();
-    // 	ifll.forEach(iface -> System.out.println("RESOURCE: interface: " + iface));
+    // 	ifll.forEach(iface -> Log.i(TAG, "RESOURCE: interface: " + iface));
     // 	// for (int i = 0; i < ifll.size(); i++) {   // Java 7
-    // 	//     System.out.println("REQUEST IN: resource if:    " + ifll.get(i));
+    // 	//     Log.i(TAG, "REQUEST IN: resource if:    " + ifll.get(i));
     // 	// }
 
     // 	List<PropertyString> pll = resource.getProperties();
-    // 	System.out.println("RESOURCE: properties count: " + pll.size());
-    // 	pll.forEach(p -> System.out.println("RESOURCE: property: " + p.name + " = " + p.value));
+    // 	Log.i(TAG, "RESOURCE: properties count: " + pll.size());
+    // 	pll.forEach(p -> Log.i(TAG, "RESOURCE: property: " + p.name + " = " + p.value));
 
     // 	List<ResourceLocal> cll = resource.getChildren();
-    // 	System.out.println("RESOURCE: child resources count: " + cll.size());
-    // 	cll.forEach(ch -> System.out.println("RESOURCE: child resource: " + ch));
+    // 	Log.i(TAG, "RESOURCE: child resources count: " + cll.size());
+    // 	cll.forEach(ch -> Log.i(TAG, "RESOURCE: child resource: " + ch));
 
-    // 	System.out.println("RESOURCE: service provider (callback): "
-    // 			   + resource.getServiceProvider().getClass().getName());
+    // 	Log.i(TAG, "RESOURCE: service provider (callback): "
+    // 			   + resource.getResourceSP().getClass().getName());
 
-    // 	System.out.println("RESOURCE: callback param: "
+    // 	Log.i(TAG, "RESOURCE: callback param: "
     // 			   + resource.getCallbackParam().getClass().getName());
 
-    // 	System.out.println("RESOURCE: serial number: " + resource.sn);
+    // 	Log.i(TAG, "RESOURCE: serial number: " + resource.sn);
 
     // 	// Instance Id
-    // 	// System.out.println("RESOURCE: resource instance id: " + resource.id.getClass().getName());
-    // 	if (resource.id.getClass().getName().equals("org.iochibity.Resource$InstanceId")) {
-    // 	    System.out.println("RESOURCE: resource InstanceId class: InstanceId");
-    // 	} else if (resource.id.getClass().getName().equals("org.iochibity.Resource$InstanceOrdinal")) {
-    // 	    System.out.println("RESOURCE: resource InstanceId class: InstanceOrdinal, val="
-    // 			       + ((org.iochibity.ResourceLocal.InstanceOrdinal)resource.id).val);
-    // 	} else if (resource.id.getClass().getName().equals("org.iochibity.ResourceLocal$InstanceString")) {
-    // 	    System.out.println("RESOURCE: resource InstanceId class: InstanceString, val="
-    // 			       + ((org.iochibity.ResourceLocal.InstanceString)resource.id).val);
-    // 	} else if (resource.id.getClass().getName().equals("org.iochibity.ResourceLocal$InstanceUuid")) {
-    // 	    System.out.println("RESOURCE: resource InstanceId class: InstanceUuid, val="
-    // 			       + ((org.iochibity.ResourceLocal.InstanceUuid)resource.id).val);
+    // 	// Log.i(TAG, "RESOURCE: resource instance id: " + resource.id.getClass().getName());
+    // 	if (resource.id.getClass().getName().equals("openocf.Resource$InstanceId")) {
+    // 	    Log.i(TAG, "RESOURCE: resource InstanceId class: InstanceId");
+    // 	} else if (resource.id.getClass().getName().equals("openocf.Resource$InstanceOrdinal")) {
+    // 	    Log.i(TAG, "RESOURCE: resource InstanceId class: InstanceOrdinal, val="
+    // 			       + ((openocf.ResourceLocal.InstanceOrdinal)resource.id).val);
+    // 	} else if (resource.id.getClass().getName().equals("openocf.ResourceLocal$InstanceString")) {
+    // 	    Log.i(TAG, "RESOURCE: resource InstanceId class: InstanceString, val="
+    // 			       + ((openocf.ResourceLocal.InstanceString)resource.id).val);
+    // 	} else if (resource.id.getClass().getName().equals("openocf.ResourceLocal$InstanceUuid")) {
+    // 	    Log.i(TAG, "RESOURCE: resource InstanceId class: InstanceUuid, val="
+    // 			       + ((openocf.ResourceLocal.InstanceUuid)resource.id).val);
     // 	}
 
     // 	logResourcePolicies(resource);
 
     // 	try {
-    // 	    System.out.println("RESOURCE: action set: " + resource.getActionSet());
+    // 	    Log.i(TAG, "RESOURCE: action set: " + resource.getActionSet());
     // 	} catch (OCFNotImplementedException e) {
-    // 	    System.out.println("ERROR**** RESOURCE: getActionSet not implemented.");
+    // 	    Log.i(TAG, "ERROR**** RESOURCE: getActionSet not implemented.");
     // 	}
-    // 	System.out.println("RESOURCE: logResource EXIT");
+    // 	Log.i(TAG, "RESOURCE: logResource EXIT");
     // }
 
     // static public void logObservation(ObservationRecord observationRecord)
     // {
-    // 	// System.out.println("OBSERVATION: logObservation ENTRY");
+    // 	// Log.i(TAG, "OBSERVATION: logObservation ENTRY");
 
-    // 	System.out.println("\tOBSERVED uri: " + observationRecord.getUriPath());
+    // 	Log.i(TAG, "\tOBSERVED uri: " + observationRecord.getUriPath());
 
-    // 	System.out.println("\tOBSERVED type: " + observationRecord.getType());
+    // 	Log.i(TAG, "\tOBSERVED type: " + observationRecord.getType());
 
     // 	// log rtypes
     // 	List<String> rtypes = observationRecord.getResourceTypes();
-    // 	System.out.println("\tOBSERVED RESOURCE TYPES count: " + rtypes.size());
+    // 	Log.i(TAG, "\tOBSERVED RESOURCE TYPES count: " + rtypes.size());
     // 	for (String t : (List<String>)rtypes) {
-    // 	    System.out.println("\tOBSERVED rtype: " + t);
+    // 	    Log.i(TAG, "\tOBSERVED rtype: " + t);
     // 	}
 
     // 	// log interfaces
     // 	List<String> ifaces = observationRecord.getInterfaces();
-    // 	System.out.println("\tOBSERVED INTERFACES count: " + ifaces.size());
+    // 	Log.i(TAG, "\tOBSERVED INTERFACES count: " + ifaces.size());
     // 	for (String iface : ifaces) {
-    // 	    System.out.println("\tOBSERVED interface: " + iface);
+    // 	    Log.i(TAG, "\tOBSERVED interface: " + iface);
     // 	}
 
     // 	// log properties (PlatformInfo, DeviceInfo, or "values" for resources)
     // 	PropertyMap<String, Object> pmap = observationRecord.getProperties();
-    // 	System.out.println("\tOBSERVED PROPERTIES count: " + pmap.size());
+    // 	Log.i(TAG, "\tOBSERVED PROPERTIES count: " + pmap.size());
     // 	for (Map.Entry<String, Object> entry : pmap.entrySet())
     // 	    {
-    // 		System.out.println("\tOBSERVED property: "
+    // 		Log.i(TAG, "\tOBSERVED property: "
     // 				   + entry.getKey()
     // 				   + " = "
     // 				   + entry.getValue());
     // 	    }
     // 	List<IObservationRecord> kids = observationRecord.getChildren();
     // 	if (kids != null) {
-    // 	    System.out.println("\tOBSERVED CHILDREN count: " + kids.size());
+    // 	    Log.i(TAG, "\tOBSERVED CHILDREN count: " + kids.size());
     // 	    for (IObservationRecord p : kids) {
-    // 		System.out.println("================ CHILD");
+    // 		Log.i(TAG, "================ CHILD");
     // 		logObservation((ObservationRecord)p);
     // 	    }
     // 	}
     // }
 
-    // static public void logRequestIn(StimulusIn requestIn)
+    // static public void logRequestIn(InboundRequest requestIn)
     // {
-    // 	System.out.println("LOG StimulusIn logRequestIn ENTRY");
-    // 	// System.out.println("LOG StimulusIn this handle: " + requestIn.localHandle);
-    // 	// System.out.println("LOG StimulusIn remote handle: " + requestIn.getRemoteHandle);
-    // 	// System.out.println("LOG StimulusIn resource handle: " + requestIn.getResourceHandle());
-    // 	System.out.println("LOG StimulusIn request method: " + requestIn.getMethod());
-    // 	System.out.println("LOG StimulusIn query : \"" + requestIn.getQueryString() + "\"");
-    // 	System.out.println("LOG StimulusIn msg id : " + requestIn.getMessageId());
+    // 	Log.i(TAG, "LOG StimulusIn logRequestIn ENTRY");
+    // 	// Log.i(TAG, "LOG StimulusIn this handle: " + requestIn.localHandle);
+    // 	// Log.i(TAG, "LOG StimulusIn remote handle: " + requestIn.getRemoteHandle);
+    // 	// Log.i(TAG, "LOG StimulusIn resource handle: " + requestIn.getResourceHandle());
+    // 	Log.i(TAG, "LOG StimulusIn request method: " + requestIn.getMethod());
+    // 	Log.i(TAG, "LOG StimulusIn query : \"" + requestIn.getQueryString() + "\"");
+    // 	Log.i(TAG, "LOG StimulusIn msg id : " + requestIn.getMessageId());
 
-    // 	System.out.println("LOG StimulusIn method : " + requestIn.getMethod());
-    // 	System.out.println("LOG StimulusIn watch action : " + requestIn.watchAction);
-    // 	System.out.println("LOG StimulusIn watch id :     " + requestIn.watchId);
+    // 	Log.i(TAG, "LOG StimulusIn method : " + requestIn.getMethod());
+    // 	Log.i(TAG, "LOG StimulusIn watch action : " + requestIn.watchAction);
+    // 	Log.i(TAG, "LOG StimulusIn watch id :     " + requestIn.watchId);
 
 
     // 	// ResourceLocal resource = requestIn.getResource();
     // 	// logResource(resource);
 
-    // 	// logDeviceAddress(requestIn.getRemoteDeviceAddress());
+    // 	// logEndpoint(requestIn.getRemoteEndpoint());
 
-    // 	// System.out.println("LOG StimulusIn watch action: " + requestIn.watchAction);
-    // 	// System.out.println("LOG StimulusIn watch id    : " + requestIn.watchId);
+    // 	// Log.i(TAG, "LOG StimulusIn watch action: " + requestIn.watchAction);
+    // 	// Log.i(TAG, "LOG StimulusIn watch id    : " + requestIn.watchId);
 
-    // 	List<HeaderOption> headerOptions = requestIn.getOptions();
+    // 	List<CoAPOption> headerOptions = requestIn.getOptions();
     // 	if (headerOptions != null)
-    // 	    System.out.println("LOG StimulusIn header opts ct: " + headerOptions.size());
+    // 	    Log.i(TAG, "LOG StimulusIn header opts ct: " + headerOptions.size());
 
     // 	// ObservationList<PayloadForResourceState> observation = requestIn.getPDUPayload();
     // 	// if (observation == null) {
-    // 	//     System.out.println("LOG StimulusIn observation is null");
+    // 	//     Log.i(TAG, "LOG StimulusIn observation is null");
     // 	// }
     // }
 
-    static public void logRequestIn(CoServiceProvider cosp)
+    // static public void logRequestIn(CoResourceSP cosp)
+    // {
+    // 	Log.i(TAG, "APP_LOGGER logRequestIn ENTRY, thread "
+    // 			   + Thread.currentThread().getId());
+
+    // 	Log.i(TAG, "APP_LOGGER: stack result: " + cosp.getResult());
+
+    // 	Log.i(TAG, "APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
+    // 	Log.i(TAG, "APP_LOGGER CoSP method:\t" + cosp.method());
+    // 	// Log.i(TAG, "APP_LOGGER CoSP conn type:\t" + cosp.connType());
+    // 	Log.i(TAG, "APP_LOGGER CoSP sec ID:\t"
+    // 			   + Arrays.toString(cosp.getCoSecurityId()));
+    // 	Log.i(TAG, "APP_LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
+
+    // 	Log.i(TAG, "LOGGING CO-ADDRESS:");
+    // 	logCoAddress(cosp);
+
+    // 	// List<CoAPOption> headerOptions = cosp.getOptions();
+    // 	// if (headerOptions != null)
+    // 	//     Log.i(TAG, "LOG StimulusIn header options ct: " + headerOptions.size());
+
+    // 	// FIXME:
+    // 	// if (cosp.result == OCStackResult.OK) {
+
+    // 	//     Log.i(TAG, "APP_LOGGER CoSP OBSERVATIONS:");
+    // 	//     // Log.i(TAG, "APP_LOGGER CoSP OBSERVATION type: "
+    // 	//     // 		       + cosp.getObservationType()
+    // 	//     // 		       + ": "
+    // 	//     // 		       + observationTypes.get(cosp.getObservationType()));
+
+    // 	//     ObservationList<ObservationRecord> observationRecords = cosp.getObservationRecords();
+    // 	//     if (observationRecords != null) {
+    // 	// 	Log.i(TAG, "LOG OBSERVATIONRECORD count: " + observationRecords.size());
+    // 	// 	for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
+    // 	// 	    List<IObservationRecord> kids = observationRecord.getChildren();
+    // 	// 	    if (kids != null) {
+    // 	// 		Log.i(TAG, "LOG CHILD OBSERVATIONS count: "
+    // 	// 				   + observationRecord.getChildren().size());
+    // 	// 	    }
+    // 	// 	    // logObservation(observation);
+    // 	// 	}
+    // 	//     }
+    // 	// }
+    // }
+
+    static public void logOutboundStimulus(OutboundStimulus request)
     {
-	System.out.println("APP_LOGGER logRequestIn ENTRY, thread "
+	Log.i(TAG, "APP_LOGGERlogOutboundStimulus ENTRY, thread "
 			   + Thread.currentThread().getId());
 
-	System.out.println("APP_LOGGER: stack result: " + cosp.getCoResult());
+	Log.i(TAG, "APP_LOGGER CoSP uri path:\t" + request.getUri());
+	// OBSOLETE Log.i(TAG, "APP_LOGGER CoSP method:\t" + cosp.getMethod());
+	// Log.i(TAG, "APP_LOGGER CoSP conn type:\t" + cosp.connType());
 
-	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
-	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
-	System.out.println("APP_LOGGER CoSP sec ID:\t"
-			   + Arrays.toString(cosp.getCoSecurityId()));
-	System.out.println("APP_LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
-
-	System.out.println("LOGGING CO-ADDRESS:");
-	logCoAddress(cosp);
-
-	// List<HeaderOption> headerOptions = cosp.getOptions();
+	// List<CoAPOption> headerOptions = cosp.getOptions();
 	// if (headerOptions != null)
-	//     System.out.println("LOG StimulusIn header options ct: " + headerOptions.size());
+	//     Log.i(TAG, "LOG StimulusIn header options ct: " + headerOptions.size());
 
 	// FIXME:
 	// if (cosp.result == OCStackResult.OK) {
 
-	//     System.out.println("APP_LOGGER CoSP OBSERVATIONS:");
-	//     // System.out.println("APP_LOGGER CoSP OBSERVATION type: "
+	//     Log.i(TAG, "APP_LOGGER CoSP OBSERVATIONS:");
+	//     // Log.i(TAG, "APP_LOGGER CoSP OBSERVATION type: "
 	//     // 		       + cosp.getObservationType()
 	//     // 		       + ": "
 	//     // 		       + observationTypes.get(cosp.getObservationType()));
 
 	//     ObservationList<ObservationRecord> observationRecords = cosp.getObservationRecords();
 	//     if (observationRecords != null) {
-	// 	System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
+	// 	Log.i(TAG, "LOG OBSERVATIONRECORD count: " + observationRecords.size());
 	// 	for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
 	// 	    List<IObservationRecord> kids = observationRecord.getChildren();
 	// 	    if (kids != null) {
-	// 		System.out.println("LOG CHILD OBSERVATIONS count: "
+	// 		Log.i(TAG, "LOG CHILD OBSERVATIONS count: "
 	// 				   + observationRecord.getChildren().size());
 	// 	    }
 	// 	    // logObservation(observation);
@@ -490,80 +534,42 @@ public class Logger
 	// }
     }
 
-    static public void logRequestOut(CoServiceProvider cosp)
+    static public void logInboundResponse(InboundResponse resp)
     {
-	System.out.println("APP_LOGGER logRequestOut ENTRY, thread "
+	Log.i(TAG, "APP_LOGGER logInboundResponse ENTRY, thread "
 			   + Thread.currentThread().getId());
 
-	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
-	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
+	//	Log.i(TAG, "APP_LOGGER stack result: " + resp.getResult());
 
-	// List<HeaderOption> headerOptions = cosp.getOptions();
+	Log.i(TAG, "APP_LOGGER Resp uri path:\t" + resp.getUri());
+	// Log.i(TAG, "APP_LOGGER Resp conn type:\t" + resp.connType());
+	// Log.i(TAG, "APP_LOGGER Resp sec ID:\t"
+	// 		   + Arrays.toString(resp.getCoSecurityId()));
+	// Log.i(TAG, "APP_LOGGER Resp serial:\t" + resp.getNotificationSerial());
+
+	Log.i(TAG, "LOGGING CO-ADDRESS:");
+	logCoAddress(resp.getEndpoint());
+
+	// List<CoAPOption> headerOptions = cosp.getOptions();
 	// if (headerOptions != null)
-	//     System.out.println("LOG StimulusIn header options ct: " + headerOptions.size());
+	//     Log.i(TAG, "LOG StimulusIn header options ct: " + headerOptions.size());
 
 	// FIXME:
 	// if (cosp.result == OCStackResult.OK) {
 
-	//     System.out.println("APP_LOGGER CoSP OBSERVATIONS:");
-	//     // System.out.println("APP_LOGGER CoSP OBSERVATION type: "
+	//     Log.i(TAG, "APP_LOGGER CoSP OBSERVATIONS:");
+	//     // Log.i(TAG, "APP_LOGGER CoSP OBSERVATION type: "
 	//     // 		       + cosp.getObservationType()
 	//     // 		       + ": "
 	//     // 		       + observationTypes.get(cosp.getObservationType()));
 
 	//     ObservationList<ObservationRecord> observationRecords = cosp.getObservationRecords();
 	//     if (observationRecords != null) {
-	// 	System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
+	// 	Log.i(TAG, "LOG OBSERVATIONRECORD count: " + observationRecords.size());
 	// 	for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
 	// 	    List<IObservationRecord> kids = observationRecord.getChildren();
 	// 	    if (kids != null) {
-	// 		System.out.println("LOG CHILD OBSERVATIONS count: "
-	// 				   + observationRecord.getChildren().size());
-	// 	    }
-	// 	    // logObservation(observation);
-	// 	}
-	//     }
-	// }
-    }
-
-    static public void logResponseIn(CoServiceProvider cosp)
-    {
-	System.out.println("APP_LOGGER logResponseIn ENTRY, thread "
-			   + Thread.currentThread().getId());
-
-	System.out.println("APP_LOGGER stack result: " + cosp.getCoResult());
-
-	System.out.println("APP_LOGGER CoSP uri path:\t" + cosp.uriPath());
-	System.out.println("APP_LOGGER CoSP method:\t" + cosp.method());
-	// System.out.println("APP_LOGGER CoSP conn type:\t" + cosp.connType());
-	System.out.println("APP_LOGGER CoSP sec ID:\t"
-			   + Arrays.toString(cosp.getCoSecurityId()));
-	System.out.println("APP_LOGGER CoSP serial:\t" + cosp.getNotificationSerial());
-
-	System.out.println("LOGGING CO-ADDRESS:");
-	logCoAddress(cosp);
-
-	// List<HeaderOption> headerOptions = cosp.getOptions();
-	// if (headerOptions != null)
-	//     System.out.println("LOG StimulusIn header options ct: " + headerOptions.size());
-
-	// FIXME:
-	// if (cosp.result == OCStackResult.OK) {
-
-	//     System.out.println("APP_LOGGER CoSP OBSERVATIONS:");
-	//     // System.out.println("APP_LOGGER CoSP OBSERVATION type: "
-	//     // 		       + cosp.getObservationType()
-	//     // 		       + ": "
-	//     // 		       + observationTypes.get(cosp.getObservationType()));
-
-	//     ObservationList<ObservationRecord> observationRecords = cosp.getObservationRecords();
-	//     if (observationRecords != null) {
-	// 	System.out.println("LOG OBSERVATIONRECORD count: " + observationRecords.size());
-	// 	for (ObservationRecord observationRecord : (ObservationList<ObservationRecord>) observationRecords) {
-	// 	    List<IObservationRecord> kids = observationRecord.getChildren();
-	// 	    if (kids != null) {
-	// 		System.out.println("LOG CHILD OBSERVATIONS count: "
+	// 		Log.i(TAG, "LOG CHILD OBSERVATIONS count: "
 	// 				   + observationRecord.getChildren().size());
 	// 	    }
 	// 	    // logObservation(observation);

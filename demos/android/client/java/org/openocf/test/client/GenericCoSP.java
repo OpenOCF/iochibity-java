@@ -1,30 +1,29 @@
 package org.openocf.test.client;
 
-import org.iochibity.CoServiceProvider;
-import org.iochibity.constants.Method;
-// import org.iochibity.ObservationIn;
-import org.iochibity.ObservationRecord;
-// import org.iochibity.ObservationList;
-import org.iochibity.constants.OCStackResult;
+import openocf.app.CoResourceSP;
+import openocf.constants.Method;
+// import openocf.ObservationIn;
+import openocf.behavior.InboundResponse;
+import openocf.behavior.ObservationRecord;
+// import openocf.ObservationList;
+import openocf.constants.OCStackResult;
 
 import org.openocf.test.Logger;
 
 import java.util.List;
 
 public class GenericCoSP
-    extends  CoServiceProvider
-    // implements ICoServiceProvider
+    extends  CoResourceSP
+    // implements ICoResourceSP
 {
     private int cbdata = 99;
 
     public GenericCoSP() {
 	super();
-	method(Method.GET);
     }
     public GenericCoSP(String uri) {
 	super();
-	method(Method.GET);
-	uriPath(uri);
+	setUri(uri);
     }
 
     // we need info from both response msg and observation payload to create a unicast request
@@ -55,7 +54,8 @@ public class GenericCoSP
     // 	// types, interfaces, properties?
     // }
 
-    public int coReact()
+    @Override
+    public void coReact(InboundResponse resp)
     {
 	System.out.println("JAVA: GenericCoSP.coReact ENTRY");
 	System.out.println("JAVA: cbdata: " + cbdata);
@@ -64,8 +64,6 @@ public class GenericCoSP
 
 	// save incoming resource info - ServiceManager.registerRemoteResource(...)?
 	// update screen ...
-
-	return 0;
     }
 }
 
