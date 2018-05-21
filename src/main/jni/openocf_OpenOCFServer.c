@@ -507,145 +507,145 @@ JNIEXPORT void JNICALL Java_openocf_engine_OCFServerSP_registerDefaultServiceRou
  * Method:    registerServiceProvider
  * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lorg/iochibity/IResourceServiceProvider;B)Lorg/iochibity/ResourceLocal;
  */
-JNIEXPORT jobject JNICALL Java_openocf_engine_OCFServerSP_registerServiceProvider__Ljava_lang_String_2_3Ljava_lang_String_2_3Ljava_lang_String_2Lorg_iochibity_IServiceProvider_2B
-(JNIEnv * env, jclass klass,
- jstring j_uri,
- jobjectArray j_tnames,
- jobjectArray j_ifnames,
- jobject j_ServiceProvider,
-   /* jobject j_callback_param, */
-   jbyte   j_policies)
-{
-    OC_UNUSED(klass);
-    printf("Java_openocf_engine_OCFServerSP_registerServiceProvider ENTRY\n");
+/* JNIEXPORT jobject JNICALL Java_openocf_engine_OCFServerSP_registerServiceProvider__Ljava_lang_String_2_3Ljava_lang_String_2_3Ljava_lang_String_2Lorg_iochibity_IServiceProvider_2B */
+/* (JNIEnv * env, jclass klass, */
+/*  jstring j_uri, */
+/*  jobjectArray j_tnames, */
+/*  jobjectArray j_ifnames, */
+/*  jobject j_ServiceProvider, */
+/*    /\* jobject j_callback_param, *\/ */
+/*    jbyte   j_policies) */
+/* { */
+/*     OC_UNUSED(klass); */
+/*     printf("Java_openocf_engine_OCFServerSP_registerServiceProvider ENTRY\n"); */
 
-    jobject j_resource_type_name = (*env)->GetObjectArrayElement(env, j_tnames, 0);
-    const char *c_resource_type_name = "";
-    if (j_resource_type_name == NULL) {
-	j_resource_type_name = (*env)->NewStringUTF(env, c_resource_type_name);
-	c_resource_type_name = (char*) (*env)->GetStringUTFChars(env, j_resource_type_name, NULL);
-    } else {
-	c_resource_type_name = (char*) (*env)->GetStringUTFChars(env, j_resource_type_name, NULL);
-	if (c_resource_type_name == NULL) {
-	    THROW_JNI_EXCEPTION("GetStringUTFChars");
-	    return NULL;
-	}
-    }
-    jobject j_resource_if_name = (*env)->GetObjectArrayElement(env, j_ifnames, 0);
-    const char *c_resource_if_name = "";
-    if (j_resource_if_name == NULL) {
-	j_resource_if_name = (*env)->NewStringUTF(env, c_resource_if_name);
-	c_resource_if_name = (char*) (*env)->GetStringUTFChars(env, j_resource_if_name, NULL);
-    } else {
-	c_resource_if_name = (char*) (*env)->GetStringUTFChars(env, j_resource_if_name, NULL);
-	if (c_resource_if_name == NULL) {
-	    THROW_JNI_EXCEPTION("GetStringUTFChars");
-	    return NULL;
-	}
-    }
+/*     jobject j_resource_type_name = (*env)->GetObjectArrayElement(env, j_tnames, 0); */
+/*     const char *c_resource_type_name = ""; */
+/*     if (j_resource_type_name == NULL) { */
+/* 	j_resource_type_name = (*env)->NewStringUTF(env, c_resource_type_name); */
+/* 	c_resource_type_name = (char*) (*env)->GetStringUTFChars(env, j_resource_type_name, NULL); */
+/*     } else { */
+/* 	c_resource_type_name = (char*) (*env)->GetStringUTFChars(env, j_resource_type_name, NULL); */
+/* 	if (c_resource_type_name == NULL) { */
+/* 	    THROW_JNI_EXCEPTION("GetStringUTFChars"); */
+/* 	    return NULL; */
+/* 	} */
+/*     } */
+/*     jobject j_resource_if_name = (*env)->GetObjectArrayElement(env, j_ifnames, 0); */
+/*     const char *c_resource_if_name = ""; */
+/*     if (j_resource_if_name == NULL) { */
+/* 	j_resource_if_name = (*env)->NewStringUTF(env, c_resource_if_name); */
+/* 	c_resource_if_name = (char*) (*env)->GetStringUTFChars(env, j_resource_if_name, NULL); */
+/*     } else { */
+/* 	c_resource_if_name = (char*) (*env)->GetStringUTFChars(env, j_resource_if_name, NULL); */
+/* 	if (c_resource_if_name == NULL) { */
+/* 	    THROW_JNI_EXCEPTION("GetStringUTFChars"); */
+/* 	    return NULL; */
+/* 	} */
+/*     } */
 
-    const char *c_uri = "";
-    if (j_uri == NULL) {
-	j_uri = (*env)->NewStringUTF(env, c_uri);
-	c_uri = (char*) (*env)->GetStringUTFChars(env, j_uri, NULL);
-    } else {
-	c_uri = (char*) (*env)->GetStringUTFChars(env, j_uri, NULL);
-	if (c_uri == NULL) {
-	    THROW_JNI_EXCEPTION("GetStringUTFChars");
-	}
-    }
+/*     const char *c_uri = ""; */
+/*     if (j_uri == NULL) { */
+/* 	j_uri = (*env)->NewStringUTF(env, c_uri); */
+/* 	c_uri = (char*) (*env)->GetStringUTFChars(env, j_uri, NULL); */
+/*     } else { */
+/* 	c_uri = (char*) (*env)->GetStringUTFChars(env, j_uri, NULL); */
+/* 	if (c_uri == NULL) { */
+/* 	    THROW_JNI_EXCEPTION("GetStringUTFChars"); */
+/* 	} */
+/*     } */
 
-    /* prep callback */
-    /* (*env)->GetJavaVM(env, &g_jvm); */
-    /* bool returnValue = true; */
+/*     /\* prep callback *\/ */
+/*     /\* (*env)->GetJavaVM(env, &g_jvm); *\/ */
+/*     /\* bool returnValue = true; *\/ */
 
-    jobject x_ServiceProvider = NULL;
-    /* jobject x_callback_param = NULL; */
-    if (j_ServiceProvider == NULL) {
-	THROW_STACK_EXCEPTION(OC_STACK_INVALID_PARAM, "ResourceServiceProvider must not be null");
-	return NULL;
-    }
-    // convert local to global references to be passed
-    x_ServiceProvider = (*env)->NewGlobalRef(env, j_ServiceProvider);
-    jclass k_rsp = (*env)->GetObjectClass(env, x_ServiceProvider);
-    if (k_rsp == NULL) {
-	THROW_JNI_EXCEPTION("GetObjectClass for ResourceServiceProvider impl");
-    }
+/*     jobject x_ServiceProvider = NULL; */
+/*     /\* jobject x_callback_param = NULL; *\/ */
+/*     if (j_ServiceProvider == NULL) { */
+/* 	THROW_STACK_EXCEPTION(OC_STACK_INVALID_PARAM, "ResourceServiceProvider must not be null"); */
+/* 	return NULL; */
+/*     } */
+/*     // convert local to global references to be passed */
+/*     x_ServiceProvider = (*env)->NewGlobalRef(env, j_ServiceProvider); */
+/*     jclass k_rsp = (*env)->GetObjectClass(env, x_ServiceProvider); */
+/*     if (k_rsp == NULL) { */
+/* 	THROW_JNI_EXCEPTION("GetObjectClass for ResourceServiceProvider impl"); */
+/*     } */
 
-    OCResourceHandle c_resource_handle;
-    OCStackResult op_result;
-    op_result = OCCreateResource( &c_resource_handle,    /* **Resource */
-				  c_resource_type_name,  /* const char *resourceTypeName, */
-				  c_resource_if_name,    /* const char *resourceInterfaceName, */
-				  c_uri,                 /* const char *uri, */
-				  _openocf_app_ResourceSP_react,
-				  /* c_resource_sp_react, */
-				  /* x_callback_param, */
-				  x_ServiceProvider,
-				  (uint8_t) j_policies);  /* uint8_t resourceProperties */
+/*     OCResourceHandle c_resource_handle; */
+/*     OCStackResult op_result; */
+/*     op_result = OCCreateResource( &c_resource_handle,    /\* **Resource *\/ */
+/* 				  c_resource_type_name,  /\* const char *resourceTypeName, *\/ */
+/* 				  c_resource_if_name,    /\* const char *resourceInterfaceName, *\/ */
+/* 				  c_uri,                 /\* const char *uri, *\/ */
+/* 				  _openocf_app_ResourceSP_react, */
+/* 				  /\* c_resource_sp_react, *\/ */
+/* 				  /\* x_callback_param, *\/ */
+/* 				  x_ServiceProvider, */
+/* 				  (uint8_t) j_policies);  /\* uint8_t resourceProperties *\/ */
 
-    if (op_result != OC_STACK_OK) THROW_STACK_EXCEPTION(op_result, "OCCreateResource failed");
+/*     if (op_result != OC_STACK_OK) THROW_STACK_EXCEPTION(op_result, "OCCreateResource failed"); */
 
-    /* we already have j_ServiceProvider, the ServiceProvider object;
-       now we just need to link it to the resource created by
-       OCCreateResource and populate it */
+/*     /\* we already have j_ServiceProvider, the ServiceProvider object; */
+/*        now we just need to link it to the resource created by */
+/*        OCCreateResource and populate it *\/ */
 
-    /* jmethodID mid_resource_ctor = (*env)->GetMethodID(env, K_RESOURCE_LOCAL, "<init>", "()V"); */
-    /* if (mid_resource_ctor == NULL) { */
-    /* 	THROW_JNI_EXCEPTION("GetMethodID failed for ResourceLocal ctor\n"); */
-    /* 	return NULL; */
-    /* }    /\* insert handle to OCResource *\/ */
-    /* if (K_RESOURCE_LOCAL != NULL) { /\* cannot be null in this case *\/ */
-    /*     jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J"); */
-    /*     if (fid_handle != NULL) { */
-	    (*env)->SetLongField(env, j_ServiceProvider,
-				 FID_RSP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
-	/* } */
-        /* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); */
-        /* if (urifield != NULL) { */
-            jstring jString = (*env)->NewStringUTF(env, ((OCResource*)c_resource_handle)->uri);
-            if (jString != NULL) {
-                (*env)->SetObjectField(env, j_ServiceProvider,
-				       FID_RSP_URI_PATH, jString);
-            }
-	/* } */
+/*     /\* jmethodID mid_resource_ctor = (*env)->GetMethodID(env, K_RESOURCE_LOCAL, "<init>", "()V"); *\/ */
+/*     /\* if (mid_resource_ctor == NULL) { *\/ */
+/*     /\* 	THROW_JNI_EXCEPTION("GetMethodID failed for ResourceLocal ctor\n"); *\/ */
+/*     /\* 	return NULL; *\/ */
+/*     /\* }    /\\* insert handle to OCResource *\\/ *\/ */
+/*     /\* if (K_RESOURCE_LOCAL != NULL) { /\\* cannot be null in this case *\\/ *\/ */
+/*     /\*     jfieldID fid_handle = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "handle", "J"); *\/ */
+/*     /\*     if (fid_handle != NULL) { *\/ */
+/* 	    (*env)->SetLongField(env, j_ServiceProvider, */
+/* 				 FID_RSP_HANDLE, (intptr_t) (OCResource*)c_resource_handle); */
+/* 	/\* } *\/ */
+/*         /\* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); *\/ */
+/*         /\* if (urifield != NULL) { *\/ */
+/*             jstring jString = (*env)->NewStringUTF(env, ((OCResource*)c_resource_handle)->uri); */
+/*             if (jString != NULL) { */
+/*                 (*env)->SetObjectField(env, j_ServiceProvider, */
+/* 				       FID_RSP_URI_PATH, jString); */
+/*             } */
+/* 	/\* } *\/ */
 
-        /* jfieldID fid_policies = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "policies", "I"); */
-        /* if (fid_policies != NULL) { */
-	    (*env)->SetIntField(env, j_ServiceProvider,
-				FID_RSP_POLICIES,
-				(jint)((OCResource*)c_resource_handle)->resourceProperties);
-	/* } else { */
-	/*     THROW_JNI_EXCEPTION("SetIntField failed for fid_policies\n"); */
-	/* } */
+/*         /\* jfieldID fid_policies = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "policies", "I"); *\/ */
+/*         /\* if (fid_policies != NULL) { *\/ */
+/* 	    (*env)->SetIntField(env, j_ServiceProvider, */
+/* 				FID_RSP_POLICIES, */
+/* 				(jint)((OCResource*)c_resource_handle)->resourceProperties); */
+/* 	/\* } else { *\/ */
+/* 	/\*     THROW_JNI_EXCEPTION("SetIntField failed for fid_policies\n"); *\/ */
+/* 	/\* } *\/ */
 
-	    /* FIXME: deal with OCResource.sequenceNumber */
+/* 	    /\* FIXME: deal with OCResource.sequenceNumber *\/ */
 
-	/* instance id ∪nion */
-	/* printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins); */
-	/* printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr); */
-	/* printf("instance uuid ln: %d\n", ((OCResource*)c_resource_handle)->uniqueUUID.id_length); */
-	/* printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); */
+/* 	/\* instance id ∪nion *\/ */
+/* 	/\* printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins); *\/ */
+/* 	/\* printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr); *\/ */
+/* 	/\* printf("instance uuid ln: %d\n", ((OCResource*)c_resource_handle)->uniqueUUID.id_length); *\/ */
+/* 	/\* printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); *\/ */
 
-	    /* FIXME: deal with OCResource instance Id union */
-	if ( ((OCResource*)c_resource_handle)->ins > 0) {
-	    printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins);
-	} else if ( ((OCResource*)c_resource_handle)->uniqueStr != NULL) {
-	    printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr);
-	} else if ( ((OCResource*)c_resource_handle)->uniqueUUID.id_length > 0) {
-	    printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id);
-	} else {
-	    /* printf("NO INSTANCE ID\n"); */
-	}
-    /* } */
+/* 	    /\* FIXME: deal with OCResource instance Id union *\/ */
+/* 	if ( ((OCResource*)c_resource_handle)->ins > 0) { */
+/* 	    printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins); */
+/* 	} else if ( ((OCResource*)c_resource_handle)->uniqueStr != NULL) { */
+/* 	    printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr); */
+/* 	} else if ( ((OCResource*)c_resource_handle)->uniqueUUID.id_length > 0) { */
+/* 	    printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); */
+/* 	} else { */
+/* 	    /\* printf("NO INSTANCE ID\n"); *\/ */
+/* 	} */
+/*     /\* } *\/ */
 
-    /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_type_name, c_resource_type_name); */
-    /* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_if_name, c_resource_if_name); */
-    (*env)->ReleaseStringUTFChars(env, j_uri, c_uri);
+/*     /\* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_type_name, c_resource_type_name); *\/ */
+/*     /\* (*env)->ReleaseStringUTFChars(env, j_ServiceProvider_if_name, c_resource_if_name); *\/ */
+/*     (*env)->ReleaseStringUTFChars(env, j_uri, c_uri); */
 
-    printf("openocf_engine_OCFServerSP/registerServiceProvider EXIT\n");
-    return j_ServiceProvider;
-}
+/*     printf("openocf_engine_OCFServerSP/registerServiceProvider EXIT\n"); */
+/*     return j_ServiceProvider; */
+/* } */
 
 /*
  * Class:     openocf_OpenOCFServer
