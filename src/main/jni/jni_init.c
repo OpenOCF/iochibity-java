@@ -24,8 +24,8 @@
 #define  LOGD(LOG_TAG, ...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define  LOGE(LOG_TAG, ...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
-#define  LOGD(...)  printf(__VA_ARGS__)
-#define  LOGE(...)  printf(__VA_ARGS)
+#define  LOGD(LOG_TAG, ...)  printf(__VA_ARGS__)
+#define  LOGE(LOG_TAG, ...)  printf(__VA_ARGS)
 #define ANDROID_LOG_DEBUG  1
 #define ANDROID_LOG_ERROR 2
 #endif
@@ -48,6 +48,15 @@
 
 /* #include "logger.h" */
 
+int init_Endpoint(JNIEnv* env);
+int init_BehaviorRecord(JNIEnv* env);
+int init_InboundStimulus(JNIEnv* env);
+int init_InboundResponse(JNIEnv* env);
+int init_ResourceSPs(JNIEnv* env);
+int init_ICoResourceSP(JNIEnv* env);
+int init_CoResourceSP(JNIEnv* env);
+int init_pmap(JNIEnv* env);
+int init_map_keys(JNIEnv* env);
 
 /* see: https://groups.google.com/forum/#!topic/android-ndk/ATVmPxmAj6s */
 JavaVM* g_JVM;
@@ -62,9 +71,11 @@ jmethodID MID_ANDROID_SEND_EMPTY_MSG = NULL;
 jclass   K_OPENOCF = NULL;
 jfieldID FID_OPENOCF_UI_HANDLER = NULL;
 
+/* Java types */
 jclass    K_INTEGER                       = NULL; /* 32-bit ints */
 jmethodID MID_INT_CTOR                    = NULL;
 jmethodID MID_INT_INTVALUE                = NULL; /* Integer.intValue() returns int */
+jmethodID MID_INT_VALUE_OF                = NULL; /* Integer.intValue() returns int */
 jclass K_LONG                             = NULL; /* 64-bit ints */
 jmethodID MID_LONG_CTOR                   = NULL;
 jmethodID MID_LONG_LONGVALUE              = NULL; /* Long.longValue() returns long */
@@ -72,6 +83,8 @@ jmethodID MID_LONG_LONGVALUE              = NULL; /* Long.longValue() returns lo
 jclass K_BOOLEAN                          = NULL;
 jmethodID MID_BOOL_CTOR                   = NULL;
 jmethodID MID_BOOL_BOOLVALUE              = NULL; /* Boolean.booleanValue() returns boolean */
+jfieldID FID_BOOL_TRUE              = NULL; /* static Boolean.TRUE */
+jfieldID FID_BOOL_FALSE              = NULL; /* static Boolean.FALSE */
 jclass K_DOUBLE                           = NULL;
 jmethodID MID_DBL_CTOR                    = NULL; /* Double.doubleValue() returns double */
 jmethodID MID_DBL_DBLVALUE                = NULL; /* Double.doubleValue() returns double */
@@ -80,16 +93,30 @@ jmethodID MID_SHORT_CTOR                  = NULL;
 jmethodID MID_SHORT_SHORTVALUE            = NULL;
 jclass K_STRING                           = NULL;
 jmethodID MID_STR_CTOR                    = NULL;
-jclass K_LIST                             = NULL; /* OCByteString => List<Byte> */
-jclass K_BYTE                             = NULL;
-jmethodID MID_BYTE_CTOR                   = NULL;
-jclass K_OBJECT                           = NULL;
+
+jclass K_LIST                             = NULL;
+jmethodID MID_LIST_SIZE                   = NULL;
+jmethodID MID_LIST_GET                    = NULL;
+
+jclass K_ARRAYLIST                        = NULL;
+jmethodID MID_ARRAYLIST_CTOR     = NULL;
+jmethodID MID_ARRAYLIST_CTOR_INT = NULL;
+jmethodID MID_ARRAYLIST_ADD      = NULL;
 /* jclass K_ARRAY; - List */
 
 jclass    K_LINKED_LIST                   = NULL;
 jmethodID MID_LL_CTOR                     = NULL;
 jmethodID MID_LL_ADD                      = NULL;
 jmethodID MID_LL_GET                      = NULL;
+
+jclass K_BYTE                             = NULL;
+jmethodID MID_BYTE_CTOR                   = NULL;
+jclass K_OBJECT                           = NULL;
+
+jclass K_HASHMAP                          = NULL;
+jmethodID MID_HASHMAP_CTOR = NULL;
+jmethodID MID_HASHMAP_CTOR_INT = NULL;
+jmethodID MID_HASHMAP_PUT = NULL;
 
 /* Messages */
 /* jclass    K_INBOUND_RESPONSE                = NULL; */
@@ -189,8 +216,8 @@ jfieldID  FID_RQO_DEST                    = NULL;
 int init_java(JNIEnv* env)
 {
     jclass klass = NULL;
-    /* LOGD(LOG_TAG, "Finding class for java/lang/Integer:"); */
 
+    /* Integer */
     if (K_INTEGER == NULL) {	/* 32 bits */
 	klass = (*env)->FindClass(env, "java/lang/Integer");
 	/* JC_INTEGER_URL); */
@@ -202,27 +229,29 @@ int init_java(JNIEnv* env)
 	K_INTEGER = (jclass)(*env)->NewGlobalRef(env, klass);
 	(*env)->DeleteLocalRef(env, klass);
     }
-    /* LOGD(LOG_TAG, "Found class for java/lang/Integer:"); */
-
-
     if (MID_INT_CTOR == NULL) {
-	MID_INT_CTOR = (*env)->GetMethodID(env, K_INTEGER,
-					   "<init>",
-					   "(I)V");
+	MID_INT_CTOR = (*env)->GetMethodID(env, K_INTEGER, "<init>", "(I)V");
 	if (MID_INT_CTOR == NULL) {
 	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for ctor of Integer\n");
 	    return -1;
 	}
     }
     if (MID_INT_INTVALUE == NULL) {
-	MID_INT_INTVALUE = (*env)->GetMethodID(env, K_INTEGER,
-					       "intValue",
-					       J_NULLARY J_INT);
+	MID_INT_INTVALUE = (*env)->GetMethodID(env, K_INTEGER, "intValue", J_NULLARY J_INT);
 	if (MID_INT_INTVALUE == NULL) {
 	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for 'intValue' of Integer\n");
 	    return -1;
 	}
     }
+    if (MID_INT_VALUE_OF == NULL) {
+	MID_INT_VALUE_OF = (*env)->GetStaticMethodID(env, K_INTEGER, "valueOf", "(I)Ljava/lang/Integer;");
+	if (MID_INT_VALUE_OF == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for Integer.valueOf(int)\n");
+	    return -1;
+	}
+    }
+
+    /* Short */
     if (K_SHORT == NULL) {	/* uint16_t */
 	klass = (*env)->FindClass(env, JC_SHORT_URL);
 	if (klass == NULL) {
@@ -279,7 +308,7 @@ int init_java(JNIEnv* env)
 	}
     }
 
-
+    /* Boolean */
     if (K_BOOLEAN == NULL) {
 	klass = (*env)->FindClass(env, JC_BOOLEAN_URL);
 	if (klass == NULL) {
@@ -298,6 +327,20 @@ int init_java(JNIEnv* env)
 	    return -1;
 	}
     }
+    if (FID_BOOL_TRUE == NULL) {
+	FID_BOOL_TRUE = (*env)->GetStaticFieldID(env, K_BOOLEAN, "TRUE", "Ljava/lang/Boolean;");
+	if (FID_BOOL_TRUE == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetStaticFieldID failed for Boolean.TRUE\n");
+	    return -1;
+	}
+    }
+    if (FID_BOOL_FALSE == NULL) {
+	FID_BOOL_FALSE = (*env)->GetStaticFieldID(env, K_BOOLEAN, "FALSE", "Ljava/lang/Boolean;");
+	if (FID_BOOL_FALSE == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetStaticFieldID failed for Boolean.FALSE\n");
+	    return -1;
+	}
+    }
     if (MID_BOOL_BOOLVALUE == NULL) {
 	MID_BOOL_BOOLVALUE = (*env)->GetMethodID(env, K_BOOLEAN, "booleanValue", "()Z");
 	if (MID_BOOL_BOOLVALUE == NULL) {
@@ -305,6 +348,8 @@ int init_java(JNIEnv* env)
 	    return -1;
 	}
     }
+
+    /* Double */
     if (K_DOUBLE == NULL) {
 	klass = (*env)->FindClass(env, "java/lang/Double");
 	if (klass == NULL) {
@@ -355,6 +400,88 @@ int init_java(JNIEnv* env)
 	K_LIST = (jclass)(*env)->NewGlobalRef(env, klass);
 	(*env)->DeleteLocalRef(env, klass);
     }
+    if (MID_LIST_SIZE == NULL) {
+	MID_LIST_SIZE = (*env)->GetMethodID(env, K_LIST, "size", "()I");
+	if (MID_LIST_SIZE == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for List.size()\n");
+	    return -1;
+	}
+    }
+    if (MID_LIST_GET == NULL) {
+	MID_LIST_GET = (*env)->GetMethodID(env, K_LIST, "get", "(I)Ljava/lang/Object;");
+	if (MID_LIST_GET == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for List.get(int)\n");
+	    return -1;
+	}
+    }
+
+
+    /* ArrayList */
+    if (K_ARRAYLIST == NULL) {
+	klass = (*env)->FindClass(env, "java/util/ArrayList");
+	if (klass == NULL) {
+	    LOGD(LOG_TAG, "ERROR: FindClass failed for java/util/List");
+	    return -1;
+	}
+	K_ARRAYLIST = (jclass)(*env)->NewGlobalRef(env, klass);
+	(*env)->DeleteLocalRef(env, klass);
+    }
+    if (MID_ARRAYLIST_CTOR == NULL) {
+	MID_ARRAYLIST_CTOR = (*env)->GetMethodID(env, K_ARRAYLIST, "<init>", "()V");
+	if (MID_ARRAYLIST_CTOR == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for ctor ArrayList().\n");
+	    return -1;
+	}
+    }
+    if (MID_ARRAYLIST_CTOR_INT == NULL) {
+	MID_ARRAYLIST_CTOR_INT = (*env)->GetMethodID(env, K_ARRAYLIST, "<init>", "(I)V");
+	if (MID_ARRAYLIST_CTOR_INT == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for ctor ArrayList(int).\n");
+	    return -1;
+	}
+    }
+    if (MID_ARRAYLIST_ADD == NULL) {
+	MID_ARRAYLIST_ADD = (*env)->GetMethodID(env, K_ARRAYLIST, "add", "(Ljava/lang/Object;)Z");
+	if (MID_ARRAYLIST_ADD == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for ArrayList.add(E).\n");
+	    return -1;
+	}
+    }
+
+    /* HashMap */
+    if (K_HASHMAP == NULL) {
+	klass = (*env)->FindClass(env, "java/util/HashMap");
+	if (klass == NULL) {
+	    LOGD(LOG_TAG, "ERROR: FindClass failed for java/util/HashMap");
+	    return -1;
+	}
+	K_HASHMAP = (jclass)(*env)->NewGlobalRef(env, klass);
+	(*env)->DeleteLocalRef(env, klass);
+    }
+    if (MID_HASHMAP_CTOR == NULL) {
+	MID_HASHMAP_CTOR = (*env)->GetMethodID(env, K_HASHMAP, "<init>", "()V");
+	if (MID_HASHMAP_CTOR == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for ctor HashMap().\n");
+	    return -1;
+	}
+    }
+    if (MID_HASHMAP_CTOR_INT == NULL) {
+	MID_HASHMAP_CTOR_INT = (*env)->GetMethodID(env, K_HASHMAP, "<init>", "(I)V");
+	if (MID_HASHMAP_CTOR_INT == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for ctor HashMap(int).\n");
+	    return -1;
+	}
+    }
+    if (MID_HASHMAP_PUT == NULL) {
+	MID_HASHMAP_PUT = (*env)->GetMethodID(env, K_HASHMAP, "put",
+					      "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+	if (MID_HASHMAP_PUT == NULL) {
+	    LOGD(LOG_TAG, "ERROR: GetMethodID failed for HashMap.put(K, V).\n");
+	    return -1;
+	}
+    }
+
+    /* Byte */
     if (K_BYTE == NULL) {
 	klass = (*env)->FindClass(env, "java/lang/Byte");
 	if (klass == NULL) {
@@ -834,8 +961,9 @@ int init_observation_list(JNIEnv* env)
 
 static void pthread_destructor(void* value) {
     /* From http://developer.android.com/training/articles/perf-jni.html
-    /* The pthread is being destroyed, detach it from the Java VM and
-    set the pthread_key value to NULL as required */
+     * The pthread is being destroyed, detach it from the Java VM and
+     * set the pthread_key value to NULL as required
+     */
     JNIEnv *env = (JNIEnv*) value;
     __android_log_print(ANDROID_LOG_ERROR, "openocf", "detaching from pthread");
     if (env != NULL) {
@@ -929,6 +1057,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     /* init_pfrs(env); */
 
     init_pmap(env);		/* prep mid's etc. for iterating over pmap */
+
+    init_map_keys(env);
+
 
     init_ICoResourceSP(env);
     init_CoResourceSP(env);

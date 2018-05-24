@@ -72,6 +72,7 @@ extern jfieldID FID_OPENOCF_UI_HANDLER;
 extern jclass    K_INTEGER;		/* 32-bit ints */
 extern jmethodID MID_INT_CTOR;
 extern jmethodID MID_INT_INTVALUE;	/* Integer.intValue() returns int */
+extern jmethodID MID_INT_VALUE_OF;	/* Integer.valueOf(int) returns Integer */
 extern jclass K_LONG;			/* 64-bit ints */
 extern jmethodID MID_LONG_CTOR;
 extern jmethodID MID_LONG_LONGVALUE;	/* Long.longValue() returns long */
@@ -79,6 +80,9 @@ extern jmethodID MID_LONG_LONGVALUE;	/* Long.longValue() returns long */
 extern jclass K_BOOLEAN;
 extern jmethodID MID_BOOL_CTOR;
 extern jmethodID MID_BOOL_BOOLVALUE;	/* Boolean.booleanValue() returns boolean */
+extern jfieldID FID_BOOL_TRUE;
+extern jfieldID FID_BOOL_FALSE;
+
 extern jclass K_DOUBLE;
 extern jmethodID MID_DBL_CTOR;
 extern jmethodID MID_DBL_DBLVALUE;	/* Double.doubleValue() returns double */
@@ -87,16 +91,30 @@ extern jmethodID MID_SHORT_CTOR;
 extern jmethodID MID_SHORT_SHORTVALUE;
 extern jclass K_STRING;
 extern jmethodID MID_STR_CTOR;
-extern jclass K_LIST;		   /* OCByteString => List<Byte> */
-extern jclass K_BYTE;
-extern jmethodID MID_BYTE_CTOR;
-extern jclass K_OBJECT;
-/* jclass K_ARRAY; - List */
+
+extern jclass K_LIST;
+extern jmethodID MID_LIST_SIZE;
+extern jmethodID MID_LIST_GET;
+
+extern jclass K_ARRAYLIST;
+extern jmethodID MID_ARRAYLIST_CTOR;
+extern jmethodID MID_ARRAYLIST_CTOR_INT;
+extern jmethodID MID_ARRAYLIST_ADD;
 
 extern jclass    K_LINKED_LIST;
 extern jmethodID MID_LL_CTOR;
 extern jmethodID MID_LL_ADD;
 extern jmethodID MID_LL_GET;
+
+extern jclass K_HASHMAP;
+extern jmethodID MID_HASHMAP_CTOR;
+extern jmethodID MID_HASHMAP_CTOR_INT;
+extern jmethodID MID_HASHMAP_PUT;
+
+extern jclass K_BYTE;
+extern jmethodID MID_BYTE_CTOR;
+extern jclass K_OBJECT;
+/* jclass K_ARRAY; - List */
 
 extern jclass    K_OBSERVATION;
 extern jfieldID  FID_OBSERVATION_HANDLE;
