@@ -1,5 +1,7 @@
 package openocf.utils;
 
+import java.util.List;
+
 import openocf.app.ICoResourceSP;
 import openocf.app.CoResourceSP;
 
@@ -170,4 +172,6 @@ public class Endpoint	// OCDevAddr
     native public Endpoint setRoutingMulticast(boolean torf);
 
     native public int getIfIndex();
+
+    native public static List getLocalEndpoints();
 }

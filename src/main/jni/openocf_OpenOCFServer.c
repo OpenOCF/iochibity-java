@@ -656,9 +656,14 @@ JNIEXPORT jobject JNICALL
 Java_openocf_OpenOCFServer_registerResourceSP(JNIEnv *env, jclass klass, jobject j_ResourceSP)
 {
     OC_UNUSED(klass);
-    printf("Java_openocf_engine_OCFServerSP_registerResourceSP ENTRY");
+    /* printf("%s registerServiceProvider ENTRY\n", __FILE__); */
+    OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
 
+    /* rt List<String> */
+    /* we set up here, because me must pass one rt to createresource */
+    /* after the resource is created we will add the remaining types */
     jobject j_Types = (*env)->GetObjectField(env, j_ResourceSP, FID_RSP_TYPES);
+    int types_count = (*env)->CallIntMethod(env, j_Types, MID_LIST_SIZE);
     const char *c_resource_type_name = "";
     jobject j_resource_type_name = (*env)->CallObjectMethod(env, j_Types, MID_LL_GET, 0);
     if (j_resource_type_name == NULL) {
@@ -671,7 +676,9 @@ Java_openocf_OpenOCFServer_registerResourceSP(JNIEnv *env, jclass klass, jobject
 	    return NULL;
 	}
     }
+
     jobject j_Interfaces = (*env)->GetObjectField(env, j_ResourceSP, FID_RSP_INTERFACES);
+    int if_count = (*env)->CallIntMethod(env, j_Interfaces, MID_LIST_SIZE);
     jobject j_resource_if_name = (*env)->CallObjectMethod(env, j_Interfaces, MID_LL_GET, 0);
     const char *c_resource_if_name = "";
     if (j_resource_if_name == NULL) {
@@ -725,13 +732,30 @@ Java_openocf_OpenOCFServer_registerResourceSP(JNIEnv *env, jclass klass, jobject
 				  x_ServiceProvider,
 				  (uint8_t) c_policies);  /* uint8_t resourceProperties */
 
-    if (op_result != OC_STACK_OK) THROW_STACK_EXCEPTION(op_result, "OCCreateResource failed");
+    if (op_result != OC_STACK_OK) {
+	THROW_STACK_EXCEPTION(op_result, "OCCreateResource failed");
+    }
 
+    OIC_LOG_V(INFO, TAG, "Created resource, handle %p", c_resource_handle);
+
+    /* add rts */
+    char *ctype = NULL;
+    for (int i = 1; i < types_count; i++) {
+	jstring j_type = (*env)->CallObjectMethod(env, j_Types, MID_LIST_GET, i);
+	ctype = (char*) (*env)->GetStringUTFChars(env, j_type, NULL);
+	op_result = OCBindResourceTypeToResource((OCResource*)c_resource_handle, ctype);
+    }
+
+    /* add ifs */
+    char *iface = NULL;
+    for (int i = 1; i < if_count; i++) {
+	jstring j_iface = (*env)->CallObjectMethod(env, j_Interfaces, MID_LIST_GET, i);
+	iface = (char*) (*env)->GetStringUTFChars(env, j_iface, NULL);
+	op_result = OCBindResourceInterfaceToResource((OCResource*)c_resource_handle, iface);
+    }
 
     (*env)->SetLongField(env, j_ResourceSP,
-			 FID_RSP_HANDLE, (intptr_t) (OCResource*)c_resource_handle);
-
-
+			 FID_RSP_HANDLE, (intptr_t)c_resource_handle);
 
         /* jfieldID urifield = (*env)->GetFieldID(env, K_RESOURCE_LOCAL, "uri", "Ljava/lang/String;"); */
         /* if (urifield != NULL) { */
@@ -760,22 +784,22 @@ Java_openocf_OpenOCFServer_registerResourceSP(JNIEnv *env, jclass klass, jobject
 	/* printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); */
 
 	    /* FIXME: deal with OCResource instance Id union */
-	if ( ((OCResource*)c_resource_handle)->ins > 0) {
-	    printf("instance ORD:  %d\n", ((OCResource*)c_resource_handle)->ins);
-	} else if ( ((OCResource*)c_resource_handle)->uniqueStr != NULL) {
-	    printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr);
-	} else if ( ((OCResource*)c_resource_handle)->uniqueUUID.id_length > 0) {
-	    printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id);
-	} else {
-	    /* printf("NO INSTANCE ID\n"); */
-	}
+	/* if ( ((OCResource*)c_resource_handle)->ins > 0) { */
+	/*     printf("Resource instance nbr:  %d\n", ((OCResource*)c_resource_handle)->ins); */
+	/* } else if ( ((OCResource*)c_resource_handle)->uniqueStr != NULL) { */
+	/*     printf("instance str:  '%s'\n", ((OCResource*)c_resource_handle)->uniqueStr); */
+	/* } else if ( ((OCResource*)c_resource_handle)->uniqueUUID.id_length > 0) { */
+	/*     printf("instance uuid: %s\n", ((OCResource*)c_resource_handle)->uniqueUUID.id); */
+	/* } else { */
+	/*     /\* printf("NO INSTANCE ID\n"); *\/ */
+	/* } */
     /* } */
 
     /* (*env)->ReleaseStringUTFChars(env, j_ResourceSP_type_name, c_resource_type_name); */
     /* (*env)->ReleaseStringUTFChars(env, j_ResourceSP_if_name, c_resource_if_name); */
     (*env)->ReleaseStringUTFChars(env, j_Uri, c_uri);
 
-    printf("openocf_engine_OCFServerSP/registerServiceProvider EXIT\n");
+    /* printf("%s registerServiceProvider EXIT\n", __FILE__); */
     return j_ResourceSP;
 }
 

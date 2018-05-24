@@ -17,6 +17,9 @@
 #include "jni_utils.h"
 #include "jni_init.h"
 #include "org_iochibity_Exceptions.h"
+//#include "uarraylist.h"
+
+#include "map_keys.h"
 
 #include "openocf.h"
 /* #include "oic_malloc.h" */
@@ -667,3 +670,92 @@ JNIEXPORT jobject JNICALL Java_openocf_utils_Endpoint_setRoutingMulticast
 JNIEXPORT jint JNICALL Java_openocf_utils_Endpoint_getIfIndex
   (JNIEnv *env, jobject this)
 {}
+
+/*
+ * Class:     openocf_utils_Endpoint
+ * Method:    getLocalEndpoints
+ * Signature: ()Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL
+Java_openocf_utils_Endpoint_getLocalEndpoints(JNIEnv *env, jclass klass)
+{
+    OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
+
+    jobject j_eps  = (*env)->NewObject(env, K_ARRAYLIST, MID_ARRAYLIST_CTOR_INT, 8);
+    if (j_eps == NULL) {
+	OIC_LOG_V(DEBUG, TAG, "NewObject failed for eps ArrayList");
+	// printf("NewObject failed for eps ArrayList\n");
+	return NULL;
+    }
+
+    jobject j_ep = NULL;
+
+    jstring j_val = NULL;
+    jint    j_ival = 0;
+
+    jobject j_true = (*env)->GetStaticObjectField(env, K_BOOLEAN, FID_BOOL_TRUE);
+    jobject j_false = (*env)->GetStaticObjectField(env, K_BOOLEAN, FID_BOOL_FALSE);
+
+    u_arraylist_t *local_eps = oocp_get_local_endpoints();
+
+    size_t len = u_arraylist_length(local_eps);
+    OIC_LOG_V(DEBUG, TAG, "Local EP count: %d", len);
+
+    bool bres;
+    jobject ores;
+
+    for (size_t i = 0; i < len; i++)
+    {
+	OIC_LOG_V(DEBUG, TAG, "EP %d", i);
+        CAEndpoint_t *local_ep = u_arraylist_get(local_eps, i);
+
+	j_ep  = (*env)->NewObject(env, K_HASHMAP, MID_HASHMAP_CTOR);
+	if (j_ep == NULL) { OIC_LOG(INFO, TAG, "NewObject failed for ep HashMap"); return NULL;	}
+
+	/* IP Address */
+	j_val = (*env)->NewStringUTF(env, local_ep->addr);
+	ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT, KEY_ADDR, j_val);
+
+	/* Port */
+	jobject port = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF,
+						      local_ep->port);
+	ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT, KEY_PORT, port);
+
+	/* IF index */
+	jobject index = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF,
+						      local_ep->ifindex);
+	ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT, KEY_INDEX, index);
+
+	/* Transport (Adapter) */
+	jobject transport = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF,
+							   local_ep->adapter);
+	ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT, KEY_TRANSPORT, transport);
+
+	/* Secure? */
+	if ( local_ep->flags & CA_SECURE )
+	    ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT,
+					    KEY_SECURE, j_true);
+	else
+	    ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT,
+					    KEY_SECURE, j_false);
+
+	/* Multicast? */
+	if ( local_ep->flags & CA_MULTICAST )
+	    ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT,
+				     KEY_MCAST, j_true);
+	else
+	    ores = (*env)->CallObjectMethod(env, j_ep, MID_HASHMAP_PUT,
+				     KEY_MCAST, j_false);
+
+
+	/* local_ep->remoteId;	/\* String *\/ */
+
+	/* store the ep map in the eps list */
+	bres = (*env)->CallBooleanMethod(env, j_eps, MID_ARRAYLIST_ADD, j_ep);
+	(*env)->DeleteLocalRef(env, j_ep);
+	(*env)->DeleteLocalRef(env, j_ival);
+    }
+
+    // FIXME: just to be safe
+    return j_eps;
+}

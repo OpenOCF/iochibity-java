@@ -148,8 +148,11 @@ OCStackApplicationResult _openocf_app_CoResourceSP_coReact(void* c_CoRSP,
 
     OIC_LOG_V(DEBUG, __FILE__, "%s c_CoRSP: %p", __func__, c_CoRSP);
 
-    /* To support multi-threading, we cache the incoming
-       OCClientResponse record in a TLS var: */
+    /* We're going to create an InboundResponse object and pass it to
+       the client's coReact method.  We retain the data in
+       thread-local storage rather than writing it to the Java object,
+       so the client must not pass the object to a different
+       thread. */
     tls_response_in = OICCalloc(sizeof (response_in_t), 1);
     tls_response_in->txnId    = c_TxnId;
     tls_response_in->response = c_OCClientResponse;

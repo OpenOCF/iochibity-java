@@ -153,7 +153,7 @@ JNIEXPORT void JNICALL
 Java_openocf_OpenOCF_Init__I (JNIEnv *env, jclass klass, jint mode)
 {
     OC_UNUSED(klass);
-    printf("%s | %s ENTRY, mode: %d\n", __FILE__, __func__, mode);
+    printf("%s ENTRY, mode: %d\n", __func__, mode);
 
     /* store Handler for UI updates */
     /* if (FID_OPENOCF_UI_HANDLER == NULL) { */
@@ -510,6 +510,9 @@ JNIEXPORT void JNICALL Java_openocf_OpenOCF_run (JNIEnv *env, jclass clazz)
     OC_UNUSED(env);
     OC_UNUSED(clazz);
     OIC_LOG_V(DEBUG, TAG, "%s ENTRY", __func__);
+    printf("%s ENTRY\n", __func__);
+    g_quit_flag = false;
+
     /* FIXME: broken! OCProcess is not thread safe */
     /* printf("Launching worker thread...\n"); */
     /* THREAD_CREATE_DEFAULT((THREAD_T*)&tid_work, */
@@ -527,6 +530,7 @@ JNIEXPORT void JNICALL Java_openocf_OpenOCF_run (JNIEnv *env, jclass clazz)
        but the process continues, so any spawned threads do too. */
     /* THREAD_EXIT(THREAD_EXIT_OK); */
     OIC_LOG_V(DEBUG, TAG, "%s EXIT", __func__);
+    printf("%s EXIT\n", __func__);
 }
 
 /*
@@ -560,6 +564,28 @@ Java_openocf_OpenOCF_configuration(JNIEnv *env, jclass klass)
 {
     /* OIC_LOG_V(DEBUG, TAG, "%s ENTRY %s", __func__); */
     const char * str = configuration();
+    int len = strlen(str);
+    jchar *str1;
+    str1 = (jchar *)(malloc(len * sizeof(jchar)));
+
+    for (int i = 0; i < len; i++) {
+    	str1[i] = (unsigned char)str[i];
+    }
+    jstring result = (*env)->NewString(env, str1, len);
+    free(str1);
+    return result;
+}
+
+/*
+ * Class:     openocf_OpenOCF
+ * Method:    getVersion
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL
+Java_openocf_OpenOCF_getVersion(JNIEnv *env, jclass klass)
+{
+    /* OIC_LOG_V(DEBUG, TAG, "%s ENTRY %s", __func__); */
+    const char * str = oocf_get_version();
     int len = strlen(str);
     jchar *str1;
     str1 = (jchar *)(malloc(len * sizeof(jchar)));

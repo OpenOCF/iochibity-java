@@ -1,6 +1,7 @@
 package openocf.behavior;
 
 import java.util.List;
+import java.util.Map;
 
 import openocf.utils.Endpoint;
 import openocf.utils.CoAPOption;
@@ -95,4 +96,7 @@ public class InboundResponse extends Inbound
     native public List<CoAPOption> getOptions();
 
 // } OCClientResponse;
+
+    native public Map toMap();
+
 }
