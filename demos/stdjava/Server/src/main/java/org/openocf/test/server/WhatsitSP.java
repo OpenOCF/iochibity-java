@@ -52,8 +52,10 @@ public class WhatsitSP
 
     public WhatsitSP(String uriPath) {
 	setUriPath(uriPath);
-	addType("foo.t.whatsit");
+	addType("bar.t.whoozit");
+	addType("bar.t.whatsit");
 	addInterface("foo.if.whatsit");
+	addInterface("foo.if.whoozit");
 	setPolicies(ResourcePolicy.DISCOVERABLE
 		    // | ResourcePolicy.WATCHABLE
 		    | ResourcePolicy.SECURE);

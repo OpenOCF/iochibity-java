@@ -1,5 +1,6 @@
 package org.openocf.test.client;
 
+import openocf.OpenOCF;
 import openocf.OpenOCFClient;
 import openocf.app.CoResourceSP;
 import openocf.constants.Method;
@@ -17,6 +18,7 @@ import org.openocf.test.OCFLogger;
 
 import java.lang.RuntimeException;
 import java.util.List;
+import java.util.Map;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -70,6 +72,7 @@ public class DiscoveryCoRSP
 	    System.out.println("Logger Exception occurred");
 	    System.out.println(e.getMessage());
 	}
+	OCFLogger.logInboundResponseMap(resp.toMap());
 
 	this.isRetain = true;
 	resp.isRetain = true;

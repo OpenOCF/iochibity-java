@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -73,7 +74,7 @@ public class Client
     {
 	Scanner scanner = new Scanner(System.in);
 	String action = null;
-	Pattern top  = Pattern.compile("[12micrudnx]");
+	Pattern top  = Pattern.compile("[12miecrudnx]");
 	Pattern pdrx = Pattern.compile("[dprx]");
 
     	String uri = null;
@@ -90,6 +91,7 @@ public class Client
 	    System.out.println("\t2) List discovered resources");
 	    System.out.println("\tm) List Messages");
 	    System.out.println("\ti) Inspect Message");
+	    System.out.println("\te) List local Endpoints");
 	    System.out.println("\tc) CREATE");
 	    System.out.println("\tr) RETRIEVE");
 	    System.out.println("\tu) UPDATE");
@@ -280,15 +282,34 @@ public class Client
 		    msgError(TAG, e.toString());
 		}
 	    	break;
+	    case "e":
+		System.out.println("Listing local Endpoints");
+		try {
+		    List<HashMap> eps = Endpoint.getLocalEndpoints();
+		    System.out.println("Local EP count: " + eps.size());
+		    for (HashMap ep: eps) {
+			System.out.println(
+					   "["+ ep.get(OpenOCFClient.ADDRESS)
+					   + "]:" + ep.get(OpenOCFClient.PORT)
+					   + " [" + ep.get(OpenOCFClient.INDEX) + "] "
+					   + "; Transport: " + ep.get(OpenOCFClient.TRANSPORT)
+					   + "; Secure? " + ep.get(OpenOCFClient.SECURE)
+					   + "; Multicast? " + ep.get(OpenOCFClient.MULTICAST));
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    msgError(TAG, e.toString());
+		}
+	    	break;
 	    case "x":
 		System.out.println("EXITING");
 		again = false;
 		OpenOCFClient.stop();
-		try {
-		    Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		    e.printStackTrace();
-		}
+		// try {
+		//     Thread.sleep(1000);
+		// } catch (InterruptedException e) {
+		//     e.printStackTrace();
+		// }
 		System.exit(0);
 		break;
 	    default:
