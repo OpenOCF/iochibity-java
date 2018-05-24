@@ -160,6 +160,8 @@ cc_binary(
     copts = ["-std=c11",
              "-Iexternal/openocf/include", # for wrapped lib
              "-Iexternal/openocf/src/portability",
+             #"-Iexternal/openocf/src/util",
+             "-Iexternal/openocf/third_party/cjson",
              "-Iexternal/openocf/third_party/coap",
              "-Iexternal/openocf/third_party/coap/include",
              "-Iexternal/openocf/third_party/tinycbor/src",
@@ -178,6 +180,8 @@ cc_binary(
                 "//conditions:default": ["BROKEN"]}),
     deps = ["@openocf//src/ocf", # static - everything stuffed into the jni shared lib
             "@openocf//src/portability",
+            #"@openocf//src/util",
+            "@openocf//third_party/cjson",
             "@openocf//third_party/coap",
             "@openocf//third_party/tinycbor",
             "@openocf//include"],
