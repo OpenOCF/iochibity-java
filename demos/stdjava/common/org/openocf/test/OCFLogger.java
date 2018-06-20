@@ -649,12 +649,20 @@ public class OCFLogger
 			   + Thread.currentThread().getId());
 	System.out.println("Response Map size: " + rMap.size());
 	Map devAddr = (Map)rMap.get(OpenOCF.DEVADDR);
-	System.out.println("rmap devaddr address: " + devAddr.get(OpenOCF.ADDRESS));
-	System.out.println("rmap devaddr port: " + devAddr.get(OpenOCF.PORT));
-	System.out.println("rmap devaddr transport: " + devAddr.get(OpenOCF.TRANSPORT));
-	System.out.println("rmap devaddr index: " + devAddr.get(OpenOCF.INDEX));
-	System.out.println("rmap devaddr secure? " + devAddr.get(OpenOCF.SECURE));
-	System.out.println("rmap devaddr mcast?: " + devAddr.get(OpenOCF.MULTICAST));
+	System.out.println("rmap uri: " + rMap.get(OpenOCF.URI));
+	System.out.println("rmap devaddr:");
+	System.out.println("\taddress: " + devAddr.get(OpenOCF.ADDRESS));
+	System.out.println("\tport: " + devAddr.get(OpenOCF.PORT));
+	System.out.println("\ttransport adapter: "
+			   + String.format("0x%08X", (Integer)devAddr.get(OpenOCF.TRANSPORT_ADAPTER)));
+	System.out.println("\ttransport flags: "
+			   + String.format("0x%08X", (Integer)devAddr.get(OpenOCF.TRANSPORT_FLAGS)));
+	System.out.println("\tindex: " + devAddr.get(OpenOCF.INDEX));
+	System.out.println("\tsecure? " + devAddr.get(OpenOCF.SECURE));
+	System.out.println("\tmcast?: " + devAddr.get(OpenOCF.MCAST));
+
+	System.out.println("rmap connectivity type: "
+			   + String.format("0x%08X", (int)rMap.get(OpenOCF.CONN_TYPE)));
 
 	System.out.println("rmap transport: " + rMap.get(OpenOCF.TRANSPORT));
 	System.out.println("rmap udp? " + rMap.get(OpenOCF.UDP));
@@ -667,7 +675,6 @@ public class OCFLogger
 	System.out.println("rmap remote result: " + rMap.get(OpenOCF.REMOTE_RESULT));
 	System.out.println("rmap remote identity: " + rMap.get(OpenOCF.REMOTE_IDENTITY));
 	System.out.println("rmap serial: " + rMap.get(OpenOCF.SERIAL));
-	System.out.println("rmap uri: " + rMap.get(OpenOCF.URI));
 
 	ArrayList options = (ArrayList)rMap.get(OpenOCF.COAP_OPTIONS);
 	System.out.println("CoAP options (count: " + options.size() + ")");
@@ -677,6 +684,8 @@ public class OCFLogger
 	    	System.out.println("\t" + opt.getKey()+": " + opt.getValue());
 	    }
 	}
+
+	// PAYLOAD
 	System.out.println("Payload type: " + rMap.get(OpenOCF.PAYLOAD_TYPE));
 	Map payloadMap = (Map)rMap.get(OpenOCF.PAYLOAD);
 	System.out.println("Payload size: " + payloadMap.size());
@@ -702,32 +711,60 @@ public class OCFLogger
 	    link = (Map)links.get(i);
 	    System.out.println("Link " + i);
 	    System.out.println("\thref: " + link.get(OpenOCF.OCF_HREF));
+	    // port/sec: only if OIC 1.1, not OCF 1.0
+	    // System.out.println("\tport: " + link.get(OpenOCF.OCF_PORT));
+	    // System.out.println("\ttcp port: " + link.get(OpenOCF.TCP_PORT));
+
+	    // buri not in Iotivity?
+	    // System.out.println("\tbase uri: " + link.get(OpenOCF.OCF_BURI));
+
 	    System.out.println("\trel: " + link.get(OpenOCF.OCF_LINK_RELATION));
 	    System.out.println("\tanchor: " + link.get(OpenOCF.OCF_ANCHOR));
+
 	    // rt (resource types List<String>)
 	    rts = (List)link.get(OpenOCF.OCF_RT);
 	    System.out.println("\ttypes (count " + rts.size() + ")");
 	    for (String rt: (List<String>)rts) {
 		System.out.println("\t\t" + rt);
 	    }
+
 	    // if (interfaces List<String>)
 	    ifaces = (List)link.get(OpenOCF.OCF_IF);
 	    System.out.println("\tinterfaces (count " + ifaces.size() + ")");
 	    for (String iface: (List<String>)ifaces) {
 		System.out.println("\t\t" + iface);
 	    }
+
+	    System.out.println("\tpolicy bitmask "
+			       + String.format("0x%08X", (int)link.get(OpenOCF.OCF_POLICY_BITMASK)));
+	    System.out.println("\t\tdiscoverable? " + link.get(OpenOCF.DISCOVERABLE));
+	    System.out.println("\t\tobservable? " + link.get(OpenOCF.OBSERVABLE));
+
 	    // eps (List<Map>)
 	    List eps = (List)link.get(OpenOCF.OCF_EPS);
 	    System.out.println("\tEndpoints (count " + eps.size() + ")");
+	    String epstr;
+	    String delimOpen, delimClose;
 	    for (Map ep: (List<Map>)eps) {
+		delimOpen = (Boolean)ep.get(OpenOCF.IPV6)? "[" : "";
+		delimClose = (Boolean)ep.get(OpenOCF.IPV6)? "]" : "";
+		epstr = ep.get(OpenOCF.OCF_TPS) + "://"
+		    + delimOpen
+		    + ep.get(OpenOCF.OCF_ADDR)
+		    + delimClose
+		    + ":" + ep.get(OpenOCF.OCF_PORT);
+		System.out.println("\t\tep: " + epstr);
 		System.out.println("\t\ttps: " + ep.get(OpenOCF.OCF_TPS));
 		System.out.println("\t\taddr: " + ep.get(OpenOCF.OCF_ADDR));
 		System.out.println("\t\tport: " + ep.get(OpenOCF.OCF_PORT));
-		System.out.println("\t\ttransport flags: " + ep.get(OpenOCF.TRANSPORT_FLAGS));
+		System.out.println("\t\ttransport flags: "
+				   + String.format("0x%08X", (int)ep.get(OpenOCF.TRANSPORT_FLAGS)));
+		System.out.println("\t\tIPv4? " + ep.get(OpenOCF.IPV4));
+		System.out.println("\t\tIPv6? " + ep.get(OpenOCF.IPV6));
+		System.out.println("\t\tSecure? " + ep.get(OpenOCF.SECURE));
+		System.out.println("\t\tMcast? " + ep.get(OpenOCF.MCAST));
 		System.out.println("\t\tpriority: " + ep.get(OpenOCF.OCF_PRIORITY));
 	    }
-
-	    System.out.println("\tpolicy bitmask " + link.get(OpenOCF.OCF_POLICY_BITMASK));
 	}
     }
 

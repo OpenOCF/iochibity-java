@@ -294,7 +294,7 @@ public class Client
 					   + " [" + ep.get(OpenOCFClient.INDEX) + "] "
 					   + "; Transport: " + ep.get(OpenOCFClient.TRANSPORT)
 					   + "; Secure? " + ep.get(OpenOCFClient.SECURE)
-					   + "; Multicast? " + ep.get(OpenOCFClient.MULTICAST));
+					   + "; Multicast? " + ep.get(OpenOCFClient.MCAST));
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();

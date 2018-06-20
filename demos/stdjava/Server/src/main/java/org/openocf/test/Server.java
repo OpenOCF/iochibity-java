@@ -92,7 +92,7 @@ public class Server
 
 	//OCFServerSP
 	OpenOCFServer.registerResourceSP(new WhatsitSP());
-	OpenOCFServer.registerResourceSP(new WhatsitSP("/bar/whatsit"));
+	OpenOCFServer.registerResourceSP(new WhatsitSP("/foo/bar/baz/long/very/long/url/path/too/long"));
 
 	// ServiceManager.registerResourceSP(new LedSP());
 
