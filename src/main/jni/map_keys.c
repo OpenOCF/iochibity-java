@@ -39,7 +39,7 @@ jobject KEY_URI;
 jobject KEY_OCF_ADDR;
 jobject KEY_OCF_PORT;
 jobject KEY_OCF_DEVICE;		/* device */
-jobject KEY_OCF_PLATFORM;	/* platform */
+jobject KEY_OCF_POLICY;		/* p */
 jobject KEY_OCF_DI;		/* device id? */
 jobject KEY_OCF_INSTANCE;	/* ins */
 jobject KEY_OCF_RT;
@@ -47,10 +47,10 @@ jobject KEY_OCF_IF;
 jobject KEY_OCF_NAME;		/* n */
 jobject KEY_OCF_ID;
 jobject KEY_OCF_TITLE;
-jobject KEY_OCF_TYPE;
+jobject KEY_OCF_MEDIA_TYPE;
 jobject KEY_OCF_ANCHOR;
 jobject KEY_OCF_POLICY_BITMASK;	/* bm */
-jobject KEY_OCF_SEC;
+jobject KEY_OCF_SEC;		/* old security flag (OIC 1) */
 jobject KEY_OCF_EP;
 jobject KEY_OCF_EPS;
 jobject KEY_OCF_PRIORITY;	/* pri */
@@ -60,6 +60,13 @@ jobject KEY_OCF_HREF;
 jobject KEY_OCF_LINK_RELATION;
 jobject KEY_OCF_TPS;
 jobject KEY_TRANSPORT_FLAGS;
+jobject KEY_OCF_BURI;		/* base uri */
+jobject KEY_OCF_PI;		/* platform id */
+jobject KEY_TCP_PORT;
+jobject KEY_DISCOVERABLE;
+jobject KEY_OBSERVABLE;
+jobject KEY_CONN_TYPE;
+jobject KEY_TRANSPORT_ADAPTER;
 
 void init_map_keys(JNIEnv* env)
 {
@@ -187,9 +194,9 @@ void init_map_keys(JNIEnv* env)
     KEY_OCF_DEVICE = (*env)->NewGlobalRef(env, key_ocf_d);
     (*env)->DeleteLocalRef(env, key_ocf_d);
 
-    jobject key_ocf_platform = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 30);
-    KEY_OCF_PLATFORM = (*env)->NewGlobalRef(env, key_ocf_platform);
-    (*env)->DeleteLocalRef(env, key_ocf_platform);
+    jobject key_ocf_policy = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 30);
+    KEY_OCF_POLICY = (*env)->NewGlobalRef(env, key_ocf_policy);
+    (*env)->DeleteLocalRef(env, key_ocf_policy);
 
     jobject key_ocf_di = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 31);
     KEY_OCF_DI = (*env)->NewGlobalRef(env, key_ocf_di);
@@ -219,9 +226,9 @@ void init_map_keys(JNIEnv* env)
     KEY_OCF_TITLE = (*env)->NewGlobalRef(env, key_ocf_title);
     (*env)->DeleteLocalRef(env, key_ocf_title);
 
-    jobject key_ocf_type = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 38);
-    KEY_OCF_TYPE = (*env)->NewGlobalRef(env, key_ocf_type);
-    (*env)->DeleteLocalRef(env, key_ocf_type);
+    jobject key_ocf_media_type = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 38);
+    KEY_OCF_MEDIA_TYPE = (*env)->NewGlobalRef(env, key_ocf_media_type);
+    (*env)->DeleteLocalRef(env, key_ocf_media_type);
 
     jobject key_ocf_anchor = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 39);
     KEY_OCF_ANCHOR = (*env)->NewGlobalRef(env, key_ocf_anchor);
@@ -271,4 +278,33 @@ void init_map_keys(JNIEnv* env)
 								     50);
     KEY_TRANSPORT_FLAGS = (*env)->NewGlobalRef(env, key_transport_flags);
     (*env)->DeleteLocalRef(env, key_transport_flags);
+
+    jobject key_ocf_buri = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 51);
+    KEY_OCF_BURI = (*env)->NewGlobalRef(env, key_ocf_buri);
+    (*env)->DeleteLocalRef(env, key_ocf_buri);
+
+    jobject key_ocf_pi = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 52);
+    KEY_OCF_PI = (*env)->NewGlobalRef(env, key_ocf_pi);
+    (*env)->DeleteLocalRef(env, key_ocf_pi);
+
+    jobject key_tcp_port = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 53);
+    KEY_TCP_PORT = (*env)->NewGlobalRef(env, key_tcp_port);
+    (*env)->DeleteLocalRef(env, key_tcp_port);
+
+    jobject key_discoverable = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 54);
+    KEY_DISCOVERABLE = (*env)->NewGlobalRef(env, key_discoverable);
+    (*env)->DeleteLocalRef(env, key_discoverable);
+
+    jobject key_observable = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 55);
+    KEY_OBSERVABLE = (*env)->NewGlobalRef(env, key_observable);
+    (*env)->DeleteLocalRef(env, key_observable);
+
+    jobject key_conn_type = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 56);
+    KEY_CONN_TYPE = (*env)->NewGlobalRef(env, key_conn_type);
+    (*env)->DeleteLocalRef(env, key_conn_type);
+
+    jobject key_transport_adapter = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, 57);
+    KEY_TRANSPORT_ADAPTER = (*env)->NewGlobalRef(env, key_transport_adapter);
+    (*env)->DeleteLocalRef(env, key_transport_adapter);
+
 }

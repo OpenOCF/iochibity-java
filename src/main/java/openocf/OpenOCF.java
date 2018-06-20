@@ -28,10 +28,11 @@ public class OpenOCF {
     public static final int TRANSPORT       = 3;
     public static final int INDEX           = 4;
     public static final int SECURE          = 5;
-    public static final int MULTICAST       = 6;
+    public static final int MCAST           = 6;
     public static final int DEVADDR         = 7;
     public static final int IPV4            = 8;
     public static final int IPV6            = 9;
+
     public static final int SCOPE           = 10;
     public static final int SCOPE_IF        = 11;
     public static final int SCOPE_LINK      = 12;
@@ -54,7 +55,7 @@ public class OpenOCF {
     public static final int OCF_PORT        = 28;
     public static final int OCF_DEVICE      = 29; // d
 
-    public static final int OCF_PLATFORM    = 30; // p
+    public static final int OCF_POLICY      = 30; // p
     public static final int OCF_DI          = 31; // device id?
     public static final int OCF_INSTANCE    = 32; // ins
     public static final int OCF_RT          = 33;
@@ -62,8 +63,9 @@ public class OpenOCF {
     public static final int OCF_NAME        = 35; // n
     public static final int OCF_ID          = 36;
     public static final int OCF_TITLE       = 37;
-    public static final int OCF_TYPE        = 38;
+    public static final int OCF_MEDIA_TYPE  = 38;
     public static final int OCF_ANCHOR      = 39;
+
     public static final int OCF_POLICY_BITMASK= 40; // bm
     public static final int OCF_SEC         = 41;
     public static final int OCF_EP          = 42;
@@ -74,7 +76,15 @@ public class OpenOCF {
     public static final int OCF_HREF        = 47;
     public static final int OCF_LINK_RELATION= 48;
     public static final int OCF_TPS         = 49;
+
     public static final int TRANSPORT_FLAGS = 50;
+    public static final int OCF_BURI        = 51; // base uri
+    public static final int OCF_PI          = 52; // platform id
+    public static final int TCP_PORT        = 53;
+    public static final int DISCOVERABLE    = 54;
+    public static final int OBSERVABLE      = 55;
+    public static final int CONN_TYPE       = 56;
+    public static final int TRANSPORT_ADAPTER= 57;
 
     // OCMode
     public static final int CLIENT        = 0;

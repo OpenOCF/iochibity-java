@@ -436,8 +436,10 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 {
     OCDiscoveryPayload *payload = (OCDiscoveryPayload*)msg->payload;
 
-    jobject ores;		/* object response */
+    jobject ores;		/* object result */
     jstring j_sval;
+
+    jboolean bres;			/* boolean result */
 
     /* create the Payload HashMap object */
     jobject j_payload_map = (*env)->NewObject(env, K_HASHMAP, MID_HASHMAP_CTOR);
@@ -466,7 +468,7 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
     while (iface) {
 	printf("iface: %s", iface->value);
 	j_sval = (*env)->NewStringUTF(env, iface->value);
-	ores = (*env)->CallObjectMethod(env, j_if_list, MID_ARRAYLIST_ADD, j_sval);
+	bres = (*env)->CallBooleanMethod(env, j_if_list, MID_ARRAYLIST_ADD, j_sval);
 	if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	(*env)->DeleteLocalRef(env, j_sval);
 	//i++;
@@ -483,7 +485,7 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
     while (rt) {
 	printf("rt: %s", rt->value);
 	j_sval = (*env)->NewStringUTF(env, rt->value);
-	ores = (*env)->CallObjectMethod(env, j_rt_list, MID_ARRAYLIST_ADD, j_sval);
+	bres = (*env)->CallBooleanMethod(env, j_rt_list, MID_ARRAYLIST_ADD, j_sval);
 	if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	(*env)->DeleteLocalRef(env, j_sval);
 	rt = rt->next;
@@ -506,6 +508,11 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 	ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_OCF_HREF, j_sval);
 	if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	(*env)->DeleteLocalRef(env, j_sval);
+	/* buri String (base uri) NOT IMPLEMENTED by iotivity? */
+	j_sval = (*env)->NewStringUTF(env, "");
+	ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_OCF_BURI, j_sval);
+	if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
+	(*env)->DeleteLocalRef(env, j_sval);
 	/* rel String*/
 	j_sval = (*env)->NewStringUTF(env, link->rel);
 	ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_OCF_LINK_RELATION, j_sval);
@@ -523,9 +530,8 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 	if (j_link_rt_list == NULL) { THROW_JNI_EXCEPTION("link rt ArrayList() (ctor)"); }
 	OCStringLL *link_rt = link->types;
 	while (link_rt) {
-	    printf("link type: %s\n", link_rt->value);
 	    j_sval = (*env)->NewStringUTF(env, link_rt->value);
-	    ores = (*env)->CallObjectMethod(env, j_link_rt_list, MID_ARRAYLIST_ADD, j_sval);
+	    bres = (*env)->CallBooleanMethod(env, j_link_rt_list, MID_ARRAYLIST_ADD, j_sval);
 	    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	    (*env)->DeleteLocalRef(env, j_sval);
 	    link_rt = link_rt->next;
@@ -540,9 +546,8 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 	if (j_if_list == NULL) { THROW_JNI_EXCEPTION("link rt ArrayList() (ctor)"); }
 	OCStringLL *iface = link->interfaces;
 	while (iface) {
-	    printf("link iface: %s\n", iface->value);
 	    j_sval = (*env)->NewStringUTF(env, iface->value);
-	    ores = (*env)->CallObjectMethod(env, j_if_list, MID_ARRAYLIST_ADD, j_sval);
+	    bres = (*env)->CallBooleanMethod(env, j_if_list, MID_ARRAYLIST_ADD, j_sval);
 	    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	    (*env)->DeleteLocalRef(env, j_sval);
 	    iface = iface->next;
@@ -557,6 +562,17 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 	ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_OCF_POLICY_BITMASK, j_bm);
 	if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	(*env)->DeleteLocalRef(env, j_bm);
+
+	if (link->bitmap & 0x01) {
+	    ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_DISCOVERABLE, J_TRUE);
+	} else {
+	    ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_DISCOVERABLE, J_FALSE);
+	}
+	if (link->bitmap & 0x02) {
+	    ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_OBSERVABLE, J_TRUE);
+	} else {
+	    ores = (*env)->CallObjectMethod(env, j_link_map, MID_HASHMAP_PUT, KEY_OBSERVABLE, J_FALSE);
+	}
 
 	/* secure Boolean (not used by OCF 1.0) */
 	/* port int (not used by OCF 1.0) */
@@ -587,11 +603,36 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 	    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	    (*env)->DeleteLocalRef(env, j_port);
 	    /* transport flags enum bitfield */
-	    jobject j_tflags = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, ep->family);
+	    jobject j_tflags = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF,
+							      ep->family);
 	    ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_TRANSPORT_FLAGS,
 					    j_tflags);
 	    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	    (*env)->DeleteLocalRef(env, j_tflags);
+	    /* IPv6 boolean */
+	    if ( ep->family & 0x20 ) {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_IPV6, J_TRUE);
+	    } else {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_IPV6, J_FALSE);
+	    }
+	    /* IPv4 boolean */
+	    if ( ep->family & 0x40 ) {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_IPV4, J_TRUE);
+	    } else {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_IPV4, J_FALSE);
+	    }
+	    /* security flag */
+	    if ( ep->family & 0x10 ) {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_SECURE, J_TRUE);
+	    } else {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_SECURE, J_FALSE);
+	    }
+	    /* mcast flag */
+	    if ( ep->family & 0x80 ) {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_MCAST, J_TRUE);
+	    } else {
+		ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_MCAST, J_FALSE);
+	    }
 	    /* priority uint16_t (pri) */
 	    jobject j_pri = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, ep->pri);
 	    ores = (*env)->CallObjectMethod(env, j_ep_map, MID_HASHMAP_PUT, KEY_OCF_PRIORITY, j_pri);
@@ -599,7 +640,7 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 	    (*env)->DeleteLocalRef(env, j_pri);
 
 	    /* add the ep to the list of eps */
-	    ores = (*env)->CallObjectMethod(env, j_ep_list, MID_ARRAYLIST_ADD, j_ep_map);
+	    bres = (*env)->CallBooleanMethod(env, j_ep_list, MID_ARRAYLIST_ADD, j_ep_map);
 	    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	    (*env)->DeleteLocalRef(env, j_ep_map);
 	    ep = ep->next;
@@ -609,7 +650,7 @@ static jobject discovery_to_jmap(JNIEnv *env, OCClientResponse *msg)
 	(*env)->DeleteLocalRef(env, j_ep_list);
 
 	/* now add the link map to list of links, then iterate */
-	ores = (*env)->CallObjectMethod(env, j_link_list, MID_ARRAYLIST_ADD, j_link_map);
+	bres = (*env)->CallBooleanMethod(env, j_link_list, MID_ARRAYLIST_ADD, j_link_map);
 	if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 	(*env)->DeleteLocalRef(env, j_link_map);
 	link = link->next;
@@ -759,7 +800,7 @@ Java_openocf_behavior_InboundResponse_toMap(JNIEnv *env, jobject this)
 {
     OC_UNUSED(env);
     OC_UNUSED(this);
-    /* printf("InboundReponse.toMap ENTRY\n"); */
+    printf("InboundReponse.toMap ENTRY\n");
 
     jobject ores;		/* object result */
     jstring j_sval;		/* string map value */
@@ -786,6 +827,22 @@ Java_openocf_behavior_InboundResponse_toMap(JNIEnv *env, jobject this)
     ores = (*env)->CallObjectMethod(env, j_devaddr_map, MID_HASHMAP_PUT, KEY_PORT, j_port);
     if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
 
+    /* devaddr adapter */
+    jobject j_transport_adapter = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF,
+						  devaddr->adapter);
+    ores = (*env)->CallObjectMethod(env, j_devaddr_map, MID_HASHMAP_PUT, KEY_TRANSPORT_ADAPTER,
+				    j_transport_adapter);
+    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
+    (*env)->DeleteLocalRef(env, j_transport_adapter);
+
+    /* devaddr transport flags */
+    jobject j_transport_flags = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF,
+						  devaddr->adapter);
+    ores = (*env)->CallObjectMethod(env, j_devaddr_map, MID_HASHMAP_PUT, KEY_TRANSPORT_FLAGS,
+				    j_transport_flags);
+    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
+    (*env)->DeleteLocalRef(env, j_transport_flags);
+
     /* devaddr IF index */
     jobject j_index = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF,
 						     devaddr->ifindex);
@@ -799,6 +856,10 @@ Java_openocf_behavior_InboundResponse_toMap(JNIEnv *env, jobject this)
     /* OCConnectivityType (enum) connType */
     /* connType combines, transport, network, security, and ipv6 scope flags */
     printf("connType: 0x%08X\n", resp->connType);
+    jobject j_conntype = (*env)->CallStaticObjectMethod(env, K_INTEGER, MID_INT_VALUE_OF, resp->connType);
+    ores = (*env)->CallObjectMethod(env, j_rmap, MID_HASHMAP_PUT, KEY_CONN_TYPE, j_conntype);
+    if ((*env)->ExceptionCheck(env)) { (*env)->ExceptionDescribe(env); }
+    (*env)->DeleteLocalRef(env, j_conntype);
 
     int adapter = resp->connType >> 16;
     printf("adapter: 0x%08X\n", adapter);
@@ -901,7 +962,7 @@ Java_openocf_behavior_InboundResponse_toMap(JNIEnv *env, jobject this)
     if (j_options == NULL) { THROW_JNI_EXCEPTION("coap options ArrayList(int) (ctor)"); }
     /* A CoAP Option is an (id, value) pair */
     int k, v;
-    bool bres; // bool result
+    jboolean bres; // bool result
     OCHeaderOption * rcvdOptions = resp->rcvdVendorSpecificHeaderOptions;
     /* FIXME: the OCHeaderOption struct also contains a "protocolID", deal with it */
     for (int i = 0; i < resp->numRcvdVendorSpecificHeaderOptions; i++) {
