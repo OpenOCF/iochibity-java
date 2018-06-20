@@ -162,9 +162,11 @@ cc_binary(
              "-Iexternal/openocf/src/portability",
              #"-Iexternal/openocf/src/util",
              "-Iexternal/openocf/third_party/cjson",
-             "-Iexternal/openocf/third_party/coap",
-             "-Iexternal/openocf/third_party/coap/include",
-             "-Iexternal/openocf/third_party/tinycbor/src",
+             # "-Iconfig/darwin",
+             # "-Iconfig/darwin/coap",
+             "-Iexternal/libcoap/include",
+             "-Iexternal/libcoap/include/coap",
+             "-Iexternal/tinycbor/src",
              "-Iexternal/local_jdk/include",
     ] + select({"@openocf//config:darwin_with_jni": ["-Iexternal/local_jdk/include/darwin"],
                 "@openocf//config:linux_with_jni": ["-Iexternal/local_jdk/include/linux"],
@@ -181,11 +183,18 @@ cc_binary(
     deps = ["@openocf//src/ocf", # static - everything stuffed into the jni shared lib
             "@openocf//src/portability",
             #"@openocf//src/util",
-            "@openocf//third_party/cjson",
-            "@openocf//third_party/coap",
-            "@openocf//third_party/tinycbor",
+            # "@openocf//third_party/cjson",
+            # "@openocf//third_party/coap",
+            # "@tin//third_party/tinycbor",
             "@openocf//include"],
     visibility = ["//visibility:public"]
+)
+
+cc_import(
+    name="openocflib",
+    hdrs = [],
+    static_library = "libopenocf.a",
+    shared_library = "libopenocf.so",
 )
 
 # For Android, use this, which builds both a .so and a .lo
@@ -196,9 +205,15 @@ cc_library(
     copts = ["-std=c11",
              "-Iexternal/openocf/include", # for wrapped lib
              "-Iexternal/openocf/src/portability",
-             "-Iexternal/openocf/third_party/coap",
-             "-Iexternal/openocf/third_party/coap/include",
-             "-Iexternal/openocf/third_party/tinycbor/src",
+             "-Iexternal/cjson",
+             # "-Iconfig/darwin",
+             # "-Iconfig/darwin/coap",
+             "-Iexternal/libcoap/include",
+             "-Iexternal/libcoap/include/coap",
+             # "-Iexternal/openocf/third_party/coap",
+             # "-Iexternal/openocf/third_party/coap/include",
+             "-Iexternal/tinycbor/src",
+             # "-Iexternal/openocf/third_party/tinycbor/src",
              "-Iexternal/local_jdk/include",
     ] + select({"@openocf//config:darwin_with_jni": ["-Iexternal/local_jdk/include/darwin"],
                 "@openocf//config:linux_with_jni": ["-Iexternal/local_jdk/include/linux"],
@@ -212,11 +227,14 @@ cc_library(
     ] + select({"@openocf//config:darwin_with_jni": ["@local_jdk//:jni_md_header-darwin"],
                 "@openocf//config:linux_with_jni": ["@local_jdk//:jni_md_header-linux"],
                 "//conditions:default": ["BROKEN"]}),
-    deps = ["@openocf//src/ocf", # static - everything stuffed into the jni shared lib
-            "@openocf//src/portability",
-            "@openocf//third_party/coap",
-            "@openocf//third_party/tinycbor",
-            "@openocf//include"],
+    deps = ["@openocf//:openocf", # static - everything stuffed into the jni shared lib
+            #"@openocf//src/portability",
+            # FIXME: remove cjson dep, it should go in an extension lib, e.g. a logger
+            "@cjson//:cjson",
+            # "@openocf//third_party/coap",
+            # "@openocf//third_party/tinycbor",
+            #"@openocf//include"
+    ],
     linkopts = ["-llog"],
     visibility = ["//visibility:public"]
 )
