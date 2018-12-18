@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -114,11 +115,21 @@ Java_openocf_OpenOCF_config_1logging(JNIEnv *env, jclass klass, jstring j_logfna
 	/*    (j_logfname == NULL)? "NULL" */
 	/*    : (char*) (*env)->GetStringUTFChars(env, j_logfname, NULL)); */
     if (j_logfname) {
-	logfd = fopen((char*) (*env)->GetStringUTFChars(env, j_logfname, NULL), "w");
-	if (logfd) {
+        char *logfname = (char*) (*env)->GetStringUTFChars(env, j_logfname, NULL);
+	logfd = fopen(logfname, "w");
+	if (logfd != NULL) {
 	    OCLogInit(logfd);
 	} else {
-	    OIC_LOG(ERROR, TAG, "Logfile fopen failed\n");
+            char cwd[1024];
+            if (getcwd(cwd, sizeof(cwd)) != NULL)
+                fprintf(stdout, "Current working dir: %s\n", cwd);
+            /* __android_log_printf(ANDROID_LOG_INFO, TAG,  "Current working dir: %s\n", cwd); */
+            else
+                perror("getcwd() error");
+	    printf("%s ERROR Logfile fopen %s failed with errno: %s\n",
+                   __func__, logfname, strerror(errno));
+            /* __android_log_printf(ANDROID_LOG_ERROR, TAG, "%s ERROR Logfile fopen %s failed with errno: %s\n",
+               __func__, logfname, strerror(errno)); */
 	    exit(EXIT_FAILURE);
 	}
     } else {
@@ -519,11 +530,11 @@ JNIEXPORT void JNICALL Java_openocf_OpenOCF_run (JNIEnv *env, jclass clazz)
     /* 			  (THREAD_START_T)troutine_work, */
     /* 			  (void *)NULL); */
     while (!g_quit_flag) {
-	OIC_LOG_V(DEBUG, TAG, "%s LOOP", __func__);
+	/* OIC_LOG_V(DEBUG, TAG, "%s LOOP", __func__); */
 	if (OCProcess() != OC_STACK_OK) {
 	    printf("OCStack process error\n");
 	}
-	sleep(1);
+	sleep(0.3);
     }
     OCStop();
     /* main thread has nothing to do. by calling pthread_exit it exits

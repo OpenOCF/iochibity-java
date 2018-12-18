@@ -72,7 +72,9 @@ public class DiscoveryCoRSP
 	    System.out.println("Logger Exception occurred");
 	    System.out.println(e.getMessage());
 	}
-	OCFLogger.logInboundResponseMap(resp.toMap());
+
+        // Flutter:
+	//OCFLogger.logInboundResponseMap(resp.toMap());
 
 	this.isRetain = true;
 	resp.isRetain = true;

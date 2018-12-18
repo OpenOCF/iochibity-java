@@ -21,6 +21,21 @@ import java.util.StringTokenizer;
 public class ConfigAndroid {
     private static final String TAG = "ConfigAndroid";
 
+    static {
+        Log.i(TAG, "static initializer ENTRY");
+	try{
+	    Log.i(TAG, "loading libopenocf_jni.so");
+	    System.loadLibrary("openocf_jni");
+	} catch (Exception e) {
+	    // This is probably not the best way to handle exception :-)
+	    Log.i(TAG, "loadLibrary failed for openocfserver");
+	    e.printStackTrace();
+	}
+	Log.i(TAG, "LOADED libopenocf_jni.so");
+        Log.i(TAG, "static initializer EXIT");
+    }
+
+    // FIXME: can we do this without android Context?
     public static void config(Context ctx, String apk)
     {
 	Log.v(TAG, "CONFIG");
@@ -30,16 +45,14 @@ public class ConfigAndroid {
 	    Log.v(TAG, parser.nextToken());
 	}
 	// Log.v(TAG, "openocf.ConfigAndroid::config");
-	try{
-	    System.loadLibrary(apk); // "openocf_jni");
-	    //System.load("/libopenocf_jni.so");
-	} catch (Exception e) {
-            // This is probably not the best way to handle exception :-)
-	    Log.i(TAG, "loadLibrary failed for openocfserver");
-            e.printStackTrace();
-        }
-
-	Log.v(TAG, "LOADED LIB" + apk + ".so");
+	// try{
+	//     System.loadLibrary(apk); // "openocf_jni");
+	//     //System.load("/libopenocf_jni.so");
+	// } catch (Exception e) {
+        //     // This is probably not the best way to handle exception :-)
+	//     Log.i(TAG, "loadLibrary failed for openocfserver");
+        //     e.printStackTrace();
+        // }
 
 	try {
 	    OpenOCF.config_logging(null);

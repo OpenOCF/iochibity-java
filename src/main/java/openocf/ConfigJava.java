@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.StringTokenizer;
 
 import cz.adamh.utils.NativeUtils;
 
@@ -17,7 +18,7 @@ import cz.adamh.utils.NativeUtils;
 public class ConfigJava {
     private static final String TAG = "openocf.ConfigJava";
 
-    private static final String JNILIB = "/libopenocf_jni.so";
+    private static final String JNILIB = "/main/jni/libopenocf_jni.so";
     //private static final String JNILIB = "/libopenocf_jni.dylib";
 
     public static native void config_logging(String logfile_fname);
@@ -27,9 +28,17 @@ public class ConfigJava {
     public static void config(String logfile_fname, String svrs_config_fname)
     {
 	System.out.println("openocf/ConfigJava.config");
+	String property = System.getProperty("java.library.path");
+	StringTokenizer parser = new StringTokenizer(property, ";");
+        System.out.println("java.library.path:");
+	while (parser.hasMoreTokens()) {
+	    System.out.println(parser.nextToken());
+	}
+
 	try{
+	    //System.loadLibrary("openocf_jni");
 	    // Plain Java on macOS:
-	    NativeUtils.loadLibraryFromJar(JNILIB);
+            NativeUtils.loadLibraryFromJar(JNILIB);
 	    // Linux:
 	    // NativeUtils.loadLibraryFromJar(JNILIB);
 	} catch (Exception e) {

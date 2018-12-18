@@ -42,8 +42,8 @@ public class Server
 {
     static{
 	// FIXME - init method handles configuration
-	ConfigJava.config("./logs/server.log", // logfile_fname
-			     "/server_config.cbor"	  // FIXME: constant "svrs.cbor"
+	ConfigJava.config("/tmp/openocf_server.log", // logfile_fname, must be absolute path to work with bazel run
+                          "/server_config.cbor"	  // FIXME: constant "svrs.cbor"
 			     );
     }
 
