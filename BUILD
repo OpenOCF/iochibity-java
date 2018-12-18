@@ -17,7 +17,8 @@ java_library(
     #    "src/main/java/openocf/OpenOCF.java"],
     # deps = [":OpenOCFJ"],
     # exports = ["openocfjni"],
-    resources = [":libopenocf_jni.so"],
+    resources = ["//src/main/jni:libopenocf_jni.so"],
+    # runtime_deps = ["//src/main/jni:libopenocf_jni.so"],
     visibility = ["//visibility:public"]
 )
 
@@ -36,15 +37,8 @@ android_library(
                 exclude = ["src/main/java/openocf/ConfigJava.java"]),
     #+ [#"src/main/java/openocf/OpenOCF.java",
     #srcs = [":OpenOCFJ"],
-    #deps = [":AndroidConfig"],
-    exports = [#":OpenOCFJ",
-               #":AndroidConfig",
-               # android_library does not support runtime_deps or
-               # resources, so we must export the native lib.  we
-               # cannot use a cc_binary here, so we refer to a
-               # cc_library build:
-               ":openocfjni"
-    ],
+    deps = [":openocfjni"],
+    exports = [":openocfjni"],
     visibility = ["//visibility:public"]
 )
 
@@ -80,6 +74,7 @@ java_library(
 
 genrule(
     name = "javah",
+    visibility = ["//visibility:public"],
     # srcs = [":openocf_japi"],
     srcs = ["OpenOCFJ"],
     outs = [# "src/main/jni/openocf_android_OCFService.h",
@@ -149,47 +144,6 @@ genrule(
 #     visibility = ["//visibility:public"]
 # )
 
-# For a PoJo app, use this cc_binary, which builds a shared lib.
-# cc_library does not seem to work, it does not trigger build of the openocf dep
-# NOTE that *.so works on OS X.
-cc_binary(
-    name = "libopenocf_jni.so",
-    #linkstatic = False,
-    #alwayslink = 1,
-    linkshared=True,
-    copts = ["-std=c11",
-             "-Iexternal/openocf/include", # for wrapped lib
-             "-Iexternal/openocf/src/portability",
-             #"-Iexternal/openocf/src/util",
-             "-Iexternal/openocf/third_party/cjson",
-             # "-Iconfig/darwin",
-             # "-Iconfig/darwin/coap",
-             "-Iexternal/libcoap/include",
-             "-Iexternal/libcoap/include/coap",
-             "-Iexternal/tinycbor/src",
-             "-Iexternal/local_jdk/include",
-    ] + select({"@openocf//config:darwin_with_jni": ["-Iexternal/local_jdk/include/darwin"],
-                "@openocf//config:linux_with_jni": ["-Iexternal/local_jdk/include/linux"],
-                "//conditions:default": ["BROKEN"]}),
-
-    srcs = glob(["src/main/jni/*.c"]) # jni layer
-    + glob(["src/main/jni/*.h"])
-    + [":javah",
-      "@local_jdk//:jni_header",
-       "@openocf//src/ocf",
-    ] + select({"@openocf//config:darwin_with_jni": ["@local_jdk//:jni_md_header-darwin"],
-                "@openocf//config:linux_with_jni": ["@local_jdk//:jni_md_header-linux"],
-                "//conditions:default": ["BROKEN"]}),
-    deps = ["@openocf//src/ocf", # static - everything stuffed into the jni shared lib
-            "@openocf//src/portability",
-            #"@openocf//src/util",
-            # "@openocf//third_party/cjson",
-            # "@openocf//third_party/coap",
-            # "@tin//third_party/tinycbor",
-            "@openocf//include"],
-    visibility = ["//visibility:public"]
-)
-
 cc_import(
     name="openocflib",
     hdrs = [],
@@ -197,44 +151,49 @@ cc_import(
     shared_library = "libopenocf.so",
 )
 
-# For Android, use this, which builds both a .so and a .lo
 cc_library(
     name = "openocfjni",
-    linkstatic = False,
-    #alwayslink = 1,
-    copts = ["-std=c11",
-             "-Iexternal/openocf/include", # for wrapped lib
-             "-Iexternal/openocf/src/portability",
-             "-Iexternal/cjson",
-             # "-Iconfig/darwin",
-             # "-Iconfig/darwin/coap",
-             "-Iexternal/libcoap/include",
-             "-Iexternal/libcoap/include/coap",
-             # "-Iexternal/openocf/third_party/coap",
-             # "-Iexternal/openocf/third_party/coap/include",
-             "-Iexternal/tinycbor/src",
-             # "-Iexternal/openocf/third_party/tinycbor/src",
-             "-Iexternal/local_jdk/include",
-    ] + select({"@openocf//config:darwin_with_jni": ["-Iexternal/local_jdk/include/darwin"],
-                "@openocf//config:linux_with_jni": ["-Iexternal/local_jdk/include/linux"],
-                "//conditions:default": ["BROKEN"]}),
-
-    srcs = glob(["src/main/jni/*.c"]) # jni layer
-    + glob(["src/main/jni/*.h"])
-    + [":javah",
-      "@local_jdk//:jni_header",
-       "@openocf//src/ocf",
-    ] + select({"@openocf//config:darwin_with_jni": ["@local_jdk//:jni_md_header-darwin"],
-                "@openocf//config:linux_with_jni": ["@local_jdk//:jni_md_header-linux"],
-                "//conditions:default": ["BROKEN"]}),
-    deps = ["@openocf//:openocf", # static - everything stuffed into the jni shared lib
-            #"@openocf//src/portability",
-            # FIXME: remove cjson dep, it should go in an extension lib, e.g. a logger
-            "@cjson//:cjson",
-            # "@openocf//third_party/coap",
-            # "@openocf//third_party/tinycbor",
-            #"@openocf//include"
-    ],
-    linkopts = ["-llog"],
-    visibility = ["//visibility:public"]
+    alwayslink = 1,
+    srcs = ["//src/main/jni:libopenocf_jni.so"]
 )
+
+# cc_binary(
+#     name = "libopenocf_jni.soX",
+#     linkshared = 1,
+#     #alwayslink = 1,
+#     copts = ["-std=c11",
+#              "-Iexternal/openocf/include", # for wrapped lib
+#              "-Iexternal/openocf/src/portability",
+#              "-Iexternal/cjson",
+#              # "-Iconfig/darwin",
+#              # "-Iconfig/darwin/coap",
+#              "-Iexternal/libcoap/include",
+#              "-Iexternal/libcoap/include/coap",
+#              # "-Iexternal/openocf/third_party/coap",
+#              # "-Iexternal/openocf/third_party/coap/include",
+#              "-Iexternal/tinycbor/src",
+#              # "-Iexternal/openocf/third_party/tinycbor/src",
+#              "-Iexternal/local_jdk/include",
+#     ] + select({"@openocf//config:darwin_with_jni": ["-Iexternal/local_jdk/include/darwin"],
+#                 "@openocf//config:linux_with_jni": ["-Iexternal/local_jdk/include/linux"],
+#                 "//conditions:default": ["BROKEN"]}),
+
+#     srcs = glob(["src/main/jni/*.c"]) # jni layer
+#     + glob(["src/main/jni/*.h"])
+#     + [":javah",
+#        "@local_jdk//:jni_header",
+#        #"@openocf//src/ocf",
+#     ] + select({"@openocf//config:darwin_with_jni": ["@local_jdk//:jni_md_header-darwin"],
+#                 "@openocf//config:linux_with_jni": ["@local_jdk//:jni_md_header-linux"],
+#                 "//conditions:default": ["BROKEN"]}),
+#     deps = ["@openocf//:openocf", # static - everything stuffed into the jni shared lib
+#             #"@openocf//src/portability",
+#             # FIXME: remove cjson dep, it should go in an extension lib, e.g. a logger
+#             #"@cjson//:cjson",
+#             # "@openocf//third_party/coap",
+#             # "@openocf//third_party/tinycbor",
+#             #"@openocf//include"
+#     ],
+#     linkopts = ["-llog"],
+#     visibility = ["//visibility:public"]
+# )

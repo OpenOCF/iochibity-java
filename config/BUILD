@@ -45,7 +45,7 @@ config_setting(
 
 # local
 config_setting(
-    name = "linux-local",
+    name = "linux",
     values = { "host_cpu": "k8",
                "cpu": "k8"},
     visibility = ["//visibility:public"]
@@ -53,7 +53,7 @@ config_setting(
 
 # cross-compile
 config_setting(
-    name = "linux-x86_64",
+    name = "linux64",
     values = {
         "crosstool_top": "//tools/ctng:toolchain",
         "cpu": "x86_64"
@@ -71,8 +71,9 @@ config_setting(
     },
     visibility = ["//visibility:public"]
 )
+
 config_setting(
-    name = "darwin-local64",
+    name = "darwin64",
     values = { "host_cpu": "darwin_x86_64",
                "cpu": "darwin_x86_64" },
     visibility = ["//visibility:public"]

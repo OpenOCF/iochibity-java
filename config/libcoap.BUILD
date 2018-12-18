@@ -137,8 +137,10 @@ genrule(
     cmd  = select({"@//config:android_arm7": ANDROID_ARM7_CONFIG,
                    "@//config:android_arm8": ANDROID_ARM8_CONFIG,
                    "@//config:android_x86_64": ANDROID_X86_64_CONFIG,
+                   "@//config:darwin"     : LOCAL_CONFIG,
+                   "@//config:linux"     : LOCAL_CONFIG,
                    "@//config:rpi_arm8"     : RPI_ARM8_CONFIG,
-                   "//conditions:default"   : "BORKED"})
+                   "//conditions:default"   : "JBORKED"})
 )
 
 cc_library(
